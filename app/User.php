@@ -1,0 +1,85 @@
+<?php
+
+namespace App;
+
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+
+use App\Proveedor;
+
+class User extends Authenticatable implements JWTSubject 
+{
+
+    use Notifiable;
+    use HasRoles;
+
+    protected $fillable = [
+        'nombre', 'ap_paterno', 'ap_materno', 'email', 'celular', 'password'
+    ];
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+
+    public function proveedor(){
+        return $this->belongsTo(Proveedor::class);
+    }
+
+    public function horario(){
+        return $this->hasOne(Horario::class, 'horario_id', 'medico_id');
+    }
+
+    public function getNombreCompletoAttribute()
+    {
+        return strtoupper("{$this->nombre} {$this->ap_paterno} {$this->ap_materno}");
+    }
+
+    public function getNombreProveedorAttribute()
+    {
+        if($this->proveedor){
+            return $this->proveedor->nombre;
+        }
+        return '';
+    }
+
+    public function getEstadoIdAttribute()
+    {
+        return $this->broker ? $this->broker->estado_id : -1;
+    }
+    
+    public function getClaveGeneradaAttribute()
+    {
+        return "{$this->clave_broker}-{$this->clave_agente}";
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+    
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
+    public function routeNotificationForMail()
+    {
+        return $this->email; 
+    }
+
+    public function toArray(){
+  		$data = parent::toArray();
+        $data['role'] = $this->roles()->first()->name;
+        $data['permisos'] = $this->permissions->pluck('name');
+        $data['nombre_completo'] = strtoupper($this->nombre . ' ' . $this->ap_paterno . ' ' . $this->ap_materno);
+        $data['clave_generada'] = $this->clave_generada;
+  		return $data;
+  	}
+
+}
