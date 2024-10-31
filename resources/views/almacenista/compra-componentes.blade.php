@@ -71,7 +71,11 @@
     .custom-file-label:hover {
         background-color: #e7e7e7;
     }
-     
+    
+     #tabla-principal {
+        table-layout: fixed;
+        min-width: 1200px; /* Ajusta el ancho mínimo según el contenido */
+    }
 
 
     .table .form-check label .form-check-sign::before, .table .form-check label .form-check-sign::after {top: -10px !important}
@@ -102,31 +106,31 @@
                         <i v-if="menuStep > 1"  @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                     </a>
                     <div v-if="!cargandoMenu && menuStep == 1">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> LISTADO DE AÑOS </a>
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
                         <a class="nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;&nbsp;&nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
+                            <span class="underline-hover">@{{obj.nombre}}</span> 
                         </a>
                     </div>    
                     <div v-if="!cargandoMenu && menuStep == 2">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> LISTADO DE CARPETAS </a>
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
                         <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;&nbsp;&nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                            <span class="underline-hover">@{{obj.nombre}}</span> 
                         </a>
                     </div>
                     <div v-if="!cargandoMenu && menuStep == 3">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> LISTADO DE PROYECTOS </a>
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
                         <a class="nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;&nbsp;&nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                            <span class="underline-hover">@{{obj.nombre}}</span> 
                         </a>
                     </div>
                     <div v-if="!cargandoMenu && menuStep == 4">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> LISTADO DE HERRAMENTALES </a>
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
                         <a class="nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)" >
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;&nbsp;&nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
+                            <span class="underline-hover">@{{obj.nombre}}</span> 
                         </a>
                     </div>
                     
@@ -145,15 +149,23 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl-10">
+                    <div class="col-xl-7">
                         <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">COMPRA DE COMPONENTES</h2>
+                    </div>
+                    <div class="col-xl-3 form-group">
+                        <select name="" id="" class="form-control" v-model="estatusCompra" @change="fetchComponentes(selectedHerramental)">
+                            <option value="-1">TODOS LOS COMPONENTES</option>
+                            <option value="1">SIN FECHA DE PEDIDO</option>
+                            <option value="2">SIN FECHA ESTIMADA DE RECEPCION</option>
+                            <option value="3">SIN FECHA DE RECIBIDO</option>
+                        </select>
                     </div>
                     <div class="col-xl-2"  v-if="selectedHerramental" style="border-left: 1px solid  #ededed">
                         <button class="btn btn-block mt-0" @click="guardarComponentes"><i class="fa fa-save"></i>    GUARDAR</button>
                     </div>
                 </div>
                 <div class="col-xl-12" v-if="!selectedHerramental">
-                    <h5 class="text-muted my-4" > SELECCIONE UN HERRAMENTAL PARA VER SUS COMPONENTES A COMPRAR</h5>
+                    <h5 class="text-muted my-4"> SELECCIONE UN HERRAMENTAL PARA VER SUS COMPONENTES A COMPRAR</h5>
                 </div>
                 <div class="row" v-else>
                     <div class="col-xl-12">
@@ -170,7 +182,10 @@
                             </thead>
                             <tbody>
                                 <tr v-for="c in componentes">
-                                    <td class="bold">@{{c.nombre}}</td>
+                                    <td class="bold">
+                                        @{{c.nombre}} <br>
+                                        <span v-if="c.cancelado" class="badge badge-danger">CANCELADO</span>
+                                    </td>
                                     <td><input disabled class="form-control text-center" type="number" step="1" v-model="c.cantidad"></td>
                                     <td><input class="form-control text-center" type="date"  v-model="c.fecha_solicitud"></td>
                                     <td><input class="form-control text-center" type="date"  v-model="c.fecha_pedido"></td>
@@ -194,6 +209,7 @@
         var app = new Vue({
         el: '#vue-app',
         data: {
+            estatusCompra: -1,
             loading_button: false,
             cargando: false,            
             //MENU IZQUIERDO 
@@ -319,7 +335,7 @@
                 this.ruta.herramental = this.herramentales.find(obj => obj.id == herramentalId)?.nombre;
 
                 try {
-                    const response = await axios.get(`/api/herramentales/${herramentalId}/componentes?area=compras`);
+                    const response = await axios.get(`/api/herramentales/${herramentalId}/componentes?area=compras&estatusCompra=${this.estatusCompra}`);
                     this.componentes = response.data.componentes;
                 } catch (error) {
                     console.error('Error fetching componentes:', error);
@@ -383,12 +399,37 @@
                     swal('Error', 'Ocurrió un error al guardar la informacion de los componentes', 'error');
                     t.cargando = false;
                 }
-            }
+            },
+            async navigateFromUrlParams() {
+                const queryParams = new URLSearchParams(window.location.search);
+                const anioId = queryParams.get('a');
+                const clienteId = queryParams.get('c');
+                const proyectoId = queryParams.get('p');
+                const herramentalId = queryParams.get('h');
 
+                try {
+                    if (anioId) {
+                        await this.fetchClientes(anioId);
+                    }
+                    if (clienteId) {
+                        await this.fetchProyectos(clienteId);
+                    }
+                    if (proyectoId) {
+                        await this.fetchHerramentales(proyectoId);
+                    }
+                    if (herramentalId) {
+                        await this.fetchComponentes(herramentalId);
+                    }
+                } catch (error) {
+                    console.error("Error navigating from URL parameters:", error);
+                }
+            },
+            
         },
         mounted: async function () {
             let t = this;
             await t.fetchAnios();
+            this.navigateFromUrlParams();
         }
 
                 

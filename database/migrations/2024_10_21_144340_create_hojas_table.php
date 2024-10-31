@@ -15,6 +15,7 @@ class CreateHojasTable extends Migration
     {
         Schema::create('hojas', function (Blueprint $table) {
             $table->id();
+            $table->boolean('estatus')->nullable();
             $table->integer('consecutivo')->nullable();
             $table->string('calidad')->nullable();
             $table->string('espesor')->nullable();

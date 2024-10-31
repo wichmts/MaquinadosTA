@@ -77,7 +77,7 @@ The above copyright notice and this permission notice shall be included in all c
     }
     .table td{
         /* font-size: 14px !important; */
-        font-size: calc(.4vw + .31rem) !important;
+        font-size: calc(.5vw + .35rem) !important;
     }
     @font-face {
         font-family: 'HKGrotesk';

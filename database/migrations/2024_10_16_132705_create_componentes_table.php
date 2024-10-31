@@ -39,7 +39,8 @@ class CreateComponentesTable extends Migration
             $table->boolean('cortado')->nullable();
             $table->boolean('ensamblado')->nullable();
             $table->string('estatus_corte')->nullable(); // inicial, proceso, pausado, finalizado
-
+            $table->boolean('cancelado')->nullable();
+            
             $table->integer('herramental_id')->nullable();
             $table->integer('material_id')->nullable();
 

@@ -38,6 +38,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('proyectos/{proyecto}/herramentales', 'APIController@obtenerPorProyecto');
     Route::get('herramentales/{herramental}/componentes', 'APIController@obtenerPorHerramental');
     Route::get('ultimas-notificaciones', 'APIController@ultimasNotificaciones');
+    Route::get('notificaciones', 'APIController@notificaciones');
     Route::get('hojas/{material_id}', 'APIController@obtenerHojas');
     Route::get('movimientos-hoja/{hoja_id}', 'APIController@obtenerMovimientosHoja');
     
@@ -48,7 +49,11 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('componente/{herramental_id}/compras', 'APIController@guardarComponentesCompras');
     Route::post('componente/{herramental_id}', 'APIController@guardarComponentes');
     Route::post('hoja', 'APIController@guardarHoja');
+    Route::delete('hoja/{hoja_id}/{estatus}', 'APIController@bajaHoja');
 
+
+    Route::delete('cancelar-componente-cargar/{componente_id}', 'APIController@cancelarComponenteCargar');
+    Route::put('liberar-componente-cargar/{herramental_id}', 'APIController@liberarComponenteCargar');
     Route::put('liberar-herramental-cargar/{herramental_id}', 'APIController@liberarHerramentalCargar');
     // Route::put('liberar-herramental-compras/{herramental_id}', 'APIController@liberarHerramentalCompras');
     

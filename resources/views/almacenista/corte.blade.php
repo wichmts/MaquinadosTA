@@ -152,31 +152,31 @@
                         <i v-if="menuStep > 1"  @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                     </a>
                     <div v-if="!cargandoMenu && menuStep == 1">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> LISTADO DE AÑOS </a>
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
                         <a class="nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;&nbsp;&nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
+                            <span class="underline-hover">@{{obj.nombre}}</span>  {{--<i class="fa fa-caret-right"></i>    --}}
                         </a>
                     </div>    
                     <div v-if="!cargandoMenu && menuStep == 2">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> LISTADO DE CARPETAS </a>
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
                         <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;&nbsp;&nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                            <span class="underline-hover">@{{obj.nombre}}</span>  {{--<i class="fa fa-caret-right"></i>    --}}
                         </a>
                     </div>
                     <div v-if="!cargandoMenu && menuStep == 3">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> LISTADO DE PROYECTOS </a>
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
                         <a class="nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;&nbsp;&nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                            <span class="underline-hover">@{{obj.nombre}}</span>  {{--<i class="fa fa-caret-right"></i>    --}}
                         </a>
                     </div>
                     <div v-if="!cargandoMenu && menuStep == 4">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> LISTADO DE HERRAMENTALES </a>
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
                         <a class="nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)" >
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;&nbsp;&nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
+                            <span class="underline-hover">@{{obj.nombre}}</span>  {{--<i class="fa fa-caret-right"></i>    --}}
                         </a>
                     </div>
                     
@@ -195,37 +195,32 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl-8">
+                    <div class="col-xl-7">
                         <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">CORTE DE MP</h2>
                     </div>
-                    <div class="col-xl-2 form-group" v-if="selectedHerramental">
-                        <select class="form-control">
-                            <option value="inicial">Por cortar</option>
-                            <option value="proceso">En proceso</option>
-                            <option value="pausado">Pausado</option>
-                            <option value="finalizado">Finalizado</option>
+                    <div class="col-xl-3 form-group" v-if="selectedHerramental">
+                        <select class="form-control" @change="fetchComponentes(selectedHerramental)" v-model="estatusCorte">
+                            <option value="-1">TODOS LOS COMPONENTES</option>
+                            <option value="inicial">POR CORTAR</option>
+                            <option value="proceso">EN PROCESO</option>
+                            <option value="pausado">PAUSADO</option>
+                            <option value="finalizado">FINALIZADO</option>
                         </select>
                     </div>
                     <div class="col-xl-2"  v-if="selectedHerramental">
                         <div class="row">
-                            {{-- <div class="col" style="border-left: 1px solid  #ededed">
-                                <button class="btn btn-block mt-0" @click="guardarComponentes"><i class="fa fa-save"></i> GUARDAR</button>
-                            </div> --}}
                             <div class="col">
                                 <button class="btn btn-block btn-success mt-0" @click="liberarHerramental"><i class="fa fa-check-double"></i> LIBERAR</button>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xl-12" v-if="selectedHerramental && liberado">
-                        <h5 class="text-danger" style="letter-sapcing: 2px"> HERRAMENTAL LIBERADO</h5>
                     </div>
                 </div>
                 <div class="col-xl-12" v-if="!selectedHerramental">
                     <h5 class="text-muted my-4"> SELECCIONE UN HERRAMENTAL PARA VER LOS CORTES A REALIZAR</h5>
                 </div>
                 <div class="row" v-else>
-                    <div class="col-xl-12">
-                        <table class="table">
+                    <div class="col-xl-12" style="overflow-x: auto !important;">
+                        <table class="table table-sm" id="tabla-principal">
                             <thead class="thead-light">
                                 <tr>
                                     <th style="width: 10%"> Componente </th>
@@ -241,7 +236,10 @@
                             </thead>
                             <tbody>
                                 <tr v-for="c in componentes">
-                                    <td class="bold">@{{c.nombre}}</td>
+                                    <td class="bold">
+                                        @{{c.nombre}} <br>
+                                        <span v-if="c.cancelado" class="badge badge-danger">CANCELADO</span>
+                                    </td>
                                     <td><input readonly class="form-control text-center" type="number" step="1" v-model="c.cantidad"></td>
                                     <td><input readonly class="form-control text-center" type="text"  v-model="c.largo"></td>
                                     <td><input readonly class="form-control text-center" type="text"  v-model="c.ancho"></td>
@@ -254,20 +252,10 @@
                                         <span v-if="c.estatus_corte == 'finalizado'" class="py-2 w-100 badge badge-success" style="font-size: 13px">FINALIZADO</span>
                                     </td>
                                     <td>
-                                        <button :disabled="c.estatus_corte == 'finalizado' || c.estatus_corte == 'proceso'" class="btn btn-default btn-sm" @click="cambiarEstatusCorte(c.id, 'proceso')"><i class="far fa-play-circle"></i> Iniciar corte</button>
-                                        <button :disabled="c.estatus_corte == 'inicial' || c.estatus_corte == 'finalizado' || c.estatus_corte == 'pausado'" class="btn btn-default btn-sm" @click="cambiarEstatusCorte(c.id, 'pausado')"><i class="far fa-pause-circle"></i> Pausar corte</button>
-                                        <button :disabled="c.estatus_corte == 'inicial' || c.estatus_corte == 'finalizado' " class="btn btn-default btn-sm" @click="finalizarCorte(c.id)"><i class="far fa-stop-circle"></i> Finalizar corte</button>
+                                        <button :disabled="c.estatus_corte == 'finalizado' || c.estatus_corte == 'proceso'" class=" mt-1 btn btn-default btn-sm" @click="cambiarEstatusCorte(c.id, 'proceso')"><i class="far fa-play-circle"></i> Iniciar corte</button>
+                                        <button :disabled="c.estatus_corte == 'inicial' || c.estatus_corte == 'finalizado' || c.estatus_corte == 'pausado'" class=" mt-1 btn btn-default btn-sm" @click="cambiarEstatusCorte(c.id, 'pausado')"><i class="far fa-pause-circle"></i> Pausar corte</button>
+                                        <button :disabled="c.estatus_corte == 'inicial' || c.estatus_corte == 'finalizado' " class=" mt-1 btn btn-default btn-sm" @click="finalizarCorte(c.id)"><i class="far fa-stop-circle"></i> Finalizar corte</button>
                                     </td>
-                                    {{-- 
-                                        <td>
-                                            <div class="checkbox-wrapper-18">
-                                                <div class="round">
-                                                    <input type="checkbox" id="checkbox-18" v-model="c.cortado" />
-                                                    <label for="checkbox-18"></label>
-                                                </div>
-                                            </div>
-                                        </td> 
-                                    --}}
                                 </tr>
                             </tbody>
                         </table>
@@ -290,27 +278,28 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-xl-12 form-group">
-                                <label for="">Seleccionar materia</label>
+                                <label class="bold" >Seleccione MP</label>
                                 <select class="form-control" v-model="movimiento.material_id" @change="fetchHojas(movimiento.material_id)">
                                     <option v-for="m in materiales" :value="m.id"> @{{m.nombre}} </option>
                                 </select>
                             </div>
                             <div class="col-xl-12 form-group">
-                                <label for="">Seleccionar hoja</label>
+                                <label class="bold" >Seleccione hoja</label>
                                 <select class="form-control" v-model="movimiento.hoja_id">
+                                    <option :value="null" disabled>Seleccione la hoja de donde realizo el corte...</option>
                                     <option v-for="h in hojas" :value="h.id">Consecutivo @{{h.consecutivo}}.- Espesor: @{{h.espesor}}, Actuales: @{{h.ancho_saldo}} x @{{h.largo_saldo}}, Peso: @{{h.peso_saldo}} </option>
                                 </select>
                             </div>
                             <div class="col-xl-4 form-group">
-                                <label>Nuevo largo</label>
+                                <label class="bold" >Largo restante de la hoja</label>
                                 <input type="text" class="form-control" v-model="movimiento.largo">
                             </div>
                             <div class="col-xl-4 form-group">
-                                <label>Nuevo ancho</label>
+                                <label class="bold" >Ancho restante de la hoja</label>
                                 <input type="text" class="form-control" v-model="movimiento.ancho">
                             </div>
                             <div class="col-xl-4 form-group">
-                                <label>Nuevo peso</label>
+                                <label class="bold" >Peso restante de la hoja</label>
                                 <input type="text" class="form-control" v-model="movimiento.peso">
                             </div>
                         </div>
@@ -363,12 +352,10 @@
                 proyecto: null,
                 herramental: null,
             },
+            estatusCorte: '-1',
         },
         computed: {
-            liberado: function(){
-                return false;
-                // return this.componentes.some(element => element.cortado != 'en_compras');
-            }
+          
         },
         methods:{
             cambiarEstatusCorte(id, nuevoEstatus){
@@ -502,7 +489,7 @@
                 this.ruta.herramental = this.herramentales.find(obj => obj.id == herramentalId)?.nombre;
 
                 try {
-                    const response = await axios.get(`/api/herramentales/${herramentalId}/componentes?area=corte`);
+                    const response = await axios.get(`/api/herramentales/${herramentalId}/componentes?area=corte&estatusCorte=${this.estatusCorte}`);
                     this.componentes = response.data.componentes;
 
                 } catch (error) {
@@ -592,12 +579,37 @@
                     this.cargando = false;
                 }
             },  
+            async navigateFromUrlParams() {
+                const queryParams = new URLSearchParams(window.location.search);
+                const anioId = queryParams.get('a');
+                const clienteId = queryParams.get('c');
+                const proyectoId = queryParams.get('p');
+                const herramentalId = queryParams.get('h');
+
+                try {
+                    if (anioId) {
+                        await this.fetchClientes(anioId);
+                    }
+                    if (clienteId) {
+                        await this.fetchProyectos(clienteId);
+                    }
+                    if (proyectoId) {
+                        await this.fetchHerramentales(proyectoId);
+                    }
+                    if (herramentalId) {
+                        await this.fetchComponentes(herramentalId);
+                    }
+                } catch (error) {
+                    console.error("Error navigating from URL parameters:", error);
+                }
+            },
 
         },
         mounted: async function () {
             let t = this;
             await t.fetchAnios();
             await t.fetchMateriales();
+            this.navigateFromUrlParams();
         }
 
                 

@@ -1866,7 +1866,7 @@ fieldset[disabled] .btn-link.active {
   color: #66615b;
   line-height: normal;
   /* font-size: 14px; */
-  font-size: calc(.4vw + .35rem);
+  font-size: calc(.5vw + .4rem);
   -webkit-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
   -moz-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
   -o-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
@@ -2012,10 +2012,10 @@ fieldset[disabled] .btn-link.active {
   padding: 11px 0 11px 11px;
 }
 
-.form-group .form-control,
+/* .form-group .form-control,
 .input-group .form-control {
   padding: 10px 10px 10px 10px;
-}
+} */
 
 .form-group .form-control+.input-group-prepend .input-group-text,
 .form-group .form-control+.input-group-append .input-group-text,
@@ -2595,7 +2595,7 @@ a.text-gray:hover {
 body {
   color: #333;
   /* font-size: 14px; */
-  font-size: calc(.4vw + .35rem);
+  font-size: calc(.5vw + .40rem);
   /* font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; */
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -3095,7 +3095,7 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
 .navbar .navbar-nav .nav-link {
   text-transform: uppercase;
   font-size: 0.7142em;
-  padding: 0.5rem 0.7rem;
+  padding: 5;
   line-height: 1.625rem;
   margin-right: 3px;
 }
@@ -3234,7 +3234,7 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
 
 .navbar .navbar-collapse .nav-item a {
   /* font-size: 14px; */
-  font-size: calc(.4vw + .35rem);
+  font-size: calc(.8vw + .3rem);
 }
 
 .bg-default {
@@ -4594,7 +4594,7 @@ License - nucleoapp.com/license/
   font-weight: 700;
   padding-bottom: 0;
   text-transform: capitalize;
-  font-size: calc(.4vw + .35rem);
+  font-size: calc(.5vw + .4rem);
   border: 0;
 }
 
@@ -7175,7 +7175,7 @@ color: #cccccc;
 }
 
 .js .input-file-trigger {
-  padding: 10px 45px;
+  padding: 10px 20px;
   background: #333;
   color: #fff;
   font-size: 1em;

@@ -1,4 +1,4 @@
-<footer class="footer footer-black  footer-white ">
+{{-- <footer class="footer footer-black  footer-white ">
     <div class="container-fluid">
         <div class="row">
             <nav class="footer-nav">
@@ -15,4 +15,4 @@
             </div>
         </div>
     </div>
-</footer>
+</footer> --}}

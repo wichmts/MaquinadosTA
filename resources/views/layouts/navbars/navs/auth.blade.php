@@ -81,9 +81,16 @@ input:checked + .slider:before {
             <span class="navbar-toggler-bar navbar-kebab"></span>
         </button>
 
-        <div class="collapse navbar-collapse ml-4" id="navigation" >            
+        <div class="collapse navbar-collapse ml-4" id="navigation" >     
+            @if(auth()->user()->roles()->first()->name == 'ADMINISTRADOR')
+            <ul class="navbar-nav mr-auto text-center">
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/usuario">USUARIOS</a>
+                </li>
+            </ul>
+            @endif       
             @if(auth()->user()->roles()->first()->name == 'AUXILIAR DE DISEÑO')
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav mr-auto text-center">
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/carga-componentes">Carga de componentes</a>
                 </li>
@@ -100,12 +107,12 @@ input:checked + .slider:before {
                     <a class="nav-link menu-link" href="">Modificaciones de componentes</a>
                 </li>
                 <li class="nav-item" >
-                    <a class="nav-link menu-link" href="">Centro de notificaciones</a>
+                    <a class="nav-link menu-link" href="/centro-notificaciones">Centro de notificaciones</a>
                 </li>
             </ul>
             @endif
             @if(auth()->user()->roles()->first()->name == 'ALMACENISTA')
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav mr-auto text-center">
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/compra-componentes">Compra de componentes</a>
                 </li>
@@ -119,7 +126,7 @@ input:checked + .slider:before {
                     <a class="nav-link menu-link" href="">Temple</a>
                 </li>
                 <li class="nav-item" >
-                    <a class="nav-link menu-link" href="">Centro de notificaciones</a>
+                    <a class="nav-link menu-link" href="/centro-notificaciones">Centro de notificaciones</a>
                 </li>
             </ul>
             @endif
@@ -131,9 +138,8 @@ input:checked + .slider:before {
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                         <h6 class="dropdown-header">Ultimas notificaciones</h6>
                         <h6 v-if="notificaciones.length == 0" class="dropdown-header"><small>- Sin notificaciones para mostrar -</small></h6>
-                        <a v-for="n in notificaciones" class="dropdown-item" href="#">@{{n.fecha}} @{{n.hora}} | @{{n.componente_id ? n.componente : n.herramental}} | @{{n.descripcion}}</a>
-                        <a v-if="notificaciones.length > 0" class="dropdown-item text-center" href="#">Ver todas las notificaciones...</a>
-                        {{-- <div class="dropdown-divider"></div> --}}
+                        <a v-for="n in notificaciones" @click="irNotificacion(n)" class="dropdown-item cursor-pointer" >@{{n.fecha}} @{{n.hora}} | @{{n.componente_id ? n.componente : n.herramental}} | @{{n.descripcion}}</a>
+                        <a v-if="notificaciones.length > 0" class="dropdown-item text-center" href="/centro-notificaciones">Ver todas las notificaciones...</a>
                     </div>
                 </li>
                 <li class="nav-item btn-rotate">
@@ -168,6 +174,9 @@ input:checked + .slider:before {
                     this.notificaciones = response.data.notificaciones;
                 })
             },
+            irNotificacion(notificacion){
+                window.location.href = `${notificacion.url_base}?a=${notificacion.anio_id}&c=${notificacion.cliente_id}&p=${notificacion.proyecto_id}&h=${notificacion.herramental_id}&c=${notificacion.componente_id}`
+            }
         },
         mounted() {
             this.getNotificaciones();

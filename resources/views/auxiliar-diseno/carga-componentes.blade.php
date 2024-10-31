@@ -71,7 +71,12 @@
     .custom-file-label:hover {
         background-color: #e7e7e7;
     }
-     
+    #tabla-principal {
+        table-layout: fixed;
+        min-width: 1200px; /* Ajusta el ancho mínimo según el contenido */
+    }
+
+
 
 
     .table .form-check label .form-check-sign::before, .table .form-check label .form-check-sign::after {top: -10px !important}
@@ -102,46 +107,46 @@
                         <i class="nc-icon" v-if="menuStep > 1" @click="regresar(menuStep - 1)" ><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                     </a>
                     <div v-if="!cargandoMenu && menuStep == 1">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> LISTADO DE AÑOS </a>
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
                         <a class="nav-link cursor-pointer" @click="abrirModalNuevo('año', 'Año')">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;&nbsp;&nbsp;
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
                             <span class="underline-hover">Nuevo año...</span>
                         </a>
                         <a class="nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;&nbsp;&nbsp;
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
                             <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
                         </a>
                     </div>    
                     <div v-if="!cargandoMenu && menuStep == 2">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> LISTADO DE CARPETAS </a>
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
                         <a class="nav-link cursor-pointer" @click="abrirModalNuevo('carpeta', 'Nombre de la carpeta')">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;&nbsp;&nbsp;
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
                             <span class="underline-hover">Nueva carpeta...</span>
                         </a>
                         <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;&nbsp;&nbsp;
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
                             <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
                         </a>
                     </div>
                     <div v-if="!cargandoMenu && menuStep == 3">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> LISTADO DE PROYECTOS </a>
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
                         <a class="nav-link cursor-pointer" @click="abrirModalNuevo('proyecto', 'Nombre del Proyecto')">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;&nbsp;&nbsp;
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
                             <span class="underline-hover">Nuevo proyecto...</span>
                         </a>
                         <a class="nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;&nbsp;&nbsp;
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
                             <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
                         </a>
                     </div>
                     <div v-if="!cargandoMenu && menuStep == 4">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> LISTADO DE HERRAMENTALES </a>
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
                         <a class="nav-link cursor-pointer" @click="nuevoHerramental()">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;&nbsp;&nbsp;
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
                             <span class="underline-hover">Nuevo herramental...</span>
                         </a>
                         <a class="nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)" >
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;&nbsp;&nbsp;
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
                             <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
                         </a>
                     </div>
@@ -164,7 +169,7 @@
                     <div class="col-xl-6">
                         <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">CARGA DE COMPONENTES</h2>
                     </div>
-                    <div class="col-xl-6" v-if="selectedHerramental && !liberado">
+                    <div class="col-xl-6" v-if="selectedHerramental">
                         <div class="row">
                             <div class="col">
                                 <button class="btn btn-block mt-0" @click="agregarComponente" ><i class="fa fa-plus-circle"></i> AGREGAR COMPONENTE</button>
@@ -173,92 +178,98 @@
                                 <button class="btn btn-block mt-0" @click="guardarComponente"><i class="fa fa-save"></i>    GUARDAR</button>
                             </div>
                             <div class="col">
-                                <button class="btn btn-block btn-success mt-0" @click="liberarHerramental"><i class="fa fa-check-double"></i> LIBERAR</button>
+                                <button class="btn btn-block btn-success mt-0" @click="liberarHerramental"><i class="fa fa-check-double"></i> LIBERAR TODOS </button>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xl-12" v-if="selectedHerramental && liberado">
-                        <h5 class="text-danger" style="letter-sapcing: 2px">COMPONENTES LIBERADOS</h5>
                     </div>
                 </div>
                 <div class="col-xl-12" v-if="!selectedHerramental">
                     <h5 class="text-muted my-4" > SELECCIONE UN HERRAMENTAL PARA AGREGAR SUS COMPONENTES</h5>
                 </div>
                 <div class="row" v-else>
-                    <div class="col-xl-12 table-responsive">
-                        <table class="table">
-                            <thead class="thead thead-light">
-                                <tr>
-                                    <th style="width: 10% !important">Componente</th>
-                                    <th style="width: 10% !important">Vista 2D</th>
-                                    <th style="width: 10% !important">Vista 3D</th>
-                                    <th style="width: 10% !important">Vista explosionada</th>
-                                    <th style="width: 10% !important">Compra / Fabricacion</th>
-                                    <th style="width: 10% !important">Cantidad</th>
-                                    <th style="width: 10% !important">Largo</th>
-                                    <th style="width: 10% !important">Ancho</th>
-                                    <th style="width: 10% !important">Alto</th>
-                                    <th style="width: 10% !important">Material</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(c, index) in componentes">
-                                    <td>
-                                        <strong> <i @click="eliminarComponente(index)" class="fa fa-times-circle text-danger cursor-pointer"></i>  &nbsp;&nbsp; @{{c.nombre}}  </strong> 
-                                    </td>
-                                    <td>
-                                        <input class="input-file" :id="'2d-' + index" type="file" name="file" @change="handleFileChange($event, index, 'vista2D')" v-show="false">
-                                        <label tabindex="0" :for="'2d-' + index" class="input-file-trigger col-12 text-center"><i class="fa fa-upload"></i> Cargar  </label>
-                                        <small>@{{c.archivo_2d}}</small>
-                                    </td>
-                                    <td>
-                                        <input class="input-file" :id="'3d-' + index" type="file" name="file" @change="handleFileChange($event, index, 'vista3D')" v-show="false">
-                                        <label tabindex="0" :for="'3d-' + index" class="input-file-trigger col-12 text-center"><i class="fa fa-upload"></i> Cargar  </label>
-                                        <small>@{{c.archivo_3d}}</small>
-                                    </td>
-                                    <td>
-                                        <input class="input-file" :id="'explosionada-' + index" type="file" name="file" @change="handleFileChange($event, index, 'vistaExplosionada')" v-show="false" >
-                                        <label tabindex="0" :for="'explosionada-' + index" class="input-file-trigger col-12 text-center"><i class="fa fa-upload"></i> Cargar  </label>
-                                        <small>@{{c.archivo_explosionado}}</small>
-                                    </td>
-                                    <td class="text-left">
-                                        <div class="form-group text-left">
-                                            <div class="form-check">
-                                                <input class="form-check-input" style="margin-left: 0px !important" type="radio" :id="'es_compra_si-' + index" :value="1" v-model="c.es_compra" :disabled="liberado">
-                                                <label class="bold form-check-label" :for="'es_compra_si-' + index">
-                                                    Compra
-                                                </label>
+                    <div class="col-xl-12">
+                        <div class="table-responsive" style="overflow-x: auto !important;">
+                            <table class="table table-sm" id="tabla-principal">
+                                <thead class="thead thead-light">
+                                    <tr>
+                                        <th>Componente</th>
+                                        <th>Vista 2D</th>
+                                        <th>Vista 3D</th>
+                                        <th>Vista explosionada</th>
+                                        <th>Compra / Fabricacion</th>
+                                        <th>Cantidad</th>
+                                        <th>Largo</th>
+                                        <th>Ancho</th>
+                                        <th>Alto</th>
+                                        <th>Material</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(c, index) in componentes" :key="index">
+                                        <td>
+                                            <strong> @{{ c.nombre }}</strong>
+                                        </td>
+                                        <td>
+                                            <input class="input-file" :id="'2d-' + index" type="file" name="file" @change="handleFileChange($event, index, 'vista2D')" style="display: none;">
+                                            <label tabindex="0" :for="'2d-' + index" class="input-file-trigger col-12 text-center"><i class="fa fa-upload"></i> Cargar</label>
+                                            <small>@{{ getElipsis(c.archivo_2d) }}</small>
+                                        </td>
+                                        <td>
+                                            <input class="input-file" :id="'3d-' + index" type="file" name="file" @change="handleFileChange($event, index, 'vista3D')" style="display: none;">
+                                            <label tabindex="0" :for="'3d-' + index" class="input-file-trigger col-12 text-center"><i class="fa fa-upload"></i> Cargar</label>
+                                            <small>@{{ getElipsis(c.archivo_3d) }}</small>
+                                        </td>
+                                        <td>
+                                            <input class="input-file" :id="'explosionada-' + index" type="file" name="file" @change="handleFileChange($event, index, 'vistaExplosionada')" style="display: none;">
+                                            <label tabindex="0" :for="'explosionada-' + index" class="input-file-trigger col-12 text-center"><i class="fa fa-upload"></i> Cargar</label>
+                                            <small>@{{ getElipsis(c.archivo_explosionado) }}</small>
+                                        </td>
+                                        <td class="text-left">
+                                            <div class="form-group text-left">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" style="margin-left: 0px !important" type="radio" :id="'es_compra_si-' + index" :value="1" v-model="c.es_compra" :disabled="c.cargado == 1">
+                                                    <label class="bold form-check-label" :for="'es_compra_si-' + index">
+                                                        Compra
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" style="margin-left: 0px !important" type="radio" :id="'es_compra_no-' + index" :value="0" v-model="c.es_compra" :disabled="c.cargado == 1">
+                                                    <label class="bold form-check-label" :for="'es_compra_no-' + index">
+                                                        Fabricación
+                                                    </label>
+                                                </div>
                                             </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" style="margin-left: 0px !important" type="radio" :id="'es_compra_no-' + index" :value="0" v-model="c.es_compra" :disabled="liberado">
-                                                <label class="bold form-check-label" :for="'es_compra_no-' + index">
-                                                    Fabricación
-                                                </label>
+                                        </td>
+                                        <td><input type="number" step="any" min="0" class="form-control" v-model="c.cantidad" :disabled="c.cargado == 1"></td>
+                                        <td><input type="text" class="form-control" v-model="c.largo" :disabled="c.cargado == 1"></td>
+                                        <td><input type="text" class="form-control" v-model="c.ancho" :disabled="c.cargado == 1"></td>
+                                        <td><input type="text" class="form-control" v-model="c.alto" :disabled="c.cargado == 1"></td>
+                                        <td>
+                                            <select :disabled="c.es_compra == 1 || c.cargado == 1" class="form-control" v-model="c.material_id">
+                                                <option :value="null">Material...</option>
+                                                <option v-for="m in materiales" :value="m.id">@{{ m.nombre }}</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div class="row">
+                                                <div class="col my-1">
+                                                    <button v-if="!c.cargado" @click="liberarComponente(c)" class=" my-1 btn-block btn btn-sm btn-success"><i class="fa fa-check"></i> Liberar</button>
+                                                    <button v-if="c.cargado && !c.cancelado" disabled class=" my-1 btn-block btn btn-sm btn-success"><i class="fa fa-check-double"></i> Liberado</button>
+                                                    <button v-if="c.cargado && !c.cancelado" @click="preCancelarComponente(c)" class=" my-1 btn-block btn btn-sm btn-danger"><i class="fa fa-ban"></i> Cancelar</button>
+                                                    <button v-if="c.cargado && c.cancelado" class=" my-1 btn-block btn btn-sm btn-danger" disabled><i class="fa fa-ban"></i> Cancelado</button>
+                                                </div>
+                                                <div class="col my-1">
+                                                    <button v-if="!c.cargado" @click="eliminarComponente(index)" class="btn-block btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Eliminar</button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <input type="number" step="any" min="0" class="form-control" v-model="c.cantidad" :disabled="liberado">
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" v-model="c.largo" :disabled="liberado">
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" v-model="c.ancho" :disabled="liberado">
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" v-model="c.alto" :disabled="liberado">
-                                    </td>
-                                    <td>
-                                        <select :disabled="c.es_compra == 1 || liberado" class="form-control" v-model="c.material_id" :disabled="liberado">
-                                            <option :value="null">Material...</option>
-                                            <option v-for="m in materiales" :value="m.id">@{{m.nombre}}</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -333,6 +344,7 @@
         var app = new Vue({
         el: '#vue-app',
         data: {
+            errores: [],
             loading_button: false,
             cargando: false,
             anios: [],         
@@ -362,12 +374,31 @@
             componentes:[],
             files: []
         },
-        computed: {
-            liberado: function(){
-                return this.componentes.some(element => element.cargado);
+        watch: {
+            componentes: {
+                handler(newComponentes) {
+                    newComponentes.forEach((componente) => {
+                        if (componente.es_compra === 1) {
+                            // componente.largo = '';
+                            // componente.ancho = '';
+                            // componente.alto = '';
+                            componente.material_id = null;
+                        }
+                    });
+                },
+                deep: true // Necesario para observar cambios dentro de los objetos en el arreglo
             }
         },
+        computed: {
+
+        },
         methods:{
+            getElipsis(str){
+                 if (str && str.length > 10) {
+                    return str.substring(0, 15) + '...';
+                }
+                return str;
+            },
             async guardarComponente(mostrarAlerta = true){
                 let t = this
                 t.cargando = true;
@@ -411,10 +442,10 @@
                 
                 if (!this.files[index]) {
                         this.files[index] = {
-                        vista2D: null,
-                        vista3D: null,
-                        vistaExplosionada: null
-                    };
+                            vista2D: null,
+                            vista3D: null,
+                            vistaExplosionada: null
+                        };
                 }
 
                 this.files[index][fileType] = file;
@@ -676,7 +707,7 @@
                     document.querySelector("html").classList.add('js');
                     let fileInput  = document.querySelector( ".input-file" )
                     let button     = document.querySelector( ".input-file-trigger" )
-                    
+
                     button.addEventListener( "keydown", function( event ) {
                         if ( event.keyCode == 13 || event.keyCode == 32 ) {
                             fileInput.focus();
@@ -712,45 +743,82 @@
                     element.nombre = `${this.ruta.herramental}-${(index + 1).toString().padStart(2, '0')}`;
                 })
             },
-            async liberarHerramental() {
+            componenteValido(componente){
                 let t = this;
-
-                
                 let errores = [];
-                t.componentes.forEach((componente, index) => {  
-                     if (!componente.cantidad || parseInt(componente.cantidad) <= 0 ) {
-                        errores.push(`La cantidad en ${componente.nombre} es obligatoria y tiene que ser mayor a 0.`);
-                    }
-                    if (componente.es_compra == 0 && !componente.largo) {
-                        errores.push(`El largo en ${componente.nombre} es obligatorio.`);
-                    }
-                    if (componente.es_compra == 0 && !componente.ancho) {
-                        errores.push(`El ancho en ${componente.nombre} es obligatorio.`);
-                    }
-                    if (componente.es_compra == 0 && !componente.alto) {
-                        errores.push(`El alto en ${componente.nombre} es obligatorio.`);
-                    }
-                    if (componente.es_compra == 0 && !componente.material_id) {
-                        errores.push(`El material es obligatorio en ${componente.nombre} cuando no es compra.`);
-                    }
 
-                    if (!componente.archivo_2d || !componente.archivo_3d || !componente.archivo_explosionado) {
-                        errores.push(`Todos los archivos son obligatorios en ${componente.nombre}.`);
-                    }
-                });
+                if (!componente.cantidad || parseInt(componente.cantidad) <= 0 ) {
+                    errores.push(`La cantidad en ${componente.nombre} es obligatoria y tiene que ser mayor a 0.`);
+                }
+                if (componente.es_compra == 0 && !componente.largo) {
+                    errores.push(`El largo en ${componente.nombre} es obligatorio.`);
+                }
+                if (componente.es_compra == 0 && !componente.ancho) {
+                    errores.push(`El ancho en ${componente.nombre} es obligatorio.`);
+                }
+                if (componente.es_compra == 0 && !componente.alto) {
+                    errores.push(`El alto en ${componente.nombre} es obligatorio.`);
+                }
+                if (componente.es_compra == 0 && !componente.material_id) {
+                    errores.push(`El material es obligatorio en ${componente.nombre} cuando no es compra.`);
+                }
+                if (!componente.archivo_2d || !componente.archivo_3d || !componente.archivo_explosionado) {
+                    errores.push(`Todos los archivos son obligatorios en ${componente.nombre}.`);
+                }
 
-                if (errores.length > 0) {
-                    swal('Errores de validación', errores.join('\n'), 'error');
+                if(errores.length > 0){
+                    t.errores.push(...errores);
+                    return false;
+                }
+                else
+                    return true;
+            },
+            preCancelarComponente(c){
+                let t = this
+                swal({
+                    title: "¿Esta seguro de cancelar este componente?",
+                    text: "Se cancelar para todas las areas",
+                       icon: "warning",
+                       buttons: ['Cancelar', 'Si, cancelar'],
+                       dangerMode: true,
+                   })
+                   .then((willDelete) => {
+                       if (willDelete) {
+                            t.cancelarComponente(c);                         
+                       }
+                   });
+            },
+            async cancelarComponente(componente){
+                let t = this
+                try {
+                    const response = await axios.delete(`/api/cancelar-componente-cargar/${componente.id}`);
+                    t.cargando = false;
+                    swal('Éxito', 'Componente cancelado correctamente', 'success');
+                    t.fetchComponentes(t.selectedHerramental);
+
+                } catch (error) {
+                    t.cargando = false;
+                    console.error('Error al cancelar el componente:', error);
+                    swal('Error', 'Ocurrió un error al liberar el herramental', 'error');
+                }
+               
+            },
+            async liberarComponente(componente){
+                let t = this
+                t.errores = [];
+                let valido = t.componenteValido(componente)
+                if (!valido) {
+                    swal('Errores de validación', t.errores.join('\n'), 'error');
                     return;
                 }
-                t.cargando = true;
-                let respuesta = await t.guardarComponente(false);
 
+                let respuesta = await t.guardarComponente(false);
+                
                 if(respuesta){
                     try {
-                        const response = await axios.put(`/api/liberar-herramental-cargar/${t.selectedHerramental}`);
+                        const response = await axios.put(`/api/liberar-componente-cargar/${t.selectedHerramental}`, {componente: componente.nombre});
                         t.cargando = false;
-                        swal('Éxito', 'Herramental liberado correctamente', 'success');
+                        swal('Éxito', 'Componente liberado correctamente', 'success');
                         t.fetchComponentes(t.selectedHerramental);
 
                     } catch (error) {
@@ -762,49 +830,48 @@
                     swal('Error', 'Ocurrió un error al guardar la informacion de los componentes', 'error');
                     t.cargando = false;
                 }
+
+            },
+            async liberarHerramental() {
+                let t = this;
+
+                t.errores = [];
+                let valido = true;
+                t.componentes.forEach((componente, index) => {  
+                    valido = valido && t.componenteValido(componente);
+                });
+                if (!valido) {
+                    swal('Errores de validación', t.errores.join('\n'), 'error');
+                    return;
+                }
+                t.cargando = true;
+                let respuesta = await t.guardarComponente(false);
+
+                if(respuesta){
+                    try {
+                        const response = await axios.put(`/api/liberar-herramental-cargar/${t.selectedHerramental}`);
+                        t.cargando = false;
+                        if(response.data.success){
+                            swal('Éxito', 'Componentes del herramental liberados correctamente', 'success');
+                            t.fetchComponentes(t.selectedHerramental);
+                        }else{
+                            swal('Lo sentimos', response.data.message, 'error');
+                        }
+                    } catch (error) {
+                        t.cargando = false;
+                        console.error('Error al liberar los componentes:', error);
+                        swal('Error', 'Ocurrió un error al liberar el herramental', 'error');
+                    }
+                }else{
+                    swal('Error', 'Ocurrió un error al guardar la informacion de los componentes', 'error');
+                    t.cargando = false;
+                }
             }
         },
         mounted: async function () {
             let t = this;
-
-            // try {
-            //     let storedAnio = localStorage.getItem('selectedAnio');
-            //     if (storedAnio && storedAnio !== "null") {
-            //         t.selectedAnio = storedAnio;
-            //         await t.fetchAnios();
-            //         t.ruta.anio = t.anios.find(obj => obj.id == parseInt(storedAnio))?.nombre;
-            //         t.menuStep += 1;
-
-            //         let storedCliente = localStorage.getItem('selectedCliente');
-            //         if (storedCliente && storedCliente !== "null") {
-            //             t.selectedCliente = storedCliente;
-            //             await t.fetchClientes(t.selectedAnio);
-            //             t.ruta.cliente = t.clientes.find(obj => obj.id == parseInt(storedCliente))?.nombre;
-            //             t.menuStep += 1;
-
-
-            //             let storedProyecto = localStorage.getItem('selectedProyecto');
-            //             if (storedProyecto && storedProyecto !== "null") {
-            //                 t.selectedProyecto = storedProyecto;
-            //                 await t.fetchProyectos(t.selectedCliente);
-            //                 t.ruta.proyecto = t.proyectos.find(obj => obj.id == parseInt(storedProyecto))?.nombre;
-            //                 t.menuStep += 1;
-
-            //                 let storedHerramental = localStorage.getItem('selectedHerramental');
-            //                 if (storedHerramental && storedHerramental !== "null") {
-            //                     t.selectedHerramental = storedHerramental;
-            //                     await t.fetchHerramentales(t.selectedProyecto);
-            //                     t.ruta.herramental = t.herramentales.find(obj => obj.id == t.selectedHerramental)?.nombre;
-            //                 }
-            //             }
-            //         }
-            //     } else {
-                    await t.fetchAnios();
-                    await t.fetchMateriales();
-            //     }
-            // } catch (error) {
-            //     console.error('Error during mounted lifecycle:', error);
-            // }
+            await t.fetchAnios();
+            await t.fetchMateriales();
         }
 
                 

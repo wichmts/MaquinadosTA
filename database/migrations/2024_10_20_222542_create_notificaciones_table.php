@@ -16,6 +16,10 @@ class CreateNotificacionesTable extends Migration
         Schema::create('notificaciones', function (Blueprint $table) {
             $table->id();
             $table->text('roles')->nullable();
+            $table->string('url_base')->nullable();
+            $table->integer('anio_id')->nullable();
+            $table->integer('cliente_id')->nullable();
+            $table->integer('proyecto_id')->nullable();
             $table->integer('herramental_id')->nullable();
             $table->integer('componente_id')->nullable();
             $table->integer('cantidad')->nullable();

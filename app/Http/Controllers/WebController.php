@@ -38,9 +38,13 @@ class WebController extends Controller
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
     public function corte(){
-         if (auth()->user()->roles()->first()->name == 'ALMACENISTA')
+        if (auth()->user()->roles()->first()->name == 'ALMACENISTA')
             return view('almacenista.corte');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');   
+    }
+
+    public function centroNotificaciones(){
+        return view('generales.centro-notificaciones');
     }
 
 }

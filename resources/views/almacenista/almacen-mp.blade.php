@@ -96,7 +96,7 @@
             </div>
         </div>
         <div class="row mt-3 px-2" v-cloak v-show="!cargando" >
-            <div class="col-xl-8 d-flex align-items-end">
+            <div class="col-xl-6 d-flex align-items-end">
                 <h2 class="bold my-0 py-1 text-decoration-underline" style="letter-spacing: 2px">ALMACÉN DE MATERIA PRIMA</h2>
             </div>
             <div class="col-xl-2 d-flex align-items-end">
@@ -108,25 +108,33 @@
                 </div>
             </div>
             <div class="col-xl-2 d-flex align-items-end">
+                <div class="w-100">
+                    <label class="bold" style="letter-spacing: 1px">Filtrar por estatus</label>
+                    <select class="form-control" v-model="estatusSelected" @change="fetchHojas">
+                        <option value="activo">ACTIVAS</option>
+                        <option value="inactivo">INACTIVAS</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-xl-2 d-flex align-items-end">
                 <button class="btn btn-block mb-0" @click="abrirModalNuevo"><i class="fa fa-plus-circle"></i> AÑADIR HOJA</button>
             </div>
             <div class="col-xl-12 mt-3" >
                 <table class="table table-bordered" id="tabla">
                     <thead class="thead-light">
                         <tr>
-                            <th class="py-1" rowspan="2" style="border: 1px solid #b6b6b6 !important">Consecutivo</th>
-                            <th class="py-1" rowspan="2" style="border: 1px solid #b6b6b6 !important">Calidad</th>
-                            <th class="py-1" rowspan="2" style="border: 1px solid #b6b6b6 !important">Espesor</th>    
-                            <th class="py-1 bg-success text-white" colspan="3" style="border: 1px solid #b6b6b6 !important" >Entrada</th>    
-                            <th class="py-1 bg-warning" colspan="3" style="border: 1px solid #b6b6b6 !important">Saldo actual</th>    
-                            <th class="py-1" rowspan="2" style="border: 1px solid #b6b6b6 !important">Precio / Kilo</th>
-                            <th class="py-1" rowspan="2" style="border: 1px solid #b6b6b6 !important">Fecha Entrada</th>
-                            <th class="py-1" rowspan="2" style="border: 1px solid #b6b6b6 !important">Fecha Salida</th>
-                            <th class="py-1" rowspan="2" style="border: 1px solid #b6b6b6 !important">Factura</th>
-                            <th class="py-1" rowspan="2" style="border: 1px solid #b6b6b6 !important">Acciones</th>
+                            <th  class="py-1" rowspan="2" style="width: 5% ; border: 1px solid #b6b6b6 !important">Consecutivo</th>
+                            <th  class="py-1" rowspan="2" style="width: 5% ; border: 1px solid #b6b6b6 !important">Calidad</th>
+                            <th  class="py-1" rowspan="2" style="width: 5% ; border: 1px solid #b6b6b6 !important">Espesor</th>    
+                            <th  class="py-1 bg-success text-white" colspan="3" style="width: 13% ; border: 1px solid #b6b6b6 !important" >Entrada</th>    
+                            <th  class="py-1 bg-warning" colspan="3" style="width: 13% ; border: 1px solid #b6b6b6 !important; text-transform: none !important">Saldo actual</th>    
+                            <th  class="py-1" rowspan="2" style="width: 7% ; border: 1px solid #b6b6b6 !important">Precio / Kilo</th>
+                            <th  class="py-1" rowspan="2" style="width: 7% ; border: 1px solid #b6b6b6 !important">Fecha Entrada</th>
+                            <th  class="py-1" rowspan="2" style="width: 12% ; border: 1px solid #b6b6b6 !important">Ultimo movimiento</th>
+                            <th  class="py-1" rowspan="2" style="width: 10% ; border: 1px solid #b6b6b6 !important">Factura</th>
+                            <th  class="py-1" rowspan="2" style="width: 20% ; border: 1px solid #b6b6b6 !important">Acciones</th>
                         </tr>
                         <tr>
-                            
                             <th class="py-1" style="border: 1px solid #b6b6b6 !important">Largo</th>
                             <th class="py-1" style="border: 1px solid #b6b6b6 !important">Ancho</th>
                             <th class="py-1" style="border: 1px solid #b6b6b6 !important">Peso</th>
@@ -148,13 +156,14 @@
                             <td>@{{h.peso_saldo}}</td>
                             <td>@{{h.precio_kilo | currency}}</td>
                             <td>@{{h.fecha_entrada}}</td>
-                            <td>@{{h.fecha_salida??'-'}}</td>
+                            <td>@{{h.ultimo_movimiento ?? '-' }}</td>
                             <td>
                                 <a :href=`/api/download/facturas/${h.factura}` target="_blank">@{{h.factura}}</a>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-default" @click="verMovimientosHoja(h.id)"><i class="fa fa-list-ul cursor-pointer"></i> ver movimientos</button>
-                                <button class="btn btn-sm btn-danger" @click="bajaHoja(h.id)"><i class="fa fa-ban cursor-pointer"></i> Dar de baja</button>
+                                <button class="my-1 btn btn-sm btn-default" @click="verMovimientosHoja(h.id)"><i class="fa fa-list-ul cursor-pointer"></i> ver movimientos</button>
+                                <button v-if="h.estatus" class="my-1 btn btn-sm btn-danger" @click="estatusHoja(h.id, false)"><i class="fa fa-ban cursor-pointer"></i> Dar de baja</button>
+                                <button v-else class="my-1 btn btn-sm btn-warning text-dark" @click="estatusHoja(h.id, true)"><i class="fa fa-level-up-alt cursor-pointer"></i> Reactivar hoja</button>
                             </td>
                         </tr>
                         <tr v-if="hojas.length == 0">
@@ -254,7 +263,7 @@
                                     <thead class="thead-light">
                                         <tr>
                                             <th class="py-1" style="border: 1px solid #b6b6b6 !important" rowspan="2">Fecha</th>
-                                            <th class="py-1" style="border: 1px solid #b6b6b6 !important" colspan="3">Saldo</th>
+                                            <th class="py-1" style="border: 1px solid #b6b6b6 !important; text-transform: none !important; " colspan="3">Restante despues del movimiento</th>
                                             <th class="py-1" style="border: 1px solid #b6b6b6 !important" rowspan="2">HR</th>
                                             <th class="py-1" style="border: 1px solid #b6b6b6 !important" rowspan="2">PY</th>
                                         </tr>
@@ -308,10 +317,58 @@
             movimientos: [],
             nuevo: {},
             materialSelected: -1,
+            estatusSelected: 'activo',
         },
         methods:{
-            bajaHoja(id){
+            estatusHoja(id, estatus){
                 let t = this
+                if(estatus){
+                    swal({
+                        title: "¿Esta seguro de reactivar esta hoja?",
+                        text: "Aparecera nuevamente como una hoja activa para las otras areas",
+                        icon: "warning",
+                        buttons: ['Cancelar', 'Si, reactivar'],
+                        dangerMode: false,
+                    })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            t.cargando = true;
+                            axios.delete(`/api/hoja/${id}/${estatus}`).then(response => {
+                                if(response.data.success){
+                                    swal('Correcto', 'Hoja reactivada correctamente, podra seguir visualizandola en hojas activas.', 'success');
+                                    t.fetchHojas();
+                                    t.cargando = false;
+                                }else{
+                                    t.cargando = false;
+                                }
+                            })
+                        }
+                    });
+                }else{
+                    swal({
+                        title: "¿Esta seguro de dar de baja esta hoja?",
+                        text: "No aparecera como una hoja activa para las otras areas",
+                        icon: "warning",
+                        buttons: ['Cancelar', 'Si, dar de baja'],
+                        dangerMode: true,
+                    })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            t.cargando = true;
+                            axios.delete(`/api/hoja/${id}/${estatus}`).then(response => {
+                                if(response.data.success){
+                                    swal('Correcto', 'Hoja dada de baja correctamente, podra seguir visualizandola en hojas inactivas.', 'success');
+                                    t.fetchHojas();
+                                    t.cargando = false;
+                                }else{
+                                    t.cargando = false;
+                                }
+                            })
+                        }
+                    });
+                }
+
+
 
             },
             verMovimientosHoja(id){
@@ -434,7 +491,7 @@
             async fetchHojas() {
                 this.cargando = true
                 try {
-                    const response = await axios.get(`/api/hojas/${this.materialSelected}`);
+                    const response = await axios.get(`/api/hojas/${this.materialSelected}?estatus=${this.estatusSelected}`);
                     this.hojas = response.data.hojas;
                     Vue.nextTick(function(){
                         // $('#tabla').DataTable({
