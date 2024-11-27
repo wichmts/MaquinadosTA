@@ -111,6 +111,32 @@ input:checked + .slider:before {
                 </li>
             </ul>
             @endif
+            @if(auth()->user()->roles()->first()->name == 'JEFE DE AREA')
+            <ul class="navbar-nav mr-auto text-center">
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/enrutador">Enrutador</a>
+                </li>
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/compra-componentes">Programador</a>
+                </li>
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/compra-componentes">Operador</a>
+                </li>
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/compra-componentes">Visor pruebas</a>
+                </li>
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/compra-componentes">Visor Avance</a>
+                </li>
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/compra-componentes">Visor Avance componente</a>
+                </li>
+                
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/centro-notificaciones">Centro de notificaciones</a>
+                </li>
+            </ul>
+            @endif
             @if(auth()->user()->roles()->first()->name == 'ALMACENISTA')
             <ul class="navbar-nav mr-auto text-center">
                 <li class="nav-item" >
@@ -130,10 +156,10 @@ input:checked + .slider:before {
                 </li>
             </ul>
             @endif
-            <ul class="navbar-nav ml-auto">
+            <ul class="navbar-nav ml-auto text-center">
                 <li class="nav-item dropdown btn-rotate">
                     <a class=" cursor-pointer nav-link dropdown-toggle cursor-pointer" style="text-transform: capitalize" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-bell"></i> <small>Ultimas notificaciones</small>
+                        <i class="fa fa-bell"></i> <small class="bold">Ultimas notificaciones</small>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                         <h6 class="dropdown-header">Ultimas notificaciones</h6>
@@ -144,7 +170,7 @@ input:checked + .slider:before {
                 </li>
                 <li class="nav-item btn-rotate">
                     <a class="nav-link cursor-pointer " onclick="document.getElementById('formLogOut').submit();" style="text-transform: capitalize">
-                        <i class="fa fa-sign-out"></i> <small>{{ __('system.logout') }}</small>
+                        <i class="fa fa-sign-out"></i> <small class="bold">{{ __('system.logout') }}</small>
                     </a>
                 </li>
                 <form class="dropdown-item" action="{{ route('logout') }}" id="formLogOut" method="POST" style="display: none;">

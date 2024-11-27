@@ -152,7 +152,7 @@
                     <div class="col-xl-7">
                         <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">COMPRA DE COMPONENTES</h2>
                     </div>
-                    <div class="col-xl-3 form-group">
+                    <div class="col-xl-3 form-group" v-if="selectedHerramental">
                         <select name="" id="" class="form-control" v-model="estatusCompra" @change="fetchComponentes(selectedHerramental)">
                             <option value="-1">TODOS LOS COMPONENTES</option>
                             <option value="1">SIN FECHA DE PEDIDO</option>

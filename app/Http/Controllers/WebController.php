@@ -21,6 +21,12 @@ class WebController extends Controller
       return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
 
+     public function enrutador(){
+        if (auth()->user()->roles()->first()->name == 'JEFE DE AREA')
+            return view('jefe-area.enrutador');
+        return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
+
     public function cargaComponentes(){
         if (auth()->user()->roles()->first()->name == 'AUXILIAR DE DISEÑO')
             return view('auxiliar-diseno.carga-componentes');

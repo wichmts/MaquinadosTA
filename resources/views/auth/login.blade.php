@@ -90,7 +90,7 @@ body {
                   <h5 class="mb-1 mt-2 bold" style="letter-spacing: 2px"><small>CODIGO DE ACCESO</small></h5>
                   <input style="font-size: 20px !important; letter-spacing: 2px" 
                         class="text-center" 
-                        type="text" 
+                        type="password" 
                         name="codigo_acceso" 
                         placeholder="Ingrese su código de acceso" 
                         required/>

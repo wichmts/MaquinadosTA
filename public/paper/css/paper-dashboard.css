@@ -3234,7 +3234,8 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
 
 .navbar .navbar-collapse .nav-item a {
   /* font-size: 14px; */
-  font-size: calc(.8vw + .3rem);
+  font-size: calc(.6vw + .3rem);
+  font-weight: bold !important;
 }
 
 .bg-default {

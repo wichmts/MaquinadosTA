@@ -66,6 +66,13 @@ The above copyright notice and this permission notice shall be included in all c
     <script src="https://unpkg.com/vue-select@latest"></script>
     <link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
 
+    {{-- <link href="https://cdn.jsdelivr.net/npm/jsgantt-improved@2.8.10/dist/jsgantt.min.css" rel="stylesheet"> --}}
+    <link href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" rel="stylesheet" type="text/css">
+
+
+
+
+
     <style >
     
     /* i{
@@ -160,6 +167,14 @@ The above copyright notice and this permission notice shall be included in all c
     {{-- OPENAPAY --}}
     <script type="text/javascript" src="https://js.openpay.mx/openpay.v1.min.js"></script>
     <script type='text/javascript' src="https://js.openpay.mx/openpay-data.v1.min.js"></script>
+
+    {{-- <script src="https://cdn.jsdelivr.net/npm/jsgantt-improved@2.8.10/dist/jsgantt.min.js"></script> --}}
+    <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js" type="text/javascript"></script>
+
+
+
+
+
 
     
 

@@ -18,5 +18,6 @@ class RolesTableSeeder extends Seeder
       $role = Role::create(['name' => 'JEFE DE AREA']);
       $role = Role::create(['name' => 'AUXILIAR DE DISEÑO']);
       $role = Role::create(['name' => 'ALMACENISTA']);
+      $role = Role::create(['name' => 'PROGRAMADOR']);
     }
 }

@@ -29,6 +29,7 @@ class CreateComponentesTable extends Migration
             $table->string('fecha_pedido')->nullable();
             $table->string('fecha_estimada')->nullable();
             $table->string('fecha_real')->nullable();
+            $table->string('prioridad')->nullable();
             
             
             $table->boolean('es_compra')->nullable();
