@@ -51,7 +51,7 @@
         height: 17px !important;
      }
      input[type="file"] {
-        width: 150px; /* Ajusta el valor según lo que necesites */
+        width: 100%;
         max-width: 100%; /* Para asegurarte de que no se salga del contenedor */
     }
 
@@ -65,63 +65,45 @@
         cursor: pointer;
         border: 1px solid #ccc;
         border-radius: 4px;
-        background-color: #f7f7f7;
+        background-color: #000000 !important;
     }
 
     .custom-file-label:hover {
         background-color: #e7e7e7;
     }
-
-    .checkbox-wrapper-18 {
-        display: flex;               /* Usa Flexbox para centrar */
-        justify-content: center;     /* Centra horizontalmente */
-        align-items: center;         /* Centra verticalmente si es necesario */
-        height: 100%;                /* Asegúrate de que el contenedor tenga altura */
+    
+     #tabla-principal {
+        table-layout: fixed;
+        min-width: 1200px; /* Ajusta el ancho mínimo según el contenido */
     }
 
-    .checkbox-wrapper-18 .round {
-        position: relative;
+     #gantt_here {
+        width: 100%;
+        height: 600px; /* Ajusta este valor según tus necesidades */
     }
 
-    .checkbox-wrapper-18 .round label {
-        background-color: #fff;
-        border: 1px solid #ccc;
-        border-radius: 50%;
-        cursor: pointer;
-        height: 28px;
-        width: 28px;
-        display: block;
+    .btn-dark{
+        background-color: #333 !important;
+        color: white !important;
+        border-color: #333;
     }
 
-    .checkbox-wrapper-18 .round label:after {
-        border: 2px solid #fff;
-        border-top: none;
-        border-right: none;
-        content: "";
-        height: 6px;
-        left: 8px;
-        opacity: 0;
-        position: absolute;
-        top: 9px;
-        transform: rotate(-45deg);
-        width: 12px;
+
+    input[type="number"] {
+        -moz-appearance: textfield; /* Firefox */
+        -webkit-appearance: none;  /* Chrome, Safari, Edge */
+        appearance: none;          /* Soporte estándar */
     }
 
-    .checkbox-wrapper-18 .round input[type="checkbox"] {
-        visibility: hidden;
-        display: none;
-        opacity: 0;
+    /* Opcional: Para evitar padding adicional en algunos navegadores */
+    input[type="number"]::-webkit-inner-spin-button, 
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none; 
+        margin: 0; /* Opcional: Ajustar márgenes */
     }
 
-    .checkbox-wrapper-18 .round input[type="checkbox"]:checked + label {
-        background-color: #66bb6a;
-        border-color: #66bb6a;
-    }
 
-    .checkbox-wrapper-18 .round input[type="checkbox"]:checked + label:after {
-        opacity: 1;
-    }
-
+    .table .form-check label .form-check-sign::before, .table .form-check label .form-check-sign::after {top: -10px !important}
 
     .gantt-chart {
         display: grid;
@@ -206,10 +188,13 @@
         max-width: none; /* Elimina el límite de ancho predeterminado */
         width: 400px; /* Asegúrate de que el tooltip se ajuste al contenido */
     }
-     
+
+    .maquinaSeleccionada {
+        background-color: #c0d340 !important;
+        color: black !important;
+    }
 
 
-    .table .form-check label .form-check-sign::before, .table .form-check label .form-check-sign::after {top: -10px !important}
 </style>
 
 @section('content')
@@ -240,28 +225,35 @@
                         <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
                         <a class="nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
                             <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span>  {{--<i class="fa fa-caret-right"></i>    --}}
+                            <span class="underline-hover">@{{obj.nombre}}</span> 
                         </a>
                     </div>    
                     <div v-if="!cargandoMenu && menuStep == 2">
                         <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
                         <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
                             <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span>  {{--<i class="fa fa-caret-right"></i>    --}}
+                            <span class="underline-hover">@{{obj.nombre}}</span> 
                         </a>
                     </div>
                     <div v-if="!cargandoMenu && menuStep == 3">
                         <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
                         <a class="nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
                             <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span>  {{--<i class="fa fa-caret-right"></i>    --}}
+                            <span class="underline-hover">@{{obj.nombre}}</span> 
                         </a>
                     </div>
                     <div v-if="!cargandoMenu && menuStep == 4">
                         <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
                         <a class="nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)" >
                             <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span>  {{--<i class="fa fa-caret-right"></i>    --}}
+                            <span class="underline-hover">@{{obj.nombre}}</span> 
+                        </a>
+                    </div>
+                    <div v-if="!cargandoMenu && menuStep == 5">
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> COMPONENTES </a>
+                        <a class="nav-link cursor-pointer" v-for="obj in componentes" @click="fetchComponente(obj.id)">
+                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
+                            <span class="underline-hover">@{{obj.nombre}}</span> 
                         </a>
                     </div>
                     
@@ -275,184 +267,127 @@
                             <span class="cursor-pointer pb-2"  v-if="ruta.anio" @click="regresar(2)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.anio}}</span>    &nbsp;</span>
                             <span class="cursor-pointer pb-2"  v-if="ruta.cliente" @click="regresar(3)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.cliente}}</span>     &nbsp;</span>
                             <span class="cursor-pointer pb-2"  v-if="ruta.proyecto" @click="regresar(4)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.proyecto}}</span>     &nbsp;</span>
-                            <span class="cursor-pointer pb-2"  v-if="ruta.herramental"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.herramental}}</span>      </span>
+                            <span class="cursor-pointer pb-2"  v-if="ruta.herramental" @click="regresar(5)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.herramental}}</span>      </span>
+                            <span class="cursor-pointer pb-2 bold"  v-if="ruta.componente"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.componente}}</span>      </span>
                         </p>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl-7">
-                        <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">CORTE DE MP</h2>
+                    <div class="col-xl-4">
+                        <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE PROGRAMADOR</h2>
                     </div>
-                    <div class="col-xl-3 form-group" v-if="selectedHerramental">
-                        <select class="form-control" @change="fetchComponentes(selectedHerramental)" v-model="estatusCorte">
-                            <option value="-1">TODOS LOS COMPONENTES</option>
-                            <option value="inicial">POR CORTAR</option>
-                            <option value="proceso">EN PROCESO</option>
-                            <option value="pausado">PAUSADO</option>
-                            <option value="finalizado">FINALIZADO</option>
-                            <option value="paro">EN PARO</option>
-                        </select>
+                    <div class="col-xl-2"  v-if="selectedComponente" style="border-left: 1px solid  #ededed">
+                        <button :disabled="componente.estatus_programacion == 'proceso' || componente.programado == true" class="btn btn-block btn-default mt-0" @click="cambiarEstatusProgramacion('proceso')"><i class="fa fa-play-circle"></i>    INICIAR PROGRAM.</button>
                     </div>
-                    <div class="col-xl-2"  v-if="selectedHerramental && componentes.length > 0">
+                    <div class="col-xl-2"  v-if="selectedComponente">
+                        <button :disabled="componente.estatus_programacion == 'detenido' || componente.estatus_programacion == 'inicial' || componente.programado == true" class="btn btn-block btn-default mt-0" @click="cambiarEstatusProgramacion('detenido')"><i class="fa fa-stop-circle"></i>    DETENER PROGRAM.</button>
+                    </div>
+                    <div class="col-xl-2"  v-if="selectedComponente" style="border-left: 1px solid  #ededed">
+                        <button class="btn btn-block mt-0" :disabled="componente.programado == true" @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR</button>
+                    </div>
+                    <div class="col-xl-2"  v-if="selectedComponente" >
+                        <button class="btn btn-success btn-block mt-0" @click="liberar()" :disabled="componente.programado == true"><i class="fa fa-check-double"></i> <span>@{{componente.programado == true ? 'LIBERADO' : 'LIBERAR'}}</span></button>
+                    </div>
+                </div>
+                <hr>
+                <div class="col-xl-12" v-if="!selectedComponente">
+                    <h5 class="text-muted my-4"> SELECCIONE UN COMPONENTE PARA VER SU PROGRAMACION</h5>
+                </div>
+                <div class="row mt-3" v-else>
+                    <div class="col-xl-8" style="border-right: 1px solid #c6c6c6">
                         <div class="row">
-                            <div class="col">
-                                <button class="btn btn-block btn-success mt-0" @click="liberarHerramental"><i class="fa fa-check-double"></i> LIBERAR</button>
+                            <div class="col-xl-4 form-group">
+                                <span style="font-size: 22px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold my-4 py-2"> <i class="fa fa-cogs" style="font-size: 16px !important" ></i> @{{componente.nombre}}</span>
+                            </div>
+                            <div class="col-xl-2 form-group text-center">
+                                <a class="text-dark" :href="'/storage/' + componente.archivo_2d_public" target="_blank">
+                                    <img src="/paper/img/icons/file.png" height="80px">
+                                    <h5 class="my-0 py-0 bold pt-2">2D</h5>
+                                </a>
+                            </div>
+                            <div class="col-xl-2 form-group text-center">
+                                <a class="text-dark" :href="'/storage/' + componente.archivo_3d_public" target="_blank">
+                                    <img src="/paper/img/icons/file.png" height="80px">
+                                    <h5 class="my-0 py-0 bold pt-2">3D</h5>
+                                </a>
+                            </div>
+                            <div class="col-xl-4 form-group">
+                                <button class="btn btn-block btn-default" @click="verModalRuta()"><i class="fa fa-eye"></i> Ver ruta</button>
+                            </div>
+                            <div class="col-xl-4 form-group mt-3" style="height: 200px !important">
+                                <label class="bold">DESCRIPCION DEL TRABAJO:</label>
+                                <textarea :disabled="componente.programado == true" v-model="componente.descripcion_trabajo" class="form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Descripcion del trabajo..."></textarea>
+                            </div>
+                            <div class="col-xl-4 form-group mt-3" style="height: 200px !important">
+                                <label class="bold">HERRAMIENTAS DE CORTE:</label>
+                                <textarea :disabled="componente.programado == true" v-model="componente.herramientas_corte" class="form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Agregar herramientas de corte..."></textarea>
+                            </div>
+                            <div class="col-xl-4 form-group mt-3" v-if="componente.programado != true">
+                                <label class="bold">SELECCIONAR MAQUINA(S):</label>
+                                <ul style="height: 400px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border">
+                                    <li v-for="m in maquinas" class="dropdown-item" :class="{ maquinaSeleccionada: existeMaquina(m.id)}" @click="incluirMaquina(m.id)"><i class="fa fa-check-circle" v-if="existeMaquina(m.id)"></i> @{{m.nombre}}</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-xl-12" v-if="!selectedHerramental">
-                    <h5 class="text-muted my-4"> SELECCIONE UN HERRAMENTAL PARA VER LOS CORTES A REALIZAR</h5>
-                </div>
-                <div class="row" v-else>
-                    <div class="col-xl-12 " v-if="componentes.length == 0">
-                        <h5 class="text-muted">Este herramental aun no tiene componentes cargados...</h5>
+                    <div class="col-xl-4">
+                        <div class="text-center pt-5" v-if="componente.maquinas.length == 0">
+                            <span class="text-muted">Es necesario seleccionar una o más <strong>máquinas</strong> para poder cargar los programas</span>
+                        </div>
+                        <div class="row" v-for="(m, ind) in componente.maquinas">
+                            <div class="col-xl-4">
+                                <h5 class="bold"  style="letter-spacing: 1px"><i class="fa fa-computer"></i> @{{m.nombre}}</h5>
+                            </div>
+                            <div class="col-xl-8 text-right" v-if="componente.programado != true">
+                                <small class="cursor-pointer" style="text-decoration: underline" @click="agregarArchivo(m)"><i class="fa fa-plus-circle"></i> Agregar programa</small>
+                            </div>
+                            <div class="col-xl-12">
+                                <div class="row mb-2" v-for="(a, index) in m.archivos" :key="index + '-' + m.maquina_id">
+                                    <div class="col-xl-10 text-center mr-0 pr-0">
+                                        <input
+                                            :disabled="componente.programado == true"
+                                            class="input-file"
+                                            :id="'archivo-' + m.maquina_id + '-' + index"
+                                            type="file"
+                                            :name="'file['+ m.maquina_id +'][' + index + ']'"
+                                            @change="handleFileChange($event, ind, index)"
+                                            style="display: none;"
+                                            accept=".txt"
+                                        />
+                                        <label
+                                            tabindex="0"
+                                            :for="'archivo-' + m.maquina_id + '-' + index"
+                                            class="input-file-trigger col-12 text-center"
+                                        >
+                                            <i class="fa fa-upload"></i> Subir programa (.txt)
+                                        </label>
+                                        <small style="font-style: italic" v-if="!a.id">
+                                            @{{ a.nombre ? getElipsis(a.nombre) : "Archivo no seleccionado" }}
+                                        </small>
+                                        <small v-else>
+                                            <a :href="'/api/download/programas/' + a.nombre">@{{getElipsis(a.nombre)}}</a>
+                                        </small>
+                                    </div>
+                                    <div class="col-xl-2 text-center ml-0 pl-0" v-if="componente.programado != true">
+                                        <button class="btn btn-block btn-link my-0" @click="eliminarArchivo(m, index)">
+                                            <i class="fa fa-times-circle text-danger" style="font-size: 20px !important"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-xl-12" style="overflow-x: auto !important;" v-if="componentes.length > 0">
-                        <table class="table table-sm" id="tabla-principal">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th style="width: 10%"> Componente </th>
-                                    <th style="width: 7%"> Cantidad </th>
-                                    <th style="width: 6%"> Largo </th>
-                                    <th style="width: 6%"> Ancho </th>
-                                    <th style="width: 5%"> Alto </th>
-                                    <th style="width: 10%"> Material </th>
-                                    <th style="width: 10%"> Estatus </th>
-                                    <th style="width: 23%"> Corte </th>
-                                    <th style="width: 22%"> Acciones </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="c in componentes">
-                                    <td class="bold">
-                                        @{{c.nombre}} <br>
-                                        <span v-if="c.cancelado" class="badge badge-danger">CANCELADO</span>
-                                    </td>
-                                    <td><input readonly class="form-control text-center" type="number" step="1" v-model="c.cantidad"></td>
-                                    <td><input readonly class="form-control text-center" type="text"  v-model="c.largo"></td>
-                                    <td><input readonly class="form-control text-center" type="text"  v-model="c.ancho"></td>
-                                    <td><input readonly class="form-control text-center" type="text"  v-model="c.alto"></td>
-                                    <td><input readonly class="form-control text-center" type="text"  v-model="c.material_nombre"></td>
-                                    <td>
-                                        <span v-if="c.estatus_corte == 'paro'" class="py-2 w-100 badge badge-danger" style="font-size: 13px">EN PARO</span>
-                                        <span v-if="c.estatus_corte == 'inicial'" class="py-2 w-100 badge badge-warning" style="font-size: 13px">POR CORTAR</span>
-                                        <span v-if="c.estatus_corte == 'proceso'" class="py-2 w-100 badge badge-info" style="font-size: 13px">EN PROCESO...</span>
-                                        <span v-if="c.estatus_corte == 'pausado'" class="py-2 w-100 badge badge-dark" style="font-size: 13px">PAUSADO</span>
-                                        <span v-if="c.estatus_corte == 'finalizado'" class="py-2 w-100 badge badge-success" style="font-size: 13px">FINALIZADO</span>
-                                    </td>
-                                    <td>
-                                        <button :disabled="c.estatus_corte == 'paro' || c.estatus_corte == 'finalizado' || c.estatus_corte == 'proceso'" class=" mt-1 btn btn-default btn-sm" @click="cambiarEstatusCorte(c.id, 'proceso')"><i class="far fa-play-circle"></i> Iniciar</button>
-                                        <button :disabled="c.estatus_corte == 'paro' || c.estatus_corte == 'inicial' || c.estatus_corte == 'finalizado' || c.estatus_corte == 'pausado'" class=" mt-1 btn btn-default btn-sm" @click="cambiarEstatusCorte(c.id, 'pausado')"><i class="far fa-pause-circle"></i> Pausar</button>
-                                        <button :disabled="c.estatus_corte == 'paro' || c.estatus_corte == 'inicial' || c.estatus_corte == 'finalizado' " class=" mt-1 btn btn-default btn-sm" @click="finalizarCorte(c.id)"><i class="far fa-check-circle"></i> Finalizar</button>
-                                    </td>
-                                    <td>
-                                        <button @click="verModalRuta(c.id)" class="mt-1 btn btn-default btn-sm"><i class="fa fa-eye"></i> Ver ruta </button>
-                                        <button v-if="c.estatus_corte != 'paro'" @click="registrarParo(c.id)" :disabled="c.estatus_corte == 'finalizado'" class="mt-1 btn btn-danger btn-sm"><i class="fa fa-stop-circle"></i> Iniciar paro</button>
-                                        <button  v-else @click="eliminarParo(c.id)" :disabled="c.estatus_corte == 'finalizado'" class="mt-1 btn btn-danger btn-sm"><i class="fa fa-play-circle"></i> Reanudar operacion</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+
                 </div>
             </div>
         </div>
-
-        <div class="modal fade" id="modalFinalizarCorte" tabindex="-1" aria-labelledby="modalFinalizarCorteLabel" aria-hidden="true">
-            <div class="modal-dialog" style="min-width: 35%;">
-                <div class="modal-content" >
-                    <div class="modal-header">
-                        <h3 class="modal-title" id="modalFinalizarCorteLabel">
-                            <span>FINALIZAR CORTE @{{componente.nombre}}</span>
-                        </h3>
-                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-xl-12 form-group">
-                                <label class="bold" >Seleccione MP</label>
-                                <select class="form-control" v-model="movimiento.material_id" @change="fetchHojas(movimiento.material_id)">
-                                    <option v-for="m in materiales" :value="m.id"> @{{m.nombre}} </option>
-                                </select>
-                            </div>
-                            <div class="col-xl-12 form-group">
-                                <label class="bold" >Seleccione hoja</label>
-                                <select class="form-control" v-model="movimiento.hoja_id">
-                                    <option :value="null" disabled>Seleccione la hoja de donde realizo el corte...</option>
-                                    <option v-for="h in hojas" :value="h.id">Consecutivo @{{h.consecutivo}}.- Espesor: @{{h.espesor}}, Actuales: @{{h.ancho_saldo}} x @{{h.largo_saldo}}, Peso: @{{h.peso_saldo}} </option>
-                                </select>
-                            </div>
-                            <div class="col-xl-4 form-group">
-                                <label class="bold" >Largo restante de la hoja</label>
-                                <input type="text" class="form-control" v-model="movimiento.largo">
-                            </div>
-                            <div class="col-xl-4 form-group">
-                                <label class="bold" >Ancho restante de la hoja</label>
-                                <input type="text" class="form-control" v-model="movimiento.ancho">
-                            </div>
-                            <div class="col-xl-4 form-group">
-                                <label class="bold" >Peso restante de la hoja</label>
-                                <input type="text" class="form-control" v-model="movimiento.peso">
-                            </div>
-                        </div>
-                        <div class="row px-3" v-if="hay_retraso">
-                             <div class="mt-3 py-2 col-xl-12 form-group" style="background-color: rgb(254, 195, 195); border-radius: 10px">
-                                <label class="bold text-danger"><i class="fa fa-exclamation-circle"></i> Hubo un retraso en el tiempo estimado de corte para este componente. Indique el motivo.</label>
-                                <textarea style="border: none !important" v-model="movimiento.motivo_retraso" class="form-control w-100 text-left px-2 py-1" placeholder="Motivo del retraso..."></textarea>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xl-12"><hr></div>
-                            <div class="col-xl-12 text-right">
-                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
-                                <button class="btn btn-secondary" v-if="!loading_button" type="button" @click="finalizarCorteAPI()"><i class="fa fa-check-circle"></i> FINALIZAR CORTE</button>
-                                <button class="btn btn-secondary" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> FINALIZANDO, ESPERE ...</button>
-                            </div>
-                        </div>
-                    </div> 
-                </div>
-            </div>
-        </div>
-
-         <div class="modal fade" id="modalParo" tabindex="-1" aria-labelledby="modalParoLabel" aria-hidden="true">
-            <div class="modal-dialog" style="min-width: 30%;">
-                <div class="modal-content" >
-                    <div class="modal-header">
-                        <h3 class="text-danger modal-title" id="modalParoLabel">
-                            <span>MOTIVO DE PARO EN EL COMPONENTE @{{componente.nombre}}</span>
-                        </h3>
-                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="py-0 col-xl-12" >
-                               <textarea v-model="paro.motivo" class="form-control w-100 text-left px-2 py-1" placeholder="Motivo de paro..."></textarea>
-                           </div>                           
-                        </div>
-                        <div class="row">
-                            <div class="col-xl-12 text-right">
-                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
-                                <button class="btn btn-danger" v-if="!loading_button" type="button" @click="registrarParoAPI()"><i class="fa fa-stop-circle"></i> INICAR PARO</button>
-                                <button class="btn btn-danger" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> PROCESANDO, ESPERE ...</button>
-                            </div>
-                        </div>
-                    </div> 
-                </div>
-            </div>
-        </div>
-
         <div class="modal fade" id="modalRuta" tabindex="-1" aria-labelledby="modalRutaLabel" aria-hidden="true" >
             <div class="modal-dialog"  style="min-width: 60%;">
                 <div class="modal-content" >
                     <div class="modal-header">
-                        <h3 class="my-0 py-0 bold">RUTA PARA EL COMPONENTE @{{componente.nombre}}</h3>
+                        <h3 class="bold modal-title" id="modalRutaLabel" style="letter-spacing: 1px">RUTA PARA EL COMPONENTE @{{componente.nombre}}</h3>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
@@ -522,11 +457,44 @@
                 </div>
             </div>
         </div>
-
+        <div class="modal fade" id="modalRetraso" tabindex="-1" aria-labelledby="modalRetrasoLabel" aria-hidden="true">
+            <div class="modal-dialog" style="min-width: 35%;">
+                <div class="modal-content" >
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="modalRetrasoLabel">
+                            <span>RETRASO EN EL COMPONENTE @{{componente.nombre}}</span>
+                        </h3>
+                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row px-3">
+                             <div class="mt-3 py-2 col-xl-12 form-group" style="background-color: rgb(254, 195, 195); border-radius: 10px">
+                                <label class="bold text-danger"><i class="fa fa-exclamation-circle"></i> Hubo un retraso en el tiempo estimado de programacion para este componente. Indique el motivo.</label>
+                                <textarea style="border: none !important" v-model="componente.retraso_programacion" class="form-control w-100 text-left px-2 py-1" placeholder="Motivo del retraso..."></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-12"><hr></div>
+                            <div class="col-xl-12 text-right">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+                                <button class="btn btn-secondary" v-if="!loading_button" type="button" @click="guardar(true)"><i class="fa fa-check-circle"></i> LIBERAR COMPONENTE</button>
+                                <button class="btn btn-secondary" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> LIBERANDO, ESPERE ...</button>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        </div>
     </div>
+
+    
+
 @endsection
 
 @push('scripts')
+
 
     <script type="text/javascript">
         Vue.component('v-select', VueSelect.VueSelect)
@@ -534,37 +502,50 @@
         var app = new Vue({
         el: '#vue-app',
         data: {
+            componente: {
+                nombre: '',
+                maquinas: []
+            },
             loading_button: false,
-            cargando: false,
-            componente: {nombre: ''},
-            materiales: [],
-            hojas: [],
-            
+            cargando: false,            
             //MENU IZQUIERDO 
             anios: [],         
             clientes: [],      
             proyectos: [],     
             herramentales: [], 
             componentes: [],   
+            maquinas: [],   
             cargandoMenu: true,
             menuStep: 1, 
             selectedAnio: null,
             selectedCliente: null,
             selectedProyecto: null,
             selectedHerramental: null,
-            movimiento: {},
+            selectedComponente: null,
             ruta:{
                 anio: null,
                 cliente: null,
                 proyecto: null,
                 herramental: null,
+                componente: null,
             },
-            estatusCorte: '-1',
-            rutaAvance: [],
+            procesos: [
+                {id: 1, prioridad: 1, nombre: 'Cortar', horas: 0, minutos: 0, incluir: false},
+                {id: 2, prioridad: 2, nombre: 'Programar', horas: 0, minutos: 0, incluir: false},
+                {id: 3, prioridad: 3, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
+                {id: 4, prioridad: 4, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
+                {id: 5, prioridad: 5, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
+                {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                {id: 7, prioridad: 7, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
+                {id: 8, prioridad: 8, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
+            ],
             tasks: [],
-            procesos: [],
+            rutaAvance: [],
+            archivos: [],
             hay_retraso: false,
-            paro: {}
+        },
+        watch: {
+           
         },
         computed: {
             duracionTotal() {
@@ -665,39 +646,171 @@
             }
         },
         methods:{
-            eliminarParo(id){
-                let t = this;
-                 axios.put(`/api/eliminar-paro/${id}/corte_paro`).then(response => {
-                    if(response.data.success){
-                        t.fetchComponentes(t.selectedHerramental);
-                        swal('Operación reanudada', 'La operación ha sido reanudada exitosamente.', 'success');
-                    }
-                })
-            },  
-            registrarParoAPI(){
-                let t = this
-                if(!t.paro.motivo.trim()){
-                    swal('Campos obligatorios', 'Es necesario ingresar un motivo de paro para continuar.', 'info');
-                    return
+            incluirMaquina(maquina_id) {
+                let indiceMaquina = this.componente.maquinas.findIndex(
+                    (m) => m.maquina_id === maquina_id
+                );
+
+                // Si la máquina ya existe, elimínala del arreglo
+                if (indiceMaquina !== -1) {
+                    this.componente.maquinas.splice(indiceMaquina, 1); // Elimina la máquina
+                } else {
+                    // Si no existe, agrégala al arreglo
+                    this.componente.maquinas.push({
+                        maquina_id: maquina_id,
+                        nombre: this.maquinas.find(obj => obj.id === maquina_id)?.nombre,
+                        archivos: [{ nombre: '', archivo: null }]
+                    });
+
+                    Vue.nextTick(function() {
+                        document.querySelector("html").classList.add('js');
+                        let fileInput = document.querySelector(".input-file");
+                        let button = document.querySelector(".input-file-trigger");
+
+                        button.addEventListener("keydown", function(event) {
+                            if (event.keyCode == 13 || event.keyCode == 32) {
+                                fileInput.focus();
+                            }
+                        });
+
+                        button.addEventListener("click", function(event) {
+                            fileInput.focus();
+                            return false;
+                        });
+                    });
                 }
-                t.loading_button = true;
-                axios.post(`/api/registrar-paro/${t.componente.id}`, t.paro).then(response => {
-                    if(response.data.success){
-                        t.fetchComponentes(t.selectedHerramental);
-                        swal('Operación detenida', 'El paro de operación ha sido iniciado. No olvide registrar la reanudación una vez que se retomen las actividades.', 'success');
-                        $('#modalParo').modal('hide');
+            },
+            existeMaquina(maquina_id){
+                return this.componente.maquinas?.some(obj => obj.maquina_id == maquina_id);
+            },
+            async cargarRuta(){
+                let t = this
+
+                t.procesos = [
+                    {id: 1, prioridad: 1, nombre: 'Cortar', horas: 0, minutos: 0, incluir: false},
+                    {id: 2, prioridad: 2, nombre: 'Programar', horas: 0, minutos: 0, incluir: false},
+                    {id: 3, prioridad: 3, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
+                    {id: 4, prioridad: 4, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
+                    {id: 5, prioridad: 5, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
+                    {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                    {id: 7, prioridad: 7, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
+                    {id: 8, prioridad: 8, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
+                ];
+    
+                t.tasks.forEach(task => {
+                    let proceso = t.procesos.find(obj => obj.id === task.id);
+                    if (proceso) {
+                        proceso.horas = task.time[0]?.horas ?? 0;  
+                        proceso.minutos = task.time[0]?.minutos ?? 0;
+                        proceso.incluir = true;
                     }
-                    t.loading_button = false;
+                });
+
+                Vue.nextTick(function(){
+                    t.rutaAvance = t.ajustarRutaAvance(t.tasks, t.rutaAvance);
+                    t.calcularInicioAvance();
+                    return true;
                 })
             },
-            registrarParo(id){
-                this.componente = this.componentes.find(obj => obj.id == id);
-                this.paro = {
-                    componente_id: id,
-                    motivo: '',
-                    tipo: 'corte_paro',
+            async fetchComponente(id){
+                let t = this;
+                this.cargando = true;                
+                this.selectedComponente = id;
+                this.componente = this.componentes.find(obj => obj.id == id)
+                this.ruta.componente = this.componente.nombre;
+                
+                try {
+                    const response = await axios.get(`/api/componente/${id}`)
+                    t.tasks = JSON.parse(JSON.stringify(response.data.componente.ruta));
+                    t.rutaAvance = JSON.parse(JSON.stringify(t.tasks));
+
+                    t.rutaAvance.forEach(element => {
+                        element.time = []
+                        let find = response.data.componente.rutaAvance.find(obj => obj.id == element.id)
+                        if(find){
+                            element.time = find.time
+                        }
+                    })
+                } catch (error) {
+                    console.error('Error fetching componente:', error);
+                } finally {
+                    this.cargando = false;
+                    if(this.componente.maquinas.length > 0){
+                        document.querySelector("html").classList.add('js');
+                        let fileInput  = document.querySelector( ".input-file" )
+                        let button     = document.querySelector( ".input-file-trigger" )
+                        
+                        button.addEventListener( "keydown", function( event ) {
+                            if ( event.keyCode == 13 || event.keyCode == 32 ) {
+                                fileInput.focus();
+                            }
+                        });
+        
+                        button.addEventListener( "click", function( event ) {
+                            fileInput.focus();
+                            return false;
+                        });
+                    }
                 }
-                $('#modalParo').modal();
+            },
+            async cambiarEstatusProgramacion(band){
+                let t = this
+                try {
+                    const response = await axios.put(`api/programacion/cambio-estatus/${t.selectedComponente}`, {estatus: band});
+                    if (response.data.success) {
+                        t.componente.estatus_programacion = band;
+                    }
+                } catch (error) {
+                    console.error('Error al cambiar el estatus de programación:', error);
+                }
+            },
+            async verModalRuta(){
+                let t = this
+                await this.fetchComponente(t.selectedComponente);
+                await this.cargarRuta();
+
+                $('#modalRuta').modal()
+                Vue.nextTick(function(){
+                    Vue.nextTick(function(){
+                        $('[data-toggle="tooltip"]').tooltip('dispose');
+                        $('[data-toggle="tooltip"]').tooltip()
+                    })
+                })
+            },
+            getElipsis(str){
+                 if (str && str.length > 45) {
+                    return str.substring(0, 44) + '...';
+                }
+                return str;
+            },
+            handleFileChange(event, index1, index2) {
+                const file = event.target.files[0];
+                if (file) {
+                    this.$set(this.componente.maquinas[index1].archivos[index2], "nombre", file.name);
+                    this.$set(this.componente.maquinas[index1].archivos[index2], "archivo", file);
+                }
+            },
+            agregarArchivo(maquina) {
+                maquina.archivos.push({ nombre: '', archivo: null });
+                Vue.nextTick(function(){
+                    document.querySelector("html").classList.add('js');
+                    let fileInput  = document.querySelector( ".input-file" )
+                    let button     = document.querySelector( ".input-file-trigger" )
+                    
+                    button.addEventListener( "keydown", function( event ) {
+                        if ( event.keyCode == 13 || event.keyCode == 32 ) {
+                            fileInput.focus();
+                        }
+                    });
+    
+                    button.addEventListener( "click", function( event ) {
+                        fileInput.focus();
+                        return false;
+                    });
+                })
+            },
+            eliminarArchivo(maquina, index) {
+                maquina.archivos.splice(index, 1);
             },
             ajustarRutaAvance(tasks, rutaAvance) {
                 let convertirAMinutos = (horas, minutos) => horas * 60 + minutos;
@@ -935,112 +1048,6 @@
                     width: `${width}%` // Ancho de la barra
                 };
             },
-            async cargarRuta(){
-                let t = this
-
-                t.tasks = JSON.parse(JSON.stringify(t.componente.ruta));
-                t.rutaAvance = JSON.parse(JSON.stringify(t.tasks));
-                t.rutaAvance.forEach(element => {
-                    element.time = []
-                    let find = t.componente.rutaAvance.find(obj => obj.id == element.id)
-                    if(find){
-                        element.time = find.time
-                    }
-                })
-                
-                t.procesos = [
-                    {id: 1, prioridad: 1, nombre: 'Cortar', horas: 0, minutos: 0, incluir: false},
-                    {id: 2, prioridad: 2, nombre: 'Programar', horas: 0, minutos: 0, incluir: false},
-                    {id: 3, prioridad: 3, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
-                    {id: 4, prioridad: 4, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
-                    {id: 5, prioridad: 5, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
-                    {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-                    {id: 7, prioridad: 7, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
-                    {id: 8, prioridad: 8, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
-                ];
-    
-                t.tasks.forEach(task => {
-                    let proceso = t.procesos.find(obj => obj.id === task.id);
-                    if (proceso) {
-                        proceso.horas = task.time[0]?.horas ?? 0;  
-                        proceso.minutos = task.time[0]?.minutos ?? 0;
-                        proceso.incluir = true;
-                    }
-                });
-
-                Vue.nextTick(function(){
-                    t.rutaAvance = t.ajustarRutaAvance(t.tasks, t.rutaAvance);
-                    t.calcularInicioAvance();
-                    return true;
-                })
-            },
-            async verModalRuta(id){
-                let t = this
-                await this.fetchComponente(id);
-                await this.cargarRuta();
-                
-                $('#modalRuta').modal()
-                Vue.nextTick(function(){
-                    Vue.nextTick(function(){
-                        $('[data-toggle="tooltip"]').tooltip('dispose');
-                        $('[data-toggle="tooltip"]').tooltip()
-                    })
-                })
-            },
-            cambiarEstatusCorte(id, nuevoEstatus){
-                let t = this
-                axios.put(`api/corte/cambio-estatus/${id}`, {estatus: nuevoEstatus} ).then(response => {
-                    if(response.data.success){
-                        t.fetchComponentes(t.selectedHerramental)    
-                    }
-                })
-            },
-            finalizarCorteAPI(){
-                let t = this
-                
-                if (!t.movimiento.hoja_id) {
-                    swal('Campos obligatorios', 'El campo hoja no puede estar vacío.', 'info');
-                    return false;
-                }
-                 if (this.hay_retraso && !t.movimiento.motivo_retraso.trim()) {
-                    swal('Campos obligatorios', 'Debe ingresar un motivo de retraso.', 'info');
-                    return false;
-                }
-                t.cargando = true;
-                axios.put(`api/corte/finalizar/${t.componente.id}`, {movimiento: t.movimiento} ).then(response => {
-                    if(response.data.success){
-                        t.fetchComponentes(t.selectedHerramental)    
-                        $('#modalFinalizarCorte').modal('toggle');
-                        t.cargando = false;
-                    }
-                })
-            },
-            async finalizarCorte(id){
-                let t = this
-
-                await this.fetchComponente(id);                
-                await this.fetchHojas(t.componente.material_id)
-                await this.cargarRuta();
-
-                this.hay_retraso = false;
-                let cortar = this.rutaAvance.find(obj => obj.id === 1)
-                if(cortar){
-                    let retraso = cortar.time.find(obj => obj.type === 'delay')
-                    if(retraso){
-                        this.hay_retraso = true;
-                    }
-                }
-
-                t.movimiento = {
-                    material_id: t.componente.material_id, 
-                    hoja_id: null, 
-                    largo: 0,
-                    ancho: 0,
-                    peso: 0,
-                    motivo_retraso: '',
-                }
-                $('#modalFinalizarCorte').modal()
-            },
             regresar(step){
                 switch (step) {
                     case 1:
@@ -1049,38 +1056,50 @@
                             cliente: null,
                             proyecto: null,
                             herramental: null,
+                            componente: null,
                         } 
                         this.selectedAnio = null;
                         this.selectedCliente = null;
                         this.selectedProyecto = null;
                         this.selectedHerramental = null;
+                        this.selectedComponente = null;
                     break;
                     case 2:
                         this.ruta.cliente = null;
                         this.ruta.proyecto = null;
                         this.ruta.herramental = null;
+                        this.ruta.componente = null;
 
                         this.selectedCliente = null;
                         this.selectedProyecto = null;
                         this.selectedHerramental = null;
+                        this.selectedComponente = null;
+
                     break;
                     case 3:
                         this.ruta.proyecto = null;
                         this.ruta.herramental = null;
+                        this.ruta.componente = null;
 
                         this.selectedProyecto = null;
                         this.selectedHerramental = null;
+                        this.selectedComponente = null;
                     break;
                     case 4:
                         this.ruta.herramental = null;
                         this.selectedHerramental = null;
+                        this.ruta.componente = null;
+                    break;
+                    case 5:
+                        this.ruta.componente = null;
+                        this.selectedComponente = null;
+                        this.selectedComponente = null;
                     break;
                 }
                 this.menuStep = step;
             },
             async fetchAnios() {
                 this.cargandoMenu = true
-                axios.get('/api/anios')
                 try {
                     const response = await axios.get('/api/anios');
                     this.anios = response.data.anios;
@@ -1088,6 +1107,26 @@
                     console.error('Error fetching años:', error);
                 } finally {
                     this.cargandoMenu = false;
+                    
+                }
+            },
+            async fetchMaquinas() {
+                this.cargando = true
+                try {
+                    const response = await axios.get('/api/maquinas');
+                    this.maquinas = response.data.maquinas;
+                } catch (error) {
+                    console.error('Error fetching maquinas:', error);
+                } finally {
+                    this.cargando = false;
+                }
+            },
+            async fetchProgramadores() {
+                try {
+                    const response = await axios.get('/api/programadores');
+                    this.programadores = response.data.programadores;
+                } catch (error) {
+                    console.error('Error fetching programs:', error);
                 }
             },
             async fetchClientes(anioId) {
@@ -1095,7 +1134,7 @@
                 this.selectedAnio = anioId;
                 this.ruta.anio = this.anios.find(obj => obj.id == anioId)?.nombre;
                 
-                 try {
+                try {
                     const response = await axios.get(`/api/anios/${anioId}/clientes`);
                     this.clientes = response.data.clientes;
                     this.menuStep = 2;
@@ -1110,7 +1149,7 @@
                 this.selectedCliente = clienteId;
                 this.ruta.cliente = this.clientes.find(obj => obj.id == clienteId)?.nombre;
 
-               try {
+                try {
                     const response = await axios.get(`/api/clientes/${clienteId}/proyectos`);
                     this.proyectos = response.data.proyectos;
                     this.menuStep = 3;
@@ -1141,102 +1180,93 @@
                 this.ruta.herramental = this.herramentales.find(obj => obj.id == herramentalId)?.nombre;
 
                 try {
-                    const response = await axios.get(`/api/herramentales/${herramentalId}/componentes?area=corte&estatusCorte=${this.estatusCorte}`);
+                    const response = await axios.get(`/api/herramentales/${herramentalId}/componentes?area=programador`);
                     this.componentes = response.data.componentes;
-
+                    this.menuStep = 5;
                 } catch (error) {
                     console.error('Error fetching componentes:', error);
                 } finally {
                     this.cargando = false;
                 }
             },
-            async guardarComponentes(mostrarAlerta = true){
-                let t = this
-                t.cargando = true;
-                let formData = new FormData();
-                formData.append('data', JSON.stringify(t.componentes));
-                try {
-                    const response = await axios.post(`/api/componente/${t.selectedHerramental}/compras`, formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    });
-                    if(mostrarAlerta){
-                        swal('Correcto', 'Informacion guardada correctamente', 'success');
-                        t.fetchComponentes(t.selectedHerramental);
-                    }else{
-                        return true;
-                    }
-                } catch (error) {
-                    t.cargando = false
-                    return false;
-                }  
-            },
-            async liberarHerramental() {
-                let t = this;
-
-                let errores = [];
-                t.componentes.forEach((componente, index) => {  
-                    if (!componente.fecha_solicitud || !componente.fecha_pedido || !componente.fecha_estimada || !componente.fecha_real ) {
-                        errores.push(`Todos los campos son obligatorios para liberar en ${componente.nombre}.`);
-                    }
-
-                });
-
-                if (errores.length > 0) {
-                    swal('Errores de validación', errores.join('\n'), 'error');
+            async liberar(){
+                
+                if (!this.componente.descripcion_trabajo?.trim() || !this.componente.herramientas_corte?.trim()) {
+                    swal('Errores de validación', `Todos los campos son obligatorios para liberar el componente.`, 'error');
                     return;
                 }
-                t.cargando = true;
-                let respuesta = await t.guardarComponentes(false);
+                
+                let tieneArchivo = this.componente.maquinas.some(maquina =>
+                    maquina.archivos.some(a => a.archivo || a.id)
+                );
+                
+                if (!tieneArchivo) {
+                    swal('Errores de validación', 'Debe cargar al menos un archivo por máquina.', 'error');
+                    return;
+                }
 
-                if(respuesta){
-                    try {
-                        const response = await axios.put(`/api/liberar-herramental-compras/${t.selectedHerramental}`);
-                        t.cargando = false;
-                        swal('Éxito', 'Componentes liberados correctamente', 'success');
-                        t.fetchComponentes(t.selectedHerramental);
-
-                    } catch (error) {
-                        t.cargando = false;
-                        console.error('Error al liberar el componente:', error);
-                        swal('Error', 'Ocurrió un error al liberar el herramental', 'error');
+                this.hay_retraso = false;
+                await this.fetchComponente(this.selectedComponente);
+                await this.cargarRuta();
+                let programar = this.rutaAvance.find(obj => obj.id === 2)
+                
+                if(programar){
+                    let retraso = programar.time.find(obj => obj.type === 'delay')
+                    if(retraso){
+                        this.hay_retraso = true;
+                        $('#modalRetraso').modal();
+                        return;
                     }
-                }else{
-                    swal('Error', 'Ocurrió un error al guardar la informacion de los componentes', 'error');
+                }
+                this.guardar(true);
+            },
+            async guardar(liberarComponente){                
+                let t = this
+
+                if(this.hay_retraso && liberarComponente && !this.componente.retraso_programacion?.trim()){
+                     swal('Campos obligatorios', 'Debe ingresar un motivo de retraso.', 'info');
+                    return false;
+                }
+                t.cargando = true;
+                t.loading_button = true;
+
+                let formData = new FormData();
+
+                t.componente.maquinas.forEach((maquina, maquinaIndex) => {
+                    maquina.archivos.forEach((archivo, archivoIndex) => {
+                        if (archivo.archivo)
+                            formData.append(`archivo[${maquina.maquina_id}][${archivoIndex}]`, archivo.archivo);
+                        if (archivo.id) 
+                            formData.append(`archivo_ids[${maquina.maquina_id}][${archivoIndex}]`, archivo.id);
+                    });
+                });
+                formData.append('data', JSON.stringify(t.componente));
+
+                try {
+                    const response = await axios.post(`/api/componente/${t.selectedComponente}/programacion/${liberarComponente}`, formData, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+
+                    swal('Correcto', liberarComponente ? 'Componente liberado correctamente' : 'Información guardada correctamente', 'success');
+                    await t.fetchComponentes(t.selectedHerramental);
+                    await t.fetchComponente(t.selectedComponente);
+                    t.loading_button = false;
+                    $('#modalRetraso').modal('hide');
+                } catch (error) {
+                    console.log(error);
+                    const mensaje = error.response?.data?.error || 'Error al guardar el componente.';
+                    swal('Error', mensaje, 'error');
                     t.cargando = false;
+                    t.loading_button = false;
                 }
             },
-            async fetchMateriales() {
-                this.cargando = true
-                try {
-                    const response = await axios.get(`/api/materiales`);
-                    this.materiales = response.data.materiales;
-                } catch (error) {
-                    console.error('Error fetching materiales:', error);
-                } finally {
-                    this.cargando = false;
-                    this.materialSelected = this.materiales[0]?.id??null;
-                    this.fetchHojas();
-                }
-            },
-            async fetchHojas(material_id) {
-                this.cargando = true
-                try {
-                    const response = await axios.get(`/api/hojas/${material_id}`);
-                    this.hojas = response.data.hojas;
-                } catch (error) {
-                    console.error('Error fetching hojas:', error);
-                } finally {
-                    this.cargando = false;
-                }
-            },  
             async navigateFromUrlParams() {
                 const queryParams = new URLSearchParams(window.location.search);
                 const anioId = queryParams.get('a');
                 const clienteId = queryParams.get('c');
                 const proyectoId = queryParams.get('p');
                 const herramentalId = queryParams.get('h');
+                const componenteId = queryParams.get('co');
 
                 try {
                     if (anioId) {
@@ -1251,29 +1281,20 @@
                     if (herramentalId) {
                         await this.fetchComponentes(herramentalId);
                     }
+                    if (componenteId && componenteId != 'null') {
+                        await this.fetchComponente(componenteId);
+                    }
                 } catch (error) {
                     console.error("Error navigating from URL parameters:", error);
                 }
             },
-            async fetchComponente(id){
-                this.cargando = true;
-                try {
-                    const response = await axios.get(`/api/componente/${id}`)
-                    this.componente = response.data.componente
-
-                } catch (error) {
-                    console.error('Error fetching componente:', error);
-                } finally {
-                    this.cargando = false;
-                }
-            }
-
         },
         mounted: async function () {
             let t = this;
+            await t.fetchMaquinas();
             await t.fetchAnios();
-            await t.fetchMateriales();
-            this.navigateFromUrlParams();
+            await t.fetchProgramadores();
+            this.navigateFromUrlParams();        
         }
 
                 

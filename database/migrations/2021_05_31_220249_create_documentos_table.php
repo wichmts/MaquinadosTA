@@ -15,12 +15,13 @@ class CreateDocumentosTable extends Migration
     {
         Schema::create('documentos', function (Blueprint $table) {
             $table->id();
-            $table->string('modelo')->nullable();           //embarque, cotizacion, cliente, etc...
-            $table->integer('id_modelo')->nullable();       //Identificador del modelo asociado (Cliente, Ubicación, Transportista, 'Certificacion', 'Embarque).
+            $table->string('modelo')->nullable();           //  Programacion
+            $table->integer('id_modelo')->nullable();       //  ID componente
             $table->string('nombre')->nullable();
             $table->string('tamano')->nullable();
             $table->integer('usuario_id')->nullable();
-            $table->string('categoria')->nullable(); // layout-cliente, msds, orden-servicio, carta-porte-incompleta, confirmacion-servicio, carta-porte, factura-proveedor, factura-cliente, otros
+            $table->integer('componente_id')->nullable();
+            $table->string('categoria')->nullable();            
             $table->timestamps();
         });
     }

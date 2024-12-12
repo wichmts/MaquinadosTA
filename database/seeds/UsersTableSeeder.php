@@ -66,7 +66,7 @@ class UsersTableSeeder extends Seeder
         $user->assignRole('JEFE DE AREA');
 
         $user = new User();
-        $user->nombre = 'Programador';
+        $user->nombre = 'FIDEL';
         $user->ap_paterno = '';
         $user->ap_materno = '';
         $user->email = 'programador@maquinados.com';

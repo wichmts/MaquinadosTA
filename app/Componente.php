@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\SeguimientoTiempo;
+use Carbon\Carbon;
+use App\Maquina;
 use Illuminate\Database\Eloquent\Model;
 
 class Componente extends Model
@@ -13,6 +16,154 @@ class Componente extends Model
     public function herramental(){
         return $this->belongsTo(Herramental::class);
     }
+    
+    public function maquinas()
+    {
+        // Usamos Eloquent para hacer la consulta sin relaciones
+        $maquinas = Maquina::select('maquinas.id as maquina_id', 'maquinas.nombre', 'documentos.id as documento_id', 'documentos.nombre as documento_nombre', 'documentos.tamano as documento_tamano')
+            ->leftJoin('documentos', function($join) {
+                $join->on('documentos.id_modelo', '=', 'maquinas.id')
+                     ->where('documentos.modelo', '=', 'programacion');
+            })
+            ->where('documentos.componente_id', $this->id)
+            ->get()
+            ->groupBy('maquina_id');
+
+            $resultado = $maquinas->map(function ($maquina) {
+            $archivos = $maquina->map(function ($documento) {
+                return [
+                    'id' => $documento->documento_id,
+                    'nombre' => $documento->documento_nombre,
+                    'tamano' => $documento->documento_tamano,
+                ];
+            });
+
+            if ($archivos->isEmpty()) {
+                $archivos = [];
+            }
+
+            return [
+                'maquina_id' => $maquina[0]->maquina_id,
+                'nombre' => $maquina[0]->nombre,
+                'archivos' => $archivos,
+            ];
+        });
+
+        // Aseguramos que 'maquinas' sea un array, no un objeto
+        return $resultado->values()->all();
+    }
+    public static function procesosFijos()
+    {
+        return [
+            ['id' => 1, 'prioridad' => 1, 'nombre' => 'Cortar'],
+            ['id' => 2, 'prioridad' => 2, 'nombre' => 'Programar'],
+            ['id' => 3, 'prioridad' => 3, 'nombre' => 'Maquinar'],
+            ['id' => 4, 'prioridad' => 4, 'nombre' => 'Tornear'],
+            ['id' => 5, 'prioridad' => 5, 'nombre' => 'Roscar/Rebabear'],
+            ['id' => 6, 'prioridad' => 6, 'nombre' => 'Templar'],
+            ['id' => 7, 'prioridad' => 7, 'nombre' => 'Rectificar'],
+            ['id' => 8, 'prioridad' => 8, 'nombre' => 'EDM'],
+        ];
+    }
+
+    public function rutaAvance()
+    {
+        $procesos = $this->procesosFijos(); // Obtén los procesos fijos
+        $resultados = [];
+
+        foreach ($procesos as $proceso) {
+            // Filtra los registros de seguimiento para el proceso actual
+            $seguimientos = SeguimientoTiempo::where('componente_id', $this->id)
+                ->where('accion_id', $proceso['id'])
+                ->orderBy('fecha')
+                ->orderBy('hora')
+                ->get();
+
+            $totalHoras = 0;
+            $totalMinutos = 0;
+            $ultimoInicio = null; // Variable para guardar el último 'true' (inicio)
+
+            foreach ($seguimientos as $key => $registro) {
+                if ($registro->tipo) { // Tipo == 1 -> Inicio
+                    // Guardar el inicio si es el primer 'true' o cuando el proceso comienza de nuevo
+                    $inicio = Carbon::createFromFormat('Y-m-d H:i', $registro->fecha . ' ' . $registro->hora);
+                    $ultimoInicio = $inicio;
+                } else { // Tipo == 0 -> Pausa
+                    // Si ya tenemos un inicio, calculamos la diferencia
+                    if ($ultimoInicio) {
+                        $fin = Carbon::createFromFormat('Y-m-d H:i', $registro->fecha . ' ' . $registro->hora);
+
+                        $diferencia = $inicio->diff($fin);
+                        $totalHoras += $diferencia->h;
+                        $totalMinutos += $diferencia->i;
+
+                        // Asegurarse de que los minutos se conviertan en horas si es necesario
+                        if ($totalMinutos >= 60) {
+                            $totalHoras += floor($totalMinutos / 60);
+                            $totalMinutos = $totalMinutos % 60;
+                        }
+                        // Resetear el inicio después de la pausa
+                        $ultimoInicio = null;
+                    }
+                }
+            }
+
+            // Si el último tipo es 'true', se calcula el tiempo desde ese punto hasta el momento actual
+            if ($ultimoInicio) {
+                $ahora = Carbon::now(); // Hora y fecha actuales
+                $diferencia = $ultimoInicio->diff($ahora);
+                $totalHoras += $diferencia->h;
+                $totalMinutos += $diferencia->i;
+
+                // Asegurarse de que los minutos se conviertan en horas si es necesario
+                if ($totalMinutos >= 60) {
+                    $totalHoras += floor($totalMinutos / 60);
+                    $totalMinutos = $totalMinutos % 60;
+                }
+            }
+
+            $resultados[] = [
+                'id' => $proceso['id'],
+                'name' => $proceso['nombre'],
+                'time' => [
+                    [
+                        'hora_inicio' => 1,
+                        'minuto_inicio' => 0,
+                        'horas' => $totalHoras,
+                        'minutos' => $totalMinutos,
+                        'type' => 'normal',
+                    ]
+                ]
+            ];
+        }
+
+        return $resultados;
+    }
+
+
+    public function tiempoCorte()
+    {
+        $registros = SeguimientoTiempo::where('componente_id', $this->id)->where('accion', 'corte')->orderBy('fecha')->orderBy('hora')->get();
+        $totalSegundos = 0;
+        $ultimoInicio = null;
+
+        foreach ($registros as $registro) {
+            if ($registro->tipo == 1) {
+                $ultimoInicio = Carbon::createFromFormat('Y-m-d H:i', $registro->fecha . ' ' . $registro->hora);
+            } elseif ($registro->tipo == 0 && $ultimoInicio) {
+                $fin = Carbon::createFromFormat('Y-m-d H:i', $registro->fecha . ' ' . $registro->hora);
+                $totalSegundos += $ultimoInicio->diffInSeconds($fin);
+                $ultimoInicio = null;
+            }
+        }
+        $horas = floor($totalSegundos / 3600);
+        $minutos = floor(($totalSegundos % 3600) / 60);
+        
+        return [
+            'horas' => $horas,
+            'minutos' => $minutos,
+        ];
+    }
 
     public function toArray(){
   		$data = parent::toArray();
@@ -20,6 +171,12 @@ class Componente extends Model
         $data['archivo_2d_public'] = $this->archivo_2d ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->archivo_2d : '';
         $data['archivo_3d_public'] = $this->archivo_3d ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->archivo_3d : '';
         $data['archivo_explosionado_public'] = $this->archivo_explosionado ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->archivo_explosionado : '';
+        $data['ruta'] = $this->ruta ? json_decode($this->ruta, true) : [];
+        $data['programas'] = $this->programas ? $this->programas : [];
+        $data['rutaAvance'] = $this->rutaAvance();
+        $data['maquinas'] = $this->maquinas();
+        
+        
         return $data;
     }
 

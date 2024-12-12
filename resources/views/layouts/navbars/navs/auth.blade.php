@@ -117,7 +117,7 @@ input:checked + .slider:before {
                     <a class="nav-link menu-link" href="/enrutador">Enrutador</a>
                 </li>
                 <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/compra-componentes">Programador</a>
+                    <a class="nav-link menu-link" href="/visor-programador">Programador</a>
                 </li>
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/compra-componentes">Operador</a>
@@ -132,6 +132,19 @@ input:checked + .slider:before {
                     <a class="nav-link menu-link" href="/compra-componentes">Visor Avance componente</a>
                 </li>
                 
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/centro-notificaciones">Centro de notificaciones</a>
+                </li>
+            </ul>
+            @endif
+            @if(auth()->user()->roles()->first()->name == 'PROGRAMADOR')
+            <ul class="navbar-nav mr-auto text-center">
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/visor-programador">Visor de programador</a>
+                </li>
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/visor-avance">Visor de avance</a>
+                </li>                
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/centro-notificaciones">Centro de notificaciones</a>
                 </li>
@@ -201,7 +214,7 @@ input:checked + .slider:before {
                 })
             },
             irNotificacion(notificacion){
-                window.location.href = `${notificacion.url_base}?a=${notificacion.anio_id}&c=${notificacion.cliente_id}&p=${notificacion.proyecto_id}&h=${notificacion.herramental_id}&c=${notificacion.componente_id}`
+                window.location.href = `${notificacion.url_base}?a=${notificacion.anio_id}&c=${notificacion.cliente_id}&p=${notificacion.proyecto_id}&h=${notificacion.herramental_id}&co=${notificacion.componente_id}`
             }
         },
         mounted() {

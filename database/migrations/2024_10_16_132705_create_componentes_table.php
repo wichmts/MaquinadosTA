@@ -29,19 +29,37 @@ class CreateComponentesTable extends Migration
             $table->string('fecha_pedido')->nullable();
             $table->string('fecha_estimada')->nullable();
             $table->string('fecha_real')->nullable();
+            
+            // enrutamiento
             $table->string('prioridad')->nullable();
+            $table->text('ruta')->nullable();
+            
+            // programacion
+            $table->string('maquina')->nullable();
+            $table->text('descripcion_trabajo')->nullable();
+            $table->text('herramientas_corte')->nullable();
             
             
             $table->boolean('es_compra')->nullable();
-
+            
             $table->string('area')->nullable();          // diseno-creacion, compras, corte, ensamble ...
+            
             $table->boolean('cargado')->nullable();
             $table->boolean('comprado')->nullable();
+            $table->boolean('enrutado')->nullable();
             $table->boolean('cortado')->nullable();
+            $table->boolean('programado')->nullable();
             $table->boolean('ensamblado')->nullable();
+            
+            $table->text('retraso_corte')->nullable(); 
+            $table->text('retraso_programacion')->nullable(); 
+            
             $table->string('estatus_corte')->nullable(); // inicial, proceso, pausado, finalizado
+            $table->string('estatus_programacion')->nullable(); // inicial, proceso, pausado, finalizado
+            
             $table->boolean('cancelado')->nullable();
             
+            $table->integer('programador_id')->nullable();
             $table->integer('herramental_id')->nullable();
             $table->integer('material_id')->nullable();
 

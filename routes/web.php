@@ -30,9 +30,11 @@ Auth::routes();
 
 Route::group(['middleware' => 'auth'], function () {
 
+    // PROGRAMADOR
+    Route::get('/visor-programador', 'WebController@visorProgramador');
+    
     // JEFE DE AREA
     Route::get('/enrutador', 'WebController@enrutador');
-
 
     // AUXILIAR DE DISENO
     Route::get('/carga-componentes', 'WebController@cargaComponentes');
