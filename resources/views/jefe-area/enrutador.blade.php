@@ -218,7 +218,7 @@
             </div>
         </div>
         <div class="row" v-cloak v-show="!cargando">
-            <div class="col-xl-2 pt-3" style="background-color: #f1f1f1; height: calc(100vh - 107.3px)">
+            <div class="col-xl-2 pt-3" style="background-color: #f1f1f1; height: calc(100vh - 107.3px); overflow-y: scroll">
                 <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
                     <a class="nav-link cursor-pointer text-right text-muted" >
                         <i v-if="menuStep > 1"  @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
@@ -351,12 +351,12 @@
                                             <div class="gantt-cell task-name pt-1">@{{ task.name }}</div>
                                             <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
                                                 <div
-                                                v-for="segment in task.time"
-                                                data-toggle="tooltip" data-html="true" :title="getContenidoTooltip(task)"
-                                                :key="segment.inicio"
-                                                v-if="isTaskInHour(segment, hour)"
-                                                :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
-                                                :style="getTaskStyle(segment, hour)"
+                                                    v-for="segment in task.time"
+                                                    data-toggle="tooltip" data-html="true" :title="getContenidoTooltip(task)"
+                                                    :key="segment.inicio"
+                                                    v-if="isTaskInHour(segment, hour)"
+                                                    :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
+                                                    :style="getTaskStyle(segment, hour)"
                                                 ></div>
                                             </div>
                                         </div>
@@ -425,11 +425,11 @@
                                                     <div class="col-xl-12">
                                                         <div class="input-group mb-0">
                                                              <div class="input-group-prepend">
-                                                                 <span class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important"  @click="p.horas > 0 ? p.horas-- : p.horas"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</span>
+                                                                 <button :disabled="componente.enrutado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important"  @click="p.horas > 0 ? p.horas-- : p.horas"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
                                                              </div>
                                                              <input type="number" v-model="p.horas" class="form-control text-center px-1 py-1" step="1" @change="calcularInicio()">
                                                              <div class="input-group-append">
-                                                                 <span class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.horas++"> &nbsp;&nbsp;<i class="fa fa-plus"></i> </span>
+                                                                 <button :disabled="componente.enrutado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.horas++"> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
                                                              </div>
                                                          </div>
                                                     </div>
@@ -440,11 +440,11 @@
                                                     <div class="col-xl-12">
                                                         <div class="input-group mb-0">
                                                              <div class="input-group-prepend">
-                                                                 <span class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important"  @click="p.minutos > 0 ? p.minutos-- : p.minutos"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</span>
+                                                                 <button :disabled="componente.enrutado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important"  @click="p.minutos > 0 ? p.minutos-- : p.minutos"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
                                                              </div>
                                                              <input type="number" v-model="p.minutos" class="form-control text-center px-1 py-1" step="1" @change="calcularInicio()">
                                                              <div class="input-group-append">
-                                                                 <span class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.minutos < 60 ? p.minutos++ : p.minutos "> &nbsp;&nbsp;<i class="fa fa-plus"></i> </span>
+                                                                 <button :disabled="componente.enrutado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.minutos < 60 ? p.minutos++ : p.minutos "> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
                                                              </div>
                                                          </div>
                                                     </div>
@@ -536,7 +536,7 @@
 
 
         <div class="modal fade" id="modalLineaTiempo" tabindex="-1" aria-labelledby="modalLineaTiempoLabel" aria-hidden="true">
-            <div class="modal-dialog" style="min-width: 60%;">
+            <div class="modal-dialog" style="min-width: 70%;">
                 <div class="modal-content" >
                     <div class="modal-header">
                         <h3 class="bold modal-title" id="modalLineaTiempoLabel">
@@ -548,25 +548,25 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-xl-12 table-responsive table-stripped">
+                            <div class="col-xl-12 table-responsive table-stripped"  style="height: 75vh !important; overflow-y: scroll !important">
                                 <table class="table">
                                     <thead class="thead-light">
                                         <tr>
                                             <th>Fecha</th>
                                             <th>Hora</th>
-                                            <th>Tipo</th>
-                                            <th>Encargado</th>
                                             <th>Descripción</th>
+                                            <th>Maquina</th>
+                                            <th>Encargado</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="(l, index) in lineaTiempo" :key="'linea- ' + index + '-' + l.created_at">
                                             <td>@{{ l.fecha }}</td>
                                             <td>@{{ l.hora }}</td>
-                                            <td>@{{ l.tipo }}</td>
-                                            <td>@{{ l.area }}</td>
-                                            <td>@{{ l.descripcion }}</td>
-                                        </tr>
+                                            <td><span v-html="l.descripcion"></span></td>
+                                            <td>@{{ l.maquina }}</td>
+                                            <td>@{{ l.area }} <br><small>@{{l.encargado}}</small></td>
+                                        </tr>    
                                     </tbody>
                                 </table>
                             </div>                      
@@ -580,14 +580,7 @@
                 </div>
             </div>
         </div>
-
-
-
-
     </div>
-
-    
-
 @endsection
 
 @push('scripts')
@@ -774,20 +767,23 @@
                             hora: n.hora,
                             tipo: "NOTIFICACION",
                             area: this.generarArea(n.roles, 'notificacion'),
-                            descripcion: n.descripcion,
-                            created_at: n.created_at
+                            descripcion: `<strong>${n.descripcion}</strong>`,
+                            created_at: n.created_at,
+                            encargado: '',
+                            maquina: '-',
                         });
                     });
 
-                    // Transformar seguimiento
                     seguimiento.forEach(s => {
                         lineaTiempo.push({
                             fecha: s.fecha_show,
                             hora: s.hora_show,
                             tipo: "SEGUIMIENTO",
                             area: this.generarArea(s.accion),
-                            descripcion: this.generarDescripcion(s.accion, s.tipo, s.motivo),
-                            created_at: s.created_at
+                            descripcion: this.generarDescripcion(s.accion, s.tipo, s.tipo_paro, s.comentarios_paro),
+                            created_at: s.created_at,
+                            encargado: s.usuario,
+                            maquina: s.maquina
                         });
                     });
 
@@ -798,38 +794,51 @@
                 } finally {
                     this.cargando = false;
                     $('#modalLineaTiempo').modal();
+
                 }
             },
-            generarDescripcion(accion, tipo, motivo) {
+            generarDescripcion(accion, tipo, tipo_paro, motivo) {
                 let descripcion = "";
                 
                 switch (accion) {
                     case "corte_paro":
                         descripcion = tipo === 1 
-                            ? "SE INICIA PARO EN EL PROCESO DE CORTE" 
-                            : "SE FINALIZA PARO EN EL PROCESO DE CORTE";
+                            ? "<strong>SE INICIA PARO EN EL PROCESO DE CORTE</strong>" 
+                            : "<strong>SE FINALIZA PARO EN EL PROCESO DE CORTE</strong>";
+                        break;
+
+                    case "fabricacion_paro":
+                        descripcion = tipo === 1 
+                            ? "<strong>SE INICIA PARO EN EL PROCESO DE FABRICACION</strong>" 
+                            : "<strong>SE FINALIZA PARO EN EL PROCESO DE FABRICACION</strong>";
                         break;
                     case "corte":
                         descripcion = tipo === 1 
-                            ? "INICIA EL PROCESO DE CORTE" 
-                            : "FINALIZA EL PROCESO DE CORTE";
+                            ? "<strong>INICIA EL PROCESO DE CORTE</strong>" 
+                            : "<strong>FINALIZA EL PROCESO DE CORTE</strong>";
+                    break;
+                    case "fabricacion":
+                        descripcion = tipo === 1 
+                            ? "<strong>INICIA EL PROCESO DE FABRICACION</strong>" 
+                            : "<strong>FINALIZA EL PROCESO DE FABRICACION</strong>";
                     break;
                     case "programacion":
                         descripcion = tipo === 1 
-                            ? "INICIA PROGRAMACION " 
-                            : "FINALIZA PROGRAMACION ";
+                            ? "<strong>INICIA PROGRAMACION </strong>" 
+                            : "<strong>FINALIZA PROGRAMACION </strong>";
                     break;
                     default:
                         descripcion = "ACCION DESCONOCIDA"; // Por si hay otras acciones no previstas
+                }   
+                if (tipo_paro) {
+                    descripcion += `<br><small>MOTIVO: ${tipo_paro}</small>`;
                 }
-                
                 if (motivo) {
-                    descripcion += ` - MOTIVO: ${motivo}`;
+                    descripcion += `<br><small>COMENTARIOS: ${motivo}</small>`;
                 }
 
                 return descripcion;
             },
-
             generarArea(accion, tipo = 'seguimiento') {
                 let area = "";
                 if(tipo == 'seguimiento'){
@@ -840,6 +849,10 @@
                         break;
                         case "programacion":
                             area = 'PROGRAMADOR'
+                        break;
+                        case "fabricacion_paro":
+                        case "fabricacion":
+                            area = 'OPERADOR'
                         break;
                         default:
                             area = "AREA DESCONOCIDA"; // Por si hay otras acciones no previstas
@@ -855,7 +868,6 @@
                 }
                 return area;
             },
-
             ajustarRutaAvance(tasks, rutaAvance) {
                 let convertirAMinutos = (horas, minutos) => horas * 60 + minutos;
 
@@ -925,16 +937,13 @@
                return rutaAvance; // Devuelve la estructura modificada
             },
             getContenidoTooltip(task) {
-                    // Variables para acumular los totales de horas y minutos
                     let totalHoras = 0;
                     let totalMinutos = 0;
 
-                    // Variables para almacenar detalles de cada tipo de tarea
                     let normalTime = { horas: 0, minutos: 0 };
                     let reworkTime = { horas: 0, minutos: 0 };
                     let delayTime = { horas: 0, minutos: 0 };
 
-                    // Recorrer la array de 'time' para acumular los tiempos por tipo
                     task.time.forEach(t => {
                         if (t.type === 'normal') {
                             normalTime.horas += t.horas;
@@ -948,7 +957,6 @@
                         }
                     });
 
-                    // Convertir los minutos extra a horas
                     normalTime.horas += Math.floor(normalTime.minutos / 60);
                     normalTime.minutos = normalTime.minutos % 60;
 
@@ -958,39 +966,38 @@
                     delayTime.horas += Math.floor(delayTime.minutos / 60);
                     delayTime.minutos = delayTime.minutos % 60;
 
-                    // Sumar todos los tiempos para la duración total
                     totalHoras = normalTime.horas + reworkTime.horas + delayTime.horas;
                     totalMinutos = normalTime.minutos + reworkTime.minutos + delayTime.minutos;
 
-                    // Convertir los minutos extra a horas
                     totalHoras += Math.floor(totalMinutos / 60);
                     totalMinutos = totalMinutos % 60;
 
-                    // Generar el contenido del tooltip
                     let tooltipContent = `
                         <div class="text-left">
                             <strong>${task.name}</strong><br>
                             <strong>Total:</strong> ${totalHoras} horas y ${totalMinutos} min <br><br>
                     `;
-
-                    // Agregar la sección de 'normal' solo si tiene tiempo
-                    if (normalTime.horas > 0 || normalTime.minutos > 0) {
+                    if (normalTime.horas > 0 || normalTime.minutos > 0) 
                         tooltipContent += `<strong>${task.name}:</strong> ${normalTime.horas} horas y ${normalTime.minutos} min <br>`;
-                    }
-
-                    // Agregar la sección de 'rework' solo si tiene tiempo
-                    if (reworkTime.horas > 0 || reworkTime.minutos > 0) {
-                        tooltipContent += `<strong>Retrabajos:</strong> ${reworkTime.horas} horas y ${reworkTime.minutos} min <br>`;
-                    }
-
-                    // Agregar la sección de 'delay' solo si tiene tiempo
-                    if (delayTime.horas > 0 || delayTime.minutos > 0) {
-                        tooltipContent += `<strong>Retrasos:</strong> ${delayTime.horas} horas y ${delayTime.minutos} min <br>`;
-                    }
-
-                    tooltipContent += `</div>`;
                     
+                    if (reworkTime.horas > 0 || reworkTime.minutos > 0) 
+                        tooltipContent += `<strong>Retrabajos:</strong> ${reworkTime.horas} horas y ${reworkTime.minutos} min <br>`;
+                    
+                    if (delayTime.horas > 0 || delayTime.minutos > 0) 
+                        tooltipContent += `<strong>Retrasos:</strong> ${delayTime.horas} horas y ${delayTime.minutos} min <br> ${this.getMotivoRetraso(task)}`;
+
+                    tooltipContent += `</div>`;                    
                     return tooltipContent;
+            },
+            getMotivoRetraso(task){
+                switch(task.id){
+                    case 1: 
+                        return this.componente.retraso_corte ? `(${this.componente.retraso_corte})` : '';
+                    break
+                    case 2: 
+                        return this.componente.retraso_programacion ? `(${this.componente.retraso_programacion})` : '';
+                    break
+                }
             },
             toggleTask(proceso) {
                 let t = this

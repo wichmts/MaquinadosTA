@@ -189,9 +189,9 @@
         width: 400px; /* Asegúrate de que el tooltip se ajuste al contenido */
     }
 
-    .maquinaSeleccionada {
-        background-color: #c0d340 !important;
-        color: black !important;
+    .tipoParoSeleccionado {
+        background-color: #d34040 !important;
+        color: white !important;
     }
 
 
@@ -222,41 +222,19 @@
                         <i v-if="menuStep > 1"  @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                     </a>
                     <div v-if="!cargandoMenu && menuStep == 1">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
-                        <a class="nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> MAQUINAS </a>
+                        <a class="nav-link cursor-pointer" v-for="obj in maquinas" @click="fetchComponentes(obj.id)">
+                            <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/maquina.png') }}"></i> &nbsp;
                             <span class="underline-hover">@{{obj.nombre}}</span> 
                         </a>
                     </div>    
                     <div v-if="!cargandoMenu && menuStep == 2">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
-                        <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> 
-                        </a>
-                    </div>
-                    <div v-if="!cargandoMenu && menuStep == 3">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
-                        <a class="nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> 
-                        </a>
-                    </div>
-                    <div v-if="!cargandoMenu && menuStep == 4">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
-                        <a class="nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)" >
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> 
-                        </a>
-                    </div>
-                    <div v-if="!cargandoMenu && menuStep == 5">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> COMPONENTES </a>
+                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> COMPONENTES EN COLA DE PRODUCCION</a>
                         <a class="nav-link cursor-pointer" v-for="obj in componentes" @click="fetchComponente(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
+                            <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
                             <span class="underline-hover">@{{obj.nombre}}</span> 
                         </a>
                     </div>
-                    
                 </div>            
             </div>
             <div class="col-xl-10 mt-3">
@@ -264,132 +242,160 @@
                     <div class="mb-2 col-xl-12" style="border-bottom: 1px solid #ededed">
                         <p style="">
                             <span class="cursor-pointer pb-2" @click="regresar(1)"><i class="fa fa-home"></i> &nbsp;</span>
-                            <span class="cursor-pointer pb-2"  v-if="ruta.anio" @click="regresar(2)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.anio}}</span>    &nbsp;</span>
-                            <span class="cursor-pointer pb-2"  v-if="ruta.cliente" @click="regresar(3)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.cliente}}</span>     &nbsp;</span>
-                            <span class="cursor-pointer pb-2"  v-if="ruta.proyecto" @click="regresar(4)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.proyecto}}</span>     &nbsp;</span>
-                            <span class="cursor-pointer pb-2"  v-if="ruta.herramental" @click="regresar(5)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.herramental}}</span>      </span>
+                            <span class="cursor-pointer pb-2"  v-if="ruta.maquina" @click="regresar(2)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.maquina}}</span>      </span>
                             <span class="cursor-pointer pb-2 bold"  v-if="ruta.componente"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.componente}}</span>      </span>
                         </p>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl-4">
-                        <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE PROGRAMADOR</h2>
-                    </div>
-                    <div class="col-xl-2"  v-if="selectedComponente" style="border-left: 1px solid  #ededed">
-                        <button :disabled="componente.estatus_programacion == 'proceso' || componente.programado == true || componente.programador_id != user_id" class="btn btn-block btn-default mt-0" @click="cambiarEstatusProgramacion('proceso')"><i class="fa fa-play-circle"></i>    INICIAR PROGRAM.</button>
-                    </div>
-                    <div class="col-xl-2"  v-if="selectedComponente">
-                        <button :disabled="componente.estatus_programacion == 'detenido' || componente.estatus_programacion == 'inicial' || componente.programado == true || componente.programador_id != user_id" class="btn btn-block btn-default mt-0" @click="cambiarEstatusProgramacion('detenido')"><i class="fa fa-stop-circle"></i>    DETENER PROGRAM.</button>
-                    </div>
-                    <div class="col-xl-2"  v-if="selectedComponente" style="border-left: 1px solid  #ededed">
-                        <button class="btn btn-block mt-0" :disabled="componente.programado == true || componente.programador_id != user_id" @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR</button>
-                    </div>
-                    <div class="col-xl-2"  v-if="selectedComponente" >
-                        <button class="btn btn-success btn-block mt-0" @click="liberar()" :disabled="componente.programado == true || componente.programador_id != user_id">
-                            <i class="fa fa-check-double"></i> 
-                            <span v-if="componente.programado == true">LIBERADO</span>
-                            <span v-else>LIBERAR</span>
-                        </button>
+                    <div class="col-xl-12">
+                        <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE OPERADOR</h2>
                     </div>
                 </div>
                 <hr>
                 <div class="col-xl-12" v-if="!selectedComponente">
-                    <h5 class="text-muted my-4"> SELECCIONE UN COMPONENTE PARA VER SU PROGRAMACION</h5>
+                    <h5 class="text-muted my-4"> SELECCIONE UN COMPONENTE PARA SU FABRICACION</h5>
                 </div>
-                <div class="row mt-3" v-else>
-                    <div class="col-xl-8" style="border-right: 1px solid #c6c6c6">
-                        <div class="row">
-                            <div class="col-xl-4 form-group">
-                                <span style="font-size: 22px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold my-4 py-2"> <i class="fa fa-cogs" style="font-size: 16px !important" ></i> @{{componente.nombre}}</span>
-                            </div>
-                            <div class="col-xl-2 form-group text-center">
-                                <a class="text-dark" :href="'/storage/' + componente.archivo_2d_public" target="_blank">
-                                    <img src="/paper/img/icons/file.png" height="80px">
-                                    <h5 class="my-0 py-0 bold pt-2">2D</h5>
-                                </a>
-                            </div>
-                            <div class="col-xl-2 form-group text-center">
-                                <a class="text-dark" :href="'/storage/' + componente.archivo_3d_public" target="_blank">
-                                    <img src="/paper/img/icons/file.png" height="80px">
-                                    <h5 class="my-0 py-0 bold pt-2">3D</h5>
-                                </a>
-                            </div>
-                            <div class="col-xl-4 form-group">
-                                <button class="btn btn-block btn-default" @click="verModalRuta()"><i class="fa fa-eye"></i> Ver ruta</button>
-                            </div>
-                            <div class="col-xl-4 form-group mt-3" style="height: 200px !important">
-                                <label class="bold">DESCRIPCION DEL TRABAJO:</label>
-                                <textarea :disabled="componente.programado == true || componente.programador_id != user_id" v-model="componente.descripcion_trabajo" class="form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Descripcion del trabajo..."></textarea>
-                            </div>
-                            <div class="col-xl-4 form-group mt-3" style="height: 200px !important">
-                                <label class="bold">HERRAMIENTAS DE CORTE:</label>
-                                <textarea :disabled="componente.programado == true || componente.programador_id != user_id" v-model="componente.herramientas_corte" class="form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Agregar herramientas de corte..."></textarea>
-                            </div>
-                            <div class="col-xl-4 form-group mt-3" v-if="componente.programado != true && componente.programador_id == user_id">
-                                <label class="bold">SELECCIONAR MAQUINA(S):</label>
-                                <ul style="height: 400px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border">
-                                    <li v-for="m in maquinas" class="dropdown-item" :class="{ maquinaSeleccionada: existeMaquina(m.id)}" @click="incluirMaquina(m.id)"><i class="fa fa-check-circle" v-if="existeMaquina(m.id)"></i> @{{m.nombre}}</li>
-                                </ul>
-                            </div>
-                        </div>
+                <div class="row mt-3 pb-3" v-else>
+                    <div class="col-xl-6 form-group mb-0">
+                        <span style="font-size: 22px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold my-4 py-2"> <i class="fa fa-cogs" style="font-size: 16px !important" ></i> @{{componente.nombre}}</span>
+                    </div>
+                    <div class="col-xl-2 form-group mb-0">
+                        <label class="bold">CANTIDAD</label>
+                        <input type="text" class="form-control text-center" v-model="componente.cantidad" placeholder="Cantidad" disabled>
+                    </div>
+                    <div class="col-xl-2 form-group mb-0 mt-2">
+                        <a :href="'/storage/' + componente.archivo_2d_public" target="_blank" class="btn btn-block btn-default" @click="verModalRuta()"><i class="fa fa-file"></i> Ver 2D</a>
+                    </div>
+                    <div class="col-xl-2 form-group mb-0 mt-2">
+                        <button class="btn btn-block btn-default" @click="verModalRuta()"><i class="fa fa-eye"></i> Ver ruta</button>
+                    </div>
+                    <div class="col-xl-4 form-group mb-0" style="height: 120px !important">
+                        <label class="bold">DESCRIPCION DEL TRABAJO</label>
+                        <textarea disabled v-model="componente.descripcion_trabajo" class="mt-0 form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Descripcion del trabajo..."></textarea>
+                    </div>
+                    <div class="col-xl-4 form-group mb-0" style="height: 120px !important">
+                        <label class="bold">HERRAMIENTAS DE CORTE</label>
+                        <textarea disabled  v-model="componente.herramientas_corte" class="mt-0 form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Agregar herramientas de corte..."></textarea>
                     </div>
                     <div class="col-xl-4">
                         <div class="row">
-                            <div class="col-xl-12">
-                                <h3 class="bold mb-2" style="letter-spacing: 1px; ">PROGRAMAS POR MAQUINA</h3>
+                            <div class="col-xl-12 form-group">
+                                <label class="bold">SELECCIONAR PROGRAMA (TXT)</label>
+                                <select class="form-control" v-model="programaSeleccionado" @change="seleccionarPrograma()">
+                                    <option v-for="f in componente.fabricaciones" :value="f.id"> @{{f.archivo_show}}</option>
+                                </select>
+                            </div>
+                            <div class="col-xl-12 mt-2 form-group">
+                                <label class="bold">MAQUNA</label>
+                                <input type="text" :value="ruta.maquina" class="form-control" disabled>
                             </div>
                         </div>
-                        <div class="text-center pt-5" v-if="componente.maquinas.length == 0">
-                            <span class="text-muted">Es necesario seleccionar una o más <strong>máquinas</strong> para poder cargar los programas</span>
+                    </div>
+                </div>
+                <Transition name="fade" mode="out-in">
+                    <div class="row py-3" style="border-top: 2px dashed #d6d6d6; " v-if="fabricacion && selectedComponente" :key="fabricacion.id">
+                       
+                        <div class="col-xl-4 mb-3">
+                            <span style="font-size: 14px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold py-2"> <i class="fa fa-computer" style="font-size: 13px !important" ></i> PROGRAMA SELECCIONADO: @{{fabricacion.archivo_show}}</span>
                         </div>
-                        <div class="row" v-for="(m, ind) in componente.maquinas">
-                            <div class="col-xl-4">
-                                <h5 class="bold"  style="letter-spacing: 1px"><i class="fa fa-computer"></i> @{{m.nombre}}</h5>
+
+                         <div class="col-xl-2 mb-3"  v-if="selectedComponente">
+                            <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.estatus_fabricacion == 'proceso' || fabricacion.fabricado == true" class="btn btn-block btn-default mt-0" @click="cambiarEstatusFabricacion('proceso')"><i class="fa fa-play-circle"></i>    INICIAR FABRIC.</button>
+                        </div>
+                        <div class="col-xl-2 mb-3"  v-if="selectedComponente" style="border-right: 1px solid #efefef">
+                            <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.estatus_fabricacion == 'detenido' || fabricacion.estatus_fabricacion == 'inicial' || fabricacion.fabricado == true" class="btn btn-block btn-default mt-0" @click="cambiarEstatusFabricacion('detenido')"><i class="fa fa-stop-circle"></i>    DETENER FABRIC.</button>
+                        </div>
+
+                        <div class="col-xl-2 mb-3"  v-if="selectedComponente">
+                            <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true" class="btn btn-block mt-0"  @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR </button>
+                        </div>
+                        <div class="col-xl-2 mb-3"  v-if="selectedComponente" >
+                            <button class="btn btn-success btn-block mt-0" @click="liberar()" :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true">
+                                <i class="fa fa-check-circle"></i> 
+                                <span v-if="fabricacion.fabricado != true">FINALIZAR</span>
+                                <span v-else>FINALIZADA</span>
+                            </button>
+                        </div>
+                        <div class="col-xl-9">
+                            <div class="row">
+                                <div class="col-xl-5 form-group" style="height: 150px !important">
+                                    <label class="bold">COMENTARIOS DE COMPONENTE TERMINADO</label>
+                                    <textarea :disabled="fabricacion.fabricado == true || fabricacion.estatus_fabricacion == 'paro' " class="mt-0 form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Comentarios..." v-model="fabricacion.comentarios_terminado"></textarea>
+                                </div>
+                                <div class="col-xl-5 form-group" style="height: 150px !important">
+                                    <label class="bold">REGISTRO DE MEDIDAS</label>
+                                    <textarea :disabled="fabricacion.fabricado == true || fabricacion.estatus_fabricacion == 'paro' " class="mt-0 form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Registro de medidas..." v-model="fabricacion.registro_medidas"></textarea>
+                                </div>
+                                <div class="col-xl-2 form-group">
+                                    <label class="bold">FOTO DEL COMPONENTE</label>
+                                    <a target="_blank" v-if="fabricacion.foto" :href="'/storage/fabricaciones/' + fabricacion.foto">
+                                        <img :src="'/storage/fabricaciones/' + fabricacion.foto" style="border-radius: 10px; width: 100%; height: auto; object-fit: cover" alt="">
+                                    </a>
+                                    <img v-else src="{{ asset('paper/img/no-image.png') }}" style="border-radius: 10px; width: 100%; height: 150px; object-fit: cover" alt="">
+                                </div>
                             </div>
-                            <div class="col-xl-8 text-right" v-if="componente.programado != true || componente.programador_id != user_id">
-                                <small class="cursor-pointer" style="text-decoration: underline" @click="agregarArchivo(m)"><i class="fa fa-plus-circle"></i> Agregar programa</small>
-                            </div>
-                            <div class="col-xl-12">
-                                <div class="row mb-2" v-for="(a, index) in m.archivos" :key="index + '-' + m.maquina_id">
-                                    <div class="col-xl-10 text-center mr-0 pr-0">
-                                        <input
-                                            :disabled="componente.programado == true || componente.programador_id != user_id"
-                                            class="input-file"
-                                            :id="'archivo-' + m.maquina_id + '-' + index"
-                                            type="file"
-                                            :name="'file['+ m.maquina_id +'][' + index + ']'"
-                                            @change="handleFileChange($event, ind, index)"
-                                            style="display: none;"
-                                            accept=".txt"
-                                        />
-                                        <label
-                                            tabindex="0"
-                                            :for="'archivo-' + m.maquina_id + '-' + index"
-                                            class="input-file-trigger col-12 text-center"
-                                        >
-                                            <i class="fa fa-upload"></i> Subir programa (.txt)
-                                        </label>
-                                        <small style="font-style: italic" v-if="!a.id">
-                                            @{{ a.nombre ? getElipsis(a.nombre) : "Archivo no seleccionado" }}
-                                        </small>
-                                        <small v-else>
-                                            <a :href="'/api/download/programas/' + a.nombre">@{{getElipsis(a.nombre)}}</a>
-                                        </small>
-                                    </div>
-                                    <div class="col-xl-2 text-center ml-0 pl-0" v-if="componente.programado != true && componente.programador_id == user_id">
-                                        <button class="btn btn-block btn-link my-0" @click="eliminarArchivo(m, index)">
-                                            <i class="fa fa-times-circle text-danger" style="font-size: 20px !important"></i>
-                                        </button>
-                                    </div>
+                        </div>
+                        <div class="col-xl-3">
+                            <div class="row">
+                                <div class="col-xl-12">
+                                    <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true" class="btn btn-block mt-0" @click="abrirCamara()"><i class="fa fa-camera"></i> <span v-if="fabricacion.foto">RETOMAR FOTO</span><span v-else>TOMAR FOTO</span></button>
+                                    <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;" @change="procesarFoto($event)">
+                                </div>
+                                <div class="col-xl-12">
+                                    <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true" class="btn btn-dark btn-block mt-0"><i class="fa fa-edit"></i> SOLICITAR MODIFICACION</button>
+                                </div>
+                                <div class="col-xl-12">
+                                    <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true" class="btn btn-dark btn-block mt-0"><i class="fa fa-retweet"></i> SOLICITAR RETRABAJO</button>
+                                </div>
+                                <div class="col-xl-12">
+                                     <button v-if="fabricacion.estatus_fabricacion != 'paro'" @click="registrarParo()" :disabled="fabricacion.fabricado == true" class="mt-1 btn btn-danger btn-block"><i class="fa fa-stop-circle"></i> Iniciar paro</button>
+                                    <button  v-else @click="eliminarParo()" :disabled="fabricacion.fabricado == true" class="mt-1 btn btn-danger btn-block"><i class="fa fa-play-circle"></i> Reanudar operacion</button>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </Transition>
+            </div>
+        </div>
 
+        <div class="modal fade" id="modalParo" tabindex="-1" aria-labelledby="modalParoLabel" aria-hidden="true">
+            <div class="modal-dialog" style="min-width: 30%;">
+                <div class="modal-content" >
+                    <div class="modal-header">
+                        <h3 class="text-danger modal-title" id="modalParoLabel">
+                            <span>INICIAR PARO EN LA FABRICACION DEL COMPONENTE @{{componente.nombre}}</span>
+                        </h3>
+                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xl-12 form-group">
+                                <label class="bold">Seleccionar motivo <span style="color: red">*</span></label>
+                                <ul style="height: 300px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border mt-0">
+                                    <li v-for="p in paros" class="dropdown-item" :class="{ tipoParoSeleccionado: paro.tipo_paro == p}" @click="paro.tipo_paro = p"><i class="fa fa-check-circle" v-if="paro.tipo_paro == p"></i> @{{p}}</li>
+                                </ul>
+                            </div>
+                            <div class="py-0 col-xl-12">
+                                <label class="bold">Comentarios de paro</label>
+                               <textarea v-model="paro.comentarios_paro" class="form-control w-100 text-left px-2 py-1" placeholder="Comentarios de paro..."></textarea>
+                           </div>                           
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-12 text-right">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+                                <button class="btn btn-danger" v-if="!loading_button" type="button" @click="registrarParoAPI()"><i class="fa fa-stop-circle"></i> INICAR PARO</button>
+                                <button class="btn btn-danger" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> PROCESANDO, ESPERE ...</button>
+                            </div>
+                        </div>
+                    </div> 
                 </div>
             </div>
         </div>
+        
+        
         <div class="modal fade" id="modalRuta" tabindex="-1" aria-labelledby="modalRutaLabel" aria-hidden="true" >
             <div class="modal-dialog"  style="min-width: 60%;">
                 <div class="modal-content" >
@@ -480,8 +486,8 @@
                     <div class="modal-body">
                         <div class="row px-3">
                              <div class="mt-3 py-2 col-xl-12 form-group" style="background-color: rgb(254, 195, 195); border-radius: 10px">
-                                <label class="bold text-danger"><i class="fa fa-exclamation-circle"></i> Hubo un retraso en el tiempo estimado de programacion para este componente. Indique el motivo.</label>
-                                <textarea style="border: none !important" v-model="componente.retraso_programacion" class="form-control w-100 text-left px-2 py-1" placeholder="Motivo del retraso..."></textarea>
+                                <label class="bold text-danger"><i class="fa fa-exclamation-circle"></i> Hubo un retraso en el tiempo estimado de fabricacion para este componente. Indique el motivo.</label>
+                                <textarea style="border: none !important" v-model="fabricacion.motivo_retraso" class="form-control w-100 text-left px-2 py-1" placeholder="Motivo del retraso..."></textarea>
                             </div>
                         </div>
                         <div class="row">
@@ -518,7 +524,6 @@
             },
             loading_button: false,
             cargando: false,            
-            //MENU IZQUIERDO 
             anios: [],         
             clientes: [],      
             proyectos: [],     
@@ -527,10 +532,6 @@
             maquinas: [],   
             cargandoMenu: true,
             menuStep: 1, 
-            selectedAnio: null,
-            selectedCliente: null,
-            selectedProyecto: null,
-            selectedHerramental: null,
             selectedComponente: null,
             ruta:{
                 anio: null,
@@ -553,6 +554,32 @@
             rutaAvance: [],
             archivos: [],
             hay_retraso: false,
+            programaSeleccionado: null,
+            fabricacion: {motivo_retraso: ''},
+            fotografia: null,
+            paro: {
+                comentarios_paro: '',
+                tipo_paro: 'Daño a la Materia Prima'
+            },
+            paros: [
+                "Daño a la Materia Prima",
+                "Error de Compensación",
+                "Cambio del Componente a producir",
+                "Cambio de Programa",
+                "Falta Herramienta de Corte",
+                "Falla en Herramienta",
+                "Origen Incorrecto",
+                "Falta de Material",
+                "Falta de Lubricante",
+                "Mantenimiento",
+                "Falla Mecánica",
+                "Falla del Programa",
+                "CFE",
+                "Protección Civil",
+                "Cambio de Insertos",
+                "Cambio de Herramienta",
+                "Error de Programación",    
+            ]
         },
         watch: {
            
@@ -656,42 +683,80 @@
             }
         },
         methods:{
-            incluirMaquina(maquina_id) {
-                let indiceMaquina = this.componente.maquinas.findIndex(
-                    (m) => m.maquina_id === maquina_id
-                );
-
-                // Si la máquina ya existe, elimínala del arreglo
-                if (indiceMaquina !== -1) {
-                    this.componente.maquinas.splice(indiceMaquina, 1); // Elimina la máquina
-                } else {
-                    // Si no existe, agrégala al arreglo
-                    this.componente.maquinas.push({
-                        maquina_id: maquina_id,
-                        nombre: this.maquinas.find(obj => obj.id === maquina_id)?.nombre,
-                        archivos: [{ nombre: '', archivo: null }]
-                    });
-
-                    Vue.nextTick(function() {
-                        document.querySelector("html").classList.add('js');
-                        let fileInput = document.querySelector(".input-file");
-                        let button = document.querySelector(".input-file-trigger");
-
-                        button.addEventListener("keydown", function(event) {
-                            if (event.keyCode == 13 || event.keyCode == 32) {
-                                fileInput.focus();
-                            }
-                        });
-
-                        button.addEventListener("click", function(event) {
-                            fileInput.focus();
-                            return false;
-                        });
-                    });
+            async eliminarParo() {
+                let t = this;
+                try {
+                    const response = await axios.put(`/api/eliminar-paro/${t.fabricacion.id}/fabricacion_paro`);
+                    if (response.data.success) {
+                        await t.fetchComponentes(t.selectedMaquina);
+                        await t.fetchComponente(t.componente.id);
+                        t.seleccionarPrograma();
+                        swal('Operación reanudada', 'La operación ha sido reanudada exitosamente.', 'success');
+                    }
+                } catch (error) {
+                    console.error('Error al eliminar el paro:', error);
+                    swal('Error', 'Hubo un problema al intentar reanudar la operación.', 'error');
                 }
             },
-            existeMaquina(maquina_id){
-                return this.componente.maquinas?.some(obj => obj.maquina_id == maquina_id);
+
+            async registrarParoAPI() {
+                let t = this;
+                if (!t.paro.tipo_paro.trim()) {
+                    swal('Campos obligatorios', 'Es necesario ingresar un comentario de paro para continuar.', 'info');
+                    return;
+                }
+                t.loading_button = true;
+                try {
+                    const response = await axios.post(`/api/registrar-paro/${t.componente.id}`, t.paro);
+                    if (response.data.success) {
+                        await t.fetchComponentes(t.selectedMaquina);
+                        await t.fetchComponente(t.componente.id);
+                        t.seleccionarPrograma();
+                        swal(
+                            'Operación detenida',
+                            'El paro de operación ha sido iniciado. No olvide registrar la reanudación una vez que se retomen las actividades.',
+                            'success'
+                        );
+                        $('#modalParo').modal('hide');
+                    }
+                } catch (error) {
+                    console.error('Error al registrar el paro:', error);
+                    swal('Error', 'Hubo un problema al intentar registrar el paro.', 'error');
+                } finally {
+                    t.loading_button = false;
+                }
+            },
+            registrarParo(){
+                this.paro = {
+                    componente_id: this.componente.id,
+                    fabricacion_id: this.fabricacion.id,
+                    comentarios_paro: '',
+                    tipo_paro: 'Daño a la Materia Prima',
+                    tipo: 'fabricacion_paro',
+                }
+                $('#modalParo').modal();
+            },
+            seleccionarPrograma(){
+                let t = this
+                t.fabricacion = t.componente.fabricaciones.find(obj => obj.id == t.programaSeleccionado)
+                t.fotografia = t.componente.foto;
+            },  
+            abrirCamara() {
+                const fileInput = document.getElementById('fileInput');
+                fileInput.click();
+            },
+            procesarFoto(event) {
+                let archivo = event.target.files[0]; 
+                this.fotografia = archivo;
+
+                if (archivo) {
+                    const lector = new FileReader();
+                    lector.onload = (e) => {
+                        console.log('Foto capturada:', e.target.result);
+                    };
+                    lector.readAsDataURL(archivo); // Convierte la imagen a base64 (opcional)
+                }
+                this.guardar(false)
             },
             async cargarRuta(){
                 let t = this
@@ -722,13 +787,17 @@
                     return true;
                 })
             },
-            async fetchComponente(id){
+            async fetchComponente(id, programaSeleccionado = null){
                 let t = this;
-                this.cargando = true;                
                 this.selectedComponente = id;
                 this.componente = this.componentes.find(obj => obj.id == id)
                 this.ruta.componente = this.componente.nombre;
                 
+                this.programaSeleccionado = programaSeleccionado ? programaSeleccionado :  this.componente.fabricaciones.length > 0 ? this.componente.fabricaciones[0].id : null;
+                if(this.programaSeleccionado)
+                    this.seleccionarPrograma();
+
+                this.cargando = true;      
                 try {
                     const response = await axios.get(`/api/componente/${id}`)
                     t.tasks = JSON.parse(JSON.stringify(response.data.componente.ruta));
@@ -745,30 +814,14 @@
                     console.error('Error fetching componente:', error);
                 } finally {
                     this.cargando = false;
-                    if(this.componente.maquinas.length > 0){
-                        document.querySelector("html").classList.add('js');
-                        let fileInput  = document.querySelector( ".input-file" )
-                        let button     = document.querySelector( ".input-file-trigger" )
-                        
-                        button.addEventListener( "keydown", function( event ) {
-                            if ( event.keyCode == 13 || event.keyCode == 32 ) {
-                                fileInput.focus();
-                            }
-                        });
-        
-                        button.addEventListener( "click", function( event ) {
-                            fileInput.focus();
-                            return false;
-                        });
-                    }
                 }
             },
-            async cambiarEstatusProgramacion(band){
+            async cambiarEstatusFabricacion(band){
                 let t = this
                 try {
-                    const response = await axios.put(`api/programacion/cambio-estatus/${t.selectedComponente}`, {estatus: band});
+                    const response = await axios.put(`/api/fabricacion/cambio-estatus/${t.programaSeleccionado}`, {estatus: band});
                     if (response.data.success) {
-                        t.componente.estatus_programacion = band;
+                        t.fabricacion.estatus_fabricacion = band;
                     }
                 } catch (error) {
                     console.error('Error al cambiar el estatus de programación:', error);
@@ -776,10 +829,11 @@
             },
             async verModalRuta(){
                 let t = this
-                await this.fetchComponente(t.selectedComponente);
+                await this.fetchComponente(t.selectedComponente, t.programaSeleccionado);
                 await this.cargarRuta();
 
                 $('#modalRuta').modal()
+
                 Vue.nextTick(function(){
                     Vue.nextTick(function(){
                         $('[data-toggle="tooltip"]').tooltip('dispose');
@@ -792,35 +846,6 @@
                     return str.substring(0, 44) + '...';
                 }
                 return str;
-            },
-            handleFileChange(event, index1, index2) {
-                const file = event.target.files[0];
-                if (file) {
-                    this.$set(this.componente.maquinas[index1].archivos[index2], "nombre", file.name);
-                    this.$set(this.componente.maquinas[index1].archivos[index2], "archivo", file);
-                }
-            },
-            agregarArchivo(maquina) {
-                maquina.archivos.push({ nombre: '', archivo: null });
-                Vue.nextTick(function(){
-                    document.querySelector("html").classList.add('js');
-                    let fileInput  = document.querySelector( ".input-file" )
-                    let button     = document.querySelector( ".input-file-trigger" )
-                    
-                    button.addEventListener( "keydown", function( event ) {
-                        if ( event.keyCode == 13 || event.keyCode == 32 ) {
-                            fileInput.focus();
-                        }
-                    });
-    
-                    button.addEventListener( "click", function( event ) {
-                        fileInput.focus();
-                        return false;
-                    });
-                })
-            },
-            eliminarArchivo(maquina, index) {
-                maquina.archivos.splice(index, 1);
             },
             ajustarRutaAvance(tasks, rutaAvance) {
                 let convertirAMinutos = (horas, minutos) => horas * 60 + minutos;
@@ -905,15 +930,11 @@
                     const prioridadB = this.procesos.find(p => p.id === b.id).prioridad;
                     return prioridadA - prioridadB;
                 });
-
                 const tareasFijas = this.rutaAvance.filter(task => task.id === 1 || task.id === 2);
                 const otrasTareas = this.rutaAvance.filter(task => task.id !== 1 && task.id !== 2);
-
                 tareasFijas.forEach(task => {
                     let proceso = t.procesos.find(p => p.id === task.id);
-
                     task.time.forEach((segmento, index) => {
-                      
                             if(task.id == 1){
                                 segmento.hora_inicio = acumuladorHoras1;
                                 segmento.minuto_inicio = acumuladorMinutos1;
@@ -921,7 +942,6 @@
                                 segmento.hora_inicio = acumuladorHoras2;
                                 segmento.minuto_inicio = acumuladorMinutos2;
                             }
-                        
                         if(task.id == 1){
                             acumuladorHoras1 += segmento.horas;
                             acumuladorMinutos1 += segmento.minutos;
@@ -1035,6 +1055,11 @@
                     case 2: 
                         return this.componente.retraso_programacion ? `(${this.componente.retraso_programacion})` : '';
                     break
+                    case 3:case 4:case 5:case 6:case 7:case 8:
+                        let fabricaciones = this.componente.fabricaciones.filter(element => element.proceso_id == task.id)
+                        let motivosRetraso = fabricaciones.map(f => f.motivo_retraso).filter(motivo => motivo).join(', ')
+                        return motivosRetraso ? `(${motivosRetraso})` : '';
+                    break
                 }
             },
             isTaskInHour(segment, hour) {
@@ -1062,137 +1087,39 @@
                 switch (step) {
                     case 1:
                         this.ruta = {
-                            anio: null,
-                            cliente: null,
-                            proyecto: null,
-                            herramental: null,
+                            maquina: null,
                             componente: null,
                         } 
-                        this.selectedAnio = null;
-                        this.selectedCliente = null;
-                        this.selectedProyecto = null;
-                        this.selectedHerramental = null;
+                        this.selectedMaquina = null;
                         this.selectedComponente = null;
                     break;
                     case 2:
-                        this.ruta.cliente = null;
-                        this.ruta.proyecto = null;
-                        this.ruta.herramental = null;
                         this.ruta.componente = null;
-
-                        this.selectedCliente = null;
-                        this.selectedProyecto = null;
-                        this.selectedHerramental = null;
-                        this.selectedComponente = null;
-
-                    break;
-                    case 3:
-                        this.ruta.proyecto = null;
-                        this.ruta.herramental = null;
-                        this.ruta.componente = null;
-
-                        this.selectedProyecto = null;
-                        this.selectedHerramental = null;
-                        this.selectedComponente = null;
-                    break;
-                    case 4:
-                        this.ruta.herramental = null;
-                        this.selectedHerramental = null;
-                        this.ruta.componente = null;
-                    break;
-                    case 5:
-                        this.ruta.componente = null;
-                        this.selectedComponente = null;
                         this.selectedComponente = null;
                     break;
                 }
                 this.menuStep = step;
             },
-            async fetchAnios() {
+            async fetchMaquinas() {
                 this.cargandoMenu = true
                 try {
-                    const response = await axios.get('/api/anios');
-                    this.anios = response.data.anios;
-                } catch (error) {
-                    console.error('Error fetching años:', error);
-                } finally {
-                    this.cargandoMenu = false;
-                    
-                }
-            },
-            async fetchMaquinas() {
-                this.cargando = true
-                try {
-                    const response = await axios.get('/api/maquinas');
+                    const response = await axios.get(`/api/maquinas?operador={{auth()->user()->id}}`);
                     this.maquinas = response.data.maquinas;
                 } catch (error) {
                     console.error('Error fetching maquinas:', error);
                 } finally {
-                    this.cargando = false;
-                }
-            },
-            async fetchProgramadores() {
-                try {
-                    const response = await axios.get('/api/programadores');
-                    this.programadores = response.data.programadores;
-                } catch (error) {
-                    console.error('Error fetching programs:', error);
-                }
-            },
-            async fetchClientes(anioId) {
-                this.cargandoMenu = true
-                this.selectedAnio = anioId;
-                this.ruta.anio = this.anios.find(obj => obj.id == anioId)?.nombre;
-                
-                try {
-                    const response = await axios.get(`/api/anios/${anioId}/clientes`);
-                    this.clientes = response.data.clientes;
-                    this.menuStep = 2;
-                } catch (error) {
-                    console.error('Error fetching clientes:', error);
-                } finally {
                     this.cargandoMenu = false;
                 }
             },
-            async fetchProyectos(clienteId) {
-                this.cargandoMenu = true
-                this.selectedCliente = clienteId;
-                this.ruta.cliente = this.clientes.find(obj => obj.id == clienteId)?.nombre;
-
-                try {
-                    const response = await axios.get(`/api/clientes/${clienteId}/proyectos`);
-                    this.proyectos = response.data.proyectos;
-                    this.menuStep = 3;
-                } catch (error) {
-                    console.error('Error fetching proyectos:', error);
-                } finally {
-                    this.cargandoMenu = false;
-                }
-            },
-            async fetchHerramentales(proyectoId) {
-                this.cargandoMenu = true
-                this.selectedProyecto = proyectoId;
-                this.ruta.proyecto = this.proyectos.find(obj => obj.id == proyectoId)?.nombre;
-
-                try {
-                    const response = await axios.get(`/api/proyectos/${proyectoId}/herramentales`);
-                    this.herramentales = response.data.herramentales;
-                    this.menuStep = 4;
-                } catch (error) {
-                    console.error('Error fetching herramentales:', error);
-                } finally {
-                    this.cargandoMenu = false;
-                }
-            },
-            async fetchComponentes(herramentalId) {
+            async fetchComponentes(maquinaId) {
                 this.cargando = true
-                this.selectedHerramental = herramentalId;
-                this.ruta.herramental = this.herramentales.find(obj => obj.id == herramentalId)?.nombre;
+                this.selectedMaquina = maquinaId;
 
+                this.ruta.maquina = this.maquinas.find(obj => obj.id == maquinaId)?.nombre;
                 try {
-                    const response = await axios.get(`/api/herramentales/${herramentalId}/componentes?area=programador`);
+                    const response = await axios.get(`/api/maquinas/${maquinaId}/componentes`);
                     this.componentes = response.data.componentes;
-                    this.menuStep = 5;
+                    this.menuStep = 2;
                 } catch (error) {
                     console.error('Error fetching componentes:', error);
                 } finally {
@@ -1201,27 +1128,18 @@
             },
             async liberar(){
                 
-                if (!this.componente.descripcion_trabajo?.trim() || !this.componente.herramientas_corte?.trim()) {
-                    swal('Errores de validación', `Todos los campos son obligatorios para liberar el componente.`, 'error');
+                if (!this.fabricacion.comentarios_terminado?.trim() || !this.fabricacion.registro_medidas?.trim() || !this.fabricacion.foto?.trim()) {
+                    swal('Errores de validación', `Todos los campos incluyendo la foto son obligatorios para finalizar esta fabricacion.`, 'error');
                     return;
                 }
-                
-                let tieneArchivo = this.componente.maquinas.some(maquina =>
-                    maquina.archivos.some(a => a.archivo || a.id)
-                );
-                
-                if (!tieneArchivo) {
-                    swal('Errores de validación', 'Debe cargar al menos un archivo por máquina.', 'error');
-                    return;
-                }
-
                 this.hay_retraso = false;
-                await this.fetchComponente(this.selectedComponente);
+                await this.fetchComponente(this.selectedComponente, this.programaSeleccionado);
                 await this.cargarRuta();
-                let programar = this.rutaAvance.find(obj => obj.id === 2)
                 
-                if(programar){
-                    let retraso = programar.time.find(obj => obj.type === 'delay')
+                let proceso = this.rutaAvance.find(obj => obj.id === this.fabricacion.tipo_proceso)
+                
+                if(proceso){
+                    let retraso = proceso.time.find(obj => obj.type === 'delay')
                     if(retraso){
                         this.hay_retraso = true;
                         $('#modalRetraso').modal();
@@ -1233,35 +1151,44 @@
             async guardar(liberarComponente){                
                 let t = this
 
-                if(this.hay_retraso && liberarComponente && !this.componente.retraso_programacion?.trim()){
+                if(this.hay_retraso && liberarComponente && !this.fabricacion.motivo_retraso?.trim()){
                      swal('Campos obligatorios', 'Debe ingresar un motivo de retraso.', 'info');
                     return false;
                 }
                 t.cargando = true;
                 t.loading_button = true;
 
-                let formData = new FormData();
-
-                t.componente.maquinas.forEach((maquina, maquinaIndex) => {
-                    maquina.archivos.forEach((archivo, archivoIndex) => {
-                        if (archivo.archivo)
-                            formData.append(`archivo[${maquina.maquina_id}][${archivoIndex}]`, archivo.archivo);
-                        if (archivo.id) 
-                            formData.append(`archivo_ids[${maquina.maquina_id}][${archivoIndex}]`, archivo.id);
-                    });
-                });
-                formData.append('data', JSON.stringify(t.componente));
-
                 try {
-                    const response = await axios.post(`/api/componente/${t.selectedComponente}/programacion/${liberarComponente}`, formData, {
-                        headers: { 'Content-Type': 'multipart/form-data' }
+                    const formData = new FormData();
+                    formData.append('data', JSON.stringify(t.fabricacion));
+                     if (t.fotografia) {
+                        formData.append('fotografia', t.fotografia);
+                    }
+                    const response = await axios.post(`/api/componente/${t.programaSeleccionado}/fabricacion/${liberarComponente}`, formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
                     });
 
-                    swal('Correcto', liberarComponente ? 'Componente liberado correctamente' : 'Información guardada correctamente', 'success');
-                    await t.fetchComponentes(t.selectedHerramental);
-                    await t.fetchComponente(t.selectedComponente);
+                    swal('Correcto', liberarComponente ? 'Fabricacion finalizada correctamente' : 'Información guardada correctamente', 'success');
+                    await t.fetchComponentes(t.selectedMaquina);
+
+                    if(liberarComponente){
+                        if(t.componentes.some(obj => obj.id == t.selectedComponente)){
+                            await t.fetchComponente(t.selectedComponente);
+                            t.seleccionarPrograma();
+                        }else{
+                            t.menuStep = 1;
+                            t.selectedComponente = null;
+                            t.ruta.componente = null;
+                        }
+                    }else{
+                        await t.fetchComponente(t.selectedComponente, t.programaSeleccionado);
+                        t.seleccionarPrograma();
+                    }
                     t.loading_button = false;
                     $('#modalRetraso').modal('hide');
+                
                 } catch (error) {
                     console.log(error);
                     const mensaje = error.response?.data?.error || 'Error al guardar el componente.';
@@ -1272,27 +1199,20 @@
             },
             async navigateFromUrlParams() {
                 const queryParams = new URLSearchParams(window.location.search);
-                const anioId = queryParams.get('a');
-                const clienteId = queryParams.get('c');
-                const proyectoId = queryParams.get('p');
-                const herramentalId = queryParams.get('h');
+                const maquinaId = queryParams.get('maq');
                 const componenteId = queryParams.get('co');
+                const fabricacionId = queryParams.get('fab');
 
                 try {
-                    if (anioId) {
-                        await this.fetchClientes(anioId);
+                    if (maquinaId) {
+                        await this.fetchComponentes(maquinaId);
                     }
-                    if (clienteId) {
-                        await this.fetchProyectos(clienteId);
-                    }
-                    if (proyectoId) {
-                        await this.fetchHerramentales(proyectoId);
-                    }
-                    if (herramentalId) {
-                        await this.fetchComponentes(herramentalId);
-                    }
-                    if (componenteId && componenteId != 'null') {
+                    if (componenteId && componenteId != 'null' && this.componentes?.some(obj => obj.id == componenteId)) {
                         await this.fetchComponente(componenteId);
+                    }
+                    if(fabricacionId && fabricacionId != 'null' && this.componente?.fabricaciones?.some(obj => obj.id == fabricacionId)){
+                        this.programaSeleccionado = fabricacionId;
+                        this.seleccionarPrograma();
                     }
                 } catch (error) {
                     console.error("Error navigating from URL parameters:", error);
@@ -1302,8 +1222,6 @@
         mounted: async function () {
             let t = this;
             await t.fetchMaquinas();
-            await t.fetchAnios();
-            await t.fetchProgramadores();
             this.navigateFromUrlParams();        
         }
 

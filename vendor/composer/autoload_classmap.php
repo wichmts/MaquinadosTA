@@ -14,6 +14,7 @@ return array(
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Documento' => $baseDir . '/app/Documento.php',
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
+    'App\\Fabricacion' => $baseDir . '/app/Fabricacion.php',
     'App\\Helpers\\SystemHelper' => $baseDir . '/app/Helpers/SystemHelper.php',
     'App\\Herramental' => $baseDir . '/app/Herramental.php',
     'App\\Hoja' => $baseDir . '/app/Hoja.php',

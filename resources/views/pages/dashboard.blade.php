@@ -4,6 +4,10 @@
 ])
 
 
+<style>
+    
+
+</style>
 
 
 @section('content')
@@ -14,7 +18,7 @@
             </div>
         @endif
         <div class="row">
-
+            
         </div>
     </div>
 @endsection

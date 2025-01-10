@@ -20,9 +20,11 @@ class CreateSeguimientoTiemposTable extends Migration
             $table->boolean('tipo');         //  activo, inactivo
             $table->string('fecha');
             $table->string('hora');
-            $table->text('motivo')->nullable();
+            $table->string('tipo_paro')->nullable();
+            $table->text('comentarios_paro')->nullable();
             $table->integer('componente_id');
             $table->integer('usuario_id');
+            $table->integer('fabricacion_id')->nullable();
             $table->timestamps();
         });
     }

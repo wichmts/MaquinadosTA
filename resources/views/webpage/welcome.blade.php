@@ -9,7 +9,7 @@
 </style>
 
 @section('content')
-    
+
 @endsection
 
 @push('scripts')

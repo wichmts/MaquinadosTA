@@ -24,7 +24,7 @@ class UsersTableSeeder extends Seeder
         $user->celular = '';
         $user->active = true;
         $user->save();
-        $user->assignRole('ADMINISTRADOR');
+        $user->assignRole('DIRECCION');
 
         $user = new User();
         $user->nombre = 'Almacenista';

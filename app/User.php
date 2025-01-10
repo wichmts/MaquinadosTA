@@ -75,10 +75,11 @@ class User extends Authenticatable implements JWTSubject
 
     public function toArray(){
   		$data = parent::toArray();
-        $data['role'] = $this->roles()->first()->name;
+        $data['roles'] = $this->roles()->pluck('name');
         $data['permisos'] = $this->permissions->pluck('name');
         $data['nombre_completo'] = strtoupper($this->nombre . ' ' . $this->ap_paterno . ' ' . $this->ap_materno);
         $data['clave_generada'] = $this->clave_generada;
+        $data['maquinas'] = $this->maquinas ? json_decode($this->maquinas) : [];
   		return $data;
   	}
 

@@ -30,11 +30,19 @@ Auth::routes();
 
 Route::group(['middleware' => 'auth'], function () {
 
+    // MATRICERO
+    Route::get('/matricero', 'WebController@matricero');
+    Route::get('/matricero/lista-componentes', 'WebController@listaComponentesMatricero');
+
+    // OPERADOR
+    Route::get('/visor-operador', 'WebController@visorOperador');
+
     // PROGRAMADOR
     Route::get('/visor-programador', 'WebController@visorProgramador');
     
     // JEFE DE AREA
     Route::get('/enrutador', 'WebController@enrutador');
+    Route::get('/visor-avance-hr', 'WebController@visorAvanceHR');
 
     // AUXILIAR DE DISENO
     Route::get('/carga-componentes', 'WebController@cargaComponentes');
@@ -48,6 +56,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     // ADMIN
     Route::get('usuario', 'WebController@usuarios');
+    Route::get('maquina', 'WebController@maquinas');
     Route::get('profile', ['as' => 'profile.edit', 'uses' => 'ProfileController@edit']);
     Route::put('profile', ['as' => 'profile.update', 'uses' => 'ProfileController@update']);
     Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'ProfileController@password']);

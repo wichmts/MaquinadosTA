@@ -72,7 +72,7 @@ input:checked + .slider:before {
 <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #f1f1f1 !important" v-cloak>
     <div class="container-fluid">
         <a class="navbar-brand">
-            <img src="{{ \App\Helpers\SystemHelper::getLogo() }}" width="130" class="pl-2 pr-4 py-0" height="auto">
+            <img src="{{ \App\Helpers\SystemHelper::getLogo() }}" width="120px" class="pl-2 pr-4 py-0" height="auto">
         </a>
 
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,97 +82,131 @@ input:checked + .slider:before {
         </button>
 
         <div class="collapse navbar-collapse ml-4" id="navigation" >     
-            @if(auth()->user()->roles()->first()->name == 'ADMINISTRADOR')
+           
             <ul class="navbar-nav mr-auto text-center">
+                {{-- DIRECCION --}}
+                @if (auth()->user()->hasRole('DIRECCION'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/usuario">USUARIOS</a>
                 </li>
-            </ul>
-            @endif       
-            @if(auth()->user()->roles()->first()->name == 'AUXILIAR DE DISEÑO')
-            <ul class="navbar-nav mr-auto text-center">
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/maquina">MAQUINAS</a>
+                </li>
+                @endif
+                
+                {{-- AUXILIAR DE DISENO --}}
+                @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/carga-componentes">Carga de componentes</a>
                 </li>
+                @endif
+                @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="">Visor de componentes externos</a>
                 </li>
-                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="">Visor de avance</a>
+                @endif
+                @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="/visor-avance-hr">Visor de avance</a>
                 </li>
+                @endif
+
+                @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="">Orden de trabajo</a>
                 </li>
+                @endif
+                @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="">Modificaciones de componentes</a>
                 </li>
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/centro-notificaciones">Centro de notificaciones</a>
-                </li>
-            </ul>
-            @endif
-            @if(auth()->user()->roles()->first()->name == 'JEFE DE AREA')
-            <ul class="navbar-nav mr-auto text-center">
+                @endif
+                
+                {{-- JEFE DE AREA --}}
+                @if (auth()->user()->hasRole('JEFE DE AREA'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/enrutador">Enrutador</a>
                 </li>
+                @endif
+                
+                {{-- PROGRAMADOR --}}
+                @if (auth()->user()->hasAnyRole(['PROGRAMADOR', 'JEFE DE AREA']))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/visor-programador">Programador</a>
                 </li>
+                @endif                
+                {{-- OPERADOR --}}
+                @if (auth()->user()->hasAnyRole(['OPERADOR', 'JEFE DE AREA']))
                 <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/compra-componentes">Operador</a>
+                    <a class="nav-link menu-link" href="/visor-operador">Operador</a>
                 </li>
+                @endif
+
+                @if (auth()->user()->hasRole('MATRICERO'))
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/matricero">Matricero</a>
+                </li>
+                @endif
+                @if (auth()->user()->hasRole('MATRICERO'))
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/visor-avance-hr">Visor de avance</a>
+                </li>
+                @endif
+                @if (auth()->user()->hasRole('MATRICERO'))
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/matricero/lista-componentes">Lista de componentes</a>
+                </li>
+                @endif
+                
+                @if (auth()->user()->hasRole('JEFE DE AREA'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/compra-componentes">Visor pruebas</a>
                 </li>
+                @endif
+                @if (auth()->user()->hasRole('JEFE DE AREA'))
                 <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/compra-componentes">Visor Avance</a>
+                    <a class="nav-link menu-link" href="/visor-avance-hr">Visor Avance</a>
                 </li>
+                @endif
+                @if (auth()->user()->hasRole('JEFE DE AREA'))
                 <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/compra-componentes">Visor Avance componente</a>
+                    <a class="nav-link menu-link" href="/compra-componentes">Visor Avance componentes externos</a>
                 </li>
+                @endif
                 
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/centro-notificaciones">Centro de notificaciones</a>
-                </li>
-            </ul>
-            @endif
-            @if(auth()->user()->roles()->first()->name == 'PROGRAMADOR')
-            <ul class="navbar-nav mr-auto text-center">
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/visor-programador">Visor de programador</a>
-                </li>
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/visor-avance">Visor de avance</a>
-                </li>                
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/centro-notificaciones">Centro de notificaciones</a>
-                </li>
-            </ul>
-            @endif
-            @if(auth()->user()->roles()->first()->name == 'ALMACENISTA')
-            <ul class="navbar-nav mr-auto text-center">
+                {{-- ALMACENISTA --}}
+                @if (auth()->user()->hasRole('ALMACENISTA'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/compra-componentes">Compra de componentes</a>
                 </li>
+                @endif
+                @if (auth()->user()->hasRole('ALMACENISTA'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/almacen-mp">AlmacÉn de MP</a>
                 </li>
+                @endif
+                @if (auth()->user()->hasRole('ALMACENISTA'))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="/corte">Corte</a>
                 </li>
+                @endif
+                @if (auth()->user()->hasRole('ALMACENISTA'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="">Temple</a>
                 </li>
+                @endif
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/centro-notificaciones">Centro de notificaciones</a>
                 </li>
             </ul>
-            @endif
+
             <ul class="navbar-nav ml-auto text-center">
                 <li class="nav-item dropdown btn-rotate">
-                    <a class=" cursor-pointer nav-link dropdown-toggle cursor-pointer" style="text-transform: capitalize" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-bell"></i> <small class="bold">Ultimas notificaciones</small>
+                    <a v-if="!hay_notificaciones" @click="toggleDropdown()" class="cursor-pointer nav-link dropdown-toggle cursor-pointer" style="text-transform: capitalize" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i  class="far fa-bell "></i> <small class="bold ">Ultimas notificaciones&nbsp;</small>
+                    </a>
+                    <a v-else @click="toggleDropdown()"  class="cursor-pointer nav-link dropdown-toggle cursor-pointer" style="text-transform: capitalize" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-bell text-danger"></i> <small class="bold text-danger">Ultimas notificaciones&nbsp;</small>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                         <h6 class="dropdown-header">Ultimas notificaciones</h6>
@@ -206,15 +240,28 @@ input:checked + .slider:before {
         el: '#vue-app2',
         data: {
             notificaciones: [],
+            hay_notificaciones: @json(auth()->user()->hay_notificaciones) ? true :  false
         },
         methods:{
+            toggleDropdown(){
+                let t = this
+                axios.put('/api/ver-notificaciones').then( response => {
+                    t.hay_notificaciones = false;
+                })
+            },
             getNotificaciones(){
-                axios.get(`api/ultimas-notificaciones`).then(response => {
+                axios.get(`/api/ultimas-notificaciones`).then(response => {
                     this.notificaciones = response.data.notificaciones;
                 })
             },
             irNotificacion(notificacion){
-                window.location.href = `${notificacion.url_base}?a=${notificacion.anio_id}&c=${notificacion.cliente_id}&p=${notificacion.proyecto_id}&h=${notificacion.herramental_id}&co=${notificacion.componente_id}`
+                let roles = JSON.parse(notificacion.roles);
+
+                if (roles.includes('OPERADOR')) {
+                    window.location.href = `${notificacion.url_base}?maq=${notificacion.maquina_id}&co=${notificacion.componente_id}&fab=${notificacion.fabricacion_id}`;
+                }else{
+                    window.location.href = `${notificacion.url_base}?a=${notificacion.anio_id}&c=${notificacion.cliente_id}&p=${notificacion.proyecto_id}&h=${notificacion.herramental_id}&co=${notificacion.componente_id}`
+                }                
             }
         },
         mounted() {

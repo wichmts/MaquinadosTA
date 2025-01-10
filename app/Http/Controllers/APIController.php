@@ -16,6 +16,7 @@ use App\Maquina;
 use App\Herramental;
 use App\Componente;
 use App\Notificacion;
+use App\Fabricacion;
 use App\Hoja;
 use App\MovimientoHoja;
 use App\SeguimientoTiempo;
@@ -86,10 +87,10 @@ class APIController extends Controller
             'success' => true,
         ], 200);
     }
-    private function getToken($email, $password){
+    private function getToken($email, $codigo_acceso){
         $token = null;
         try {
-            if (!$token = \JWTAuth::attempt(['email' => $email, 'password' => $password])) {
+            if (!$token = \JWTAuth::attempt(['email' => $email, 'password' => $codigo_acceso])) {
                 return response()->json([
                   'response' => 'error',
                   'message' => 'Password or email is invalid',
@@ -154,10 +155,10 @@ class APIController extends Controller
         ]);
     }
 
-        // USUARIOS
+    // USUARIOS
     public function consultarUsuarios(Request $request){
-        $tipos = ['ADMINISTRADOR', 'VENDEDOR'];
-        $tipos = $request->tipo_usuario == -1 ? ['ADMINISTRADOR', 'VENDEDOR'] : [$request->tipo_usuario];
+        $tipos = [ 'DIRECCION', 'ALMACENISTA', 'AUXILIAR DE DISEÑO', 'JEFE DE AREA', 'PROGRAMADOR', 'OPERADOR', 'MATRICERO', 'FINANZAS', 'PROYECTOS', 'PROCESOS', 'EXTERNO'];
+        $tipos = $request->tipo_usuario == -1 ? $tipos : [$request->tipo_usuario];
         $usuarios = User::whereHas('roles', function ($query) use ($tipos) {
             $query->whereIn('name', $tipos);
         })->get();
@@ -167,16 +168,17 @@ class APIController extends Controller
           'success' => true,
         ], 200);
     }
-    public function guardarUsuario(Request $request){
+    public function guardarUsuario(Request $request) {
         $datos = $request->json()->all();
-        $user = User::where('email', $datos['email'])->get()->first();
+
+        $user = User::where('email', $datos['email'])->orWhere('codigo_acceso', $datos['codigo_acceso'])->first();
 
         if ($user) {
             return response()->json([
-                  'title' => 'Error al registrarse',
-                  'message' => 'El correo electronico ya se encuentra registrado para otro usuario.',
-                  'success' => false,
-              ], 200);
+                'title' => 'Error al registrarse',
+                'message' => 'El correo electrónico o el código de acceso ya están registrados.',
+                'success' => false,
+            ], 200);
         }
 
         $user = new User();
@@ -184,86 +186,71 @@ class APIController extends Controller
         $user->ap_paterno = $datos['ap_paterno'];
         $user->ap_materno = $datos['ap_materno'];
         $user->email = $datos['email'];
-        $user->password = bcrypt($datos['password']);
+        $user->codigo_acceso = $datos['codigo_acceso'];
+        $user->maquinas = json_encode($datos['maquinas']);
+        $user->active = $datos['active'];
         $user->api_token = Str::random(60);
-        $user->token = '';
+        $user->save();
+        $user->syncRoles($datos['roles'] ?? []);
+        $user->syncPermissions($datos['permisos'] ?? []);
 
-        if ($user->save()) {
-            $token = self::getToken($datos['email'], $datos['password']);
-            if (!is_string($token)) {
-                return response()->json([
-                  'success' => false,
-                  'title' => 'Error al registrarse',
-                  'message' => 'Token generation failed'], 200);
-            }
+        // try {
+        //     $user->notify(new CuentaCreada($datos['codigo_acceso']));
+        // } catch (\Throwable $th) {
+        //     // Opcional: manejar errores de notificación
+        // }
 
-            $user = User::where('email', $datos['email'])->get()->first();
-            $user->token = $token;
-            $user->save();
-            $user->assignRole($datos['role']);
-            $user->active = $datos['active'];
-            $user->syncPermissions($datos['permisos']);
-            $user->save();
-
-            try {
-                $user->notify(new CuentaCreada($datos['password']));
-            } catch (\Throwable $th) {
-            }
-
-            return response()->json([
-                'success' => true,
-            ], 200);
-        } else {
-            return response()->json([
-                'titulo' => 'Error al registrarse',
-                'mensaje' => 'El registro no pudo completarse, intentelo mas tarde.',
-                'success' => false,
-              ], 200);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario registrado exitosamente',
+        ], 200);
     }
-    public function editarUsuario(Request $request, $id){
+
+    public function editarUsuario(Request $request, $id) {
         $datos = $request->json()->all();
         $user = User::findOrFail($id);
-        $user_exist = User::where('email', $datos['email'])->get()->first();
+        $user_exist = User::where('email', $datos['email'])
+                        ->where('id', '!=', $id)
+                        ->first();
 
-        if ($user_exist && $id != $user_exist->id) {
+        if ($user_exist) {
             return response()->json([
-                  'title' => 'Error al registrarse',
-                  'message' => 'El correo electronico ya se encuentra registrado para otro usuario.',
-                  'success' => false,
-              ], 200);
+                'title' => 'Error al actualizar',
+                'message' => 'El correo electrónico ya está registrado para otro usuario.',
+                'success' => false,
+            ], 200);
+        }
+
+        $codigo_exist = User::where('codigo_acceso', $datos['codigo_acceso'])
+                            ->where('id', '!=', $id)
+                            ->first();
+        if ($codigo_exist) {
+            return response()->json([
+                'title' => 'Error al actualizar',
+                'message' => 'El código de acceso ya está registrado para otro usuario.',
+                'success' => false,
+            ], 200);
         }
 
         $user->nombre = $datos['nombre'];
         $user->ap_paterno = $datos['ap_paterno'];
         $user->ap_materno = $datos['ap_materno'];
         $user->email = $datos['email'];
-        $user->token = '';
+        $user->codigo_acceso = $datos['codigo_acceso'];
         $user->active = $datos['active'];
+        $user->maquinas = json_encode($datos['maquinas']);
         $user->save();
-        $user->syncRoles([]);
-        $user->assignRole($datos['role']);
-        $user->syncPermissions($datos['permisos']);
 
-        if ($datos['password'] && $datos['password'] != '') {
-            $user->password = bcrypt($datos['password']);
-            $user->save();
-            $token = self::getToken($datos['email'], $datos['password']);
-            if (!is_string($token)) {
-                return response()->json([
-                  'success' => false,
-                  'title' => 'Error al registrarse',
-                  'message' => 'Token generation failed'], 200);
-            }
-
-            $user->token = $token;
-            $user->save();
-        }
+        $user->syncRoles($datos['roles'] ?? []);
+        $user->syncPermissions($datos['permisos'] ?? []);
 
         return response()->json([
             'success' => true,
+            'message' => 'Usuario actualizado correctamente',
         ], 200);
     }
+
+
     public function eliminarUsuario($id){
         $user = User::findOrFail($id);
         $user->delete();
@@ -285,13 +272,54 @@ class APIController extends Controller
         ]);
     }
 
-    public function obtenerMaquinas(){
-        $maquinas = Maquina::all();
-
+    public function obtenerMaquinas(Request $request){
+        $usuario_id = $request->operador??null;
+        if($usuario_id){
+            $usuario = User::findOrFail($usuario_id);   
+            $maquinas = Maquina::whereIn('id', $usuario->maquinas ? json_decode($usuario->maquinas) : [])->get();
+        }else{
+            $maquinas = Maquina::all();
+        }
         return response()->json([
             'success' => true,
             'maquinas' => $maquinas
         ]);
+    }
+
+    public function guardarMaquina(Request $request){
+        $datos = $request->json()->all();
+
+        $maquina = new Maquina();
+        $maquina->nombre = $datos['nombre'];
+        $maquina->tipo_proceso = $datos['tipo_proceso'];
+        $maquina->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Máquina guardada correctamente',
+        ], 200);
+    }
+    public function editarMaquina(Request $request, $id){
+        $datos = $request->json()->all();
+        $maquina = Maquina::findOrFail($id);
+
+        $maquina->nombre = $datos['nombre'];
+        $maquina->tipo_proceso = $datos['tipo_proceso'];
+        $maquina->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Máquina actualizada correctamente',
+        ], 200);
+    }
+    public function eliminarMaquina($id) {
+        $maquina = Maquina::findOrFail($id);
+        $maquina->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Máquina eliminada correctamente',
+        ], 200);
     }
 
     public function obtenerAnios(){
@@ -346,6 +374,27 @@ class APIController extends Controller
             'componente' => $componente
         ]);
     }
+
+    public function obtenerComponentesMaquina($maquina_id){
+        $componentes = Componente::whereHas('fabricaciones', function ($query) use ($maquina_id) {
+                $query->where('maquina_id', $maquina_id)
+                    ->where('fabricado', false);
+            })
+            ->where('cargado', true)
+            ->where('enrutado', true)
+            ->where('programado', true)
+            ->with(['fabricaciones' => function ($query) use ($maquina_id) {
+                $query->where('maquina_id', $maquina_id)
+                    ->where('fabricado', false);
+            }])
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'componentes' => $componentes
+        ]);
+    }
+
     public function obtenerPorHerramental(Request $request, $herramental){
         $area = $request->area;
 
@@ -394,7 +443,13 @@ class APIController extends Controller
             ->where('cargado', true)
             ->where('enrutado', true)
             ->where('es_compra', false)
+            ->when(!auth()->user()->hasRole('JEFE DE AREA'), function($query) {
+                $query->where('programador_id', auth()->user()->id);
+            })
             ->get();
+        }
+        if($area == 'ensamble'){
+            $componentes = Componente::where('herramental_id', $herramental)->where('cargado', true)->get();
         }
         return response()->json([
             'success' => true,
@@ -426,7 +481,6 @@ class APIController extends Controller
             'success' => true,
         ]);
     }
-
     public function guardarProyecto(Request $request, $cliente){
         $datos = $request->json()->all();
         $proyecto = new Proyecto();
@@ -447,6 +501,8 @@ class APIController extends Controller
         $herramental = new Herramental();
         $herramental->nombre = $siguiente;
         $herramental->proyecto_id = $proyecto_id;
+        $herramental->estatus_ensamble = 'inicial';
+        $herramental->estatus_pruebas = 'inicial';
         $herramental->save();
 
          if ($request->hasFile('archivo')) {
@@ -461,10 +517,141 @@ class APIController extends Controller
             'id' => $herramental->id,
             'success' => true,
         ], 200);
+    }
 
+    public function obtenerHerramental($id){
+        $herramental = Herramental::findOrFail($id);
+        
+        return response()->json([
+            'success' => true,
+            'herramental' => $herramental
+        ]);
+    }
+    public function actualizarHerramental(Request $request, $id, $tipo) {
+        $datos = $request->json()->all();
+        $herramental = Herramental::findOrFail($id);
+
+        switch ($tipo) {
+            case 'formato':
+                if ($request->hasFile('archivo')) {
+                    $file = $request->file('archivo');
+                    $name = uniqid().'_'.$file->getClientOriginalName();
+                    Storage::disk('public')->put($herramental->proyecto_id . '/' . $herramental->id . '/formato2/' . $name, \File::get($file));
+                    $herramental->archivo2 = $name;
+                    $herramental->estatus_ensamble = 'checklist';
+                    $herramental->save();
+                }
+            break;
+            case 'checklist':
+                $checklist = $datos;
+                $allChecked = true;
+
+                foreach ($checklist as $item) {
+                    if (!$item['checked']) {
+                        $allChecked = false;
+                        break;
+                    }
+                }
+                $herramental->checklist = json_encode($checklist);
+                if ($allChecked)
+                    $herramental->estatus_ensamble = 'proceso';
+                $herramental->save();
+            break;
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Herramental actualizado correctamente',
+        ], 200);
     }
     public function emptyToNull($value) {
         return $value === '' ? null : $value;
+    }
+
+    public function guardarComponenteFabricacion(Request $request, $fabricacion_id, $liberar){
+        $liberar = filter_var($liberar, FILTER_VALIDATE_BOOLEAN);
+        $data = json_decode($request->data, true);
+
+        $fabricacion = Fabricacion::findOrFail($fabricacion_id);
+        $componente = Componente::findOrFail($fabricacion->componente_id);
+        $fabricacion->comentarios_terminado = $data['comentarios_terminado'];
+        $fabricacion->registro_medidas = $data['registro_medidas'];
+        $fabricacion->save();
+        
+        $archivo = $request->file('fotografia');
+        if ($archivo) {
+            $name = time() . '_' . $archivo->getClientOriginalName();
+            Storage::disk('public')->put("fabricaciones/" . $name, \File::get($archivo));
+            $fabricacion->foto = $name;
+            $fabricacion->save();
+        }
+
+        
+        if($liberar){
+            $fabricacion->motivo_retraso = $data['motivo_retraso'];
+            $fabricacion->estatus_fabricacion = 'detenido';
+            $fabricacion->fabricado = true;
+            $fabricacion->save();
+
+            
+            $fabricaciones = Fabricacion::where('componente_id', $componente->id)->get();
+            $todasFabricadas = true;
+            foreach ($fabricaciones as $fabri):
+                if($fabri->fabricado == false)
+                    $todasFabricadas = false;
+            endforeach;
+
+            if($todasFabricadas){
+                $herramental = Herramental::findOrFail($componente->herramental_id);
+                $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
+                $cliente = Cliente::findOrFail($proyecto->cliente_id);
+                $anio = Anio::findOrFail($cliente->anio_id);
+                
+                $notificacion = new Notificacion();
+                $notificacion->roles = json_encode(['MATRICERO']);
+                $notificacion->url_base = '/matricero';
+                $notificacion->anio_id = $anio->id;
+                $notificacion->cliente_id = $cliente->id;
+                $notificacion->proyecto_id = $proyecto->id;
+                $notificacion->herramental_id = $herramental->id;
+                $notificacion->componente_id = $componente->id;
+                $notificacion->cantidad = $componente->cantidad;
+                $notificacion->descripcion = 'COMPONENTE LISTO PARA ENSAMBLE';
+                $notificacion->save();
+
+                $componente->fecha_terminado = date('Y-m-d');
+                $componente->save();
+
+                $users = User::role('MATRICERO')->get();
+                foreach ($users as $user) {
+                    $user->hay_notificaciones = true;
+                    $user->save();
+                }
+            }            
+            
+            $maquina = Maquina::findOrFail($fabricacion->maquina_id);
+            $ultimoSeguimiento = SeguimientoTiempo::where('componente_id', $componente->id)
+                ->where('accion', 'fabricacion')
+                ->where('accion_id', $maquina->tipo_proceso)
+                ->orderBy('id', 'desc') 
+                ->first();
+
+            if ($ultimoSeguimiento && $ultimoSeguimiento->tipo == true) {
+                $seguimiento = new SeguimientoTiempo();
+                $seguimiento->accion_id = $maquina->tipo_proceso;
+                $seguimiento->accion = 'fabricacion';
+                $seguimiento->tipo = false;
+                $seguimiento->fecha = date('Y-m-d');
+                $seguimiento->hora = date('H:i');
+                $seguimiento->componente_id = $componente->id;
+                $seguimiento->usuario_id = auth()->user()->id;
+                $seguimiento->fabricacion_id = isset($fabricacion) ? $fabricacion->id : null;
+                $seguimiento->save();
+            }
+        }
+       
+        return response()->json([
+            'success' => true,
+        ], 200);
     }
     public function guardarComponenteProgramacion(Request $request, $componente_id, $liberar){
         $liberar = filter_var($liberar, FILTER_VALIDATE_BOOLEAN);
@@ -478,43 +665,41 @@ class APIController extends Controller
         $archivoIds = $request->input('archivo_ids', []);
         $archivosMaquinas = collect($archivoIds);
 
-        Documento::where('modelo', 'programacion')
-            ->where('componente_id', $componente_id)
-            ->whereNotIn('id', $archivosMaquinas->flatten())
-            ->get()
-            ->each(function ($documento) {
-                Storage::disk('public')->delete("programas/" . $documento->nombre);
-                $documento->delete();
-            });
-
+        Fabricacion::where('componente_id', $componente_id)
+        ->whereNotIn('id', $archivosMaquinas->flatten())
+        ->get()
+        ->each(function ($fabricacion) {
+            Storage::disk('public')->delete("programas/" . $fabricacion->nombre);
+            $fabricacion->delete();
+        });
         
         foreach ($request->file('archivo') as $maquinaId => $archivos) {
             foreach ($archivos as $index => $file) {
                 $archivoId = $archivoIds[$maquinaId][$index] ?? null;
 
                 if ($archivoId) {
-                    // Actualizar archivo existente
-                    $documento = Documento::find($archivoId);
-                    if ($documento) {
-                        Storage::disk('public')->delete("programas/" . $documento->nombre);
+                    $fabricacion = Fabricacion::find($archivoId);
+
+                    if ($fabricacion) {
+                        Storage::disk('public')->delete("programas/" . $fabricacion->nombre);
                         $name = time() . '_' . $file->getClientOriginalName();
                         Storage::disk('public')->put("programas/" . $name, \File::get($file));
-                        $documento->nombre = $name;
-                        $documento->tamano = $this->formatSize($file->getSize());
-                        $documento->save();
+                        $fabricacion->archivo = $name;
+                        $fabricacion->save();
                     }
                 } else {
                     $name = time() . '_' . $file->getClientOriginalName();
                     Storage::disk('public')->put("programas/" . $name, \File::get($file));
 
-                    $documento = new Documento();
-                    $documento->modelo = 'programacion';
-                    $documento->componente_id = $componente_id;
-                    $documento->id_modelo = $maquinaId; // Guardar la máquina asociada
-                    $documento->nombre = $name;
-                    $documento->usuario_id = auth()->user()->id;
-                    $documento->tamano = $this->formatSize($file->getSize());
-                    $documento->save();
+                    $fabricacion = new Fabricacion();
+                    $fabricacion->componente_id = $componente_id;
+                    $fabricacion->maquina_id = $maquinaId; 
+                    $fabricacion->usuario_id = auth()->user()->id;
+                    $fabricacion->archivo = $name;
+                    $fabricacion->estatus_fabricacion = 'inicial';
+                    $fabricacion->fabricado = false;
+                    $fabricacion->save();
+                
                 }
             }
         }
@@ -526,23 +711,31 @@ class APIController extends Controller
             $componente->programado = true;
             $componente->save();
 
-            $herramental = Herramental::findOrFail($componente->herramental_id);
-            $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
-            $cliente = Cliente::findOrFail($proyecto->cliente_id);
-            $anio = Anio::findOrFail($cliente->anio_id);
-            
-            $notificacion = new Notificacion();
-            $notificacion->roles = json_encode(['OPERADOR']);
-            $notificacion->url_base = '/visor-operador';
-            $notificacion->anio_id = $anio->id;
-            $notificacion->cliente_id = $cliente->id;
-            $notificacion->proyecto_id = $proyecto->id;
-            $notificacion->herramental_id = $herramental->id;
-            $notificacion->componente_id = $componente->id;
-            $notificacion->cantidad = $componente->cantidad;
-            $notificacion->descripcion = 'COMPONENTE LISTO PARA FABRICACION';
-            $notificacion->save();
-      
+            $fabricaciones = Fabricacion::where('componente_id', $componente_id)->get();
+            $usuarios = User::role('OPERADOR')->get();
+            foreach ($fabricaciones as $fab) {
+                $array = [];
+                foreach ($usuarios as $usuario) {
+                    $maquinas = json_decode($usuario->maquinas, true);
+                    if (is_array($maquinas) && in_array($fab->maquina_id, $maquinas)) {
+                        $array[] = $usuario->id;
+                        $usuario->hay_notificaciones = true;
+                        $usuario->save();
+                    }
+                }
+                if (!empty($array)){
+                    $notificacion = new Notificacion();
+                    $notificacion->roles = json_encode(['OPERADOR']);
+                    $notificacion->url_base = '/visor-operador';
+                    $notificacion->fabricacion_id = $fab->id;
+                    $notificacion->maquina_id = $fab->maquina_id;
+                    $notificacion->componente_id = $componente->id;
+                    $notificacion->cantidad = $componente->cantidad;
+                    $notificacion->responsables = json_encode($array);
+                    $notificacion->descripcion = 'COMPONENTE LIBERADO PARA FABRICACION, MAQUINA: ' . $fab->maquina->nombre . ' PROGRAMA: ' . $fab->getArchivoShow();
+                    $notificacion->save();
+                }
+            }      
             
             $ultimoSeguimiento = SeguimientoTiempo::where('componente_id', $componente_id)
                 ->where('accion', 'programacion')
@@ -611,6 +804,12 @@ class APIController extends Controller
             $notificacion->descripcion = ' COMPONENTE LIBERADO PARA CORTE';
             $notificacion->save();
 
+            $users = User::role('ALMACENISTA')->get();
+            foreach ($users as $user) {
+                $user->hay_notificaciones = true;
+                $user->save();
+            }
+
             $notificacion = new Notificacion();
             $notificacion->roles = json_encode(['PROGRAMADOR']);
             $notificacion->url_base = '/visor-programador';
@@ -620,10 +819,14 @@ class APIController extends Controller
             $notificacion->herramental_id = $herramental->id;
             $notificacion->componente_id = $componente->id;
             $notificacion->cantidad = $componente->cantidad;
+            $notificacion->responsables = json_encode([$datos['programador_id']]);
             $notificacion->descripcion = 'COMPONENTE LIBERADO PARA PROGRAMACION';
             $notificacion->save();
 
-            
+            $user = User::findOrFail($datos['programador_id']);
+            $user->hay_notificaciones = true;
+            $user->save(); 
+
         }
 
         return response()->json([
@@ -665,6 +868,12 @@ class APIController extends Controller
                 $notificacion->cantidad = $nuevoComponente->cantidad;
                 $notificacion->descripcion = 'COMPONENTE LISTO PARA ENSAMBLE';
                 $notificacion->save();
+
+                $users = User::role('MATRICERO')->get();
+                foreach ($users as $user) {
+                    $user->hay_notificaciones = true;
+                    $user->save();
+                }
             }
         }
 
@@ -796,6 +1005,11 @@ class APIController extends Controller
                 $notificacion->cantidad = null;
                 $notificacion->descripcion = $conteoCompras . ' COMPONENTES HAN SIDO LIBERADOS PARA COMPRA';
                 $notificacion->save();
+                $users = User::role('ALMACENISTA')->get();
+                foreach ($users as $user) {
+                    $user->hay_notificaciones = true;
+                    $user->save();
+                }
             }
             if($conteoCortes > 0){    
                 $notificacion = new Notificacion();
@@ -809,6 +1023,13 @@ class APIController extends Controller
                 $notificacion->cantidad = null;
                 $notificacion->descripcion = $conteoCortes . ' COMPONENTES HAN SIDO LIBERADOS PARA RUTA';
                 $notificacion->save();
+
+                $users = User::role('JEFE DE AREA')->get();
+                foreach ($users as $user) {
+                    $user->hay_notificaciones = true;
+                    $user->save();
+                }
+
             }
 
             return response()->json([
@@ -832,6 +1053,7 @@ class APIController extends Controller
         $componente->cancelado = true;
         $componente->save();
 
+        // ya no se uso area, ahora es con varias banderas para saber a donde se va
         // if($componente->area == 'almacenista'){
         //     $notificacion = new Notificacion();
         //     $notificacion->roles = json_encode(['ALMACENISTA']);
@@ -890,6 +1112,11 @@ class APIController extends Controller
             $notificacion->cantidad = $componente->cantidad;
             $notificacion->descripcion = 'COMPONENTE LIBERADO PARA COMPRA';
             $notificacion->save();
+            $users = User::role('ALMACENISTA')->get();
+            foreach ($users as $user) {
+                $user->hay_notificaciones = true;
+                $user->save();
+            }
         }else{
             $notificacion = new Notificacion();
             $notificacion->roles = json_encode(['JEFE DE AREA']);
@@ -902,6 +1129,11 @@ class APIController extends Controller
             $notificacion->cantidad = $componente->cantidad;
             $notificacion->descripcion = 'COMPONENTE LIBERADO PARA RUTA';
             $notificacion->save();
+            $users = User::role('JEFE DE AREA')->get();
+            foreach ($users as $user) {
+                $user->hay_notificaciones = true;
+                $user->save();
+            }
         }
 
 
@@ -911,20 +1143,61 @@ class APIController extends Controller
     
     }
     public function ultimasNotificaciones() {
-        $role = auth()->user()->roles()->first()->name; 
-        $notificaciones = Notificacion::where('roles', 'LIKE', '%"'.$role.'"%')->latest('id')->limit(6)->get(); 
+        $roles = auth()->user()->roles->pluck('name');
+
+        $notificaciones = Notificacion::where(function ($query) use ($roles) {
+            foreach ($roles as $role) {
+                $query->orWhere('roles', 'LIKE', '%"'.$role.'"%');
+            }
+        })->latest('id')->get();
+
+        $notificacionesFiltradas = $notificaciones->filter(function ($notificacion) {
+            return $this->verificarResponsables($notificacion);
+        })->take(6);
+
 
         return response()->json([
-            'notificaciones' => $notificaciones,
+            'notificaciones' => $notificacionesFiltradas,
             'success' => true,
         ], 200);
     }
+    public function verificarResponsables($notificacion) {
+        $userId = auth()->id();
+        if(!$notificacion->responsables){return true;}
+
+        $responsables = json_decode($notificacion->responsables, true);
+        if (is_array($responsables)) {
+            if (in_array($userId, $responsables)) {
+                return true; 
+            }
+        }        
+        return false;
+    }
     public function notificaciones() {
-        $role = auth()->user()->roles()->first()->name; 
-        $notificaciones = Notificacion::where('roles', 'LIKE', '%"'.$role.'"%')->latest('id')->get(); 
+        $roles = auth()->user()->roles->pluck('name');
+
+        $notificaciones = Notificacion::where(function ($query) use ($roles) {
+            foreach ($roles as $role) {
+                $query->orWhere('roles', 'LIKE', '%"'.$role.'"%');
+            }
+        })->latest('id')->get();
+
+        $notificacionesFiltradas = $notificaciones->filter(function ($notificacion) {
+            return $this->verificarResponsables($notificacion);
+        });
 
         return response()->json([
-            'notificaciones' => $notificaciones,
+            'notificaciones' => $notificacionesFiltradas,
+            'success' => true,
+        ], 200);
+
+    }
+    public function verNotificaciones(){
+        $user = auth()->user();
+        $user->hay_notificaciones = false;
+        $user->save();
+
+        return response()->json([
             'success' => true,
         ], 200);
     }
@@ -1034,7 +1307,29 @@ class APIController extends Controller
             'success' => true,
         ], 200);
     }
+    public function cambiarEstatusFabricacion(Request $request, $id){
+        $fabricacion = Fabricacion::findOrFail($id);
+        $maquina = Maquina::findOrFail($fabricacion->maquina_id);
+        $fabricacion->estatus_fabricacion = $request->estatus;
+        $fabricacion->save(); 
+
+        $seguimiento = new SeguimientoTiempo();
+        $seguimiento->accion_id = $maquina->tipo_proceso;
+        $seguimiento->accion = 'fabricacion';
+        $seguimiento->tipo = $request->estatus == 'proceso' ? true : false;
+        $seguimiento->fecha = date('Y-m-d');
+        $seguimiento->hora = date('H:i');
+        $seguimiento->componente_id = $fabricacion->componente_id;
+        $seguimiento->fabricacion_id = $fabricacion->id;
+        $seguimiento->usuario_id = auth()->user()->id;
+        $seguimiento->save();
+
+        return response()->json([
+            'success' => true,
+        ], 200);
+    }
     public function finalizarCorte(Request $request, $id){
+
         $componente = Componente::findOrFail($id);
         $herramental = Herramental::findOrFail($componente->herramental_id);
         
@@ -1106,6 +1401,31 @@ class APIController extends Controller
                     $seguimiento->save();
                 }
             break;
+            case 'fabricacion_paro':
+                $fabricacion = Fabricacion::findOrFail($data['fabricacion_id']);
+                $maquina = Maquina::findOrFail($fabricacion->maquina_id);
+                $fabricacion->estatus_fabricacion = 'paro';
+                $fabricacion->save();
+
+                $ultimoSeguimiento = SeguimientoTiempo::where('componente_id', $id)
+                    ->where('accion', 'fabricacion')
+                    ->where('accion_id', $maquina->tipo_proceso)
+                    ->orderBy('id', 'desc')
+                    ->first();
+
+                if ($ultimoSeguimiento && $ultimoSeguimiento->tipo == true) {
+                    $seguimiento = new SeguimientoTiempo();
+                    $seguimiento->accion_id = $maquina->tipo_proceso;
+                    $seguimiento->accion = 'fabricacion';
+                    $seguimiento->tipo = false;
+                    $seguimiento->fecha = date('Y-m-d');
+                    $seguimiento->hora = date('H:i');
+                    $seguimiento->componente_id = $id;
+                    $seguimiento->usuario_id = auth()->user()->id;
+                    $seguimiento->fabricacion_id = $fabricacion->id;
+                    $seguimiento->save();
+                }
+            break;
         }
 
         $seguimiento = new SeguimientoTiempo();
@@ -1115,8 +1435,10 @@ class APIController extends Controller
         $seguimiento->fecha = date('Y-m-d');
         $seguimiento->hora = date('H:i');
         $seguimiento->componente_id = $id;
-        $seguimiento->motivo = $data['motivo'];
+        $seguimiento->comentarios_paro = $data['comentarios_paro'];
+        $seguimiento->tipo_paro = $data['tipo_paro'];
         $seguimiento->usuario_id = auth()->user()->id;
+        $seguimiento->fabricacion_id = isset($fabricacion) ? $fabricacion->id : null;
         $seguimiento->save();
 
         return response()->json([
@@ -1124,12 +1446,19 @@ class APIController extends Controller
         ], 200);
     }
     public function eliminarParo($id, $tipo){
-        $componente = Componente::findOrFail($id);
-
+        
         switch($tipo){
             case 'corte_paro':
+                $componente = Componente::findOrFail($id);
                 $componente->estatus_corte = 'pausado';
                 $componente->save();
+            break;
+
+            case 'fabricacion_paro':
+                $fabricacion = Fabricacion::findOrFail($id);
+                $componente = Componente::findOrFail($fabricacion->componente_id);
+                $fabricacion->estatus_fabricacion = 'detenido';
+                $fabricacion->save();
             break;
         }
 
@@ -1139,13 +1468,76 @@ class APIController extends Controller
         $seguimiento->tipo = false;
         $seguimiento->fecha = date('Y-m-d');
         $seguimiento->hora = date('H:i');
-        $seguimiento->componente_id = $id;
+        $seguimiento->componente_id = $componente->id;
         $seguimiento->usuario_id = auth()->user()->id;
+        $seguimiento->fabricacion_id = isset($fabricacion) ? $fabricacion->id : null;
         $seguimiento->save();
 
         return response()->json([
             'success' => true,
         ], 200);
     }
+
+   public function obtenerAvanceHR($herramental_id)
+    {
+        $componentes = Componente::where('herramental_id', $herramental_id)->get();
+
+        $resultados = [];
+
+        foreach ($componentes as $componente) {
+            $seguimientos = SeguimientoTiempo::where('componente_id', $componente->id)
+                ->orderBy('id', 'asc')
+                ->get();
+
+            $inicio = null;
+
+            // Variables para acumular el tiempo total
+            $totalHoras = 0;
+            $totalMinutos = 0;
+
+            foreach ($seguimientos as $seguimiento) {
+                if ($seguimiento->tipo == true) {
+                    $inicio = $seguimiento;
+                } elseif ($seguimiento->tipo == false && $inicio) {
+                    $fin = $seguimiento;
+
+                    $inicioFechaHora = new \DateTime("{$inicio->fecha} {$inicio->hora}");
+                    $finFechaHora = new \DateTime("{$fin->fecha} {$fin->hora}");
+                    $intervalo = $inicioFechaHora->diff($finFechaHora);
+
+                    // Acumular las horas y minutos
+                    $totalHoras += $intervalo->h;
+                    $totalMinutos += $intervalo->i;
+
+                    $inicio = null;
+                }
+            }
+
+            // Ajustar los minutos si exceden los 60
+            $totalHoras += intdiv($totalMinutos, 60);
+            $totalMinutos = $totalMinutos % 60;
+
+            $resultados[] = [
+                'componente' => $componente->nombre,
+                'componente_id' => $componente->id,
+                'time' => [
+                    [
+                        'type' => 'normal',
+                        'hora_inicio' => 1, // Siempre 0 como se requiere
+                        'minuto_inicio' => 0, // Siempre 0 como se requiere
+                        'horas' => $totalHoras,
+                        'minutos' => $totalMinutos,
+                    ]
+                ],
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'tasks' => $resultados,
+        ]);
+
+    }
+
 
 }

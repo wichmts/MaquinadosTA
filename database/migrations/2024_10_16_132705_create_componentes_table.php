@@ -29,6 +29,8 @@ class CreateComponentesTable extends Migration
             $table->string('fecha_pedido')->nullable();
             $table->string('fecha_estimada')->nullable();
             $table->string('fecha_real')->nullable();
+            $table->string('fecha_terminado')->nullable();
+            $table->string('fecha_ensamblado')->nullable();
             
             // enrutamiento
             $table->string('prioridad')->nullable();
@@ -46,9 +48,9 @@ class CreateComponentesTable extends Migration
             
             $table->boolean('cargado')->nullable();
             $table->boolean('comprado')->nullable();
-            $table->boolean('enrutado')->nullable();
-            $table->boolean('cortado')->nullable();
             $table->boolean('programado')->nullable();
+            $table->boolean('cortado')->nullable();
+            $table->boolean('enrutado')->nullable();
             $table->boolean('ensamblado')->nullable();
             
             $table->text('retraso_corte')->nullable(); 

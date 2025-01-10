@@ -42,14 +42,13 @@ class CuentaCreada extends Notification
      */
     public function toMail($notifiable)
     {
-
-        $role = $notifiable->roles()->first()->name;
+        // $role = $notifiable->roles()->first()->name;
         return (new MailMessage)
-        ->subject('Bienvenido a Multi-Channel Logistics')
+        ->subject('Bienvenido a Maquinados TA')
         ->markdown('emails.cuenta_creada', [
             'notifiable' => $notifiable,
-            'password' => $this->password,
-            'role' => $role,
+            'password' => $this->codigo_acceso,
+            'role' => '',
             'logo' => asset('paper/img/logo-color1.png'),
             'url' =>  url()->to('/') . '/login'
         ]);

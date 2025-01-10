@@ -19,15 +19,18 @@ class CreateUsersTable extends Migration
             
             // general data
             $table->string('nombre');
-            $table->string('ap_paterno');
-            $table->string('ap_materno');
+            $table->string('ap_paterno')->nullable();
+            $table->string('ap_materno')->nullable();
             $table->string('email')->unique();
             $table->string('celular')->nullable();
             $table->string('codigo_acceso')->nullable();            
+            $table->text('maquinas')->nullable();            
+            
             // configuration and useful data
             $table->boolean('active')->nullable();          
-            $table->String('token', 1000)->nullable();      // for jwt
+            $table->string('token', 1000)->nullable();      // for jwt
             $table->string('api_token')->nullable();        //for laravel api            
+            $table->boolean('hay_notificaciones')->nullable();        //for laravel api            
             $table->rememberToken();
             $table->timestamps();
         });

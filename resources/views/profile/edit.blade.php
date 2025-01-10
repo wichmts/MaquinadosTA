@@ -3,9 +3,8 @@
     'elementActive' => 'profile'
 ])
 
-@section('content')
   <style media="screen">
-    .card .card-body{
+     .card .card-body{
       padding: 0px !important
     }
     .activate{
@@ -30,6 +29,7 @@
 
     [v-cloak] { display: none; }
   </style>
+@section('content')
     <div class="content" id="app">
         @if (session('status'))
             <div class="alert alert-success" role="alert">
@@ -42,17 +42,18 @@
             </div>
         @endif
         <div class="row" v-cloak>
-            <div class="col-12 col-xl-10 offset-xl-1">
+            <div class="col-12 col-xl-6 offset-xl-3 mt-3">
                 <div class="card card-user">
-                    <div class="image">
-                        <img src="{{ asset('/paper/img/back.png
-                        ') }}" alt="...">
+                    <div class="image" style="border-radius: 15px 15px 0px 0px !important"> 
+                        <img src="{{ asset('/paper/img/back.png') }}" alt="...">
                     </div>
                     <div class="card-header">
                         <div class="author">
-                            <img style="background-color: white; object-fit: cover" src="/paper/img/profilepic.png" alt="logo" class=" border-gray avatar" >
+                            <img style="background-color: white; object-fit:cover" src="/paper/img/profilepic.png" alt="logo" class="border-gray avatar" >
                             <h3 class="my-1" style="color: #003e5f;  letter-spacing:1px" >{{auth()->user()->nombre_completo}}</h3>
-                            <h5 class="badge badge-primary my-1" style="font-weight: normal; font-size: 17px; letter-spacing:2px">@{{role}}</h5>                             
+                            @foreach (auth()->user()->roles()->pluck('name') as $role)
+                                <h5 class="badge badge-pill badge-dark py-2 mx-1 px-4" style="font-weight: normal; font-size: 17px; letter-spacing:1px">{{$role}}</h5>                             
+                            @endforeach
                             <h5 class="mt-1 mb-4" style="color: black !important; font-weight: normal; font-size: 15px">{{auth()->user()->email}}</h5>
                         </div>
                     </div>
@@ -63,9 +64,9 @@
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link active" id="general-tab" data-toggle="tab" data-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true"><i class="fa fa-user-circle"></i> Información General</button>
                                     </li>
-                                    <li class="nav-item" role="presentation">
+                                    {{-- <li class="nav-item" role="presentation">
                                         <button class="nav-link" id="seguridad-tab" data-toggle="tab" data-target="#seguridad" type="button" role="tab" aria-controls="seguridad" aria-selected="false"><i class="fa fa-key"></i> Seguridad</button>
-                                    </li>
+                                    </li> --}}
                                 </ul>
                                 <div class="tab-content" id="myTabContent">
                                     <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
@@ -177,7 +178,7 @@
   var app = new Vue({
     el: '#app',
     data: {
-        role: '{{auth()->user()->roles()->first()->name}}',
+        // role: '{{auth()->user()->roles()->first()->name}}',
         user: {},
         activado: true,
         cargando: true,

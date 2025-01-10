@@ -16,46 +16,76 @@ class WebController extends Controller
         return view('admin-panel.configuracion');
     }
     public function usuarios(){
-      if (auth()->user()->hasPermissionTo('Usuarios y Vendedores'))
-          return view('admin-panel.usuarios');
+        if (auth()->user()->hasRole('DIRECCION'))
+          return view('generales.usuarios');
       return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
-
+    public function matricero(){
+        if (auth()->user()->hasRole('MATRICERO'))
+          return view('matricero.matricero');
+      return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
+    public function listaComponentesMatricero(){
+        if (auth()->user()->hasRole('MATRICERO'))
+          return view('matricero.lista-componentes');
+      return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
+    public function maquinas(){
+        if (auth()->user()->hasRole('DIRECCION'))
+          return view('generales.maquinas');
+      return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
     public function visorProgramador(){
-        if (auth()->user()->roles()->first()->name == 'JEFE DE AREA' || auth()->user()->roles()->first()->name == 'PROGRAMADOR')
+        if(auth()->user()->hasAnyRole(['JEFE DE AREA', 'PROGRAMADOR'])) 
             return view('programador.visor-programador');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
 
+    public function visorOperador(){
+        if(auth()->user()->hasAnyRole(['OPERADOR', 'JEFE DE AREA'])) 
+            return view('operador.visor-operador');
+        return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
+
      public function enrutador(){
-        if (auth()->user()->roles()->first()->name == 'JEFE DE AREA')
+        if(auth()->user()->hasRole('JEFE DE AREA')) 
             return view('jefe-area.enrutador');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
 
+    public function visorAvanceHR(){
+        if(auth()->user()->hasAnyRole(['JEFE DE AREA', 'PROGRAMADOR', 'MATRICERO'])) 
+            return view('jefe-area.visor-avance-hr');
+        return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
+
     public function cargaComponentes(){
-        if (auth()->user()->roles()->first()->name == 'AUXILIAR DE DISEÑO')
+        if(auth()->user()->hasRole('AUXILIAR DE DISEÑO')) 
             return view('auxiliar-diseno.carga-componentes');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
 
     public function compraComponentes(){
-        if (auth()->user()->roles()->first()->name == 'ALMACENISTA')
+        if(auth()->user()->hasRole('ALMACENISTA')) 
             return view('almacenista.compra-componentes');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
     public function almacenMP(){
-        if (auth()->user()->roles()->first()->name == 'ALMACENISTA')
+        if(auth()->user()->hasRole('ALMACENISTA')) 
             return view('almacenista.almacen-mp');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
     public function corte(){
-        if (auth()->user()->roles()->first()->name == 'ALMACENISTA')
+        if(auth()->user()->hasRole('ALMACENISTA')) 
             return view('almacenista.corte');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');   
     }
 
     public function centroNotificaciones(){
+        $user = auth()->user();
+        $user->hay_notificaciones = false;
+        $user->save();
+
         return view('generales.centro-notificaciones');
     }
 

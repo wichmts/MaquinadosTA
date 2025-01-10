@@ -21,6 +21,8 @@ class CreateNotificacionesTable extends Migration
             $table->integer('cliente_id')->nullable();
             $table->integer('proyecto_id')->nullable();
             $table->integer('herramental_id')->nullable();
+            $table->integer('fabricacion_id')->nullable();
+            $table->integer('maquina_id')->nullable();
             $table->integer('componente_id')->nullable();
             $table->integer('cantidad')->nullable();
             $table->string('descripcion')->nullable();

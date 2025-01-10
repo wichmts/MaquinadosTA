@@ -16,25 +16,27 @@ class Componente extends Model
     public function herramental(){
         return $this->belongsTo(Herramental::class);
     }
+
+    public function fabricaciones(){
+        return $this->hasMany(Fabricacion::class);
+    }
     
     public function maquinas()
     {
-        // Usamos Eloquent para hacer la consulta sin relaciones
-        $maquinas = Maquina::select('maquinas.id as maquina_id', 'maquinas.nombre', 'documentos.id as documento_id', 'documentos.nombre as documento_nombre', 'documentos.tamano as documento_tamano')
-            ->leftJoin('documentos', function($join) {
-                $join->on('documentos.id_modelo', '=', 'maquinas.id')
-                     ->where('documentos.modelo', '=', 'programacion');
+        $maquinas = Maquina::select('maquinas.id as maquina_id', 'maquinas.nombre', 'fabricaciones.id as documento_id', 'fabricaciones.archivo as documento_nombre')
+            ->leftJoin('fabricaciones', function($join) {
+                $join->on('fabricaciones.maquina_id', '=', 'maquinas.id');
             })
-            ->where('documentos.componente_id', $this->id)
+            ->where('fabricaciones.componente_id', $this->id)
             ->get()
             ->groupBy('maquina_id');
 
-            $resultado = $maquinas->map(function ($maquina) {
-            $archivos = $maquina->map(function ($documento) {
+        $resultado = $maquinas->map(function ($maquina) {
+            $archivos = $maquina->map(function ($fabricacion) {
                 return [
-                    'id' => $documento->documento_id,
-                    'nombre' => $documento->documento_nombre,
-                    'tamano' => $documento->documento_tamano,
+                    'id' => $fabricacion->documento_id,
+                    'nombre' => $fabricacion->documento_nombre,
+                    'tamano' => $fabricacion->documento_tamano,
                 ];
             });
 
@@ -48,8 +50,6 @@ class Componente extends Model
                 'archivos' => $archivos,
             ];
         });
-
-        // Aseguramos que 'maquinas' sea un array, no un objeto
         return $resultado->values()->all();
     }
     public static function procesosFijos()

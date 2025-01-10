@@ -143,7 +143,12 @@
         },
         methods:{
             irNotificacion(notificacion){
-                window.location.href = `${notificacion.url_base}?a=${notificacion.anio_id}&c=${notificacion.cliente_id}&p=${notificacion.proyecto_id}&h=${notificacion.herramental_id}&co=${notificacion.componente_id}`
+                let roles = JSON.parse(notificacion.roles);
+
+                if (roles.includes('OPERADOR'))
+                    window.location.href = `${notificacion.url_base}?maq=${notificacion.maquina_id}&co=${notificacion.componente_id}&fab=${notificacion.fabricacion_id}`;
+                else
+                    window.location.href = `${notificacion.url_base}?a=${notificacion.anio_id}&c=${notificacion.cliente_id}&p=${notificacion.proyecto_id}&h=${notificacion.herramental_id}&co=${notificacion.componente_id}`
             },
             async fetchNotificaciones() {
                 $('#tabla').dataTable().fnDestroy();

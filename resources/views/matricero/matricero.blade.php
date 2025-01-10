@@ -189,7 +189,7 @@
         width: 400px; /* Asegúrate de que el tooltip se ajuste al contenido */
     }
 
-    .maquinaSeleccionada {
+    .componenteSeleccionado {
         background-color: #c0d340 !important;
         color: black !important;
     }
@@ -273,195 +273,114 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl-4">
-                        <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE PROGRAMADOR</h2>
-                    </div>
-                    <div class="col-xl-2"  v-if="selectedComponente" style="border-left: 1px solid  #ededed">
-                        <button :disabled="componente.estatus_programacion == 'proceso' || componente.programado == true || componente.programador_id != user_id" class="btn btn-block btn-default mt-0" @click="cambiarEstatusProgramacion('proceso')"><i class="fa fa-play-circle"></i>    INICIAR PROGRAM.</button>
-                    </div>
-                    <div class="col-xl-2"  v-if="selectedComponente">
-                        <button :disabled="componente.estatus_programacion == 'detenido' || componente.estatus_programacion == 'inicial' || componente.programado == true || componente.programador_id != user_id" class="btn btn-block btn-default mt-0" @click="cambiarEstatusProgramacion('detenido')"><i class="fa fa-stop-circle"></i>    DETENER PROGRAM.</button>
-                    </div>
-                    <div class="col-xl-2"  v-if="selectedComponente" style="border-left: 1px solid  #ededed">
-                        <button class="btn btn-block mt-0" :disabled="componente.programado == true || componente.programador_id != user_id" @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR</button>
-                    </div>
-                    <div class="col-xl-2"  v-if="selectedComponente" >
-                        <button class="btn btn-success btn-block mt-0" @click="liberar()" :disabled="componente.programado == true || componente.programador_id != user_id">
-                            <i class="fa fa-check-double"></i> 
-                            <span v-if="componente.programado == true">LIBERADO</span>
-                            <span v-else>LIBERAR</span>
-                        </button>
+                    <div class="col-xl-12">
+                        <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE MATRICERO</h2>
                     </div>
                 </div>
                 <hr>
-                <div class="col-xl-12" v-if="!selectedComponente">
-                    <h5 class="text-muted my-4"> SELECCIONE UN COMPONENTE PARA VER SU PROGRAMACION</h5>
+                <div class="col-xl-12" v-if="!selectedHerramental">
+                    <h5 class="text-muted my-4"> SELECCIONE UN HERRAMENTAL PARA COMENZAR SU ENSAMBLE</h5>
                 </div>
                 <div class="row mt-3" v-else>
-                    <div class="col-xl-8" style="border-right: 1px solid #c6c6c6">
+                    
+                    {{-- vista de carga de archivo --}}
+                    <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'inicial'">
                         <div class="row">
-                            <div class="col-xl-4 form-group">
-                                <span style="font-size: 22px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold my-4 py-2"> <i class="fa fa-cogs" style="font-size: 16px !important" ></i> @{{componente.nombre}}</span>
-                            </div>
-                            <div class="col-xl-2 form-group text-center">
-                                <a class="text-dark" :href="'/storage/' + componente.archivo_2d_public" target="_blank">
-                                    <img src="/paper/img/icons/file.png" height="80px">
-                                    <h5 class="my-0 py-0 bold pt-2">2D</h5>
-                                </a>
-                            </div>
-                            <div class="col-xl-2 form-group text-center">
-                                <a class="text-dark" :href="'/storage/' + componente.archivo_3d_public" target="_blank">
-                                    <img src="/paper/img/icons/file.png" height="80px">
-                                    <h5 class="my-0 py-0 bold pt-2">3D</h5>
-                                </a>
-                            </div>
-                            <div class="col-xl-4 form-group">
-                                <button class="btn btn-block btn-default" @click="verModalRuta()"><i class="fa fa-eye"></i> Ver ruta</button>
-                            </div>
-                            <div class="col-xl-4 form-group mt-3" style="height: 200px !important">
-                                <label class="bold">DESCRIPCION DEL TRABAJO:</label>
-                                <textarea :disabled="componente.programado == true || componente.programador_id != user_id" v-model="componente.descripcion_trabajo" class="form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Descripcion del trabajo..."></textarea>
-                            </div>
-                            <div class="col-xl-4 form-group mt-3" style="height: 200px !important">
-                                <label class="bold">HERRAMIENTAS DE CORTE:</label>
-                                <textarea :disabled="componente.programado == true || componente.programador_id != user_id" v-model="componente.herramientas_corte" class="form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Agregar herramientas de corte..."></textarea>
-                            </div>
-                            <div class="col-xl-4 form-group mt-3" v-if="componente.programado != true && componente.programador_id == user_id">
-                                <label class="bold">SELECCIONAR MAQUINA(S):</label>
-                                <ul style="height: 400px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border">
-                                    <li v-for="m in maquinas" class="dropdown-item" :class="{ maquinaSeleccionada: existeMaquina(m.id)}" @click="incluirMaquina(m.id)"><i class="fa fa-check-circle" v-if="existeMaquina(m.id)"></i> @{{m.nombre}}</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4">
-                        <div class="row">
-                            <div class="col-xl-12">
-                                <h3 class="bold mb-2" style="letter-spacing: 1px; ">PROGRAMAS POR MAQUINA</h3>
-                            </div>
-                        </div>
-                        <div class="text-center pt-5" v-if="componente.maquinas.length == 0">
-                            <span class="text-muted">Es necesario seleccionar una o más <strong>máquinas</strong> para poder cargar los programas</span>
-                        </div>
-                        <div class="row" v-for="(m, ind) in componente.maquinas">
+                            <h5 class="bold col-xl-12" style="letter-spacing: 1px">Para comenzar el ensamble del herramental @{{herramental.nombre}} es necesario cargar el formato solicitado:</h5>
                             <div class="col-xl-4">
-                                <h5 class="bold"  style="letter-spacing: 1px"><i class="fa fa-computer"></i> @{{m.nombre}}</h5>
+                                <input
+                                    class="input-file"
+                                    id="archivo2"
+                                    type="file"
+                                    @change="handleFileChange($event)"
+                                    style="display: none;"
+                                />
+                                <label tabindex="0" for="archivo2" class="input-file-trigger col-12 text-center">
+                                    <i class="fa fa-upload"></i> CARGAR FORMATO F71-03 ANEXO 1
+                                </label>
                             </div>
-                            <div class="col-xl-8 text-right" v-if="componente.programado != true || componente.programador_id != user_id">
-                                <small class="cursor-pointer" style="text-decoration: underline" @click="agregarArchivo(m)"><i class="fa fa-plus-circle"></i> Agregar programa</small>
+                        </div>
+                        
+                    </div>
+                    
+                    {{-- vista de checklist --}}
+                    <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'checklist'">
+                        <div class="row mb-3">
+                            <div class="col-xl-10">
+                                <h3 class="bold pb-1 mb-0" style="letter-spacing: 1px">Lista de materiales para @{{herramental.nombre}}</h3>
+                                <h5 class="py-1 my-0" style="letter-spacing: 1px; opacity: .6" >Verifique que todos los componentes esten disponibles y listos para comenzar el ensamble:</h5>
                             </div>
-                            <div class="col-xl-12">
-                                <div class="row mb-2" v-for="(a, index) in m.archivos" :key="index + '-' + m.maquina_id">
-                                    <div class="col-xl-10 text-center mr-0 pr-0">
-                                        <input
-                                            :disabled="componente.programado == true || componente.programador_id != user_id"
-                                            class="input-file"
-                                            :id="'archivo-' + m.maquina_id + '-' + index"
-                                            type="file"
-                                            :name="'file['+ m.maquina_id +'][' + index + ']'"
-                                            @change="handleFileChange($event, ind, index)"
-                                            style="display: none;"
-                                            accept=".txt"
-                                        />
-                                        <label
-                                            tabindex="0"
-                                            :for="'archivo-' + m.maquina_id + '-' + index"
-                                            class="input-file-trigger col-12 text-center"
-                                        >
-                                            <i class="fa fa-upload"></i> Subir programa (.txt)
-                                        </label>
-                                        <small style="font-style: italic" v-if="!a.id">
-                                            @{{ a.nombre ? getElipsis(a.nombre) : "Archivo no seleccionado" }}
-                                        </small>
-                                        <small v-else>
-                                            <a :href="'/api/download/programas/' + a.nombre">@{{getElipsis(a.nombre)}}</a>
-                                        </small>
-                                    </div>
-                                    <div class="col-xl-2 text-center ml-0 pl-0" v-if="componente.programado != true && componente.programador_id == user_id">
-                                        <button class="btn btn-block btn-link my-0" @click="eliminarArchivo(m, index)">
-                                            <i class="fa fa-times-circle text-danger" style="font-size: 20px !important"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="col-xl-2">
+                                <button class="btn btn-success btn-block" @click="guardarChecklist()"><i class="fa fa-save"></i> GUARDAR CAMBIOS</button>
+                            </div>
+                        </div>
+                        <div class="row" >
+                            <div class="col-xl-12 table-responsive" style="height: 55vh; overflow-y:scroll">
+                                <table class="table table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th style="text-transform: none !important">¿Listo para ensamble?</td>
+                                            <th>Componente</td>
+                                            <th>Tipo</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(componente, index) in herramental.checklist">
+                                            <td>@{{index + 1}}</td>
+                                            <td>
+                                                <div class="form-check" :key="index">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox" :id="'componente-' + index" v-model="componente.checked">
+                                                        <span class="form-check-sign"></span>
+                                                    </label>
+                                                </div>    
+                                            </td>
+                                            <td class="bold">@{{componente.nombre}}</td>
+                                            <td>@{{componente.es_compra ? 'COMPRAS' : 'FABRICACIÓN'}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-xl-12 mt-2">
+                                <h5 class="text-muted" style="letter-spacing: 1px">Una vez que todos los componentes esten listos, podra comenzar con el ensamblado del herramental.</h5>
                             </div>
                         </div>
                     </div>
 
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="modalRuta" tabindex="-1" aria-labelledby="modalRutaLabel" aria-hidden="true" >
-            <div class="modal-dialog"  style="min-width: 60%;">
-                <div class="modal-content" >
-                    <div class="modal-header">
-                        <h3 class="bold modal-title" id="modalRutaLabel" style="letter-spacing: 1px">RUTA PARA EL COMPONENTE @{{componente.nombre}}</h3>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                         <div class="row d-flex align-items-center">
-                            <div class="col-xl-12">
-                                <div class="row">
-                                    <div class="col-xl-12" style="overflow-x:scroll">
-                                        <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }" >
-                                            <div class="gantt-header general-header">
-                                                <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px" >TIEMPO TEÓRICO EN HORAS</div>
-                                            </div>
-                                            <div class="gantt-header">
-                                                <div class="gantt-cell task-name pt-1">ACCIONES</div>
-                                                <div class="gantt-cell pt-1" v-for="hour in duracionTotal" :key="hour">
-                                                    @{{ hour }}
-                                                </div>
-                                            </div>
-                                            <div class="gantt-row" v-for="task in tasks" :key="task.id" >
-                                                <div class="gantt-cell task-name pt-1">@{{ task.name }}</div>
-                                                <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
-                                                    <div
-                                                    v-for="segment in task.time"
-                                                    data-toggle="tooltip" data-html="true" :title="getContenidoTooltip(task)"
-                                                    :key="segment.inicio"
-                                                    v-if="isTaskInHour(segment, hour)"
-                                                    :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
-                                                    :style="getTaskStyle(segment, hour)"
-                                                    ></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-xl-12" style="overflow-x:scroll">
-                                        <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }" >
-                                            <div class="gantt-header general-header">
-                                                <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px" >VISTA DE AVANCE DEL COMPONENTE</div>
-                                            </div>
-                                            <div class="gantt-header">
-                                                <div class="gantt-cell task-name pt-1">ACCIONES</div>
-                                                <div class="gantt-cell pt-1" v-for="hour in duracionTotal" :key="hour">@{{ hour }}</div>
-                                            </div>
-                                            <div class="gantt-row" v-for="task in rutaAvance" :key="task.id" >
-                                                <div class="gantt-cell task-name pt-1">@{{ task.name }}</div>
-                                                <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
-                                                    <div
-                                                        v-for="segment in task.time"
-                                                        data-toggle="tooltip" data-html="true" :title="getContenidoTooltip(task)"
-                                                        :key="segment.inicio"
-                                                        v-if="isTaskInHour(segment, hour)"
-                                                        :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
-                                                        :style="getTaskStyle(segment, hour)">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="limite-tiempo" :style="{ left: `${165 + (40 * totalHoras) + ((40 / 60 ) * totalMinutos) }px` }"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                    {{-- vista de componente --}}
+                    <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'proceso'">
+                        <div class="row">
+                            <div class="col-xl-3" style="border-right: 1px solid #ededed; height: 70vh; overflow-y:scroll">  
+                                 <h5 class="bold" style="letter-spacing: 1px">Seleccionar componente a ensamblar: </h5>
+                                 <ul  class="dropdown-menu show w-100 position-static border mt-0">
+                                     <li v-for="c in componentes" class="dropdown-item" :class="{ componenteSeleccionado: selectedComponente == c.id}" @click="fetchComponente(c.id)"><i class="fa fa-check-circle" v-if="selectedComponente == c.id"></i> @{{c.nombre}} <small>(@{{componente.ensamblado ? 'Ensamblado' : 'Sin ensamblar'}})</small></li>
+                                 </ul>
                             </div>
-                        </div>  
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                           <div class="col-xl-5">
+                                <div class="row">
+                                    <div class="col-xl-6 form-group">
+                                        <span style="font-size: 22px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold my-4 py-2"> <i class="fa fa-cogs" style="font-size: 16px !important" ></i> @{{componente.nombre}}</span>
+                                    </div>
+                                     <div class="col-xl-6 form-group text-center">
+                                        <a class="text-dark" :href="'/storage/' + componente.archivo_explosionado_public" target="_blank">
+                                            <img src="/paper/img/icons/file.png" height="80px">
+                                            <h5 class="my-0 py-0 bold pt-2">Vista Explosionada</h5>
+                                        </a>
+                                    </div>
+                                </div>
+                           </div>
+                           <div class="col-xl-4">
+                                <div class="row " style="height: 70vh">
+                                    <div class="col-xl-12">
+                                        <h5 class="bold"><a :href="'/storage/' + componente.archivo_2d_public" target="_blank" class="text-dark text-decoration-none">Vista 2D</a></h5>
+                                    </div>
+                                    <div class="col-xl-12 h-100" >
+                                        <iframe :src="'/storage/' + componente.archivo_2d_public" style="width: 100%; height: 75%; border: none;"></iframe>
+                                    </div>
+                                </div>
+                           </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -512,10 +431,7 @@
         el: '#vue-app',
         data: {
             user_id: {{auth()->user()->id}},
-            componente: {
-                nombre: '',
-                maquinas: []
-            },
+            componente: {},
             loading_button: false,
             cargando: false,            
             //MENU IZQUIERDO 
@@ -524,7 +440,6 @@
             proyectos: [],     
             herramentales: [], 
             componentes: [],   
-            maquinas: [],   
             cargandoMenu: true,
             menuStep: 1, 
             selectedAnio: null,
@@ -539,188 +454,49 @@
                 herramental: null,
                 componente: null,
             },
-            procesos: [
-                {id: 1, prioridad: 1, nombre: 'Cortar', horas: 0, minutos: 0, incluir: false},
-                {id: 2, prioridad: 2, nombre: 'Programar', horas: 0, minutos: 0, incluir: false},
-                {id: 3, prioridad: 3, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
-                {id: 4, prioridad: 4, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
-                {id: 5, prioridad: 5, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
-                {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-                {id: 7, prioridad: 7, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
-                {id: 8, prioridad: 8, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
-            ],
-            tasks: [],
-            rutaAvance: [],
-            archivos: [],
             hay_retraso: false,
+            herramental: {},
         },
         watch: {
            
         },
-        computed: {
-            duracionTotal() {
-                let maxHour = 0;
-                this.tasks.forEach(task => {
-                    task.time.forEach(segment => {
-                    const endHour = segment.hora_inicio + segment.horas + segment.minutos / 60;
-                    if (endHour > maxHour) maxHour = Math.ceil(endHour);
-                    });
-                });
-                return maxHour;
-            },
-            totalHoras() {
-                let totalHoras = 0;
-                let totalMinutos = 0;
-                let maxTime = { horas: 0, minutos: 0 };
-
-                this.tasks.forEach(task => {
-                    let taskTotalHoras = 0;
-                    let taskTotalMinutos = 0;
-
-                    // Sumar el tiempo de cada segmento de la tarea
-                    task.time.forEach(segmento => {
-                        taskTotalHoras += segmento.horas;
-                        taskTotalMinutos += segmento.minutos;
-                    });
-
-                    // Normalizar minutos en horas
-                    taskTotalHoras += Math.floor(taskTotalMinutos / 60);
-                    taskTotalMinutos = taskTotalMinutos % 60;
-
-                    // Si la tarea es 1 o 2 (comienza en la misma hora), tomamos la tarea con mayor tiempo total
-                    if (task.id === 1 || task.id === 2) {
-                        if (taskTotalHoras > maxTime.horas || (taskTotalHoras === maxTime.horas && taskTotalMinutos > maxTime.minutos)) {
-                            maxTime.horas = taskTotalHoras;
-                            maxTime.minutos = taskTotalMinutos;
-                        }
-                    } else {
-                        totalHoras += taskTotalHoras;
-                        totalMinutos += taskTotalMinutos;
-                    }
-                });
-
-                // Normalizar los minutos
-                totalHoras += Math.floor(totalMinutos / 60);
-                totalMinutos = totalMinutos % 60;
-
-                // Asegurar que las tareas 1 y 2 empiezan a la misma hora, y agregamos su duración total
-                totalHoras += maxTime.horas;
-                totalMinutos += maxTime.minutos;
-
-                // Normalizar al final
-                if (totalMinutos >= 60) {
-                    totalHoras += Math.floor(totalMinutos / 60);
-                    totalMinutos = totalMinutos % 60;
-                }
-
-                return totalHoras;
-            },
-            totalMinutos() {
-                let totalMinutos = 0;
-                let maxTime = { horas: 0, minutos: 0 };
-
-                this.tasks.forEach(task => {
-                    let taskTotalHoras = 0;
-                    let taskTotalMinutos = 0;
-
-                    // Sumar el tiempo de cada segmento de la tarea
-                    task.time.forEach(segmento => {
-                        taskTotalHoras += segmento.horas;
-                        taskTotalMinutos += segmento.minutos;
-                    });
-
-                    // Normalizar minutos en horas
-                    taskTotalHoras += Math.floor(taskTotalMinutos / 60);
-                    taskTotalMinutos = taskTotalMinutos % 60;
-
-                    // Si la tarea es 1 o 2 (comienza en la misma hora), tomamos la tarea con mayor tiempo total
-                    if (task.id === 1 || task.id === 2) {
-                        if (taskTotalHoras > maxTime.horas || (taskTotalHoras === maxTime.horas && taskTotalMinutos > maxTime.minutos)) {
-                            maxTime.horas = taskTotalHoras;
-                            maxTime.minutos = taskTotalMinutos;
-                        }
-                    } else {
-                        totalMinutos += taskTotalMinutos;
-                    }
-                });
-
-                // Agregar la duración total de las tareas 1 y 2
-                totalMinutos += maxTime.minutos;
-
-                // Normalizar minutos
-                if (totalMinutos >= 60) {
-                    totalMinutos = totalMinutos % 60;
-                }
-
-                return totalMinutos;
-            }
-        },
         methods:{
-            incluirMaquina(maquina_id) {
-                let indiceMaquina = this.componente.maquinas.findIndex(
-                    (m) => m.maquina_id === maquina_id
-                );
-
-                // Si la máquina ya existe, elimínala del arreglo
-                if (indiceMaquina !== -1) {
-                    this.componente.maquinas.splice(indiceMaquina, 1); // Elimina la máquina
-                } else {
-                    // Si no existe, agrégala al arreglo
-                    this.componente.maquinas.push({
-                        maquina_id: maquina_id,
-                        nombre: this.maquinas.find(obj => obj.id === maquina_id)?.nombre,
-                        archivos: [{ nombre: '', archivo: null }]
-                    });
-
-                    Vue.nextTick(function() {
-                        document.querySelector("html").classList.add('js');
-                        let fileInput = document.querySelector(".input-file");
-                        let button = document.querySelector(".input-file-trigger");
-
-                        button.addEventListener("keydown", function(event) {
-                            if (event.keyCode == 13 || event.keyCode == 32) {
-                                fileInput.focus();
-                            }
-                        });
-
-                        button.addEventListener("click", function(event) {
-                            fileInput.focus();
-                            return false;
-                        });
-                    });
+            async guardarChecklist(){
+                let t = this;
+                this.loading_button = true;
+                try {
+                    const response = await axios.post(`/api/herramental/${this.selectedHerramental}/checklist`, t.herramental.checklist);
+                    swal('Correcto', 'Checklist guardado correctamente', 'success');
+                    await this.fetchHerramental(this.selectedHerramental);
+                    if(this.herramental.estatus_ensamble == 'proceso'){
+                        this.fetchComponentes(this.selectedHerramental);
+                    }
+                } catch (error) {
+                    console.error('Error guardando checklist:', error);
+                    swal('Error', 'Error al guardar el checklist', 'error');
+                } finally {
+                    this.loading_button = false;
                 }
             },
-            existeMaquina(maquina_id){
-                return this.componente.maquinas?.some(obj => obj.maquina_id == maquina_id);
-            },
-            async cargarRuta(){
-                let t = this
+            async handleFileChange(event) {
+                const file = event.target.files[0];
+                if (!file) return;
 
-                t.procesos = [
-                    {id: 1, prioridad: 1, nombre: 'Cortar', horas: 0, minutos: 0, incluir: false},
-                    {id: 2, prioridad: 2, nombre: 'Programar', horas: 0, minutos: 0, incluir: false},
-                    {id: 3, prioridad: 3, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
-                    {id: 4, prioridad: 4, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
-                    {id: 5, prioridad: 5, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
-                    {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-                    {id: 7, prioridad: 7, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
-                    {id: 8, prioridad: 8, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
-                ];
-    
-                t.tasks.forEach(task => {
-                    let proceso = t.procesos.find(obj => obj.id === task.id);
-                    if (proceso) {
-                        proceso.horas = task.time[0]?.horas ?? 0;  
-                        proceso.minutos = task.time[0]?.minutos ?? 0;
-                        proceso.incluir = true;
-                    }
-                });
+                const formData = new FormData();
+                formData.append('archivo', file);
 
-                Vue.nextTick(function(){
-                    t.rutaAvance = t.ajustarRutaAvance(t.tasks, t.rutaAvance);
-                    t.calcularInicioAvance();
-                    return true;
-                })
+                try {
+                    const response = await axios.post(`/api/herramental/${this.selectedHerramental}/formato`, formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    });
+                    swal('Correcto', 'Formato cargado correctamente', 'success');
+                    await this.fetchHerramental(this.selectedHerramental);
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                    swal('Error', 'Error al cargar el archivo', 'error');
+                }
             },
             async fetchComponente(id){
                 let t = this;
@@ -731,93 +507,23 @@
                 
                 try {
                     const response = await axios.get(`/api/componente/${id}`)
-                    t.tasks = JSON.parse(JSON.stringify(response.data.componente.ruta));
-                    t.rutaAvance = JSON.parse(JSON.stringify(t.tasks));
 
-                    t.rutaAvance.forEach(element => {
-                        element.time = []
-                        let find = response.data.componente.rutaAvance.find(obj => obj.id == element.id)
-                        if(find){
-                            element.time = find.time
-                        }
-                    })
                 } catch (error) {
                     console.error('Error fetching componente:', error);
                 } finally {
                     this.cargando = false;
-                    if(this.componente.maquinas.length > 0){
-                        document.querySelector("html").classList.add('js');
-                        let fileInput  = document.querySelector( ".input-file" )
-                        let button     = document.querySelector( ".input-file-trigger" )
-                        
-                        button.addEventListener( "keydown", function( event ) {
-                            if ( event.keyCode == 13 || event.keyCode == 32 ) {
-                                fileInput.focus();
-                            }
-                        });
-        
-                        button.addEventListener( "click", function( event ) {
-                            fileInput.focus();
-                            return false;
-                        });
-                    }
                 }
             },
-            async cambiarEstatusProgramacion(band){
-                let t = this
+            async fetchHerramental(id){
+                this.cargando = true;                
                 try {
-                    const response = await axios.put(`api/programacion/cambio-estatus/${t.selectedComponente}`, {estatus: band});
-                    if (response.data.success) {
-                        t.componente.estatus_programacion = band;
-                    }
+                    const response = await axios.get(`/api/herramental/${id}`)
+                    this.herramental = response.data.herramental;
                 } catch (error) {
-                    console.error('Error al cambiar el estatus de programación:', error);
+                    console.error('Error fetching herramental:', error);
+                } finally {
+                    this.cargando = false;
                 }
-            },
-            async verModalRuta(){
-                let t = this
-                await this.fetchComponente(t.selectedComponente);
-                await this.cargarRuta();
-
-                $('#modalRuta').modal()
-                Vue.nextTick(function(){
-                    Vue.nextTick(function(){
-                        $('[data-toggle="tooltip"]').tooltip('dispose');
-                        $('[data-toggle="tooltip"]').tooltip()
-                    })
-                })
-            },
-            getElipsis(str){
-                 if (str && str.length > 45) {
-                    return str.substring(0, 44) + '...';
-                }
-                return str;
-            },
-            handleFileChange(event, index1, index2) {
-                const file = event.target.files[0];
-                if (file) {
-                    this.$set(this.componente.maquinas[index1].archivos[index2], "nombre", file.name);
-                    this.$set(this.componente.maquinas[index1].archivos[index2], "archivo", file);
-                }
-            },
-            agregarArchivo(maquina) {
-                maquina.archivos.push({ nombre: '', archivo: null });
-                Vue.nextTick(function(){
-                    document.querySelector("html").classList.add('js');
-                    let fileInput  = document.querySelector( ".input-file" )
-                    let button     = document.querySelector( ".input-file-trigger" )
-                    
-                    button.addEventListener( "keydown", function( event ) {
-                        if ( event.keyCode == 13 || event.keyCode == 32 ) {
-                            fileInput.focus();
-                        }
-                    });
-    
-                    button.addEventListener( "click", function( event ) {
-                        fileInput.focus();
-                        return false;
-                    });
-                })
             },
             eliminarArchivo(maquina, index) {
                 maquina.archivos.splice(index, 1);
@@ -1037,27 +743,6 @@
                     break
                 }
             },
-            isTaskInHour(segment, hour) {
-                const start = segment.hora_inicio + segment.minuto_inicio / 60; // Hora de inicio en formato decimal
-                const end = start + segment.horas + segment.minutos / 60; // Hora de fin en formato decimal
-                return start < hour + 1 && end > hour;
-            },
-            getTaskStyle(segment, hour) {
-                const start = segment.hora_inicio + segment.minuto_inicio / 60; // Hora de inicio con minutos
-                const end = start + segment.horas + segment.minutos / 60; // Hora de fin con duración
-
-                // Calcula el porcentaje de la barra que corresponde a esta hora
-                const startPercentage = Math.max(0, (Math.max(start, hour) - hour) * 100); // Posición de inicio en porcentaje
-                const endPercentage = Math.min(100, (Math.min(end, hour + 1) - hour) * 100); // Posición de fin en porcentaje
-
-                // Asegúrate de que el ancho de la barra no sea negativo (por ejemplo, si la tarea comienza antes de la hora)
-                const width = Math.max(0, endPercentage - startPercentage);
-
-                return {
-                    left: `${startPercentage}%`, // Posición inicial de la barra
-                    width: `${width}%` // Ancho de la barra
-                };
-            },
             regresar(step){
                 switch (step) {
                     case 1:
@@ -1187,12 +872,52 @@
             async fetchComponentes(herramentalId) {
                 this.cargando = true
                 this.selectedHerramental = herramentalId;
-                this.ruta.herramental = this.herramentales.find(obj => obj.id == herramentalId)?.nombre;
+                this.herramental = this.herramentales.find(obj => obj.id == herramentalId);
+                this.ruta.herramental = this.herramental?.nombre;
 
+                if(this.herramental.estatus_ensamble == 'inicial'){
+                    Vue.nextTick(function() {
+                        document.querySelector("html").classList.add('js');
+                        let fileInput = document.querySelector(".input-file");
+                        let button = document.querySelector(".input-file-trigger");
+
+                        button.addEventListener("keydown", function(event) {
+                            if (event.keyCode == 13 || event.keyCode == 32) {
+                                fileInput.focus();
+                            }
+                        });
+
+                        button.addEventListener("click", function(event) {
+                            fileInput.focus();
+                            return false;
+                        });
+                    });
+                }
+                
                 try {
-                    const response = await axios.get(`/api/herramentales/${herramentalId}/componentes?area=programador`);
+                    const response = await axios.get(`/api/herramentales/${herramentalId}/componentes?area=ensamble`);
                     this.componentes = response.data.componentes;
-                    this.menuStep = 5;
+                    let checklist = this.componentes.map(obj => {
+                        return {
+                            id: obj.id,
+                            nombre: obj.nombre,
+                            checked: false
+                        };
+                    });
+                    if(this.herramental.estatus_ensamble == 'proceso' && this.componentes.length > 0){
+                        this.fetchComponente(this.componentes[0].id);
+                    }
+
+                    if (this.herramental.checklist && this.herramental.checklist.length > 0) {
+                        checklist = checklist.map(item => {
+                            const existingItem = this.herramental.checklist.find(obj => obj.id === item.id);
+                            return {
+                                ...item,
+                                checked: existingItem ? existingItem.checked : false
+                            };
+                        });
+                    }
+                    this.herramental.checklist = checklist;
                 } catch (error) {
                     console.error('Error fetching componentes:', error);
                 } finally {
@@ -1301,9 +1026,7 @@
         },
         mounted: async function () {
             let t = this;
-            await t.fetchMaquinas();
             await t.fetchAnios();
-            await t.fetchProgramadores();
             this.navigateFromUrlParams();        
         }
 

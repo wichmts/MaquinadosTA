@@ -64,6 +64,11 @@
             autocomplete: off !important;
     }
 
+    .roleSeleccionado {
+        background-color: #c0d340 !important;
+        color: black !important;
+    }
+
 </style>
 
 @section('content')
@@ -87,18 +92,17 @@
         <div class="card shadow col-md-12" v-cloak v-show="!cargando">
             <div class="card-header border-0">
                 <div class="row align-items-center">
-                    <div class="col-md-6 mb-0">
-                        <h3 class="bold my-0 py-1" style="letter-spacing: 2px;color: #234666 !important">USUARIOS Y VENDEDORES<br><small>USERS & SALES REPRESENTATIVES</small></h3>
+                    <div class="col-md-8   mb-0">
+                        <h3 class="bold my-0 py-1" style="letter-spacing: 1px;">USUARIOS Y PERMISOS</h3>
                     </div>
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-2 form-group">
                         <label for="">Filtrar por tipo de usuario:</label>
                         <select v-model="tipo_usuario" class="form-control" @change="getData">
                             <option value="-1">Todos los usuarios</option>
-                            <option value="ADMINISTRADOR">Aministradores</option>
-                            <option value="VENDEDOR">Vendedores</option>
+                            <option v-for="r in roles" :value="r">@{{r}}</option>
                         </select>
                     </div>
-                    <div class="form-group col-md-3 col-xs-12 mt-4">
+                    <div class="form-group col-md-2 col-xs-12 mt-4">
                         <button class="btn btn-normal col-md-12" @click="reiniciarModal"><i class="fa fa-circle-plus"></i> NUEVO USUARIO</button>
                     </div>
 
@@ -108,8 +112,8 @@
                                 <tr>
                                     <th scope="col">Nombre</th>
                                     <th scope="col">Correo electronico</th>
-                                    <th scope="col">Tipo de usuario</th>
-                                    <th scope="col">Permisos del usuario</th>
+                                    <th scope="col">Roles del usuario</th>
+                                    {{-- <th scope="col">Permisos del usuario</th> --}}
                                     <th scope="col">Estatus</th>
                                     <th scope="col" class="no-sort">Acciones</th>
                                 </tr>
@@ -119,11 +123,11 @@
                                     <td style="width: 15%">@{{p.nombre_completo}}</td>
                                     <td style="width: 15%">@{{p.email}}</td>
                                     <td style="width: 10%">
-                                        <span style="font-size: 12px" class="badge-info badge badge-pill mx-1 my-1 py-2 px-3"> @{{p.role}}</span>
+                                        <span v-for="r in p.roles" style="font-size: 12px" class="badge-dark badge badge-pill mx-1 my-1 py-2 px-3"> @{{r}}</span>
                                     </td>
-                                    <td style="width: 40%">
+                                    {{-- <td style="width: 40%">
                                         <span style="font-size: 12px; background-color: #234666 !important" class="badge-dark badge badge-pill mx-1 my-1 py-2 px-3" v-for="per in p.permisos"> @{{per}}</span>
-                                    </td>
+                                    </td> --}}
                                     <td style="width: 10%">
                                         <span style="font-size: 12px" class="badge badge-success py-2 px-4" v-if="p.active"><i class="fa fa-unlock"></i> ACTIVO </span>
                                         <span style="font-size: 12px" class="badge badge-danger py-2 px-4" v-else><i class="fa fa-lock"></i> INACTIVO</span>
@@ -149,7 +153,7 @@
 
         <!-- Modal nueva -->
         <div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="modalUsuarioLabel" aria-hidden="true">
-            <div class="modal-dialog" style="min-width: 70%;">
+            <div class="modal-dialog" style="min-width: 60%;">
                 <div class="modal-content" >
                     <div class="modal-header">
                         <h3 class="modal-title" id="modalUsuarioLabel">@{{usuario.id ? 'Editar usuario' : 'Crear nuevo usuario'}} </h3>
@@ -159,86 +163,50 @@
                     </div>
                     <div class="modal-body">
                         <div class="row ">
-                            <div class="form-group col-md-3">
-                                <label for="">Nombre(s) <span style="color: red">*</span></label>
+                            <div class="form-group col-md-4">
+                                <label class="bold">Nombre(s) <span style="color: red">*</span></label>
                                 <input placeholder="Nombre(s) del usuario..." class=" form-control" type="text" v-model="usuario.nombre"/>
                             </div>
-                            <div class="form-group col-md-3">
-                                <label for="">Apellido paterno <span style="color: red">*</span></label>
-                                <input placeholder="Apellidos del usuario..." class=" form-control" type="text" v-model="usuario.ap_paterno"/>
+                            <div class="form-group col-md-4">
+                                <label class="bold">Apellido paterno </label>
+                                <input placeholder="Apellidos paterno ..." class=" form-control" type="text" v-model="usuario.ap_paterno"/>
                             </div>
-                            <div class="form-group col-md-3">
-                                <label for="">Apellido materno <span style="color: red">*</span></label>
-                                <input placeholder="Apellidos del usuario..." class=" form-control" type="text" v-model="usuario.ap_materno"/>
+                            <div class="form-group col-md-4">
+                                <label class="bold">Apellido materno </label>
+                                <input placeholder="Apellidos materno ..." class=" form-control" type="text" v-model="usuario.ap_materno"/>
                             </div>
-                            <div class="form-group col-md-3">
-                                <label for="">Estatus <span style="color: red">*</span></label>
+                            <div class="form-group col-md-4">
+                                <label class="bold">Estatus <span style="color: red">*</span></label>
                                 <select v-model="usuario.active" class="form-control">
                                     <option :value="1">Activo</option>
                                     <option :value="0">Inactivo</option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-3">
-                                <label for="">Correo electronico <span style="color: red">*</span></label>
+                            <div class="form-group col-md-4">
+                                <label class="bold">Correo electronico <span style="color: red">*</span></label>
                                 <input placeholder="nombre@mail.com" class="form-control" type="email" v-model="usuario.email"/>
                             </div>
-                            <div class="form-group col-md-3">
-                                <label for=""><span v-if="typeof(usuario.id) == 'undefined'">Contraseña </span><span v-else>Cambiar contraseña </span><span style="color: red">*</span></label>
-                                <input class="form-control" type="text" style="font-weight: bold; letter-spacing: 1px" v-model="usuario.password"/>
+                            <div class="form-group col-xl-4">
+                                <label class="bold text-danger" style="letter-spacing: 1px">CODIGO DE ACCESO *</label>
+                                <input class="form-control text-center" placeholder="-----" type="text" style="font-weight: bold; letter-spacing: 2px" v-model="usuario.codigo_acceso"/>
                             </div>
-                            <div class="form-group col-md-3">
-                                <label for=""><span v-if="typeof(usuario.id) == 'undefined'">Confirmar contraseña </span><span v-else>Confirmar nueva contraseña </span>  <span style="color: red">*</span></label>
-                                <input class="form-control" type="text" style="font-weight: bold; letter-spacing: 1px" v-model="usuario.password_confirmation"/>
+                            <div class="col-xl-6 form-group mt-2">
+                                <label class="bold">Seleccionar role(s) del usuario <span style="color: red">*</span></label>
+                                <ul style="height: 300px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border mt-0">
+                                    <li v-for="r in roles" class="dropdown-item" :class="{ roleSeleccionado: existeRole(r)}" @click="incluirRole(r)"><i class="fa fa-check-circle" v-if="existeRole(r)"></i> @{{r}}</li>
+                                </ul>
                             </div>
-                            <div class="form-group col-md-3">
-                                <label for="">Tipo de usuario: <span style="color: red">*</span></label>
-                                <select class="form-control" v-model="usuario.role" @change="cambiarRole">
-                                    <option value="ADMINISTRADOR">Administrador</option>
-                                    <option value="VENDEDOR">Vendedor</option>
-                                </select>
+                            <div class="col-xl-6 form-group mt-2" v-if="existeRole('OPERADOR')">
+                                <label class="bold">Asignar MAQUINAS al operador <span style="color: red">*</span></label>
+                                <ul style="height: 300px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border mt-0">
+                                    <li v-for="m in maquinas" class="dropdown-item" :class="{ roleSeleccionado: existeMaquina(m.id)}" @click="incluirMaquina(m.id)"><i class="fa fa-check-circle" v-if="existeMaquina(m.id)"></i> @{{m.nombre}}</li>
+                                </ul>
                             </div>
                         </div>  
-                        <hr>
-                        <div class="row">
-                            <h5 class="col-md-12">Asignarle permisos a este usuario</h5>        
-                             <div class="table-responsive col-md-12">
-                                <table class="table table-condensed">
-                                    <thead class="thead-light">
-                                    <tr>
-                                        <th style="width: 20%">Permiso</th>
-                                        <th style="width: 60%">Descripcion</th>
-                                        <th style="width: 20%">¿Otorgar permiso?</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr v-for="(obj, index) in permisos">
-                                        <td><strong>@{{obj.title}}</strong></td>
-                                        <td>@{{obj.description}}</td>
-                                        <td>
-                                        <div class="form-group">
-                                            <div class="form-check">
-                                            <label class="form-check-label" style="font-size: 10px">
-                                                <input type="checkbox" class="form-check-input" v-model="obj.value">
-                                                <span class="form-check-sign"></span>
-                                            </label>
-                                            </div>
-                                        </div>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div> 
-                        <hr>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <small>Se enviara un correo electronico al usuario con la información de acceso a su cuenta, una vez dentro puede modificar sus datos basicos y contraseña.</small>
-                            </div>
-                            <div class="col-md-4 text-right">
-                                 <button class="btn btn-secondary" v-if="!loading_button" type="button" @click="guardar"><i class="fa fa-save"></i> Guardar</button>
-                                 <button class="btn btn-secondary" type="button" disabled v-else><i class="fa fa-spinner spin"></i> CARGANDO...</button>
-                            </div>
-                        </div>
+                    </div>
+                    <div class="modal-footer text-right">
+                         <button class="btn btn-secondary" v-if="!loading_button" type="button" @click="guardar"><i class="fa fa-save"></i> Guardar</button>
+                        <button class="btn btn-secondary" type="button" disabled v-else><i class="fa fa-spinner spin"></i> CARGANDO...</button>
                     </div>
                 </div>
             </div>
@@ -262,28 +230,41 @@
                 ap_materno: '',
                 active: 1,
                 email: '',
-                password: '',
-                password_confirmation: '',
-                role: 'ADMINISTRADOR',
-                permisos: []
+                codigo_acceso: '',
+                roles: [],
+                permisos: [],
+                maquinas: [],
             },
             tipo_usuario: '-1',
             permisos: [],
-            auth_role: '{{auth()->user()->roles()->first()->name}}',
+            maquinas: [],
+            roles: [ 'DIRECCION', 'ALMACENISTA', 'AUXILIAR DE DISEÑO', 'JEFE DE AREA', 'PROGRAMADOR', 'OPERADOR', 'MATRICERO', 'FINANZAS', 'PROYECTOS', 'PROCESOS', 'EXTERNO'],
         },
         methods:{ 
-            cambiarRole: function(){
-                let t = this
-                t.permisos.map(element => {
-                    if(t.usuario.role == 'VENDEDOR' && (element.title == 'Clientes' || element.title == 'Prospectos')){
-                        element.value = true
-                    }else
-                        element.value = false
+            incluirRole(role) {
+                let indiceRole = this.usuario.roles.findIndex((m) => m === role);
 
-                    if(t.usuario.role == 'ADMINISTRADOR'){
-                        element.value = true
-                    }
-                })
+                if (indiceRole !== -1){
+                    this.usuario.roles.splice(indiceRole, 1); 
+                    if(role == 'OPERADOR')
+                        this.usuario.maquinas = [];
+                }
+                else
+                    this.usuario.roles.push(role);
+            },
+            existeRole(role){
+                return this.usuario.roles?.some(obj => obj == role);
+            },
+            incluirMaquina(id) {
+                let indiceMaquina = this.usuario.maquinas.findIndex((m) => m === id);
+
+                if (indiceMaquina !== -1)
+                    this.usuario.maquinas.splice(indiceMaquina, 1); 
+                else
+                    this.usuario.maquinas.push(id);
+            },
+            existeMaquina(id){
+                return this.usuario.maquinas?.some(obj => obj == id);
             },
             isEmail: function(cadena){
                 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -315,25 +296,20 @@
             },
             guardar: function(){
                 let t = this;
-                if((t.usuario.id && t.usuario.password && t.usuario.password != '') || !t.usuario.id){
-                    if(t.usuario.password != t.usuario.password_confirmation){
-                        swal('Las contrasenas deben ser iguales', 'Reviselas y vuelva a intentarlo.', 'info');
-                        return;
-                    }
-                    if(t.usuario.password.length < 6){
-                        swal('Las contrasenas deben tener al menos 6 caracteres', 'Reviselas y vuelva a intentarlo.', 'info');
-                        return;
-                    }
-                    if(t.usuario.nombre == '' || t.usuario.ap_paterno == '' || t.usuario.ap_materno == '' || t.usuario.estatus == '' || t.usuario.email == '')
-                    {
-                        swal('Campos obligatorios', 'Los campos marcados con asterisco son obligatorios.', 'info');
-                        return;
-                    }
-                    if(!t.isEmail(t.usuario.email))
-                    {
-                        swal('Verifique el correo electronico', 'Verifique que el correo electronico que proporciono sea valido.', 'info');
-                        return;
-                    }
+                if(t.usuario.nombre == '' || t.usuario.estatus == '' || t.usuario.email == '' || t.usuario.codigo_acceso == '')
+                {
+                    swal('Campos obligatorios', 'Los campos marcados con asterisco son obligatorios.', 'info');
+                    return;
+                }
+                if(t.usuario.roles.length == 0){
+                    swal('Role obligatorio', 'El usuario debe tener al menos un role asignado.', 'info');
+                    return;
+                }
+
+                if(!t.isEmail(t.usuario.email))
+                {
+                    swal('Verifique el correo electronico', 'Verifique que el correo electronico que proporciono sea valido.', 'info');
+                    return;
                 }
                 t.loading_button = true;
                 t.usuario.permisos = [];
@@ -387,11 +363,12 @@
                     email: '',
                     password: '',
                     password_confirmation: '',
-                    role: 'ADMINISTRADOR',
+                    roles: [],
+                    maquinas: [],
                 };
-                t.permisos.map(obj => {
-                    obj.value = true;
-                });
+                // t.permisos.map(obj => {
+                //     obj.value = true;
+                // });
                  Vue.nextTick(function () {
                     $('#modalUsuario').modal();
                 });
@@ -400,9 +377,9 @@
             editar: function(index){
                 let t = this;
                 t.usuario =  JSON.parse(JSON.stringify(t.usuarios[index]));
-                t.permisos.map(obj => {
-                    obj.value = t.usuario.permisos.includes(obj.title);
-                });
+                // t.permisos.map(obj => {
+                //     obj.value = t.usuario.permisos.includes(obj.title);
+                // });
                 Vue.nextTick(function () {
                     $('#modalUsuario').modal();
                 });
@@ -411,6 +388,14 @@
                 let t = this;
                 t.cargando = true;
                 $('#tabla').dataTable().fnDestroy();
+
+                axios.get('api/maquinas').then(response => {
+                    t.maquinas = response.data.maquinas;
+                }).catch(e => {
+                    console.log(e);
+                });
+
+
                 axios.get('/api/usuario', {params: {tipo_usuario: t.tipo_usuario}}) .then(response => {
                     t.usuarios = response.data.usuarios;
                     Vue.nextTick(function () {
@@ -435,61 +420,61 @@
                     t.cargando = false;    
                 })
             },
-            inicializarPermisos: function(){
-               this.permisos = [
-                    {
-                        "title": "Programacion de cargas",
-                        "description": "Acceso y gestión de la información relacionada con las cargas y su transportacion.",
-                        "value": true
-                    },
-                    {
-                        "title": "Clientes",
-                        "description": "Acceso y gestión de la información relacionada con los clientes del sistema.",
-                        "value": true
-                    },
-                     {
-                        "title": "Prospectos",
-                        "description": "Acceso y gestión de la información relacionada con los prospectos o futuros clientes asi como el seguimiento de estos.",
-                        "value": true
-                    },
-                    {
-                        "title": "Licitaciones",
-                        "description": "Acceso y gestión de la información relacionada con la licitacion de cargas a transportistas externos.",
-                        "value": true
-                    },
-                    {
-                        "title": "Salidas y Destinos",
-                        "description": "Acceso y gestión de la información relacionada con los puntos de salida y destino de las cargas.",
-                        "value": true
-                    },
-                    {
-                        "title": "Conductores",
-                        "description": "Acceso y gestión de la información relacionada con los conductores.",
-                        "value": true
-                    },
-                    {
-                        "title": "Camiones y  Remolques",
-                        "description": "Acceso y gestión de la información relacionada con los vehiculos que transportan la carga.",
-                        "value": true
-                    },
-                    {
-                        "title": "Transportistas externos",
-                        "description": "Acceso y gestión de la información relacionada con los transportistas externos del sistema.",
-                        "value": true
-                    },
-                    {
-                        "title": "Usuarios y Vendedores",
-                        "description": "Administración de usuarios con acceso al sistema, asignando distintos niveles de permisos y roles.",
-                        "value": true
-                    }
-                ];
+            // inicializarPermisos: function(){
+            //    this.permisos = [
+            //         {
+            //             "title": "Programacion de cargas",
+            //             "description": "Acceso y gestión de la información relacionada con las cargas y su transportacion.",
+            //             "value": true
+            //         },
+            //         {
+            //             "title": "Clientes",
+            //             "description": "Acceso y gestión de la información relacionada con los clientes del sistema.",
+            //             "value": true
+            //         },
+            //          {
+            //             "title": "Prospectos",
+            //             "description": "Acceso y gestión de la información relacionada con los prospectos o futuros clientes asi como el seguimiento de estos.",
+            //             "value": true
+            //         },
+            //         {
+            //             "title": "Licitaciones",
+            //             "description": "Acceso y gestión de la información relacionada con la licitacion de cargas a transportistas externos.",
+            //             "value": true
+            //         },
+            //         {
+            //             "title": "Salidas y Destinos",
+            //             "description": "Acceso y gestión de la información relacionada con los puntos de salida y destino de las cargas.",
+            //             "value": true
+            //         },
+            //         {
+            //             "title": "Conductores",
+            //             "description": "Acceso y gestión de la información relacionada con los conductores.",
+            //             "value": true
+            //         },
+            //         {
+            //             "title": "Camiones y  Remolques",
+            //             "description": "Acceso y gestión de la información relacionada con los vehiculos que transportan la carga.",
+            //             "value": true
+            //         },
+            //         {
+            //             "title": "Transportistas externos",
+            //             "description": "Acceso y gestión de la información relacionada con los transportistas externos del sistema.",
+            //             "value": true
+            //         },
+            //         {
+            //             "title": "Usuarios y Vendedores",
+            //             "description": "Administración de usuarios con acceso al sistema, asignando distintos niveles de permisos y roles.",
+            //             "value": true
+            //         }
+            //     ];
 
-            }
+            // }
         },
         mounted: function () {
             this.$nextTick(function () {
                 let t = this;
-                t.inicializarPermisos();
+                // t.inicializarPermisos();
                 t.getData();
             })
         }

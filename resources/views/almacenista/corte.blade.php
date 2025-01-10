@@ -206,6 +206,10 @@
         max-width: none; /* Elimina el límite de ancho predeterminado */
         width: 400px; /* Asegúrate de que el tooltip se ajuste al contenido */
     }
+     .tipoParoSeleccionado {
+        background-color: #d34040 !important;
+        color: white !important;
+    }
      
 
 
@@ -231,7 +235,7 @@
             </div>
         </div>
         <div class="row" v-cloak v-show="!cargando">
-            <div class="col-xl-2 pt-3" style="background-color: #f1f1f1; height: calc(100vh - 107.3px)">
+            <div class="col-xl-2 pt-3" style="background-color: #f1f1f1; height: calc(100vh - 107.3px); overflow-y: scroll">
                 <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
                     <a class="nav-link cursor-pointer text-right text-muted" >
                         <i v-if="menuStep > 1"  @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
@@ -422,7 +426,7 @@
                 <div class="modal-content" >
                     <div class="modal-header">
                         <h3 class="text-danger modal-title" id="modalParoLabel">
-                            <span>MOTIVO DE PARO EN EL COMPONENTE @{{componente.nombre}}</span>
+                            <span>INICIO DE PARO EN EL COMPONENTE @{{componente.nombre}}</span>
                         </h3>
                         <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -430,9 +434,16 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="py-0 col-xl-12" >
-                               <textarea v-model="paro.motivo" class="form-control w-100 text-left px-2 py-1" placeholder="Motivo de paro..."></textarea>
-                           </div>                           
+                            <div class="col-xl-12 form-group">
+                                <label class="bold">Seleccionar motivo <span style="color: red">*</span></label>
+                                <ul style="height: 300px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border mt-0">
+                                    <li v-for="p in paros" class="dropdown-item" :class="{ tipoParoSeleccionado: paro.tipo_paro == p}" @click="paro.tipo_paro = p"><i class="fa fa-check-circle" v-if="paro.tipo_paro == p"></i> @{{p}}</li>
+                                </ul>
+                            </div>
+                            <div class="py-0 col-xl-12">
+                                <label class="bold">Comentarios de paro</label>
+                               <textarea v-model="paro.comentarios_paro" class="form-control w-100 text-left px-2 py-1" placeholder="Comentarios de paro..."></textarea>
+                           </div>                                   
                         </div>
                         <div class="row">
                             <div class="col-xl-12 text-right">
@@ -564,7 +575,29 @@
             tasks: [],
             procesos: [],
             hay_retraso: false,
-            paro: {}
+            paro: {
+                comentarios_paro: '',
+                tipo_paro: 'Daño a la Materia Prima',
+            },
+            paros: [
+                "Daño a la Materia Prima",
+                "Error de Compensación",
+                "Cambio del Componente a producir",
+                "Cambio de Programa",
+                "Falta Herramienta de Corte",
+                "Falla en Herramienta",
+                "Origen Incorrecto",
+                "Falta de Material",
+                "Falta de Lubricante",
+                "Mantenimiento",
+                "Falla Mecánica",
+                "Falla del Programa",
+                "CFE",
+                "Protección Civil",
+                "Cambio de Insertos",
+                "Cambio de Herramienta",
+                "Error de Programación",    
+            ]
         },
         computed: {
             duracionTotal() {
@@ -676,7 +709,7 @@
             },  
             registrarParoAPI(){
                 let t = this
-                if(!t.paro.motivo.trim()){
+                if(!t.paro.tipo_paro.trim()){
                     swal('Campos obligatorios', 'Es necesario ingresar un motivo de paro para continuar.', 'info');
                     return
                 }
@@ -694,7 +727,8 @@
                 this.componente = this.componentes.find(obj => obj.id == id);
                 this.paro = {
                     componente_id: id,
-                    motivo: '',
+                    comentarios_paro: '',
+                    tipo_paro: 'Daño a la Materia Prima',
                     tipo: 'corte_paro',
                 }
                 $('#modalParo').modal();

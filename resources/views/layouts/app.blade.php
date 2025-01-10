@@ -26,7 +26,7 @@ The above copyright notice and this permission notice shall be included in all c
     <link rel="icon" type="image/png" href="/paper/img/favicon.png">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <title>
-        {{ __('Multi-Channel') }}
+        {{ __('Manufacturas') }}
     </title>
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'

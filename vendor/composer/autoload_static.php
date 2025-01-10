@@ -607,6 +607,7 @@ class ComposerStaticInit60eef7165f8ea49c6781e3119c6a5a04
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Documento' => __DIR__ . '/../..' . '/app/Documento.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
+        'App\\Fabricacion' => __DIR__ . '/../..' . '/app/Fabricacion.php',
         'App\\Helpers\\SystemHelper' => __DIR__ . '/../..' . '/app/Helpers/SystemHelper.php',
         'App\\Herramental' => __DIR__ . '/../..' . '/app/Herramental.php',
         'App\\Hoja' => __DIR__ . '/../..' . '/app/Hoja.php',
