@@ -434,7 +434,7 @@
                                     <div class="col-xl-12" style="overflow-x:scroll">
                                         <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }" >
                                             <div class="gantt-header general-header">
-                                                <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px" >VISTA DE AVANCE DEL COMPONENTE</div>
+                                                <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px" >TIEMPO REAL EN HORAS</div>
                                             </div>
                                             <div class="gantt-header">
                                                 <div class="gantt-cell task-name pt-1">ACCIONES</div>

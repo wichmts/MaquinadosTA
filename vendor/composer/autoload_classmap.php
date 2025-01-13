@@ -67,6 +67,7 @@ return array(
     'App\\Proyecto' => $baseDir . '/app/Proyecto.php',
     'App\\Rules\\CurrentPasswordCheckRule' => $baseDir . '/app/Rules/CurrentPasswordCheckRule.php',
     'App\\SeguimientoTiempo' => $baseDir . '/app/SeguimientoTiempo.php',
+    'App\\Solicitud' => $baseDir . '/app/Solicitud.php',
     'App\\User' => $baseDir . '/app/User.php',
     'ArithmeticError' => $vendorDir . '/symfony/polyfill-php70/Resources/stubs/ArithmeticError.php',
     'Asm89\\Stack\\Cors' => $vendorDir . '/asm89/stack-cors/src/Asm89/Stack/Cors.php',

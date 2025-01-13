@@ -64,6 +64,8 @@ class UsersTableSeeder extends Seeder
         $user->active = true;
         $user->save();
         $user->assignRole('JEFE DE AREA');
+        $user->assignRole('PROGRAMADOR');
+        $user->assignRole('OPERADOR');
 
         $user = new User();
         $user->nombre = 'FIDEL';
@@ -77,6 +79,32 @@ class UsersTableSeeder extends Seeder
         $user->active = true;
         $user->save();
         $user->assignRole('PROGRAMADOR');
+
+        $user = new User();
+        $user->nombre = 'OPERADOR';
+        $user->ap_paterno = '';
+        $user->ap_materno = '';
+        $user->email = 'operador@maquinados.com';
+        $user->codigo_acceso = '0937';
+        $user->api_token = Str::random(60);
+        $user->token = Str::random(60);
+        $user->celular = '';
+        $user->active = true;
+        $user->save();
+        $user->assignRole('OPERADOR');
+
+        $user = new User();
+        $user->nombre = 'MATRICERO';
+        $user->ap_paterno = '';
+        $user->ap_materno = '';
+        $user->email = 'matricero@maquinados.com';
+        $user->codigo_acceso = '0938';
+        $user->api_token = Str::random(60);
+        $user->token = Str::random(60);
+        $user->celular = '';
+        $user->active = true;
+        $user->save();
+        $user->assignRole('MATRICERO');
 
 
         $material = new Material();

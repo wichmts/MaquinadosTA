@@ -303,6 +303,7 @@
                                                 <th class="text-center">Componente</th>
                                                 <th class="text-center">Cantidad</th>
                                                 <th class="text-center">Estado</th>
+                                                <th class="text-center" style="text-transform: none !important">Fecha de compra</th>
                                                 <th class="text-center" style="text-transform: none !important">Fecha componente terminado</th>
                                                 <th class="text-center" style="text-transform: none !important">Fecha ensamble</th>
                                             </tr>
@@ -318,9 +319,10 @@
                                                 <td class="text-center">@{{obj.cantidad}}</td>
                                                 <td class="text-center">
                                                     <span v-if="obj.ensamblado == true" class="badge badge-success py-3 w-100">ENSAMBLADO</span>
-                                                    <span v-else class="badge badge-dark py-2 w-100">SIN ENSAMBLAR</span>
+                                                    <span v-else class="badge badge-dark py-3 w-100">SIN ENSAMBLAR</span>
                                                 </td>
-                                                <td>@{{obj.fecha_terminado??'-'}}</td>
+                                                <td>@{{obj.es_compra && obj.fecha_real ? obj.fecha_real : '-'}}</td>
+                                                <td>@{{!obj.es_compra && obj.fecha_terminado ? obj.fecha_terminado : '-'}}</td>
                                                 <td>@{{obj.fecha_ensamblado??'-'}}</td>
                                             </tr>
                                         </tbody>
@@ -378,6 +380,26 @@
            
         },
         methods:{
+            async handleFileChange(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('archivo', file);
+                
+                try {
+                    const response = await axios.post(`/api/herramental/${this.selectedHerramental}/formato`, formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    });
+                    await this.fetchComponentes(this.selectedHerramental);
+                    swal('Correcto', 'Formato cargado correctamente', 'success');
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                    swal('Error', 'Error al cargar el archivo', 'error');
+                }
+            },
             async fetchComponente(id){
                 let t = this;
                 this.cargando = true;                

@@ -16,6 +16,7 @@ class CreateMaquinasTable extends Migration
         Schema::create('maquinas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
+            $table->string('tipo_proceso')->nullable();
             $table->timestamps();
         });
     }

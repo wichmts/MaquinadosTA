@@ -29,6 +29,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::put('ver-notificaciones', 'APIController@verNotificaciones');
     Route::get('ultimas-notificaciones', 'APIController@ultimasNotificaciones');
 
+    Route::post('solicitud/{componente_id}', 'APIController@registrarSolicitud');
+    Route::get('solicitud/{componente_id}', 'APIController@obtenerSolicitudes');
+
     Route::post('documentos/embarque/{categoria}/{id}', 'APIController@cargarDocumentosEmbarque');
     Route::put('documentos/{modelo}/{id}', 'APIController@subirDocumentos');
     Route::delete('documentos/{id}', 'APIController@eliminarDocumento');

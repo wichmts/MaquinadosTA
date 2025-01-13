@@ -25,12 +25,16 @@ class CreateComponentesTable extends Migration
             $table->string('alto')->nullable();
             $table->string('peso')->nullable();
             $table->string('precio_kilo')->nullable();
+            
+            $table->string('fecha_cargado')->nullable();
             $table->string('fecha_solicitud')->nullable();
             $table->string('fecha_pedido')->nullable();
             $table->string('fecha_estimada')->nullable();
             $table->string('fecha_real')->nullable();
             $table->string('fecha_terminado')->nullable();
             $table->string('fecha_ensamblado')->nullable();
+
+            $table->string('foto_matricero')->nullable();
             
             // enrutamiento
             $table->string('prioridad')->nullable();
@@ -44,7 +48,7 @@ class CreateComponentesTable extends Migration
             
             $table->boolean('es_compra')->nullable();
             
-            $table->string('area')->nullable();          // diseno-creacion, compras, corte, ensamble ...
+            $table->string('area')->nullable();          
             
             $table->boolean('cargado')->nullable();
             $table->boolean('comprado')->nullable();

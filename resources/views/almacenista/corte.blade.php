@@ -284,7 +284,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl-7">
+                    <div class="col-xl-9">
                         <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">CORTE DE MP</h2>
                     </div>
                     <div class="col-xl-3 form-group" v-if="selectedHerramental">
@@ -296,13 +296,6 @@
                             <option value="finalizado">FINALIZADO</option>
                             <option value="paro">EN PARO</option>
                         </select>
-                    </div>
-                    <div class="col-xl-2"  v-if="selectedHerramental && componentes.length > 0">
-                        <div class="row">
-                            <div class="col">
-                                <button class="btn btn-block btn-success mt-0" @click="liberarHerramental"><i class="fa fa-check-double"></i> LIBERAR</button>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="col-xl-12" v-if="!selectedHerramental">
@@ -501,7 +494,7 @@
                                     <div class="col-xl-12" style="overflow-x:scroll">
                                         <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }" >
                                             <div class="gantt-header general-header">
-                                                <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px" >VISTA DE AVANCE DEL COMPONENTE</div>
+                                                <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px" >TIEMPO REAL EN HORAS</div>
                                             </div>
                                             <div class="gantt-header">
                                                 <div class="gantt-cell task-name pt-1">ACCIONES</div>
@@ -1205,41 +1198,6 @@
                     t.cargando = false
                     return false;
                 }  
-            },
-            async liberarHerramental() {
-                let t = this;
-
-                let errores = [];
-                t.componentes.forEach((componente, index) => {  
-                    if (!componente.fecha_solicitud || !componente.fecha_pedido || !componente.fecha_estimada || !componente.fecha_real ) {
-                        errores.push(`Todos los campos son obligatorios para liberar en ${componente.nombre}.`);
-                    }
-
-                });
-
-                if (errores.length > 0) {
-                    swal('Errores de validación', errores.join('\n'), 'error');
-                    return;
-                }
-                t.cargando = true;
-                let respuesta = await t.guardarComponentes(false);
-
-                if(respuesta){
-                    try {
-                        const response = await axios.put(`/api/liberar-herramental-compras/${t.selectedHerramental}`);
-                        t.cargando = false;
-                        swal('Éxito', 'Componentes liberados correctamente', 'success');
-                        t.fetchComponentes(t.selectedHerramental);
-
-                    } catch (error) {
-                        t.cargando = false;
-                        console.error('Error al liberar el componente:', error);
-                        swal('Error', 'Ocurrió un error al liberar el herramental', 'error');
-                    }
-                }else{
-                    swal('Error', 'Ocurrió un error al guardar la informacion de los componentes', 'error');
-                    t.cargando = false;
-                }
             },
             async fetchMateriales() {
                 this.cargando = true

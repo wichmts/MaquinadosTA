@@ -370,7 +370,7 @@
                                 <div class="col-xl-12 px-0" style="overflow-x:scroll">
                                     <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }" >
                                         <div class="gantt-header general-header">
-                                            <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px" >VISTA DE AVANCE DEL COMPONENTE</div>
+                                            <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px" >TIEMPO REAL EN HORAS</div>
                                         </div>
                                         <div class="gantt-header">
                                             <div class="gantt-cell task-name pt-1">ACCIONES</div>
@@ -474,7 +474,12 @@
                         </div>
                          <div class="row mt-3">
                             <div class="col-xl-12">
-                                <button @click="mostrarLineaDeTiempo" class="btn btn-block btn-default"><i class="fa fa-calendar"></i> Ver linea de tiempo (@{{componente.nombre}}) </button>
+                                <button @click="mostrarLineaDeTiempo" class="btn btn-block btn-default"><i class="fa fa-calendar"></i> Ver linea de tiempo del componente </button>
+                            </div>
+                        </div>
+                        <div class="row mt-1">
+                            <div class="col-xl-12">
+                                <button @click="fetchSolicitudes" class="btn btn-block btn-default"><i class="fa fa-list"></i> Ver solicitudes de componente </button>
                             </div>
                         </div>
                         {{-- <div class="row">
@@ -580,6 +585,56 @@
                 </div>
             </div>
         </div>
+
+
+         <div class="modal fade" id="modalSolicitudes" tabindex="-1" aria-labelledby="modalSolicitudesLabel" aria-hidden="true">
+            <div class="modal-dialog" style="min-width: 70%;">
+                <div class="modal-content" >
+                    <div class="modal-header">
+                        <h3 class="bold modal-title" id="modalSolicitudesLabel">
+                            SOLICITUDES ASOCIADAS AL COMPONENTE @{{componente.nombre}}
+                        </h3>
+                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xl-12 table-responsive table-stripped"  style="height: 75vh !important; overflow-y: scroll !important">
+                                <table class="table">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Hora</th>
+                                            <th>Tipo</th>
+                                            <th>Programa</th>
+                                            <th>Comentarios</th>
+                                            <th>Solicita</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(l, index) in solicitudes" :key="'linea- ' + index + '-' + l.created_at">
+                                            <td>@{{ l.fecha }}</td>
+                                            <td>@{{ l.hora }}</td>
+                                            <td class="bold">@{{ l.tipo.toUpperCase() }}</td>
+                                            <td>@{{ l.programa }}</td>
+                                            <td><span v-html="l.comentarios"></span></td>
+                                            <td>@{{ l.usuario.nombre_completo }} <br><small>@{{l.area_solicitante}}</small></td>
+                                        </tr>    
+                                    </tbody>
+                                </table>
+                            </div>                      
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-12 text-right">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        </div>
+
     </div>
 @endsection
 
@@ -592,6 +647,8 @@
         var app = new Vue({
         el: '#vue-app',
         data: {
+            solicitudes: [],
+            maquinas: [],
             componente: {},
             estatusCompra: -1,
             loading_button: false,
@@ -770,7 +827,7 @@
                             descripcion: `<strong>${n.descripcion}</strong>`,
                             created_at: n.created_at,
                             encargado: '',
-                            maquina: '-',
+                            maquina: this.getMaquina(n.maquina_id),
                         });
                     });
 
@@ -796,6 +853,36 @@
                     $('#modalLineaTiempo').modal();
 
                 }
+            },
+            async fetchSolicitudes() {
+                let t = this;
+                this.cargando = true;
+
+                try {
+                    const response = await axios.get(`/api/solicitud/${t.componente.id}`);
+                    let solicitudes = response.data.solicitudes;
+
+                    this.solicitudes = solicitudes.map(s => {
+                        return {
+                            fecha: s.fecha_show,
+                            hora: s.hora_show,
+                            tipo: s.tipo,
+                            programa: s.fabricacion_id ? s.fabricacion.archivo_show : 'N/A',
+                            comentarios: s.comentarios,
+                            area_solicitante: s.area_solicitante,
+                            usuario: s.usuario
+                        };
+                    });
+                } catch (error) {
+                    console.error('Error fetching solicitudes:', error);
+                } finally {
+                    this.cargando = false;
+                    $('#modalSolicitudes').modal();
+                }
+            },
+            getMaquina(id) {
+                let maquina = this.maquinas.find(m => m.id === id);
+                return maquina ? maquina.nombre : '-';
             },
             generarDescripcion(accion, tipo, tipo_paro, motivo) {
                 let descripcion = "";
@@ -1310,6 +1397,14 @@
                 }
                 this.menuStep = step;
             },
+            async fetchMaquinas() {
+                try {
+                    const response = await axios.get('/api/maquinas');
+                    this.maquinas = response.data.maquinas;
+                } catch (error) {
+                    console.error('Error fetching maquinas:', error);
+                }
+            },
             async fetchAnios() {
                 this.cargandoMenu = true
                 // axios.get('/api/anios')
@@ -1541,6 +1636,7 @@
             let t = this;
             await t.fetchAnios();
             await t.fetchProgramadores();
+            await t.fetchMaquinas();
             this.navigateFromUrlParams();        
         }
 

@@ -194,6 +194,119 @@
         color: black !important;
     }
 
+    /*  */
+
+  .checkbox-wrapper-26 * {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+  }
+
+  .checkbox-wrapper-26 input[type="checkbox"] {
+    display: none;
+  }
+
+  .checkbox-wrapper-26 label {
+    --size: 100px;
+    --shadow: calc(var(--size) * .07) calc(var(--size) * .1);
+
+    position: relative;
+    display: block;
+    width: var(--size);
+    height: var(--size);
+    margin: 0 auto;
+    background-color: #f72414;
+    border-radius: 50%;
+    box-shadow: 0 var(--shadow) #ffbeb8;
+    cursor: pointer;
+    transition: 0.2s ease transform, 0.2s ease background-color,
+      0.2s ease box-shadow;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .checkbox-wrapper-26 label:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    width: calc(var(--size) * .7);
+    height: calc(var(--size) * .7);
+    margin: 0 auto;
+    background-color: #fff;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    box-shadow: inset 0 var(--shadow) #ffbeb8;
+    transition: 0.2s ease width, 0.2s ease height;
+  }
+
+  .checkbox-wrapper-26 label:hover:before {
+    width: calc(var(--size) * .55);
+    height: calc(var(--size) * .55);
+    box-shadow: inset 0 var(--shadow) #ff9d96;
+  }
+
+  .checkbox-wrapper-26 label:active {
+    transform: scale(0.9);
+  }
+
+  .checkbox-wrapper-26 .tick_mark {
+    position: absolute;
+    top: -1px;
+    right: 0;
+    left: calc(var(--size) * -.05);
+    width: calc(var(--size) * .6);
+    height: calc(var(--size) * .6);
+    margin: 0 auto;
+    margin-left: calc(var(--size) * .14);
+    transform: rotateZ(-40deg);
+  }
+
+  .checkbox-wrapper-26 .tick_mark:before,
+  .checkbox-wrapper-26 .tick_mark:after {
+    content: "";
+    position: absolute;
+    background-color: #fff;
+    border-radius: 2px;
+    opacity: 0;
+    transition: 0.2s ease transform, 0.2s ease opacity;
+  }
+
+  .checkbox-wrapper-26 .tick_mark:before {
+    left: 0;
+    bottom: 0;
+    width: calc(var(--size) * .1);
+    height: calc(var(--size) * .3);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.23);
+    transform: translateY(calc(var(--size) * -.68));
+  }
+
+  .checkbox-wrapper-26 .tick_mark:after {
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: calc(var(--size) * .1);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.23);
+    transform: translateX(calc(var(--size) * .78));
+  }
+
+  .checkbox-wrapper-26 input[type="checkbox"]:checked + label {
+    background-color: #07d410;
+    box-shadow: 0 var(--shadow) #92ff97;
+  }
+
+  .checkbox-wrapper-26 input[type="checkbox"]:checked + label:before {
+    width: 0;
+    height: 0;
+  }
+
+  .checkbox-wrapper-26 input[type="checkbox"]:checked + label .tick_mark:before,
+  .checkbox-wrapper-26 input[type="checkbox"]:checked + label .tick_mark:after {
+    transform: translate(0);
+    opacity: 1;
+  }
+
+
 
 </style>
 
@@ -273,8 +386,11 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl-12">
+                    <div class="col-xl-9">
                         <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE MATRICERO</h2>
+                    </div>
+                    <div class="col-xl-3">
+                        <button class="btn btn-success btn-block" v-if="selectedHerramental && herramental && herramental.estatus_ensamble == 'proceso'"><i class="fa fa-check-double"></i> LIBERAR HERRAMENTAL</button>
                     </div>
                 </div>
                 <hr>
@@ -322,11 +438,11 @@
                                             <th>#</th>
                                             <th style="text-transform: none !important">¿Listo para ensamble?</td>
                                             <th>Componente</td>
-                                            <th>Tipo</td>
+                                            <th>Procedencia</td>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(componente, index) in herramental.checklist">
+                                        <tr v-for="(componente, index) in herramental.checklist" :key="index">
                                             <td>@{{index + 1}}</td>
                                             <td>
                                                 <div class="form-check" :key="index">
@@ -351,64 +467,95 @@
                     {{-- vista de componente --}}
                     <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'proceso'">
                         <div class="row">
-                            <div class="col-xl-3" style="border-right: 1px solid #ededed; height: 70vh; overflow-y:scroll">  
+                            <div class="col-xl-3" style="border-right: 2px dashed #d6d6d6;">  
                                  <h5 class="bold" style="letter-spacing: 1px">Seleccionar componente a ensamblar: </h5>
-                                 <ul  class="dropdown-menu show w-100 position-static border mt-0">
-                                     <li v-for="c in componentes" class="dropdown-item" :class="{ componenteSeleccionado: selectedComponente == c.id}" @click="fetchComponente(c.id)"><i class="fa fa-check-circle" v-if="selectedComponente == c.id"></i> @{{c.nombre}} <small>(@{{componente.ensamblado ? 'Ensamblado' : 'Sin ensamblar'}})</small></li>
+                                 <ul  class="dropdown-menu show w-100 position-static border mt-0" style="height: 65vh; overflow-y: scroll">
+                                     <li v-for="c in componentes" class="dropdown-item" :class="{ componenteSeleccionado: selectedComponente == c.id}" @click="fetchComponente(c.id)"><i class="fa fa-check-circle" v-if="selectedComponente == c.id"></i> @{{c.nombre}} <small>(@{{ c.ensamblado ? 'Ensamblado' : 'Sin ensamblar'}})</small></li>
                                  </ul>
                             </div>
-                           <div class="col-xl-5">
+                            <div class="col-xl-9" >
                                 <div class="row">
-                                    <div class="col-xl-6 form-group">
-                                        <span style="font-size: 22px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold my-4 py-2"> <i class="fa fa-cogs" style="font-size: 16px !important" ></i> @{{componente.nombre}}</span>
+                                    <div class="col-xl-9 form-group mt-4">
+                                        <span style="font-size: 22px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold mt-2 py-2"> <i class="fa fa-cogs" style="font-size: 16px !important" ></i> @{{componente.nombre}}</span>
                                     </div>
-                                     <div class="col-xl-6 form-group text-center">
-                                        <a class="text-dark" :href="'/storage/' + componente.archivo_explosionado_public" target="_blank">
-                                            <img src="/paper/img/icons/file.png" height="80px">
-                                            <h5 class="my-0 py-0 bold pt-2">Vista Explosionada</h5>
+                                     <div class="col-xl-3 form-group text-center">
+                                        <a v-if="componente.archivo_explosionado_public" class="text-dark cursor-pointer" :href="'/storage/' + componente.archivo_explosionado_public" target="_blank">
+                                            <img src="/paper/img/icons/file.png" height="80px"><br>
+                                            <label class="my-0 py-0 bold pt-2">VISTA EXPLOSIONADA</label>
                                         </a>
                                     </div>
+                                    {{-- <div class="col-xl-12 mb-3" ></div> --}}
                                 </div>
-                           </div>
-                           <div class="col-xl-4">
-                                <div class="row " style="height: 70vh">
-                                    <div class="col-xl-12">
-                                        <h5 class="bold"><a :href="'/storage/' + componente.archivo_2d_public" target="_blank" class="text-dark text-decoration-none">Vista 2D</a></h5>
+                                <div class="row">
+                                    <div class="col-xl-7">
+                                        <div class="row">
+                                            <div class="col-xl-6 text-center form-group" >
+                                                <label class="bold ">¿COMPONENTE ENSAMBLADO?</label>
+                                                <div class="checkbox-wrapper-26 mt-4">
+                                                    <input type="checkbox" :id="'_checkbox-26' + componente.id" v-model="componente.ensamblado" @change="cambiarEstatusComponente()" :key="'checkbox-' + componente.id">
+                                                    <label :for="'_checkbox-26' + componente.id">
+                                                        <div class="tick_mark"></div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6 text-center form-group">
+                                                <label class="bold">FOTO DEL COMPONENTE</label>
+                                                <a target="_blank" v-if="componente.foto_matricero" :href="'/storage/fotos_matricero/' + componente.foto_matricero">
+                                                    <img :src="'/storage/fotos_matricero/' + componente.foto_matricero" style="border-radius: 10px; width: 100%; height: auto; object-fit: cover" alt="">
+                                                </a>
+                                                <img v-else src="{{ asset('paper/img/no-image.png') }}" style="border-radius: 10px; width: 100%; height: 180px; object-fit: cover" alt="">
+                                                <button :disabled="componente.ensamblado == true" class="btn btn-block mb-0" @click="abrirCamara()"><i class="fa fa-camera"></i> <span v-if="componente.foto_matricero">RETOMAR FOTO</span><span v-else>TOMAR FOTO</span></button>
+                                                <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;" @change="procesarFoto($event)">
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <button :disabled="componente.ensamblado == true || componente.es_compra == true" @click="abrirSolicitud('modificacion')"  class="btn btn-block btn-dark"><i class="fa fa-exclamation-circle"></i> SOLICITAR AJUSTE</button>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <button :disabled="componente.ensamblado == true" @click="abrirSolicitud('rechazo')"  class="btn btn-block btn-danger"><i class="fa fa-times-circle"></i> RECHAZAR COMPONENTE</button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-xl-12 h-100" >
-                                        <iframe :src="'/storage/' + componente.archivo_2d_public" style="width: 100%; height: 75%; border: none;"></iframe>
+                                    <div class="col-xl-5">
+                                        <div class="row" style="height: 60vh">
+                                            <div class="col-xl-12">
+                                                    <label class="bold"><a v-if="componente.archivo_2d_public" :href="'/storage/' + componente.archivo_2d_public" target="_blank" class="text-dark text-decoration-none">VISTA 2D</a></label>
+                                                </div>
+                                                <div class="col-xl-12 h-100" >
+                                                    <iframe v-if="componente.archivo_2d_public" :src="'/storage/' + componente.archivo_2d_public" style="width: 100%; height: 75%; border: none;"></iframe>
+                                                </div>
+                                            </div>
                                     </div>
                                 </div>
-                           </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="modalRetraso" tabindex="-1" aria-labelledby="modalRetrasoLabel" aria-hidden="true">
-            <div class="modal-dialog" style="min-width: 35%;">
+
+         <div class="modal fade" id="modalSolicitud" tabindex="-1" aria-labelledby="modalSolicitudLabel" aria-hidden="true">
+            <div class="modal-dialog" style="min-width: 40%;">
                 <div class="modal-content" >
                     <div class="modal-header">
-                        <h3 class="modal-title" id="modalRetrasoLabel">
-                            <span>RETRASO EN EL COMPONENTE @{{componente.nombre}}</span>
+                        <h3 class="text-dark modal-title" id="modalSolicitudLabel">
+                            <span>@{{solicitud.tipo == 'modificacion' ? 'SOLICITAR AJUSTE PARA EL COMPONENTE ' + componente.nombre : 'RECHAZAR EL COMPONENTE ' + componente.nombre}}</span>
                         </h3>
                         <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <div class="row px-3">
-                             <div class="mt-3 py-2 col-xl-12 form-group" style="background-color: rgb(254, 195, 195); border-radius: 10px">
-                                <label class="bold text-danger"><i class="fa fa-exclamation-circle"></i> Hubo un retraso en el tiempo estimado de programacion para este componente. Indique el motivo.</label>
-                                <textarea style="border: none !important" v-model="componente.retraso_programacion" class="form-control w-100 text-left px-2 py-1" placeholder="Motivo del retraso..."></textarea>
-                            </div>
+                        <div class="row">
+                            <div class="py-0 col-xl-12">
+                                <label class="bold">Comentarios <span class="text-danger">*</span></label>
+                               <textarea v-model="solicitud.comentarios" class="form-control w-100 text-left px-2 py-1" placeholder="Agregar comentarios..."></textarea>
+                           </div>                           
                         </div>
                         <div class="row">
-                            <div class="col-xl-12"><hr></div>
                             <div class="col-xl-12 text-right">
                                 <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
-                                <button class="btn btn-secondary" v-if="!loading_button" type="button" @click="guardar(true)"><i class="fa fa-check-circle"></i> LIBERAR COMPONENTE</button>
-                                <button class="btn btn-secondary" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> LIBERANDO, ESPERE ...</button>
+                                <button class="btn" :class="{'btn-danger' : solicitud.tipo == 'rechazo'}" v-if="!loading_button" type="button" @click="enviarSolicitud()"><i class="fa fa-paper-plane"></i> @{{solicitud.tipo == 'rechazo' ? 'RECHAZAR COMPONENTE' : 'SOLICITAR AJUSTE'}}</button>
+                                <button class="btn" :class="{'btn-danger' : solicitud.tipo == 'rechazo'}" type="button" disabled v-if="loading_button"><i class="fa fa-spinner"></i> ENVIANDO, ESPERE ...</button>
                             </div>
                         </div>
                     </div> 
@@ -430,6 +577,7 @@
         var app = new Vue({
         el: '#vue-app',
         data: {
+            solicitud: {motivo: '', tipo: 'ajuste'},
             user_id: {{auth()->user()->id}},
             componente: {},
             loading_button: false,
@@ -456,11 +604,64 @@
             },
             hay_retraso: false,
             herramental: {},
+            solicitud: {
+                tipo: '',
+                comentarios: '',
+                area_solicitante: 'ENSAMBLE'
+            },
         },
         watch: {
            
         },
         methods:{
+            abrirSolicitud(tipo){
+                this.solicitud = {
+                    tipo: tipo,
+                    comentarios: '',
+                    area_solicitante: 'ENSAMBLE'
+                }
+                $('#modalSolicitud').modal();
+            },
+            async enviarSolicitud(){
+                let t = this;
+            
+                if (!t.solicitud.comentarios.trim()) {
+                    swal('Campos obligatorios', 'Es necesario ingresar comentarios para continuar.', 'info');
+                    return;
+                }
+            
+                t.loading_button = true;
+                
+                try {
+                    const response = await axios.post(`/api/solicitud/${t.componente.id}`, t.solicitud);
+                    if (response.data.success) {
+                        swal('Solicitud enviada', 'La solicitud ha sido enviada exitosamente.', 'success');
+                        $('#modalSolicitud').modal('hide');
+                    }
+                } catch (error) {
+                    console.error('Error al enviar la solicitud:', error);
+                    swal('Error', 'Hubo un problema al intentar enviar la solicitud.', 'error');
+                } finally {
+                    t.loading_button = false;
+                }
+            },
+            abrirCamara() {
+                const fileInput = document.getElementById('fileInput');
+                fileInput.click();
+            },
+            async procesarFoto(event) {
+                let archivo = event.target.files[0]; 
+                this.fotografia = archivo;
+
+                if (archivo) {
+                    const lector = new FileReader();
+                    lector.onload = (e) => {
+                        console.log('Foto capturada:', e.target.result);
+                    };
+                    lector.readAsDataURL(archivo);
+                }
+                await this.guardarFoto()
+            },
             async guardarChecklist(){
                 let t = this;
                 this.loading_button = true;
@@ -478,21 +679,58 @@
                     this.loading_button = false;
                 }
             },
+            async guardarFoto(){
+                let t = this;
+                this.loading_button = true;
+                try {
+                    const formData = new FormData();
+                    formData.append('foto', this.fotografia);
+                    const response = await axios.post(`/api/herramental/${this.selectedComponente}/foto`, formData);
+                    await this.fetchComponente(this.selectedComponente);
+                } catch (error) {
+                    console.error('Error guardando foto:', error);
+                    swal('Error', 'Error al guardar la foto', 'error');
+                } finally {
+                    this.loading_button = false;
+                }
+            },
+            async cambiarEstatusComponente(){
+                let t = this;
+
+                if (!this.componente.foto_matricero) {
+                        swal('Error', 'Debe cargar una foto del componente antes de cambiar el estado de componente.', 'error');
+                        this.$nextTick(() => {
+                            this.$set(this.componente, 'ensamblado', false);
+                        });
+                        return;
+                }
+                try {
+                    const response = await axios.post(`/api/herramental/${this.selectedComponente}/estatus-ensamblado`, {ensamblado: t.componente.ensamblado});
+                    await this.fetchComponentes(this.selectedHerramental);
+                    await this.fetchComponente(this.selectedComponente);
+
+                } catch (error) {
+                    console.error('Error cambiando estatus:', error);
+                    swal('Error', 'Error al cambiar el estatus', 'error');
+                     this.$nextTick(() => {
+                        this.$set(t.componente, 'ensamblado', !t.componente.ensamblado);
+                    });
+                }                
+            },
             async handleFileChange(event) {
                 const file = event.target.files[0];
                 if (!file) return;
 
                 const formData = new FormData();
                 formData.append('archivo', file);
-
                 try {
                     const response = await axios.post(`/api/herramental/${this.selectedHerramental}/formato`, formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }
                     });
+                    await this.fetchComponentes(this.selectedHerramental);
                     swal('Correcto', 'Formato cargado correctamente', 'success');
-                    await this.fetchHerramental(this.selectedHerramental);
                 } catch (error) {
                     console.error('Error uploading file:', error);
                     swal('Error', 'Error al cargar el archivo', 'error');
@@ -502,12 +740,10 @@
                 let t = this;
                 this.cargando = true;                
                 this.selectedComponente = id;
-                this.componente = this.componentes.find(obj => obj.id == id)
-                this.ruta.componente = this.componente.nombre;
-                
                 try {
                     const response = await axios.get(`/api/componente/${id}`)
-
+                    this.componente = response.data.componente;
+                    this.ruta.componente = this.componente.nombre;
                 } catch (error) {
                     console.error('Error fetching componente:', error);
                 } finally {
@@ -872,7 +1108,8 @@
             async fetchComponentes(herramentalId) {
                 this.cargando = true
                 this.selectedHerramental = herramentalId;
-                this.herramental = this.herramentales.find(obj => obj.id == herramentalId);
+                await this.fetchHerramental(herramentalId);
+                // this.herramental = this.herramentales.find(obj => obj.id == herramentalId);
                 this.ruta.herramental = this.herramental?.nombre;
 
                 if(this.herramental.estatus_ensamble == 'inicial'){
@@ -901,10 +1138,11 @@
                         return {
                             id: obj.id,
                             nombre: obj.nombre,
+                            es_compra: obj.es_compra,
                             checked: false
                         };
                     });
-                    if(this.herramental.estatus_ensamble == 'proceso' && this.componentes.length > 0){
+                    if(this.herramental.estatus_ensamble == 'proceso' && this.componentes.length > 0 && !this.selectedComponente){
                         this.fetchComponente(this.componentes[0].id);
                     }
 
@@ -958,25 +1196,11 @@
             async guardar(liberarComponente){                
                 let t = this
 
-                if(this.hay_retraso && liberarComponente && !this.componente.retraso_programacion?.trim()){
-                     swal('Campos obligatorios', 'Debe ingresar un motivo de retraso.', 'info');
-                    return false;
-                }
                 t.cargando = true;
                 t.loading_button = true;
 
                 let formData = new FormData();
-
-                t.componente.maquinas.forEach((maquina, maquinaIndex) => {
-                    maquina.archivos.forEach((archivo, archivoIndex) => {
-                        if (archivo.archivo)
-                            formData.append(`archivo[${maquina.maquina_id}][${archivoIndex}]`, archivo.archivo);
-                        if (archivo.id) 
-                            formData.append(`archivo_ids[${maquina.maquina_id}][${archivoIndex}]`, archivo.id);
-                    });
-                });
-                formData.append('data', JSON.stringify(t.componente));
-
+                formData.append('data', JSON.stringify(t.componente));                
                 try {
                     const response = await axios.post(`/api/componente/${t.selectedComponente}/programacion/${liberarComponente}`, formData, {
                         headers: { 'Content-Type': 'multipart/form-data' }

@@ -123,12 +123,12 @@
     }
 
 
+
     .gantt-chart {
         display: grid;
         grid-template-rows: auto;
         font-family: Arial, sans-serif;
     }
-
 
     .gantt-header, .gantt-row {
         display: grid;
@@ -141,9 +141,8 @@
         padding: 0px;
         text-align: center;
         font-size: 12px;
-        width: 40px;
+        width: 100px;
     }
-
 
     .task-name {
         background-color: #f0f0f0;
@@ -295,30 +294,28 @@
                     <div class="col-xl-12 " v-if="tasks.length == 0">
                         <h5 class="text-muted">Este herramental aun no tiene componentes cargados...</h5>
                     </div>
-                    <div class="col-xl-12" v-else>
-                        <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }" >
+                    <div class="col-xl-12" v-else style="overflow-x:scroll">
+                       <div class="gantt-chart" >
                             <div class="gantt-header general-header">
-                                <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px" >TIEMPO (HORAS)</div>
+                                <div class="time-header pb-2" >TIEMPO (DIAS)</div>
                             </div>
                             <div class="gantt-header">
-                                <div class="gantt-cell task-name pt-1">ACCIONES</div>
-                                <div class="gantt-cell pt-1" v-for="hour in duracionTotal" :key="hour">@{{ hour }}</div>
+                                <div class="gantt-cell task-name">ACCIONES</div>
+                                <div class="gantt-cell" v-for="day in duracionTotal" :key="day">@{{ day }}</div>
                             </div>
-                            <div class="gantt-row" v-for="task in tasks" :key="task.id" >
-                                <div class="gantt-cell task-name pt-1">@{{ task.componente }}</div>
-                                <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
+                            <div class="gantt-row" v-for="task in tasks" :key="task.id">
+                                <div class="gantt-cell task-name">@{{ task.componente }}</div>
+                                <div class="gantt-cell gantt-bar" v-for="day in duracionTotal" :key="day">
                                     <div
                                         v-for="segment in task.time"
-                                        data-toggle="tooltip" data-html="true" :title="getContenidoTooltip(task)"
-                                        :key="segment.inicio"
-                                        v-if="isTaskInHour(segment, hour)"
+                                        :key="segment.dia_inicio"
                                         :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
-                                        :style="getTaskStyle(segment, hour)">
+                                        :style="getTaskStyle(segment, day)">
                                     </div>
                                 </div>
                             </div>
-                            <div class="limite-tiempo" :style="{ left: `${165 + (40 * totalHoras) + ((40 / 60 ) * totalMinutos) }px` }"></div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -361,254 +358,80 @@
             procesos: [],
         },
         computed: {
-            duracionTotal() {
-                let maxHour = 0;
-                this.tasks.forEach(task => {
-                    task.time.forEach(segment => {
-                    const endHour = segment.hora_inicio + segment.horas + segment.minutos / 60;
-                    if (endHour > maxHour) maxHour = Math.ceil(endHour);
-                    });
-                });
-                return maxHour;
-            },
-            totalHoras() {
-                let totalHoras = 0;
-                let totalMinutos = 0;
-                let maxTime = { horas: 0, minutos: 0 };
+             duracionTotal() {
+                // Extraemos las fechas de inicio y término de las tareas
+                const fechasInicio = this.tasks.flatMap(task => 
+                    task.time.map(t => t.dia_inicio.split(' ')[0]) // Solo la fecha en formato YYYY-MM-DD
+                );
 
-                this.tasks.forEach(task => {
-                    let taskTotalHoras = 0;
-                    let taskTotalMinutos = 0;
+                const fechasFin = this.tasks.flatMap(task => 
+                    task.time.map(t => t.dia_termino.split(' ')[0]) // Solo la fecha en formato YYYY-MM-DD
+                );
 
-                    // Sumar el tiempo de cada segmento de la tarea
-                    task.time.forEach(segmento => {
-                        taskTotalHoras += segmento.horas;
-                        taskTotalMinutos += segmento.minutos;
-                    });
+                // Convertimos las fechas a objetos Date
+                const minFecha = new Date(Math.min(...fechasInicio.map(fecha => new Date(fecha).getTime())));
+                const maxFecha = new Date(Math.max(...fechasFin.map(fecha => new Date(fecha).getTime())));
 
-                    // Normalizar minutos en horas
-                    taskTotalHoras += Math.floor(taskTotalMinutos / 60);
-                    taskTotalMinutos = taskTotalMinutos % 60;
-
-                    // Si la tarea es 1 o 2 (comienza en la misma hora), tomamos la tarea con mayor tiempo total
-                    if (task.id === 1 || task.id === 2) {
-                        if (taskTotalHoras > maxTime.horas || (taskTotalHoras === maxTime.horas && taskTotalMinutos > maxTime.minutos)) {
-                            maxTime.horas = taskTotalHoras;
-                            maxTime.minutos = taskTotalMinutos;
-                        }
-                    } else {
-                        totalHoras += taskTotalHoras;
-                        totalMinutos += taskTotalMinutos;
-                    }
-                });
-
-                // Normalizar los minutos
-                totalHoras += Math.floor(totalMinutos / 60);
-                totalMinutos = totalMinutos % 60;
-
-                // Asegurar que las tareas 1 y 2 empiezan a la misma hora, y agregamos su duración total
-                totalHoras += maxTime.horas;
-                totalMinutos += maxTime.minutos;
-
-                // Normalizar al final
-                if (totalMinutos >= 60) {
-                    totalHoras += Math.floor(totalMinutos / 60);
-                    totalMinutos = totalMinutos % 60;
+                // Creamos un array de días entre la fecha mínima y máxima
+                const diasTotales = [];
+                for (let d = new Date(minFecha); d <= maxFecha; d.setDate(d.getDate() + 1)) {
+                    diasTotales.push(new Date(d).toISOString().split('T')[0]); // YYYY-MM-DD
                 }
 
-                return totalHoras;
-            },
-            totalMinutos() {
-                let totalMinutos = 0;
-                let maxTime = { horas: 0, minutos: 0 };
-
-                this.tasks.forEach(task => {
-                    let taskTotalHoras = 0;
-                    let taskTotalMinutos = 0;
-
-                    // Sumar el tiempo de cada segmento de la tarea
-                    task.time.forEach(segmento => {
-                        taskTotalHoras += segmento.horas;
-                        taskTotalMinutos += segmento.minutos;
-                    });
-
-                    // Normalizar minutos en horas
-                    taskTotalHoras += Math.floor(taskTotalMinutos / 60);
-                    taskTotalMinutos = taskTotalMinutos % 60;
-
-                    // Si la tarea es 1 o 2 (comienza en la misma hora), tomamos la tarea con mayor tiempo total
-                    if (task.id === 1 || task.id === 2) {
-                        if (taskTotalHoras > maxTime.horas || (taskTotalHoras === maxTime.horas && taskTotalMinutos > maxTime.minutos)) {
-                            maxTime.horas = taskTotalHoras;
-                            maxTime.minutos = taskTotalMinutos;
-                        }
-                    } else {
-                        totalMinutos += taskTotalMinutos;
-                    }
-                });
-
-                // Agregar la duración total de las tareas 1 y 2
-                totalMinutos += maxTime.minutos;
-
-                // Normalizar minutos
-                if (totalMinutos >= 60) {
-                    totalMinutos = totalMinutos % 60;
-                }
-
-                return totalMinutos;
+                return diasTotales;
             }
+
         },
-        methods:{
-            
-            ajustarRutaAvance(tasks, rutaAvance) {
-                let convertirAMinutos = (horas, minutos) => horas * 60 + minutos;
+        methods:{           
+            // isTaskInDay(segment, day) {
+            //     const inicio = new Date(segment.dia_inicio).toISOString().split('T')[0];
+            //     const termino = new Date(segment.dia_termino).toISOString().split('T')[0];                
+            //     return day >= inicio && day <= termino;
+            // },
 
-                let convertirAHorasYMinutos = (minutosTotales) => {
-                    let horas = Math.floor(minutosTotales / 60);
-                    let minutos = minutosTotales % 60;
-                    return { horas, minutos };
-                };
+           getTaskStyle(segment, day) {
+                const startDate = new Date(segment.dia_inicio);
+                const endDate = new Date(segment.dia_termino);
+                const currentDate = new Date(day + ' 23:59');
 
-                // Variables para rastrear el tiempo actual
-                let tiempoActualEnMinutos = 60; // Empieza desde el inicio del proyecto
+                //
+                console.log('ENTRO: ' + segment.componente);
+                console.log(day);
+                console.log(startDate);
+                console.log(endDate);
+                console.log(currentDate);
 
-                // Recorremos las tareas de rutaAvance
-                rutaAvance.forEach((tareaAvance) => {
-                    // Buscar la tarea correspondiente en tasks
-                    let tareaTeorica = tasks.find((t) => t.id === tareaAvance.id);
+                // Si el día está fuera del rango de la tarea, no mostrar la barra
+                if (currentDate < startDate || currentDate > endDate) {
+                    return { display: 'none' };
+                }
 
-                    if (tareaTeorica) {
-                    // Calcular tiempo total en tasks
-                    let tiempoTotalTasks = tareaTeorica.time.reduce(
-                        (total, tiempo) => total + convertirAMinutos(tiempo.horas, tiempo.minutos),
-                        0
-                    );
+                // Convertimos la fecha de inicio y fin a horas con decimales
+                const taskStartHour = startDate.getHours() + startDate.getMinutes() / 60;
+                const taskEndHour = endDate.getHours() + endDate.getMinutes() / 60;
 
-                    let tiempoTotalRutaAvance = tareaAvance.time.reduce(
-                        (total, tiempo) => {
-                            // Solo suma si el tipo no es 'delay'
-                            if (tiempo.type !== 'delay') {
-                                return total + convertirAMinutos(tiempo.horas, tiempo.minutos);
-                            }
-                            return total; // Devuelve el total sin cambios si type === 'delay'
-                        },
-                        0 // Valor inicial del acumulador
-                    );
+                // Calculamos el porcentaje de la barra en función del día
+                const totalDayHours = 24; // Un día tiene 24 horas
 
-                    // Si el tiempo de rutaAvance excede al de tasks
-                    if (tiempoTotalRutaAvance > tiempoTotalTasks) {
-                        let excesoMinutos = tiempoTotalRutaAvance - tiempoTotalTasks;
+                // Si es el primer día de la tarea, ajustamos la posición inicial
+                const startPercentage = currentDate.toDateString() === startDate.toDateString()
+                    ? (taskStartHour / totalDayHours) * 100
+                    : 0;
 
-                        // Ajustar tiempo normal para que coincida con tasks
-                        let tiempoNormal = tareaAvance.time.find((t) => t.type === "normal");
-                        if (tiempoNormal) {
-                            tiempoNormal.horas = Math.floor(tiempoTotalTasks / 60);
-                            tiempoNormal.minutos = tiempoTotalTasks % 60;
-                        }
+                // Si es el último día de la tarea, ajustamos la posición final
+                const endPercentage = currentDate.toDateString() === endDate.toDateString()
+                    ? (taskEndHour / totalDayHours) * 100
+                    : 100;
 
-                        // Agregar el tiempo de delay
-                        let { horas: horasDelay, minutos: minutosDelay } = convertirAHorasYMinutos(excesoMinutos);
-                            tareaAvance.time.push({
-                            hora_inicio: 0, // Este se ajustará después
-                            minuto_inicio: 0,
-                            horas: horasDelay,
-                            minutos: minutosDelay,
-                            type: "delay",
-                        });
-                    }
-
-                    // Ajustar hora_inicio y minuto_inicio de cada segmento
-                    tareaAvance.time.forEach((segmento) => {
-                        let { horas, minutos } = convertirAHorasYMinutos(tiempoActualEnMinutos);
-                        segmento.hora_inicio = horas;
-                        segmento.minuto_inicio = minutos;
-
-                        // Avanzar el tiempo actual según la duración del segmento
-                        tiempoActualEnMinutos += convertirAMinutos(segmento.horas, segmento.minutos);
-                    });
-                    }
-                }); 
-                
-               return rutaAvance; // Devuelve la estructura modificada
-            },
-            
-            getContenidoTooltip(task) {
-                    let totalHoras = 0;
-                    let totalMinutos = 0;
-
-                    let normalTime = { horas: 0, minutos: 0 };
-                    let reworkTime = { horas: 0, minutos: 0 };
-                    let delayTime = { horas: 0, minutos: 0 };
-
-                    task.time.forEach(t => {
-                        if (t.type === 'normal') {
-                            normalTime.horas += t.horas;
-                            normalTime.minutos += t.minutos;
-                        } else if (t.type === 'rework') {
-                            reworkTime.horas += t.horas;
-                            reworkTime.minutos += t.minutos;
-                        } else if (t.type === 'delay') {
-                            delayTime.horas += t.horas;
-                            delayTime.minutos += t.minutos;
-                        }
-                    });
-
-                    normalTime.horas += Math.floor(normalTime.minutos / 60);
-                    normalTime.minutos = normalTime.minutos % 60;
-
-                    reworkTime.horas += Math.floor(reworkTime.minutos / 60);
-                    reworkTime.minutos = reworkTime.minutos % 60;
-
-                    delayTime.horas += Math.floor(delayTime.minutos / 60);
-                    delayTime.minutos = delayTime.minutos % 60;
-
-                    totalHoras = normalTime.horas + reworkTime.horas + delayTime.horas;
-                    totalMinutos = normalTime.minutos + reworkTime.minutos + delayTime.minutos;
-
-                    totalHoras += Math.floor(totalMinutos / 60);
-                    totalMinutos = totalMinutos % 60;
-
-                    let tooltipContent = `
-                        <div class="text-left">
-                            <strong>${task.name}</strong><br>
-                            <strong>Total:</strong> ${totalHoras} horas y ${totalMinutos} min <br><br>
-                    `;
-                    if (normalTime.horas > 0 || normalTime.minutos > 0) 
-                        tooltipContent += `<strong>${task.name}:</strong> ${normalTime.horas} horas y ${normalTime.minutos} min <br>`;
-                    
-                    if (reworkTime.horas > 0 || reworkTime.minutos > 0) 
-                        tooltipContent += `<strong>Retrabajos:</strong> ${reworkTime.horas} horas y ${reworkTime.minutos} min <br>`;
-                    
-                    if (delayTime.horas > 0 || delayTime.minutos > 0) 
-                        tooltipContent += `<strong>Retrasos:</strong> ${delayTime.horas} horas y ${delayTime.minutos} min <br> ${this.getMotivoRetraso(task)}`;
-
-                    tooltipContent += `</div>`;                    
-                    return tooltipContent;
-            },
-            isTaskInHour(segment, hour) {
-                const start = segment.hora_inicio + segment.minuto_inicio / 60; // Hora de inicio en formato decimal
-                const end = start + segment.horas + segment.minutos / 60; // Hora de fin en formato decimal
-                return start < hour + 1 && end > hour;
-            },
-            getTaskStyle(segment, hour) {
-                const start = segment.hora_inicio + segment.minuto_inicio / 60; // Hora de inicio con minutos
-                const end = start + segment.horas + segment.minutos / 60; // Hora de fin con duración
-
-                // Calcula el porcentaje de la barra que corresponde a esta hora
-                const startPercentage = Math.max(0, (Math.max(start, hour) - hour) * 100); // Posición de inicio en porcentaje
-                const endPercentage = Math.min(100, (Math.min(end, hour + 1) - hour) * 100); // Posición de fin en porcentaje
-
-                // Asegúrate de que el ancho de la barra no sea negativo (por ejemplo, si la tarea comienza antes de la hora)
-                const width = Math.max(0, endPercentage - startPercentage);
+                const width = endPercentage - startPercentage;
 
                 return {
-                    left: `${startPercentage}%`, // Posición inicial de la barra
-                    width: `${width}%` // Ancho de la barra
+                    left: `${startPercentage}%`, // La posición de la barra
+                    width: `${width}%`, // El ancho de la barra
                 };
             },
-            async cargarRuta(){
 
-            },
+
             regresar(step){
                 switch (step) {
                     case 1:
@@ -711,6 +534,7 @@
                 try {
                     const response = await axios.get(`/api/avance-hr/${herramentalId}`);
                     this.tasks = response.data.tasks;
+
                     console.log(this.tasks);
                 } catch (error) {
                     console.error('Error fetching tasks:', error);
