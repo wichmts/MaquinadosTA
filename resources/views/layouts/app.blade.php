@@ -68,6 +68,10 @@ The above copyright notice and this permission notice shall be included in all c
 
     {{-- <link href="https://cdn.jsdelivr.net/npm/jsgantt-improved@2.8.10/dist/jsgantt.min.css" rel="stylesheet"> --}}
     <link href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" rel="stylesheet" type="text/css">
+    
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css">
+    
+
 
 
 
@@ -171,7 +175,8 @@ The above copyright notice and this permission notice shall be included in all c
     {{-- <script src="https://cdn.jsdelivr.net/npm/jsgantt-improved@2.8.10/dist/jsgantt.min.js"></script> --}}
     <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js" type="text/javascript"></script>
 
-
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
 
 
 

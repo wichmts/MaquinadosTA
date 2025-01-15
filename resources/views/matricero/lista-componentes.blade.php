@@ -321,8 +321,8 @@
                                                     <span v-if="obj.ensamblado == true" class="badge badge-success py-3 w-100">ENSAMBLADO</span>
                                                     <span v-else class="badge badge-dark py-3 w-100">SIN ENSAMBLAR</span>
                                                 </td>
-                                                <td>@{{obj.es_compra && obj.fecha_real ? obj.fecha_real : '-'}}</td>
-                                                <td>@{{!obj.es_compra && obj.fecha_terminado ? obj.fecha_terminado : '-'}}</td>
+                                                <td>@{{obj.es_compra && obj.fecha_real ? obj.fecha_real : 'N/A'}}</td>
+                                                <td>@{{!obj.es_compra && obj.fecha_terminado ? obj.fecha_terminado : 'En fabricacion...'}}</td>
                                                 <td>@{{obj.fecha_ensamblado??'-'}}</td>
                                             </tr>
                                         </tbody>

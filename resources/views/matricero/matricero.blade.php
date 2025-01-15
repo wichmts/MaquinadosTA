@@ -508,7 +508,7 @@
                                                 <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;" @change="procesarFoto($event)">
                                             </div>
                                             <div class="col-xl-6">
-                                                <button :disabled="componente.ensamblado == true || componente.es_compra == true" @click="abrirSolicitud('modificacion')"  class="btn btn-block btn-dark"><i class="fa fa-exclamation-circle"></i> SOLICITAR AJUSTE</button>
+                                                <button :disabled="componente.ensamblado == true || componente.es_compra == true" @click="abrirSolicitud('ajuste')"  class="btn btn-block btn-dark"><i class="fa fa-exclamation-circle"></i> SOLICITAR AJUSTE</button>
                                             </div>
                                             <div class="col-xl-6">
                                                 <button :disabled="componente.ensamblado == true" @click="abrirSolicitud('rechazo')"  class="btn btn-block btn-danger"><i class="fa fa-times-circle"></i> RECHAZAR COMPONENTE</button>
@@ -538,7 +538,7 @@
                 <div class="modal-content" >
                     <div class="modal-header">
                         <h3 class="text-dark modal-title" id="modalSolicitudLabel">
-                            <span>@{{solicitud.tipo == 'modificacion' ? 'SOLICITAR AJUSTE PARA EL COMPONENTE ' + componente.nombre : 'RECHAZAR EL COMPONENTE ' + componente.nombre}}</span>
+                            <span>@{{solicitud.tipo == 'ajuste' ? 'SOLICITAR AJUSTE PARA EL COMPONENTE ' + componente.nombre : 'RECHAZAR EL COMPONENTE ' + componente.nombre}}</span>
                         </h3>
                         <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>

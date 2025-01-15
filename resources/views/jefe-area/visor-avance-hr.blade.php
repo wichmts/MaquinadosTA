@@ -141,7 +141,7 @@
         padding: 0px;
         text-align: center;
         font-size: 12px;
-        width: 100px;
+        width: 90px;
     }
 
     .task-name {
@@ -300,14 +300,17 @@
                                 <div class="time-header pb-2" >TIEMPO (DIAS)</div>
                             </div>
                             <div class="gantt-header">
-                                <div class="gantt-cell task-name">ACCIONES</div>
-                                <div class="gantt-cell" v-for="day in duracionTotal" :key="day">@{{ day }}</div>
+                                <div class="gantt-cell task-name pt-2">ACCIONES</div>
+                                <div class="gantt-cell pt-2" v-for="day in duracionTotal" :key="day">
+                                    <span class="bold">@{{ day }}</span>
+                                </div>
                             </div>
-                            <div class="gantt-row" v-for="task in tasks" :key="task.id">
-                                <div class="gantt-cell task-name">@{{ task.componente }}</div>
-                                <div class="gantt-cell gantt-bar" v-for="day in duracionTotal" :key="day">
+                            <div class="gantt-row" v-for="task in tasks" :key="task.id" >
+                                <div class="gantt-cell task-name pt-2">@{{ task.componente }}</div>
+                                <div class="gantt-cell gantt-bar" v-for="day in duracionTotal" :key="day" >
                                     <div
                                         v-for="segment in task.time"
+                                        class=""
                                         :key="segment.dia_inicio"
                                         :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
                                         :style="getTaskStyle(segment, day)">
@@ -320,6 +323,7 @@
                 </div>
             </div>
         </div>
+
 
     </div>
 @endsection
@@ -357,6 +361,12 @@
             tasks: [],
             procesos: [],
         },
+        mounted: async function () {
+            let t = this;
+            await t.fetchAnios();
+            await t.fetchMateriales();
+            this.navigateFromUrlParams();
+        },
         computed: {
              duracionTotal() {
                 // Extraemos las fechas de inicio y término de las tareas
@@ -383,54 +393,42 @@
 
         },
         methods:{           
-            // isTaskInDay(segment, day) {
-            //     const inicio = new Date(segment.dia_inicio).toISOString().split('T')[0];
-            //     const termino = new Date(segment.dia_termino).toISOString().split('T')[0];                
-            //     return day >= inicio && day <= termino;
-            // },
-
-           getTaskStyle(segment, day) {
+            getTaskStyle(segment, day) {
                 const startDate = new Date(segment.dia_inicio);
                 const endDate = new Date(segment.dia_termino);
-                const currentDate = new Date(day + ' 23:59');
 
-                //
-                console.log('ENTRO: ' + segment.componente);
-                console.log(day);
-                console.log(startDate);
-                console.log(endDate);
-                console.log(currentDate);
+                console.log('Original day string:', day);
 
-                // Si el día está fuera del rango de la tarea, no mostrar la barra
-                if (currentDate < startDate || currentDate > endDate) {
+                // Asegurarse de que la fecha sea interpretada correctamente en la zona horaria local
+                const [year, month, date] = day.split('-'); // Separar año, mes, día
+                const currentDate = new Date(year, month - 1, date); // Mes es 0-indexado
+                currentDate.setHours(0, 0, 0, 0);
+
+                console.log('Processed currentDate:', currentDate);
+
+                // Rest of the logic remains the same
+                if (currentDate < new Date(startDate.toDateString()) || currentDate > new Date(endDate.toDateString())) {
                     return { display: 'none' };
                 }
 
-                // Convertimos la fecha de inicio y fin a horas con decimales
                 const taskStartHour = startDate.getHours() + startDate.getMinutes() / 60;
                 const taskEndHour = endDate.getHours() + endDate.getMinutes() / 60;
 
-                // Calculamos el porcentaje de la barra en función del día
-                const totalDayHours = 24; // Un día tiene 24 horas
+                const totalDayHours = 24;
 
-                // Si es el primer día de la tarea, ajustamos la posición inicial
-                const startPercentage = currentDate.toDateString() === startDate.toDateString()
-                    ? (taskStartHour / totalDayHours) * 100
-                    : 0;
+                const isStartDay = currentDate.toDateString() === startDate.toDateString();
+                const isEndDay = currentDate.toDateString() === endDate.toDateString();
 
-                // Si es el último día de la tarea, ajustamos la posición final
-                const endPercentage = currentDate.toDateString() === endDate.toDateString()
-                    ? (taskEndHour / totalDayHours) * 100
-                    : 100;
+                const startPercentage = isStartDay ? (taskStartHour / totalDayHours) * 100 : 0;
+                const endPercentage = isEndDay ? (taskEndHour / totalDayHours) * 100 : 100;
 
-                const width = endPercentage - startPercentage;
+                const width = Math.max(0, endPercentage - startPercentage);
 
                 return {
-                    left: `${startPercentage}%`, // La posición de la barra
-                    width: `${width}%`, // El ancho de la barra
+                    left: `${startPercentage}%`,
+                    width: `${width}%`,
                 };
             },
-
 
             regresar(step){
                 switch (step) {
@@ -590,28 +588,9 @@
                     console.error("Error navigating from URL parameters:", error);
                 }
             },
-            // async fetchComponente(id){
-            //     this.cargando = true;
-            //     try {
-            //         const response = await axios.get(`/api/componente/${id}`)
-            //         this.componente = response.data.componente
+              
 
-            //     } catch (error) {
-            //         console.error('Error fetching componente:', error);
-            //     } finally {
-            //         this.cargando = false;
-            //     }
-            // }
-
-        },
-        mounted: async function () {
-            let t = this;
-            await t.fetchAnios();
-            await t.fetchMateriales();
-            this.navigateFromUrlParams();
-        }
-
-                
+        }                
     })
 
     </script>

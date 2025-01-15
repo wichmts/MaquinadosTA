@@ -352,11 +352,12 @@
                                             <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
                                                 <div
                                                     v-for="segment in task.time"
-                                                    data-toggle="tooltip" data-html="true" :title="getContenidoTooltip(task)"
+                                                    :data-tooltip="getContenidoTooltip(task)" 
                                                     :key="segment.inicio"
                                                     v-if="isTaskInHour(segment, hour)"
                                                     :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
                                                     :style="getTaskStyle(segment, hour)"
+                                                    class="gantt-bar-segment"
                                                 ></div>
                                             </div>
                                         </div>
@@ -381,9 +382,10 @@
                                             <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
                                                 <div
                                                     v-for="segment in task.time"
-                                                    data-toggle="tooltip" data-html="true" :title="getContenidoTooltip(task)"
+                                                    :data-tooltip="getContenidoTooltip(task)" 
                                                     :key="segment.inicio"
                                                     v-if="isTaskInHour(segment, hour)"
+                                                    class="gantt-bar-segment"
                                                     :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
                                                     :style="getTaskStyle(segment, hour)">
                                                 </div>
@@ -454,85 +456,33 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="col-xl-12 text-center mt-3">
+                            <div class="col-xl-12 text-center mt-4">
                                 <h5 class="badge badge-dark badge-pill px-3 py-2" style="background-color: #c0d340 !important; color: black !important"> Tiempo estimado:  @{{totalHoras}} horas y @{{totalMinutos}} minutos. </h5>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-xl-3 py-0 px-1">
-                                <button class="px-1 btn btn-block btn-dark my-1">RE TRABAJO</button>
+                        <div class="row mt-3">
+                            <div class="col-xl-6 py-0 px-1">
+                                <button :disabled="!componente.enrutado " class="px-1 btn btn-block btn-dark my-1" @click="abrirModalSolicitud('retrabajo')"><i class="fa fa-retweet"></i> RETRABAJO</button>
                             </div>
-                            <div class="col-xl-3 py-0 px-1">
-                                <button class="px-1 btn btn-block btn-dark my-1" >MODIFICACIÓN</button>
+                            <div class="col-xl-6 py-0 px-1">
+                                <button :disabled="!componente.enrutado " class="px-1 btn btn-block btn-dark my-1" @click="abrirModalSolicitud('modificacion')"><i class="fa fa-edit"></i> MODIFICACIÓN</button>
                             </div>
-                            <div class="col-xl-3 py-0 px-1">
-                                <button class="px-1 btn btn-block btn-dark my-1">RE FABRICACIÓN</button>
+                            <div class="col-xl-6 py-0 px-1">
+                                <button :disabled="!componente.enrutado " class="px-1 btn btn-block btn-dark my-1" ><i class="fa fa-redo"></i> REFABRICACIÓN</button>
                             </div>
-                            <div class="col-xl-3 py-0 px-1">
-                                <button class="px-1 btn btn-block btn-dark my-1">REFACCIÓN</button>
+                            <div class="col-xl-6 py-0 px-1">
+                                <button :disabled="!componente.enrutado " class="px-1 btn btn-block btn-dark my-1"><i class="fa fa-puzzle-piece"></i> REFACCIÓN</button>
                             </div>
                         </div>
                          <div class="row mt-3">
-                            <div class="col-xl-12">
-                                <button @click="mostrarLineaDeTiempo" class="btn btn-block btn-default"><i class="fa fa-calendar"></i> Ver linea de tiempo del componente </button>
+                            <div class="col-xl-6">
+                                <button @click="mostrarLineaDeTiempo" class="btn btn-block btn-default"><i class="fa fa-calendar"></i> LINEA DEL TIEMPO </button>
                             </div>
-                        </div>
-                        <div class="row mt-1">
-                            <div class="col-xl-12">
-                                <button @click="fetchSolicitudes" class="btn btn-block btn-default"><i class="fa fa-list"></i> Ver solicitudes de componente </button>
+                            <div class="col-xl-6">
+                                <button @click="fetchSolicitudes" class="btn btn-block btn-default"><i class="fa fa-clipboard-list"></i> SOLICITUDES</button>
                             </div>
                         </div>
                         {{-- <div class="row">
-                            <div class="col-xl-12">
-                                <h5 class="bold cursor-pointer" style="letter-spacing: 1px" @click="verVersiones = !verVersiones">
-                                    <i class="fa fa-history"></i> Historial de versiones 
-                                    <i v-if="verVersiones" class="fa fa-caret-down"></i>
-                                    <i v-if="!verVersiones" class="fa fa-caret-right"></i>
-                                </h5>
-                            </div>
-                            <transition name="slide-fade">
-                                <div class="col-xl-12 table-responsive" v-if="verVersiones">
-                                    <table class="table">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th style="font-size: 14px">Version</th>
-                                                <th style="font-size: 14px">Fecha</th>
-                                                <th style="font-size: 14px">Tipo</th>
-                                                <th style="font-size: 14px">Motivo</th>
-                                                <th style="font-size: 14px">Ver</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td style="font-size: 11px !important">.1</td>
-                                                <td style="font-size: 11px !important">28/11/2024 14:56 Hrs</td>
-                                                <td style="font-size: 11px !important" class="bold">REFABRICACION</td>
-                                                <td style="font-size: 11px !important">
-                                                    Se rompio una pieza fundamental durante el ensamblado y requiere volver a iniciar el trabajo completo.
-                                                </td>
-                                                <td style="font-size: 11px !important">
-                                                    <button class="btn btn-sm btn-default">
-                                                        <i class="fa fa-eye"></i> Ver
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="font-size: 11px !important">.2</td>
-                                                <td style="font-size: 11px !important">10/12/2024 10:31 Hrs</td>
-                                                <td style="font-size: 11px !important" class="bold">MODIFICACION</td>
-                                                <td style="font-size: 11px !important">
-                                                    Se rompio una pieza fundamental durante el ensamblado y requiere volver a iniciar el trabajo completo.
-                                                </td>
-                                                <td style="font-size: 11px !important">
-                                                    <button class="btn btn-sm btn-default">
-                                                        <i class="fa fa-eye"></i> Ver
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </transition>
                         </div> --}}
                     </div>
                 </div>
@@ -566,11 +516,11 @@
                                     </thead>
                                     <tbody>
                                         <tr v-for="(l, index) in lineaTiempo" :key="'linea- ' + index + '-' + l.created_at">
-                                            <td>@{{ l.fecha }}</td>
-                                            <td>@{{ l.hora }}</td>
-                                            <td><span v-html="l.descripcion"></span></td>
-                                            <td>@{{ l.maquina }}</td>
-                                            <td>@{{ l.area }} <br><small>@{{l.encargado}}</small></td>
+                                            <td style="width: 15% !important">@{{ l.fecha }}</td>
+                                            <td style="width: 10% !important">@{{ l.hora }}</td>
+                                            <td style="width: 40% !important"><span v-html="l.descripcion"></span></td>
+                                            <td style="width: 15% !important">@{{ l.maquina }}</td>
+                                            <td style="width: 20% !important">@{{ l.area }} <br><small>@{{l.encargado}}</small></td>
                                         </tr>    
                                     </tbody>
                                 </table>
@@ -585,9 +535,7 @@
                 </div>
             </div>
         </div>
-
-
-         <div class="modal fade" id="modalSolicitudes" tabindex="-1" aria-labelledby="modalSolicitudesLabel" aria-hidden="true">
+        <div class="modal fade" id="modalSolicitudes" tabindex="-1" aria-labelledby="modalSolicitudesLabel" aria-hidden="true">
             <div class="modal-dialog" style="min-width: 70%;">
                 <div class="modal-content" >
                     <div class="modal-header">
@@ -600,7 +548,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-xl-12 table-responsive table-stripped"  style="height: 75vh !important; overflow-y: scroll !important">
+                            <div class="col-xl-12 table-responsive table-stripped"  style="max-height: 75vh !important; overflow-y: scroll !important">
                                 <table class="table">
                                     <thead class="thead-light">
                                         <tr>
@@ -613,6 +561,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <tr v-if="solicitudes.length == 0">
+                                            <td colspan="6"> No hay ninguna solicitud de retrabajo, modificacion o ajuste pendiente para este componente </td>
+                                        </tr>
                                         <tr v-for="(l, index) in solicitudes" :key="'linea- ' + index + '-' + l.created_at">
                                             <td>@{{ l.fecha }}</td>
                                             <td>@{{ l.hora }}</td>
@@ -635,6 +586,85 @@
             </div>
         </div>
 
+        <div class="modal fade" id="modalRetrabajo" tabindex="-1" aria-labelledby="modalRetrabajoLabel" aria-hidden="true">
+            <div class="modal-dialog" style="min-width: 40%;">
+                <div class="modal-content" >
+                    <div class="modal-header">
+                        <h3 class="bold modal-title" id="modalRetrabajoLabel">
+                            AGREGAR TIEMPO DE RETRABAJO PARA @{{componente.nombre}}
+                        </h3>
+                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close" @click="fetchComponente(componente.id)">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xl-12">
+
+                            </div>
+                            <div class="col-xl-12 table-responsive">
+                                <table class="table">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Accion</th> 
+                                            <th>Horas</th> 
+                                            <th>Minutos</th> 
+                                        </tr> 
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="p in solicitud.procesos" :key="'sol-' + p.id">
+                                            <td class="py-1">@{{p.nombre}}</td>
+                                            <td class="py-1">
+                                                <div class="row">
+                                                    <div class="col-xl-12">
+                                                        <div class="input-group mb-0">
+                                                             <div class="input-group-prepend">
+                                                                 <button class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important"  @click="p.horas > 0 ? p.horas-- : p.horas; actualizarRetrabajos()"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
+                                                             </div>
+                                                             <input type="number" v-model="p.horas" class="form-control text-center px-1 py-1" step="1" @change="actualizarRetrabajos()">
+                                                             <div class="input-group-append">
+                                                                 <button class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.horas++; actualizarRetrabajos()"> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
+                                                             </div>
+                                                         </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-1">
+                                                <div class="row">
+                                                    <div class="col-xl-12">
+                                                        <div class="input-group mb-0">
+                                                             <div class="input-group-prepend">
+                                                                 <button class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important"  @click="p.minutos > 0 ? p.minutos-- : p.minuto; actualizarRetrabajos()"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
+                                                             </div>
+                                                             <input type="number" v-model="p.minutos" class="form-control text-center px-1 py-1" step="1" @change="actualizarRetrabajos()">
+                                                             <div class="input-group-append">
+                                                                 <button class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.minutos < 60 ? p.minutos++ : p.minutos; actualizarRetrabajos()"> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
+                                                             </div>
+                                                         </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-xl-12 form-group mt-3">
+                                <label class="bold">Descripción del problema detectado: <span class="text-danger">*</span> </label>
+                                <textarea v-model="componente.notificacion_texto" class="form-control w-100 text-left px-1 py-1" style="height: 120px" placeholder="Describe de problema para que el programador pueda realizar los ajustes requeridos (esto se agregara a la linea de tiempo del componente)..."></textarea>
+                            </div>
+                            
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-12 text-right">
+                                <button @click="fetchComponente(componente.id)" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+                                <button class="btn" @click="enviarRetrabajo()"><i class="fa fa-save"></i> APLICAR CAMBIOS</button>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        </div>
+
     </div>
 @endsection
 
@@ -647,9 +677,13 @@
         var app = new Vue({
         el: '#vue-app',
         data: {
+            solicitud: {
+                tipo: '',
+                reasignar: 'corte'
+            },
             solicitudes: [],
             maquinas: [],
-            componente: {},
+            componente: {hay_retrabajo: false, notificacion_texto: ''},
             estatusCompra: -1,
             loading_button: false,
             cargando: false,            
@@ -807,6 +841,60 @@
             }
         },
         methods:{
+            async enviarRetrabajo(){
+                let t = this
+                t.cargando = true;
+
+                t.componente.ruta = JSON.parse(JSON.stringify(t.tasks));
+                t.componente.hay_retrabajo = true;
+                
+                try {
+                    const response = await axios.put(`/api/componente/${t.selectedComponente}/enrutamiento/${false}`, t.componente);
+                    $('#modalRetrabajo').modal('hide');
+                    swal('Correcto', 'Se ha asignado el tiempo de retrabajo correctamente y el componente ha sido reasignado a programacion.', 'success');
+                    await t.fetchComponentes(t.selectedHerramental);
+                    await t.fetchComponente(t.selectedComponente);
+                } catch (error) {
+                    t.cargando = false
+                    return false;
+                }  
+            },
+            abrirModalSolicitud(tipo) {  
+                let t = this;
+
+                this.solicitud = {
+                    tipo: tipo,
+                    reasignar: 'corte',
+                    procesos: [
+                        {id: 1, prioridad: 1, nombre: 'Cortar', horas: 0, minutos: 0},
+                        {id: 2, prioridad: 2, nombre: 'Programar', horas: 0, minutos: 0},
+                        {id: 3, prioridad: 3, nombre: 'Maquinar', horas: 0, minutos: 0},
+                        {id: 4, prioridad: 4, nombre: 'Tornear', horas: 0, minutos: 0},
+                        {id: 5, prioridad: 5, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0},
+                        {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0},
+                        {id: 7, prioridad: 7, nombre: 'Rectificar', horas: 0, minutos: 0},
+                        {id: 8, prioridad: 8, nombre: 'EDM', horas: 0, minutos: 0}
+                    ],
+                };
+                this.solicitud.procesos = this.solicitud.procesos.filter(proceso => {
+                    return this.tasks.some(task => task.id === proceso.id);
+                });
+
+                this.solicitud.procesos.forEach(proceso => {
+                    let task = this.tasks.find(task => task.id === proceso.id);
+                    if (task) {
+                        let retrabajo = task.time.find(time => time.type === "rework");
+                        if (retrabajo) {
+                            proceso.horas = retrabajo.horas;
+                            proceso.minutos = retrabajo.minutos;
+                        }
+                    }
+                });
+                $('#modalRetrabajo').modal({
+                    backdrop: 'static',
+                    keyboard: false // Opcional: evita cerrar el modal con la tecla Esc
+                });
+            },
             async mostrarLineaDeTiempo() {
                 let t = this;
                 this.cargando = true;
@@ -1109,30 +1197,33 @@
                 }
                 this.calcularInicio();
             },
-            agregarRetrabajo(taskId) {
-                const task = this.tasks.find(task => task.id === taskId);
-                if (task) {
-                    task.time.push({
-                        hora_inicio: null,
-                        minuto_inicio: null,
-                        horas: 1,
-                        minutos: 0,
-                        type: "rework"
-                    });
-                }
-                this.calcularInicio();
-            },
-            agregarRetraso(taskId) {
-                const task = this.tasks.find(task => task.id === taskId);
-                if (task) {
-                    task.time.push({
-                        hora_inicio: null,
-                        minuto_inicio: null,
-                        horas: 1,
-                        minutos: 0,
-                        type: "delay"
-                    });
-                }
+            actualizarRetrabajos() {
+                let t = this;
+                t.solicitud.procesos.forEach(proceso => {
+                    let task = this.tasks.find(task => task.id === proceso.id);
+                    if (task) {
+                        let retrabajo = task.time.find(time => time.type === "rework");
+                        if (retrabajo) {
+                            retrabajo.horas = parseInt(proceso.horas);
+                            retrabajo.minutos = parseInt(proceso.minutos);
+
+                            if (proceso.horas === 0 && proceso.minutos === 0) {
+                                task.time = task.time.filter(time => time.type !== "rework");
+                            }
+                        } else {
+                            if (proceso.horas !== 0 || proceso.minutos !== 0) {
+                                task.time.push({
+                                    hora_inicio: null,
+                                    minuto_inicio: null,
+                                    horas: proceso.horas,
+                                    minutos: proceso.minutos,
+                                    type: "rework"
+                                });
+                            }
+                        }
+                    }
+                });
+
                 this.calcularInicio();
             },
             calcularInicio() {
@@ -1235,14 +1326,19 @@
                     });
                 });
 
+                Vue.nextTick(function(){
+                    tippy('[data-tippy-root]').forEach(t => t.destroy()); 
+                    tippy('.gantt-bar-segment', {
+                        content(reference) { return reference.getAttribute('data-tooltip')},
+                        allowHTML: true,
+                        theme: 'light-border',
+                    });
+                })
+
                 // FALTA ACTUALIZAR EL DE AVANCE CUANDO CAMBIE EL ORIGINAL
-                
                 // Vue.nextTick(function(){
                 //     t.rutaAvance = t.ajustarRutaAvance(t.tasks, t.rutaAvance);
                 //     t.calcularInicioAvance();
-                //     Vue.nextTick(function(){
-                //         $('[data-toggle="tooltip"]').tooltip()
-                //     })
                 // })
 
             },
@@ -1531,16 +1627,20 @@
                     t.rutaAvance = t.ajustarRutaAvance(t.tasks, rutaAvanceAux);
                     t.calcularInicioAvance();
                     
+                    tippy('[data-tippy-root]').forEach(t => t.destroy()); 
                     Vue.nextTick(function(){
-                        $('[data-toggle="tooltip"]').tooltip()
+                        tippy('.gantt-bar-segment', {
+                            content(reference) { return reference.getAttribute('data-tooltip')},
+                            allowHTML: true,
+                            theme: 'light-border',
+                        });
                     })
                 })
 
             },
             async guardar(liberarComponente){
                 let t = this
-                
-                
+
                 if(liberarComponente){
                     if(!t.componente.prioridad || !t.componente.programador_id){
                         swal('Errores de validación', `Todos los campos son obligatorios para liberar.`, 'error');
@@ -1553,6 +1653,7 @@
                 }
                 t.cargando = true;
                 t.componente.ruta = JSON.parse(JSON.stringify(t.tasks));
+
                 try {
                     const response = await axios.put(`/api/componente/${t.selectedComponente}/enrutamiento/${liberarComponente}`, t.componente);
                     if(!liberarComponente)

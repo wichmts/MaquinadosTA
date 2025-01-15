@@ -25,7 +25,7 @@ class CreateNotificacionesTable extends Migration
             $table->integer('maquina_id')->nullable();
             $table->integer('componente_id')->nullable();
             $table->integer('cantidad')->nullable();
-            $table->string('descripcion')->nullable();
+            $table->text('descripcion')->nullable();
             $table->text('responsables')->nullable();
             $table->timestamps();
         });
