@@ -195,6 +195,264 @@
     }
 
 
+    /*  */
+
+
+  .checkbox-wrapper-11 {
+    --text: #414856;
+    --check: #35d312;
+    --disabled: #C3C8DE;
+    --border-radius: 10px;
+    border-radius: var(--border-radius);
+    position: relative;
+    padding: 5px;
+    display: grid;
+    grid-template-columns: 30px auto;
+    align-items: center;
+  }
+  .checkbox-wrapper-11 label {
+    color: var(--text);
+    position: relative;
+    cursor: pointer;
+    display: grid;
+    align-items: center;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+    transition: color 0.3s ease;
+  }
+  .checkbox-wrapper-11 label::before,
+  .checkbox-wrapper-11 label::after {
+    content: "";
+    position: absolute;
+  }
+  .checkbox-wrapper-11 label::before {
+    height: 2px;
+    width: 8px;
+    left: -27px;
+    background: var(--check);
+    border-radius: 2px;
+    transition: background 0.3s ease;
+  }
+  .checkbox-wrapper-11 label:after {
+    height: 4px;
+    width: 4px;
+    top: 8px;
+    left: -25px;
+    border-radius: 50%;
+  }
+  .checkbox-wrapper-11 input[type=checkbox] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+    height: 15px;
+    width: 15px;
+    outline: none;
+    border: 0;
+    margin: 0 15px 0 0;
+    cursor: pointer;
+    background: var(--background);
+    display: grid;
+    align-items: center;
+  }
+  .checkbox-wrapper-11 input[type=checkbox]::before, .checkbox-wrapper-11 input[type=checkbox]::after {
+    content: "";
+    position: absolute;
+    height: 2px;
+    top: auto;
+    background: var(--check);
+    border-radius: 2px;
+  }
+  .checkbox-wrapper-11 input[type=checkbox]::before {
+    width: 0px;
+    right: 60%;
+    transform-origin: right bottom;
+  }
+  .checkbox-wrapper-11 input[type=checkbox]::after {
+    width: 0px;
+    left: 40%;
+    transform-origin: left bottom;
+  }
+  .checkbox-wrapper-11 input[type=checkbox]:checked::before {
+    -webkit-animation: check-01-11 0.4s ease forwards;
+            animation: check-01-11 0.4s ease forwards;
+  }
+  .checkbox-wrapper-11 input[type=checkbox]:checked::after {
+    -webkit-animation: check-02-11 0.4s ease forwards;
+            animation: check-02-11 0.4s ease forwards;
+  }
+  .checkbox-wrapper-11 input[type=checkbox]:checked + label {
+    color: var(--disabled);
+    -webkit-animation: move-11 0.3s ease 0.1s forwards;
+            animation: move-11 0.3s ease 0.1s forwards;
+  }
+  .checkbox-wrapper-11 input[type=checkbox]:checked + label::before {
+    background: var(--disabled);
+    -webkit-animation: slice-11 0.4s ease forwards;
+            animation: slice-11 0.4s ease forwards;
+  }
+  .checkbox-wrapper-11 input[type=checkbox]:checked + label::after {
+    -webkit-animation: firework-11 0.5s ease forwards 0.1s;
+            animation: firework-11 0.5s ease forwards 0.1s;
+  }
+
+  @-webkit-keyframes move-11 {
+    50% {
+      padding-left: 8px;
+      padding-right: 0px;
+    }
+    100% {
+      padding-right: 4px;
+    }
+  }
+
+  @keyframes move-11 {
+    50% {
+      padding-left: 8px;
+      padding-right: 0px;
+    }
+    100% {
+      padding-right: 4px;
+    }
+  }
+  @-webkit-keyframes slice-11 {
+    60% {
+      width: 100%;
+      left: 4px;
+    }
+    100% {
+      width: 100%;
+      left: -2px;
+      padding-left: 0;
+    }
+  }
+  @keyframes slice-11 {
+    60% {
+      width: 100%;
+      left: 4px;
+    }
+    100% {
+      width: 100%;
+      left: -2px;
+      padding-left: 0;
+    }
+  }
+  @-webkit-keyframes check-01-11 {
+    0% {
+      width: 4px;
+      top: auto;
+      transform: rotate(0);
+    }
+    50% {
+      width: 0px;
+      top: auto;
+      transform: rotate(0);
+    }
+    51% {
+      width: 0px;
+      top: 8px;
+      transform: rotate(45deg);
+    }
+    100% {
+      width: 5px;
+      top: 8px;
+      transform: rotate(45deg);
+    }
+  }
+  @keyframes check-01-11 {
+    0% {
+      width: 4px;
+      top: auto;
+      transform: rotate(0);
+    }
+    50% {
+      width: 0px;
+      top: auto;
+      transform: rotate(0);
+    }
+    51% {
+      width: 0px;
+      top: 8px;
+      transform: rotate(45deg);
+    }
+    100% {
+      width: 5px;
+      top: 8px;
+      transform: rotate(45deg);
+    }
+  }
+  @-webkit-keyframes check-02-11 {
+    0% {
+      width: 4px;
+      top: auto;
+      transform: rotate(0);
+    }
+    50% {
+      width: 0px;
+      top: auto;
+      transform: rotate(0);
+    }
+    51% {
+      width: 0px;
+      top: 8px;
+      transform: rotate(-45deg);
+    }
+    100% {
+      width: 10px;
+      top: 8px;
+      transform: rotate(-45deg);
+    }
+  }
+  @keyframes check-02-11 {
+    0% {
+      width: 4px;
+      top: auto;
+      transform: rotate(0);
+    }
+    50% {
+      width: 0px;
+      top: auto;
+      transform: rotate(0);
+    }
+    51% {
+      width: 0px;
+      top: 8px;
+      transform: rotate(-45deg);
+    }
+    100% {
+      width: 10px;
+      top: 8px;
+      transform: rotate(-45deg);
+    }
+  }
+  @-webkit-keyframes firework-11 {
+    0% {
+      opacity: 1;
+      box-shadow: 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0;
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      box-shadow: 0 -15px 0 0px #4F29F0, 14px -8px 0 0px #4F29F0, 14px 8px 0 0px #4F29F0, 0 15px 0 0px #4F29F0, -14px 8px 0 0px #4F29F0, -14px -8px 0 0px #4F29F0;
+    }
+  }
+  @keyframes firework-11 {
+    0% {
+      opacity: 1;
+      box-shadow: 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0;
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      box-shadow: 0 -15px 0 0px #4F29F0, 14px -8px 0 0px #4F29F0, 14px 8px 0 0px #4F29F0, 0 15px 0 0px #4F29F0, -14px 8px 0 0px #4F29F0, -14px -8px 0 0px #4F29F0;
+    }
+  }
+
+
 </style>
 
 @section('content')
@@ -337,19 +595,31 @@
                             <div class="row">
                                 <div class="col-xl-5 form-group" style="height: 150px !important">
                                     <label class="bold">COMENTARIOS DE COMPONENTE TERMINADO</label>
-                                    <textarea :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-0 form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Comentarios..." v-model="fabricacion.comentarios_terminado"></textarea>
+                                    <textarea :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-0 form-control text-left px-1 py-1" style="min-height: 150px !important" placeholder="Comentarios..." v-model="fabricacion.comentarios_terminado"></textarea>
                                 </div>
-                                <div class="col-xl-5 form-group" style="height: 150px !important">
+                                <div class="col-xl-4 form-group" style="height: 150px !important">
                                     <label class="bold">REGISTRO DE MEDIDAS</label>
-                                    <textarea :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-0 form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Registro de medidas..." v-model="fabricacion.registro_medidas"></textarea>
+                                    <textarea :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-0 form-control text-left px-1 py-1" style="min-height: 150px !important" placeholder="Registro de medidas..." v-model="fabricacion.registro_medidas"></textarea>
                                 </div>
-                                <div class="col-xl-2 form-group">
-                                    <label class="bold">FOTO DEL COMPONENTE</label>
+                                <div class="col-xl-3 form-group">
+                                    <label class="bold">FOTO COMPONENTE TERMINADO</label>
                                     <a target="_blank" v-if="fabricacion.foto" :href="'/storage/fabricaciones/' + fabricacion.foto">
                                         <img :src="'/storage/fabricaciones/' + fabricacion.foto" style="border-radius: 10px; width: 100%; height: auto; object-fit: cover" alt="">
                                     </a>
                                     <img v-else src="{{ asset('paper/img/no-image.png') }}" style="border-radius: 10px; width: 100%; height: 150px; object-fit: cover" alt="">
                                 </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-12 mt-3 mb-0 pb-0">
+                                    <label class="bold" style="letter-spacing: 1px">SELECCIONE UN SUBCOMPONENTE PARA MARCARLO COMO FABRICADO:</label>
+                                </div>
+                                <div class="col-xl-2 pt-0 mt-0" v-for="(x, index) in fabricacion.checklist_fabricadas">
+                                    <div class="checkbox-wrapper-11" >
+                                        <input :id="index" type="checkbox" v-model="x.terminado">
+                                        <label :for="index" class="bold btn btn-sm btn-default" style="font-size: 15px !important;">@{{x.nombre}}</label>
+                                    </div>
+                                </div>
+                               
                             </div>
                         </div>
                         <div class="col-xl-3">
@@ -600,6 +870,7 @@
                 {id: 7, prioridad: 7, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
                 {id: 8, prioridad: 8, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
             ],
+
             tasks: [],
             rutaAvance: [],
             archivos: [],
@@ -755,6 +1026,10 @@
                 try {
                     const response = await axios.post(`/api/solicitud/${t.componente.id}`, t.solicitud);
                     if (response.data.success) {
+                        await t.fetchComponentes(t.selectedMaquina);
+                        t.menuStep = 1;
+                        t.selectedComponente = null;
+                        t.ruta.componente = null;
                         swal('Solicitud enviada', 'La solicitud ha sido enviada exitosamente.', 'success');
                         $('#modalSolicitud').modal('hide');
                     }
@@ -783,7 +1058,6 @@
                     swal('Error', 'Hubo un problema al intentar reanudar la operación.', 'error');
                 }
             },
-
             async registrarParoAPI() {
                 let t = this;
                 if (!t.paro.tipo_paro.trim()) {
@@ -825,6 +1099,15 @@
                 let t = this
                 t.fabricacion = t.componente.fabricaciones.find(obj => obj.id == t.programaSeleccionado)
                 t.fotografia = t.componente.foto;
+                if(!t.fabricacion.checklist_fabricadas){
+                    this.fabricacion.checklist_fabricadas = []
+                    for (let index = 1; index <= this.componente.cantidad; index++) {
+                        this.fabricacion.checklist_fabricadas.push({
+                            nombre: this.componente.nombre + '.' + index,
+                            terminado: false
+                        })
+                    }
+                }
             },  
             abrirCamara() {
                 const fileInput = document.getElementById('fileInput');

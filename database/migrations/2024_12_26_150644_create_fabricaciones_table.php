@@ -25,7 +25,8 @@ class CreateFabricacionesTable extends Migration
             $table->text('registro_medidas')->nullable();
             $table->string('foto')->nullable();
             $table->text('motivo_retraso')->nullable();
-            
+            $table->integer('orden')->nullable();
+            $table->text('checklist_fabricadas')->nullable();
             $table->timestamps();
         });
     }

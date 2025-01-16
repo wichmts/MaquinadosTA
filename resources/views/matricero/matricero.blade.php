@@ -696,7 +696,6 @@
             },
             async cambiarEstatusComponente(){
                 let t = this;
-
                 if (!this.componente.foto_matricero) {
                         swal('Error', 'Debe cargar una foto del componente antes de cambiar el estado de componente.', 'error');
                         this.$nextTick(() => {
@@ -704,18 +703,35 @@
                         });
                         return;
                 }
+                swal({
+                    title: "¿Está seguro?",
+                    text: "¿Desea cambiar el estado del componente?",
+                    icon: "warning",
+                    buttons: ['Cancelar', 'Si, cambiar estado'],
+                    dangerMode: true,
+                }).then((willChange) => {
+                    if (willChange) {
+                        t.cambiarEstado();
+                    } else {
+                        this.$nextTick(() => {
+                            this.$set(t.componente, 'ensamblado', !t.componente.ensamblado);
+                        });
+                    }
+                });
+            },
+            async cambiarEstado(){
+                let t = this;
                 try {
-                    const response = await axios.post(`/api/herramental/${this.selectedComponente}/estatus-ensamblado`, {ensamblado: t.componente.ensamblado});
+                    const response = await axios.post(`/api/herramental/${this.selectedComponente}/estatus-ensamblado`, { ensamblado: t.componente.ensamblado });
                     await this.fetchComponentes(this.selectedHerramental);
                     await this.fetchComponente(this.selectedComponente);
-
                 } catch (error) {
                     console.error('Error cambiando estatus:', error);
                     swal('Error', 'Error al cambiar el estatus', 'error');
-                     this.$nextTick(() => {
+                    this.$nextTick(() => {
                         this.$set(t.componente, 'ensamblado', !t.componente.ensamblado);
                     });
-                }                
+                }
             },
             async handleFileChange(event) {
                 const file = event.target.files[0];

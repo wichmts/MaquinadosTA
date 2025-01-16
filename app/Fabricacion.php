@@ -21,6 +21,7 @@ class Fabricacion extends Model
     {
   		$data = parent::toArray();
         $data['archivo_show'] = $this->getArchivoShow();
+        $data['checklist_fabricadas'] = $this->checklist_fabricadas ?  json_decode($this->checklist_fabricadas) : null;
         $data['proceso_id'] = $this->maquina? $this->maquina->tipo_proceso : null;
         return $data;
     }

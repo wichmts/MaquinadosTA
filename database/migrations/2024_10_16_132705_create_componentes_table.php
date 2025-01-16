@@ -62,6 +62,7 @@ class CreateComponentesTable extends Migration
             
             $table->string('estatus_corte')->nullable(); // inicial, proceso, pausado, finalizado
             $table->string('estatus_programacion')->nullable(); // inicial, proceso, pausado, finalizado
+            $table->integer('estatus_fabricacion')->nullable();  // el orden actual en el que va cada fabricacion
             
             $table->boolean('cancelado')->nullable();
             
