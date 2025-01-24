@@ -54,7 +54,7 @@ class WebController extends Controller
     }
 
     public function visorAvanceHR(){
-        if(auth()->user()->hasAnyRole(['JEFE DE AREA', 'PROGRAMADOR', 'MATRICERO'])) 
+        if(auth()->user()->hasAnyRole(['JEFE DE AREA', 'PROGRAMADOR', 'MATRICERO', 'AUXILIAR DE DISEÑO'])) 
             return view('jefe-area.visor-avance-hr');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
@@ -68,6 +68,11 @@ class WebController extends Controller
     public function compraComponentes(){
         if(auth()->user()->hasRole('ALMACENISTA')) 
             return view('almacenista.compra-componentes');
+        return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
+     public function temple(){
+        if(auth()->user()->hasRole('ALMACENISTA')) 
+            return view('almacenista.temple');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
     public function almacenMP(){

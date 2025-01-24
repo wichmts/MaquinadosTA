@@ -76,6 +76,10 @@
         min-width: 1200px; /* Ajusta el ancho mínimo según el contenido */
     }
 
+    .bg-person{
+        background-color: #f8ffab !important;
+    }
+
 
 
 
@@ -206,9 +210,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(c, index) in componentes" :key="index">
+                                    <tr v-for="(c, index) in componentes" :key="index" v-show="!c.refabricado" :class="{'bg-person': c.retrabajo}">
                                         <td>
-                                            <strong> @{{ c.nombre }}</strong>
+                                            <strong> @{{ c.nombre }} <br> <small v-if="c.retrabajo" >En modificacion...</small></strong>
                                         </td>
                                         <td>
                                             <input class="input-file" :id="'2d-' + index" type="file" name="file" @change="handleFileChange($event, index, 'vista2D')" style="display: none;">
@@ -254,13 +258,18 @@
                                         <td>
                                             <div class="row">
                                                 <div class="col my-1">
-                                                    <button v-if="!c.cargado" @click="liberarComponente(c)" class=" my-1 btn-block btn btn-sm btn-success"><i class="fa fa-check"></i> Liberar</button>
-                                                    <button v-if="c.cargado && !c.cancelado" disabled class=" my-1 btn-block btn btn-sm btn-success"><i class="fa fa-check-double"></i> Liberado</button>
-                                                    <button v-if="c.cargado && !c.cancelado" @click="preCancelarComponente(c)" class=" my-1 btn-block btn btn-sm btn-danger"><i class="fa fa-ban"></i> Cancelar</button>
-                                                    <button v-if="c.cargado && c.cancelado" class=" my-1 btn-block btn btn-sm btn-danger" disabled><i class="fa fa-ban"></i> Cancelado</button>
+                                                    <button v-if="!c.retrabajo && !c.cargado" @click="liberarComponente(c)" class=" my-1 btn-block btn btn-sm btn-success"><i class="fa fa-check"></i> Liberar</button>
+                                                    <button v-if="!c.retrabajo && c.cargado && !c.cancelado" disabled class=" my-1 btn-block btn btn-sm btn-success"><i class="fa fa-check-double"></i> Liberado</button>
+
+                                                    <button @click="modificacion(c.id)" v-if="!c.retrabajo && c.cargado && !c.cancelado && c.es_compra == 0" class="btn btn-block my-2 btn-dark btn-sm"><i class="fa fa-edit"></i> Modific.</button>    
+                                                    <button v-if="!c.retrabajo && c.cargado && !c.cancelado" @click="preCancelarComponente(c)" class=" my-1 btn-block btn btn-sm btn-danger"><i class="fa fa-ban"></i> Cancelar</button>
+                                                    <button v-if="!c.retrabajo && c.cargado && c.cancelado" class=" my-1 btn-block btn btn-sm btn-danger" disabled><i class="fa fa-ban"></i> Cancelado</button>
                                                 </div>
                                                 <div class="col my-1">
                                                     <button v-if="!c.cargado" @click="eliminarComponente(index)" class="btn-block btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Eliminar</button>
+                                                </div>
+                                                <div class="col my-0">
+                                                    <button v-if="c.retrabajo" @click="enviarRetrabajo(c)" class="btn-block btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Confirmar </button>
                                                 </div>
                                             </div>
                                         </td>
@@ -351,7 +360,6 @@
             clientes: [],      
             proyectos: [],     
             herramentales: [], 
-            componentes: [],   
             materiales: [],
             selectedAnio: null,
             selectedCliente: null,
@@ -379,9 +387,6 @@
                 handler(newComponentes) {
                     newComponentes.forEach((componente) => {
                         if (componente.es_compra === 1) {
-                            // componente.largo = '';
-                            // componente.ancho = '';
-                            // componente.alto = '';
                             componente.material_id = null;
                         }
                     });
@@ -389,10 +394,102 @@
                 deep: true // Necesario para observar cambios dentro de los objetos en el arreglo
             }
         },
-        computed: {
-
-        },
         methods:{
+            async enviarRetrabajo(componente) {
+                let t = this
+                t.errores = [];
+                let valido = t.componenteValido(componente)
+                if (!valido) {
+                    swal('Errores de validación', t.errores.join('\n'), 'error');
+                    return;
+                }
+                let respuesta = await t.guardarComponente(false);
+                if(respuesta){
+                    try {
+                        t.cargando = true;
+                        const response = await axios.put(`/api/retrabajo-componente/${componente.id}`);
+                        t.cargando = false;
+                        swal('¡Correcto!', 'El componente ha sido enviado al proceso de enrutamiento para realizar las modificaciones necesarias.', 'success');
+                        t.fetchComponentes(t.selectedHerramental);
+                    } catch (error) {
+                        t.cargando = false;
+                        console.error('Error al enviar el componente a retrabajo:', error);
+                        swal('Error', 'Ocurrió un error al enviar el componente a retrabajo', 'error');
+                    }
+                }else{
+                    swal('Error', 'Ocurrió un error al guardar la informacion de los componentes', 'error');
+                    t.cargando = false;
+                }
+            },
+            async modificacion(id) {
+                let componente = this.componentes.find(obj => obj.id == id);
+
+                const tipoModificacion = await this.seleccionarTipoModificacion(componente.nombre);
+
+                if (!tipoModificacion) {
+                    return; // Cancelado por el usuario
+                }
+
+                switch (tipoModificacion) {
+                    case "retrabajo":
+                        componente.retrabajo = true;
+                        swal(`El componente ${componente.nombre} está listo para ser modificado`, 'Puedes editar las vistas del componente. Una vez que hayas terminado, haz clic en "Confirmar" en el componente para aplicar los cambios.', 'info');
+                        this.$forceUpdate();
+                        break;
+
+                    case "refabricacion":
+                        componente.refabricado = true;
+                        this.componentes.push({
+                            nombre: componente.nombre,
+                            es_compra: 0,
+                            cantidad: componente.cantidad,
+                            largo: '',
+                            ancho: '',
+                            alto: '',
+                            material_id: componente.material_id,
+                            archivo_2d: '',
+                            archivo_3d: '',
+                            archivo_explosionado: '',
+                            cargado: false,
+                        });
+
+                        this.componentes.sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+                        let respuesta = await this.guardarComponente(false);
+                        if(respuesta){
+                            await this.fetchComponentes(this.selectedHerramental);
+                            swal('Refabricacion generada correctamente', `Se ha generado una nueva version para el componente ${componente.nombre}.`, 'success')
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            },
+            seleccionarTipoModificacion(nombreComponente) {
+                return swal({
+                    title: `¿Qué tipo de modificación desea realizar al componente ${nombreComponente}?`,
+                    text: "Retrabajo: Modificación del diseño de un componente existente, realizando ajustes menores sin alterar significativamente su ruta actual. \n\nRefabricación: Creación de una nueva versión del componente con un diseño completamente nuevo, reiniciando todo el proceso desde el principio.",
+                    icon: "info",
+                    buttons: {
+                        cancel: {
+                            text: "Cancelar",
+                            value: null,
+                            visible: true,
+                        },
+                        retrabajo: {
+                            text: "Retrabajo",
+                            value: "retrabajo",
+                            className: "btn-dark",
+                        },
+                        refabricacion: {
+                            text: "Refabricación",
+                            value: "refabricacion",
+                            className: "btn-dark",
+                        },
+                    },
+                });
+            },
             getElipsis(str){
                  if (str && str.length > 10) {
                     return str.substring(0, 15) + '...';
@@ -462,9 +559,27 @@
                     break;
                 }
             },
-            agregarComponente(){
+            agregarComponente() {
+                // Obtener los nombres existentes que coincidan con el formato 'herramental-XX...'
+                const regex = new RegExp(`^${this.ruta.herramental}-(\\d+)$`);
+                let maxNumero = 0;
+
+                this.componentes.forEach(componente => {
+                    const match = componente.nombre.match(regex);
+                    if (match) {
+                        const numero = parseInt(match[1], 10);
+                        if (numero > maxNumero) {
+                            maxNumero = numero;
+                        }
+                    }
+                });
+
+                // Calcular el nuevo número incrementado
+                const nuevoNumero = (maxNumero + 1).toString().padStart(2, '0'); // Usa 3 dígitos como base, ajusta si lo prefieres
+
+                // Agregar el nuevo componente
                 this.componentes.push({
-                    nombre: `${this.ruta.herramental}-${(this.componentes.length + 1).toString().padStart(2, '0')}`,
+                    nombre: `${this.ruta.herramental}-${nuevoNumero}`,
                     es_compra: 1,
                     cantidad: 1,
                     largo: '',
@@ -475,23 +590,25 @@
                     archivo_3d: '',
                     archivo_explosionado: '',
                     cargado: false,
-                })
+                });
 
+                // Configuración del botón de archivo
                 document.querySelector("html").classList.add('js');
-                let fileInput  = document.querySelector( ".input-file" )
-                let button     = document.querySelector( ".input-file-trigger" )
-                
-                button.addEventListener( "keydown", function( event ) {
-                    if ( event.keyCode == 13 || event.keyCode == 32 ) {
+                const fileInput = document.querySelector(".input-file");
+                const button = document.querySelector(".input-file-trigger");
+
+                button.addEventListener("keydown", function (event) {
+                    if (event.keyCode == 13 || event.keyCode == 32) {
                         fileInput.focus();
                     }
                 });
 
-                button.addEventListener( "click", function( event ) {
+                button.addEventListener("click", function (event) {
                     fileInput.focus();
                     return false;
                 });
             },
+
             seleccionaArchivo: function(e){
                 let t = this;
                 var files = e.target.files || e.dataTransfer.files;
@@ -704,6 +821,11 @@
                 try {
                     const response = await axios.get(`/api/herramentales/${herramentalId}/componentes?area=cargar-componentes`);
                     this.componentes = response.data.componentes;
+                    this.componentes.forEach(obj => {
+                        obj.retrabajo = false; 
+                        obj.refabricado ?? false
+                    })
+                    this.componentes.sort((a, b) => a.nombre.localeCompare(b.nombre));
                     document.querySelector("html").classList.add('js');
                     let fileInput  = document.querySelector( ".input-file" )
                     let button     = document.querySelector( ".input-file-trigger" )
@@ -814,9 +936,15 @@
 
                 let respuesta = await t.guardarComponente(false);
                 
+                await t.fetchComponentes(t.selectedHerramental);
+
+                let id_componente = t.componentes.find(obj => obj.nombre == componente.nombre && obj.refabricado == false);
+                id_componente = id_componente.id; 
+                
                 if(respuesta){
                     try {
-                        const response = await axios.put(`/api/liberar-componente-cargar/${t.selectedHerramental}`, {componente: componente.nombre});
+                        t.cargando = true;
+                        const response = await axios.put(`/api/liberar-componente-cargar/${t.selectedHerramental}`, {componente: id_componente});
                         t.cargando = false;
                         swal('Éxito', 'Componente liberado correctamente', 'success');
                         t.fetchComponentes(t.selectedHerramental);
@@ -866,12 +994,37 @@
                     swal('Error', 'Ocurrió un error al guardar la informacion de los componentes', 'error');
                     t.cargando = false;
                 }
-            }
+            },
+            async navigateFromUrlParams() {
+                const queryParams = new URLSearchParams(window.location.search);
+                const anioId = queryParams.get('a');
+                const clienteId = queryParams.get('c');
+                const proyectoId = queryParams.get('p');
+                const herramentalId = queryParams.get('h');
+
+                try {
+                    if (anioId) {
+                        await this.fetchClientes(anioId);
+                    }
+                    if (clienteId) {
+                        await this.fetchProyectos(clienteId);
+                    }
+                    if (proyectoId) {
+                        await this.fetchHerramentales(proyectoId);
+                    }
+                    if (herramentalId) {
+                        await this.fetchComponentes(herramentalId);
+                    }
+                } catch (error) {
+                    console.error("Error navigating from URL parameters:", error);
+                }
+            },
         },
         mounted: async function () {
             let t = this;
             await t.fetchAnios();
             await t.fetchMateriales();
+            this.navigateFromUrlParams();
         }
 
                 

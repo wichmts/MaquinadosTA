@@ -545,7 +545,7 @@
                 {id: 3, prioridad: 3, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
                 {id: 4, prioridad: 4, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
                 {id: 5, prioridad: 5, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
-                {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                // {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
                 {id: 7, prioridad: 7, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
                 {id: 8, prioridad: 8, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
             ],
@@ -560,12 +560,22 @@
         computed: {
             duracionTotal() {
                 let maxHour = 0;
-                this.tasks.forEach(task => {
-                    task.time.forEach(segment => {
-                    const endHour = segment.hora_inicio + segment.horas + segment.minutos / 60;
-                    if (endHour > maxHour) maxHour = Math.ceil(endHour);
+
+                const calcularMaxHora = (array) => {
+                    array.forEach(task => {
+                        task.time.forEach(segment => {
+                            const endHour = segment.hora_inicio + segment.horas + segment.minutos / 60;
+                            if (endHour > maxHour) maxHour = Math.ceil(endHour);
+                        });
                     });
-                });
+                };
+
+                // Calcular para tasks
+                calcularMaxHora(this.tasks);
+
+                // Calcular para rutaAvance
+                calcularMaxHora(this.rutaAvance);
+
                 return maxHour;
             },
             totalHoras() {
@@ -1034,6 +1044,11 @@
                     break
                     case 2: 
                         return this.componente.retraso_programacion ? `(${this.componente.retraso_programacion})` : '';
+                    break
+                    case 3:case 4:case 5:case 6:case 7:case 8:
+                        let fabricaciones = this.componente.fabricaciones.filter(element => element.proceso_id == task.id)
+                        let motivosRetraso = fabricaciones.map(f => f.motivo_retraso).filter(motivo => motivo).join(', ')
+                        return motivosRetraso ? `(${motivosRetraso})` : '';
                     break
                 }
             },

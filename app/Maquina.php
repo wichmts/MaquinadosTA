@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Maquina extends Model
 {
-    protected $fillable = ['nombre'];
+    protected $fillable = ['nombre', 'tipo_proceso'];
 }

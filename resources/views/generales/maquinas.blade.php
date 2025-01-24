@@ -185,7 +185,7 @@
                     {id: 3, prioridad: 3, nombre: 'Maquinar'},
                     {id: 4, prioridad: 4, nombre: 'Tornear'},
                     {id: 5, prioridad: 5, nombre: 'Roscar/Rebabear'},
-                    {id: 6, prioridad: 6, nombre: 'Templar'},
+                    // {id: 6, prioridad: 6, nombre: 'Templar'},
                     {id: 7, prioridad: 7, nombre: 'Rectificar'},
                     {id: 8, prioridad: 8, nombre: 'EDM'}
                 ]

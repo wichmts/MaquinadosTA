@@ -198,259 +198,114 @@
     /*  */
 
 
-  .checkbox-wrapper-11 {
-    --text: #414856;
-    --check: #35d312;
-    --disabled: #C3C8DE;
-    --border-radius: 10px;
-    border-radius: var(--border-radius);
-    position: relative;
-    padding: 5px;
-    display: grid;
-    grid-template-columns: 30px auto;
-    align-items: center;
+
+
+  .checkbox-wrapper-10 .tgl {
+    display: none;
   }
-  .checkbox-wrapper-11 label {
-    color: var(--text);
+  .checkbox-wrapper-10 .tgl,
+  .checkbox-wrapper-10 .tgl:after,
+  .checkbox-wrapper-10 .tgl:before,
+  .checkbox-wrapper-10 .tgl *,
+  .checkbox-wrapper-10 .tgl *:after,
+  .checkbox-wrapper-10 .tgl *:before,
+  .checkbox-wrapper-10 .tgl + .tgl-btn {
+    box-sizing: border-box;
+  }
+  .checkbox-wrapper-10 .tgl::-moz-selection,
+  .checkbox-wrapper-10 .tgl:after::-moz-selection,
+  .checkbox-wrapper-10 .tgl:before::-moz-selection,
+  .checkbox-wrapper-10 .tgl *::-moz-selection,
+  .checkbox-wrapper-10 .tgl *:after::-moz-selection,
+  .checkbox-wrapper-10 .tgl *:before::-moz-selection,
+  .checkbox-wrapper-10 .tgl + .tgl-btn::-moz-selection,
+  .checkbox-wrapper-10 .tgl::selection,
+  .checkbox-wrapper-10 .tgl:after::selection,
+  .checkbox-wrapper-10 .tgl:before::selection,
+  .checkbox-wrapper-10 .tgl *::selection,
+  .checkbox-wrapper-10 .tgl *:after::selection,
+  .checkbox-wrapper-10 .tgl *:before::selection,
+  .checkbox-wrapper-10 .tgl + .tgl-btn::selection {
+    background: none;
+  }
+  .checkbox-wrapper-10 .tgl + .tgl-btn {
+    outline: 0;
+    display: block;
+    width: 80%;
+    height: 40px;
     position: relative;
     cursor: pointer;
-    display: grid;
-    align-items: center;
-    width: -webkit-fit-content;
-    width: -moz-fit-content;
-    width: fit-content;
-    transition: color 0.3s ease;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
   }
-  .checkbox-wrapper-11 label::before,
-  .checkbox-wrapper-11 label::after {
-    content: "";
-    position: absolute;
-  }
-  .checkbox-wrapper-11 label::before {
-    height: 2px;
-    width: 8px;
-    left: -27px;
-    background: var(--check);
-    border-radius: 2px;
-    transition: background 0.3s ease;
-  }
-  .checkbox-wrapper-11 label:after {
-    height: 4px;
-    width: 4px;
-    top: 8px;
-    left: -25px;
-    border-radius: 50%;
-  }
-  .checkbox-wrapper-11 input[type=checkbox] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
+  .checkbox-wrapper-10 .tgl + .tgl-btn:after,
+  .checkbox-wrapper-10 .tgl + .tgl-btn:before {
     position: relative;
-    height: 15px;
-    width: 15px;
-    outline: none;
-    border: 0;
-    margin: 0 15px 0 0;
-    cursor: pointer;
-    background: var(--background);
-    display: grid;
-    align-items: center;
-  }
-  .checkbox-wrapper-11 input[type=checkbox]::before, .checkbox-wrapper-11 input[type=checkbox]::after {
+    display: block;
     content: "";
+    width: 50%;
+    height: 100%;
+  }
+  .checkbox-wrapper-10 .tgl + .tgl-btn:after {
+    left: 0;
+  }
+  .checkbox-wrapper-10 .tgl + .tgl-btn:before {
+    display: none;
+  }
+  .checkbox-wrapper-10 .tgl:checked + .tgl-btn:after {
+    left: 50%;
+  }
+
+  .checkbox-wrapper-10 .tgl-flip + .tgl-btn {
+    padding: 2px;
+    transition: all 0.2s ease;
+    font-family: sans-serif;
+    perspective: 100px;
+  }
+  .checkbox-wrapper-10 .tgl-flip + .tgl-btn:after,
+  .checkbox-wrapper-10 .tgl-flip + .tgl-btn:before {
+    display: inline-block;
+    transition: all 0.4s ease;
+    width: 100%;
+    text-align: center;
     position: absolute;
-    height: 2px;
-    top: auto;
-    background: var(--check);
-    border-radius: 2px;
+    line-height: 40px;
+    font-size: 14px !important;
+    font-weight: bold;
+    color: #fff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+    border-radius: 4px;
   }
-  .checkbox-wrapper-11 input[type=checkbox]::before {
-    width: 0px;
-    right: 60%;
-    transform-origin: right bottom;
+  .checkbox-wrapper-10 .tgl-flip + .tgl-btn:after {
+    content: attr(data-tg-on);
+    background: #02C66F;
+    transform: rotateY(-180deg);
   }
-  .checkbox-wrapper-11 input[type=checkbox]::after {
-    width: 0px;
-    left: 40%;
-    transform-origin: left bottom;
+  .checkbox-wrapper-10 .tgl-flip + .tgl-btn:before {
+    background: #FF3A19;
+    content: attr(data-tg-off);
   }
-  .checkbox-wrapper-11 input[type=checkbox]:checked::before {
-    -webkit-animation: check-01-11 0.4s ease forwards;
-            animation: check-01-11 0.4s ease forwards;
+  .checkbox-wrapper-10 .tgl-flip + .tgl-btn:active:before {
+    transform: rotateY(-20deg);
   }
-  .checkbox-wrapper-11 input[type=checkbox]:checked::after {
-    -webkit-animation: check-02-11 0.4s ease forwards;
-            animation: check-02-11 0.4s ease forwards;
+  .checkbox-wrapper-10 .tgl-flip:checked + .tgl-btn:before {
+    transform: rotateY(180deg);
   }
-  .checkbox-wrapper-11 input[type=checkbox]:checked + label {
-    color: var(--disabled);
-    -webkit-animation: move-11 0.3s ease 0.1s forwards;
-            animation: move-11 0.3s ease 0.1s forwards;
+  .checkbox-wrapper-10 .tgl-flip:checked + .tgl-btn:after {
+    transform: rotateY(0);
+    left: 0;
+    background: #7FC6A6;
   }
-  .checkbox-wrapper-11 input[type=checkbox]:checked + label::before {
-    background: var(--disabled);
-    -webkit-animation: slice-11 0.4s ease forwards;
-            animation: slice-11 0.4s ease forwards;
-  }
-  .checkbox-wrapper-11 input[type=checkbox]:checked + label::after {
-    -webkit-animation: firework-11 0.5s ease forwards 0.1s;
-            animation: firework-11 0.5s ease forwards 0.1s;
+  .checkbox-wrapper-10 .tgl-flip:checked + .tgl-btn:active:after {
+    transform: rotateY(20deg);
   }
 
-  @-webkit-keyframes move-11 {
-    50% {
-      padding-left: 8px;
-      padding-right: 0px;
-    }
-    100% {
-      padding-right: 4px;
-    }
-  }
-
-  @keyframes move-11 {
-    50% {
-      padding-left: 8px;
-      padding-right: 0px;
-    }
-    100% {
-      padding-right: 4px;
-    }
-  }
-  @-webkit-keyframes slice-11 {
-    60% {
-      width: 100%;
-      left: 4px;
-    }
-    100% {
-      width: 100%;
-      left: -2px;
-      padding-left: 0;
-    }
-  }
-  @keyframes slice-11 {
-    60% {
-      width: 100%;
-      left: 4px;
-    }
-    100% {
-      width: 100%;
-      left: -2px;
-      padding-left: 0;
-    }
-  }
-  @-webkit-keyframes check-01-11 {
-    0% {
-      width: 4px;
-      top: auto;
-      transform: rotate(0);
-    }
-    50% {
-      width: 0px;
-      top: auto;
-      transform: rotate(0);
-    }
-    51% {
-      width: 0px;
-      top: 8px;
-      transform: rotate(45deg);
-    }
-    100% {
-      width: 5px;
-      top: 8px;
-      transform: rotate(45deg);
-    }
-  }
-  @keyframes check-01-11 {
-    0% {
-      width: 4px;
-      top: auto;
-      transform: rotate(0);
-    }
-    50% {
-      width: 0px;
-      top: auto;
-      transform: rotate(0);
-    }
-    51% {
-      width: 0px;
-      top: 8px;
-      transform: rotate(45deg);
-    }
-    100% {
-      width: 5px;
-      top: 8px;
-      transform: rotate(45deg);
-    }
-  }
-  @-webkit-keyframes check-02-11 {
-    0% {
-      width: 4px;
-      top: auto;
-      transform: rotate(0);
-    }
-    50% {
-      width: 0px;
-      top: auto;
-      transform: rotate(0);
-    }
-    51% {
-      width: 0px;
-      top: 8px;
-      transform: rotate(-45deg);
-    }
-    100% {
-      width: 10px;
-      top: 8px;
-      transform: rotate(-45deg);
-    }
-  }
-  @keyframes check-02-11 {
-    0% {
-      width: 4px;
-      top: auto;
-      transform: rotate(0);
-    }
-    50% {
-      width: 0px;
-      top: auto;
-      transform: rotate(0);
-    }
-    51% {
-      width: 0px;
-      top: 8px;
-      transform: rotate(-45deg);
-    }
-    100% {
-      width: 10px;
-      top: 8px;
-      transform: rotate(-45deg);
-    }
-  }
-  @-webkit-keyframes firework-11 {
-    0% {
-      opacity: 1;
-      box-shadow: 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0;
-    }
-    30% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-      box-shadow: 0 -15px 0 0px #4F29F0, 14px -8px 0 0px #4F29F0, 14px 8px 0 0px #4F29F0, 0 15px 0 0px #4F29F0, -14px 8px 0 0px #4F29F0, -14px -8px 0 0px #4F29F0;
-    }
-  }
-  @keyframes firework-11 {
-    0% {
-      opacity: 1;
-      box-shadow: 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0, 0 0 0 -2px #4F29F0;
-    }
-    30% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-      box-shadow: 0 -15px 0 0px #4F29F0, 14px -8px 0 0px #4F29F0, 14px 8px 0 0px #4F29F0, 0 15px 0 0px #4F29F0, -14px 8px 0 0px #4F29F0, -14px -8px 0 0px #4F29F0;
-    }
-  }
 
 
 </style>
@@ -506,7 +361,11 @@
                         <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> COMPONENTES EN COLA DE PRODUCCION</a>
                         <a class="nav-link cursor-pointer" v-for="obj in componentes" @click="fetchComponente(obj.id)">
                             <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> 
+                            <span class="underline-hover">@{{obj.nombre}} &nbsp; 
+                                <small v-if="obj.prioridad == 'A'" class="badge badge-danger badge-pill px-2 py-1"> Prioridad @{{obj.prioridad}}</small>
+                                <small v-if="obj.prioridad == 'B'" class="badge badge-warning badge-pill px-2 py-1"> Prioridad @{{obj.prioridad}}</small>
+                                <small v-if="obj.prioridad == 'C'" class="badge badge-info badge-pill px-2 py-1"> Prioridad @{{obj.prioridad}}</small>
+                            </span> 
                         </a>
                     </div>
                 </div>            
@@ -610,16 +469,14 @@
                                 </div>
                             </div>
                             <div class="row">
+                                
                                 <div class="col-xl-12 mt-3 mb-0 pb-0">
-                                    <label class="bold" style="letter-spacing: 1px">SELECCIONE UN SUBCOMPONENTE PARA MARCARLO COMO FABRICADO:</label>
+                                    <label class="bold" style="letter-spacing: 1px">SELECCIONE UN SUBCOMPONENTE PARA MARCARLO COMO FABRICADO UNA VEZ QUE HAYA FINALIZADO SU FABRICACIÓN:</label>
                                 </div>
-                                <div class="col-xl-2 pt-0 mt-0" v-for="(x, index) in fabricacion.checklist_fabricadas">
-                                    <div class="checkbox-wrapper-11" >
-                                        <input :id="index" type="checkbox" v-model="x.terminado">
-                                        <label :for="index" class="bold btn btn-sm btn-default" style="font-size: 15px !important;">@{{x.nombre}}</label>
-                                    </div>
-                                </div>
-                               
+                                <div class="checkbox-wrapper-10 col-xl-2" v-for="(x, index) in fabricacion.checklist_fabricadas">
+                                    <input class="tgl tgl-flip" :id="'cb5' + index" type="checkbox" v-model="x.terminado" />
+                                    <label class="tgl-btn" :data-tg-off="'✘ ' +x.nombre" :data-tg-on="'✔ ' + x.nombre" :for="'cb5' + index"></label>
+                                </div>                               
                             </div>
                         </div>
                         <div class="col-xl-3">
@@ -866,7 +723,7 @@
                 {id: 3, prioridad: 3, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
                 {id: 4, prioridad: 4, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
                 {id: 5, prioridad: 5, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
-                {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                // {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
                 {id: 7, prioridad: 7, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
                 {id: 8, prioridad: 8, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
             ],
@@ -908,12 +765,22 @@
         computed: {
             duracionTotal() {
                 let maxHour = 0;
-                this.tasks.forEach(task => {
-                    task.time.forEach(segment => {
-                    const endHour = segment.hora_inicio + segment.horas + segment.minutos / 60;
-                    if (endHour > maxHour) maxHour = Math.ceil(endHour);
+
+                const calcularMaxHora = (array) => {
+                    array.forEach(task => {
+                        task.time.forEach(segment => {
+                            const endHour = segment.hora_inicio + segment.horas + segment.minutos / 60;
+                            if (endHour > maxHour) maxHour = Math.ceil(endHour);
+                        });
                     });
-                });
+                };
+
+                // Calcular para tasks
+                calcularMaxHora(this.tasks);
+
+                // Calcular para rutaAvance
+                calcularMaxHora(this.rutaAvance);
+
                 return maxHour;
             },
             totalHoras() {
@@ -1135,7 +1002,7 @@
                     {id: 3, prioridad: 3, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
                     {id: 4, prioridad: 4, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
                     {id: 5, prioridad: 5, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
-                    {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                    // {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
                     {id: 7, prioridad: 7, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
                     {id: 8, prioridad: 8, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
                 ];
@@ -1493,6 +1360,10 @@
                 try {
                     const response = await axios.get(`/api/maquinas/${maquinaId}/componentes`);
                     this.componentes = response.data.componentes;
+                    this.componentes.sort((a, b) => {
+                        const prioridadOrden = { 'A': 1, 'B': 2, 'C': 3 };
+                        return prioridadOrden[a.prioridad] - prioridadOrden[b.prioridad];
+                    });
                     this.menuStep = 2;
                 } catch (error) {
                     console.error('Error fetching componentes:', error);
@@ -1506,12 +1377,18 @@
                     swal('Errores de validación', `Todos los campos incluyendo la foto son obligatorios para finalizar esta fabricacion.`, 'error');
                     return;
                 }
+
+                if (this.fabricacion.checklist_fabricadas.some(item => !item.terminado)) {
+                    swal('Fabricación incompleta', 'Todos los subcomponentes deben estar marcados como fabricados para continuar.', 'error');
+                    return;
+                }
+
                 this.hay_retraso = false;
                 await this.fetchComponente(this.selectedComponente, this.programaSeleccionado);
                 await this.cargarRuta();
                 
-                let proceso = this.rutaAvance.find(obj => obj.id === this.fabricacion.tipo_proceso)
-                
+                let proceso = this.rutaAvance.find(obj => parseInt(obj.id) === parseInt(this.fabricacion.proceso_id))
+
                 if(proceso){
                     let retraso = proceso.time.find(obj => obj.type === 'delay')
                     if(retraso){
@@ -1525,13 +1402,15 @@
             async guardar(liberarComponente){                
                 let t = this
 
+
                 if(this.hay_retraso && liberarComponente && !this.fabricacion.motivo_retraso?.trim()){
-                     swal('Campos obligatorios', 'Debe ingresar un motivo de retraso.', 'info');
+                    swal('Campos obligatorios', 'Debe ingresar un motivo de retraso.', 'info');
                     return false;
                 }
+                
+
                 t.cargando = true;
                 t.loading_button = true;
-
                 try {
                     const formData = new FormData();
                     formData.append('data', JSON.stringify(t.fabricacion));

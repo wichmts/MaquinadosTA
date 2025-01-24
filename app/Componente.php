@@ -20,9 +20,29 @@ class Componente extends Model
     public function fabricaciones(){
         return $this->hasMany(Fabricacion::class);
     }
+
+    public function refabricaciones() {
+        $refabricaciones = Componente::where('herramental_id', $this->herramental_id)
+            ->where('nombre', $this->nombre)
+            ->where('cargado', true)
+            ->where('es_compra', false)
+            ->orderBy('version', 'desc')
+            ->get(['id', 'version']) // Obtener solo los campos necesarios
+            ->map(function($componente) {
+                return [
+                    'id' => $componente->id,
+                    'creada' => $componente->fecha_cargado,
+                    'version' => $componente->version
+                ];
+            })
+            ->toArray(); // Convertir la colección a un array
+
+        return $refabricaciones; // Devuelve el array con los componentes
+    }
+
+
     
-    public function maquinas()
-    {
+    public function maquinas(){
         $maquinas = Maquina::select('maquinas.id as maquina_id', 'maquinas.nombre', 'fabricaciones.id as documento_id', 'fabricaciones.archivo as documento_nombre')
             ->leftJoin('fabricaciones', function($join) {
                 $join->on('fabricaciones.maquina_id', '=', 'maquinas.id');
@@ -52,8 +72,7 @@ class Componente extends Model
         });
         return $resultado->values()->all();
     }
-    public static function procesosFijos()
-    {
+    public static function procesosFijos(){
         return [
             ['id' => 1, 'prioridad' => 1, 'nombre' => 'Cortar'],
             ['id' => 2, 'prioridad' => 2, 'nombre' => 'Programar'],
@@ -65,9 +84,7 @@ class Componente extends Model
             ['id' => 8, 'prioridad' => 8, 'nombre' => 'EDM'],
         ];
     }
-
-    public function rutaAvance()
-    {
+    public function rutaAvance(){
         $procesos = $this->procesosFijos(); // Obtén los procesos fijos
         $resultados = [];
 
@@ -139,10 +156,7 @@ class Componente extends Model
 
         return $resultados;
     }
-
-
-    public function tiempoCorte()
-    {
+    public function tiempoCorte(){
         $registros = SeguimientoTiempo::where('componente_id', $this->id)->where('accion', 'corte')->orderBy('fecha')->orderBy('hora')->get();
         $totalSegundos = 0;
         $ultimoInicio = null;
@@ -172,9 +186,10 @@ class Componente extends Model
         $data['archivo_3d_public'] = $this->archivo_3d ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->archivo_3d : '';
         $data['archivo_explosionado_public'] = $this->archivo_explosionado ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->archivo_explosionado : '';
         $data['ruta'] = $this->ruta ? json_decode($this->ruta, true) : [];
-        $data['programas'] = $this->programas ? $this->programas : [];
+        $data['fabricaciones'] = $this->fabricaciones ? $this->fabricaciones : [];
         $data['rutaAvance'] = $this->rutaAvance();
         $data['maquinas'] = $this->maquinas();
+        $data['refabricaciones'] = $this->refabricaciones();
         
         
         return $data;

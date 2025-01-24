@@ -21,6 +21,10 @@ class CreateHerramentalesTable extends Migration
             $table->integer('proyecto_id');
             $table->string('estatus_ensamble')->nullable(); //inicial, checklist, proceso, finalizado
             $table->string('estatus_pruebas')->nullable();
+
+            $table->string('inicio_ensamble')->nullable();
+            $table->string('termino_ensamble')->nullable();
+
             $table->text('checklist')->nullable();
             $table->timestamps();
         });

@@ -593,14 +593,24 @@
             ]
         },
         computed: {
-            duracionTotal() {
+           duracionTotal() {
                 let maxHour = 0;
-                this.tasks.forEach(task => {
-                    task.time.forEach(segment => {
-                    const endHour = segment.hora_inicio + segment.horas + segment.minutos / 60;
-                    if (endHour > maxHour) maxHour = Math.ceil(endHour);
+
+                const calcularMaxHora = (array) => {
+                    array.forEach(task => {
+                        task.time.forEach(segment => {
+                            const endHour = segment.hora_inicio + segment.horas + segment.minutos / 60;
+                            if (endHour > maxHour) maxHour = Math.ceil(endHour);
+                        });
                     });
-                });
+                };
+
+                // Calcular para tasks
+                calcularMaxHora(this.tasks);
+
+                // Calcular para rutaAvance
+                calcularMaxHora(this.rutaAvance);
+
                 return maxHour;
             },
             totalHoras() {

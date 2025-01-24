@@ -3632,6 +3632,7 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
 }
 
 @media screen and (min-width: 768px) {
+  
   .navbar-form {
     margin-top: 21px;
     margin-bottom: 21px;
@@ -6828,7 +6829,6 @@ License - nucleoapp.com/license/
   }
 }
 
-
 .section-image {
   background-size: cover;
   background-position: center center;
@@ -7902,3 +7902,88 @@ i {
 .underline-hover:hover{
   text-decoration: underline;
 }
+
+/* Cambia el punto de quiebre de col-xl para que se aplique desde 1024px */
+@media screen and (min-width: 1024px) {
+  [class*="col-xl"] {
+    flex: 0 0 auto;
+    /* Permite ajustar el ancho según la clase aplicada (por ejemplo, col-xl-6) */
+    max-width: 100%;
+    /* Ajusta dinámicamente el ancho */
+  }
+
+  /* Ejemplo: Ajuste específico para col-xl-1 a col-xl-12 */
+  .col-xl-1 {
+    flex: 0 0 8.333333%;
+    /* 1 de 12 columnas */
+    max-width: 8.333333%;
+  }
+
+  .col-xl-2 {
+    flex: 0 0 16.666667%;
+    /* 2 de 12 columnas */
+    max-width: 16.666667%;
+  }
+
+  .col-xl-3 {
+    flex: 0 0 25%;
+    /* 3 de 12 columnas */
+    max-width: 25%;
+  }
+
+  .col-xl-4 {
+    flex: 0 0 33.333333%;
+    /* 4 de 12 columnas */
+    max-width: 33.333333%;
+  }
+
+  .col-xl-5 {
+    flex: 0 0 41.666667%;
+    /* 5 de 12 columnas */
+    max-width: 41.666667%;
+  }
+
+  .col-xl-6 {
+    flex: 0 0 50%;
+    /* 6 de 12 columnas */
+    max-width: 50%;
+  }
+
+  .col-xl-7 {
+    flex: 0 0 58.333333%;
+    /* 7 de 12 columnas */
+    max-width: 58.333333%;
+  }
+
+  .col-xl-8 {
+    flex: 0 0 66.666667%;
+    /* 8 de 12 columnas */
+    max-width: 66.666667%;
+  }
+
+  .col-xl-9 {
+    flex: 0 0 75%;
+    /* 9 de 12 columnas */
+    max-width: 75%;
+  }
+
+  .col-xl-10 {
+    flex: 0 0 83.333333%;
+    /* 10 de 12 columnas */
+    max-width: 83.333333%;
+  }
+
+  .col-xl-11 {
+    flex: 0 0 91.666667%;
+    /* 11 de 12 columnas */
+    max-width: 91.666667%;
+  }
+
+  .col-xl-12 {
+    flex: 0 0 100%;
+    /* 12 de 12 columnas */
+    max-width: 100%;
+  }
+}
+
+

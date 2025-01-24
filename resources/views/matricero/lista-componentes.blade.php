@@ -686,9 +686,7 @@
                     if (herramentalId) {
                         await this.fetchComponentes(herramentalId);
                     }
-                    if (componenteId && componenteId != 'null') {
-                        await this.fetchComponente(componenteId);
-                    }
+                   
                 } catch (error) {
                     console.error("Error navigating from URL parameters:", error);
                 }

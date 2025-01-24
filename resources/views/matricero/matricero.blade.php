@@ -390,7 +390,7 @@
                         <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE MATRICERO</h2>
                     </div>
                     <div class="col-xl-3">
-                        <button class="btn btn-success btn-block" v-if="selectedHerramental && herramental && herramental.estatus_ensamble == 'proceso'"><i class="fa fa-check-double"></i> LIBERAR HERRAMENTAL</button>
+                        <button class="btn btn-success btn-block" @click="liberarHerramental()" v-if="selectedHerramental && herramental && herramental.estatus_ensamble == 'proceso'"><i class="fa fa-check-double"></i> LIBERAR HERRAMENTAL </button>
                     </div>
                 </div>
                 <hr>
@@ -438,6 +438,7 @@
                                             <th>#</th>
                                             <th style="text-transform: none !important">¿Listo para ensamble?</td>
                                             <th>Componente</td>
+                                            <th>Cantidad</td>
                                             <th>Procedencia</td>
                                         </tr>
                                     </thead>
@@ -453,6 +454,7 @@
                                                 </div>    
                                             </td>
                                             <td class="bold">@{{componente.nombre}}</td>
+                                            <td>@{{componente.cantidad}}</td>
                                             <td>@{{componente.es_compra ? 'COMPRAS' : 'FABRICACIÓN'}}</td>
                                         </tr>
                                     </tbody>
@@ -614,6 +616,42 @@
            
         },
         methods:{
+            async liberarHerramental(){
+                let t = this;
+            
+                let unassembledComponents = this.componentes.filter(c => !c.ensamblado);
+                if (unassembledComponents.length > 0) {
+                    swal('Error', 'No se puede liberar el herramental. Todos los componentes deben estar ensamblados.', 'error');
+                    return;
+                }
+
+                swal({
+                    title: "¿Está seguro?",
+                    text: "¿Desea liberar el herramental para comenzar con las pruebas?",
+                    icon: "info",
+                    buttons: ['Cancelar', 'Si, liberar'],
+                    dangerMode: false,
+                }).then((willChange) => {
+                    if (willChange) {
+                        t.liberar();
+                    }
+                });
+            },
+            async liberar(){
+                let t = this;
+                axios.put(`/api/liberar-herramental-ensamble/${t.selectedHerramental}`)
+                .then(response => {
+                    if(response.data.success){
+                        swal('Herramental liberado', 'El herramental ha sido liberado exitosamente.', 'success');
+                        t.selectedHerramental = null;
+                        t.fetchHerramentales(t.selectedProyecto);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error liberando herramental:', error);
+                    swal('Error', 'Hubo un problema al intentar liberar el herramental.', 'error');
+                });
+            },
             abrirSolicitud(tipo){
                 this.solicitud = {
                     tipo: tipo,
@@ -1112,7 +1150,7 @@
                 this.ruta.proyecto = this.proyectos.find(obj => obj.id == proyectoId)?.nombre;
 
                 try {
-                    const response = await axios.get(`/api/proyectos/${proyectoId}/herramentales`);
+                    const response = await axios.get(`/api/proyectos/${proyectoId}/herramentales?area=ensamble`);
                     this.herramentales = response.data.herramentales;
                     this.menuStep = 4;
                 } catch (error) {
@@ -1153,6 +1191,7 @@
                     let checklist = this.componentes.map(obj => {
                         return {
                             id: obj.id,
+                            cantidad: obj.cantidad,
                             nombre: obj.nombre,
                             es_compra: obj.es_compra,
                             checked: false
@@ -1176,63 +1215,6 @@
                     console.error('Error fetching componentes:', error);
                 } finally {
                     this.cargando = false;
-                }
-            },
-            async liberar(){
-                
-                if (!this.componente.descripcion_trabajo?.trim() || !this.componente.herramientas_corte?.trim()) {
-                    swal('Errores de validación', `Todos los campos son obligatorios para liberar el componente.`, 'error');
-                    return;
-                }
-                
-                let tieneArchivo = this.componente.maquinas.some(maquina =>
-                    maquina.archivos.some(a => a.archivo || a.id)
-                );
-                
-                if (!tieneArchivo) {
-                    swal('Errores de validación', 'Debe cargar al menos un archivo por máquina.', 'error');
-                    return;
-                }
-
-                this.hay_retraso = false;
-                await this.fetchComponente(this.selectedComponente);
-                await this.cargarRuta();
-                let programar = this.rutaAvance.find(obj => obj.id === 2)
-                
-                if(programar){
-                    let retraso = programar.time.find(obj => obj.type === 'delay')
-                    if(retraso){
-                        this.hay_retraso = true;
-                        $('#modalRetraso').modal();
-                        return;
-                    }
-                }
-                this.guardar(true);
-            },
-            async guardar(liberarComponente){                
-                let t = this
-
-                t.cargando = true;
-                t.loading_button = true;
-
-                let formData = new FormData();
-                formData.append('data', JSON.stringify(t.componente));                
-                try {
-                    const response = await axios.post(`/api/componente/${t.selectedComponente}/programacion/${liberarComponente}`, formData, {
-                        headers: { 'Content-Type': 'multipart/form-data' }
-                    });
-
-                    swal('Correcto', liberarComponente ? 'Componente liberado correctamente' : 'Información guardada correctamente', 'success');
-                    await t.fetchComponentes(t.selectedHerramental);
-                    await t.fetchComponente(t.selectedComponente);
-                    t.loading_button = false;
-                    $('#modalRetraso').modal('hide');
-                } catch (error) {
-                    console.log(error);
-                    const mensaje = error.response?.data?.error || 'Error al guardar el componente.';
-                    swal('Error', mensaje, 'error');
-                    t.cargando = false;
-                    t.loading_button = false;
                 }
             },
             async navigateFromUrlParams() {

@@ -62,6 +62,7 @@ class UsersTableSeeder extends Seeder
         $user->token = Str::random(60);
         $user->celular = '';
         $user->active = true;
+        $user->maquinas = "[1]";
         $user->save();
         $user->assignRole('JEFE DE AREA');
         $user->assignRole('PROGRAMADOR');
@@ -90,6 +91,7 @@ class UsersTableSeeder extends Seeder
         $user->token = Str::random(60);
         $user->celular = '';
         $user->active = true;
+        $user->maquinas = "[2, 3]";
         $user->save();
         $user->assignRole('OPERADOR');
 

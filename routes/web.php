@@ -49,6 +49,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     // ALMACENISTA
     Route::get('/compra-componentes', 'WebController@compraComponentes');
+    Route::get('/temple', 'WebController@temple');
     Route::get('/almacen-mp', 'WebController@almacenMP');
     Route::get('/corte', 'WebController@corte');
     Route::get('/centro-notificaciones', 'WebController@centroNotificaciones');

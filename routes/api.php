@@ -61,12 +61,15 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('herramental/{proyecto_id}', 'APIController@guardarHerramental');
     Route::post('herramental/{herramental_id}/{tipo}', 'APIController@actualizarHerramental');
     Route::get('herramental/{herramental_id}', 'APIController@obtenerHerramental');
-
+    
+    Route::post('componente/{herramental_id}/temple', 'APIController@guardarComponentesTemple');
     Route::post('componente/{herramental_id}/compras', 'APIController@guardarComponentesCompras');
     Route::post('componente/{herramental_id}', 'APIController@guardarComponentes');
     Route::post('hoja', 'APIController@guardarHoja');
     Route::delete('hoja/{hoja_id}/{estatus}', 'APIController@bajaHoja');
-
+    
+    Route::put('refabricacion-componente/{componente_id}', 'APIController@refabricacionComponente');
+    Route::put('retrabajo-componente/{componente_id}', 'APIController@retrabajoComponente');
     Route::put('componente/{componente_id}/enrutamiento/{liberar}', 'APIController@guardarComponenteEnrutamiento');
     Route::post('componente/{componente_id}/programacion/{liberar}', 'APIController@guardarComponenteProgramacion');
     Route::post('componente/{fabricacion_id}/fabricacion/{liberar}', 'APIController@guardarComponenteFabricacion');
@@ -74,6 +77,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::delete('cancelar-componente-cargar/{componente_id}', 'APIController@cancelarComponenteCargar');
     Route::put('liberar-componente-cargar/{herramental_id}', 'APIController@liberarComponenteCargar');
     Route::put('liberar-herramental-cargar/{herramental_id}', 'APIController@liberarHerramentalCargar');
+    Route::put('liberar-herramental-ensamble/{herramental_id}', 'APIController@liberarHerramentalEnsamble');
 
     Route::put('fabricacion/cambio-estatus/{id}', 'APIController@cambiarEstatusFabricacion');
     Route::put('programacion/cambio-estatus/{id}', 'APIController@cambiarEstatusProgramacion');

@@ -102,7 +102,7 @@ input:checked + .slider:before {
                 @endif
                 @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
                 <li class="nav-item" >
-                    <a class="nav-link menu-link" href="">Visor de componentes externos</a>
+                    <a class="nav-link menu-link" href="">Visor componentes externos</a>
                 </li>
                 @endif
                 @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
@@ -192,7 +192,7 @@ input:checked + .slider:before {
                 @endif
                 @if (auth()->user()->hasRole('ALMACENISTA'))
                 <li class="nav-item" >
-                    <a class="nav-link menu-link" href="">Temple</a>
+                    <a class="nav-link menu-link" href="/temple">Temple</a>
                 </li>
                 @endif
                 <li class="nav-item" >

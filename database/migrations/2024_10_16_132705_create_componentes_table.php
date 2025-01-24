@@ -27,13 +27,24 @@ class CreateComponentesTable extends Migration
             $table->string('precio_kilo')->nullable();
             
             $table->string('fecha_cargado')->nullable();
+            $table->string('fecha_terminado')->nullable();
+            $table->string('fecha_ensamblado')->nullable();
+            
+            // compras
             $table->string('fecha_solicitud')->nullable();
             $table->string('fecha_pedido')->nullable();
             $table->string('fecha_estimada')->nullable();
             $table->string('fecha_real')->nullable();
-            $table->string('fecha_terminado')->nullable();
-            $table->string('fecha_ensamblado')->nullable();
 
+            // temple
+            $table->boolean('requiere_temple')->nullable();
+            
+            $table->string('fecha_solicitud_temple')->nullable();
+            $table->string('fecha_envio_temple')->nullable();
+            $table->string('fecha_estimada_temple')->nullable();
+            $table->string('fecha_recibido_temple')->nullable();
+            
+            
             $table->string('foto_matricero')->nullable();
             
             // enrutamiento
@@ -45,6 +56,8 @@ class CreateComponentesTable extends Migration
             $table->text('descripcion_trabajo')->nullable();
             $table->text('herramientas_corte')->nullable();
             
+            $table->boolean('refabricado')->nullable();
+            $table->integer('version')->nullable();
             
             $table->boolean('es_compra')->nullable();
             
