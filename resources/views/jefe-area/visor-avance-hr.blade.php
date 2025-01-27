@@ -326,25 +326,75 @@
 
 
         <div class="modal fade" id="modalNuevo" tabindex="-1" aria-labelledby="modalNuevoLabel" aria-hidden="true">
-            <div class="modal-dialog" style="min-width: 40%;">
+            <div class="modal-dialog" style="min-width: 50%;">
                 <div class="modal-content" >
                     <div class="modal-header">
                         <h3 class="modal-title" id="modalNuevoLabel">
-                            <span class="bold">INFORMACIÓN DE @{{componente.componente}}</span>
+                            <span class="bold">INFORMACIÓN DE @{{infoComponentes.componente}}</span>
                         </h3>
                         <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            
+                   <div class="modal-body">
+                        <div class="col-xl-12 accordion" id="accordionComponentes" v-if="infoComponentes.time && infoComponentes.time.length > 0">
+                            <div class="card" v-for="(componente, index) in infoComponentes.time.slice().reverse()" :key="componente.version">
+                                <!-- Cabecera del acordeón -->
+                                <div class="card-header cursor-pointer" :id="'heading-' + componente.version" :class="{'bg-success text-white': componente.type == 'normal', 'bg-danger text-white': componente.type == 'rework'}" data-toggle="collapse"  :data-target="'#collapse-' + componente.version"  :aria-expanded="index === 0"  :aria-controls="'collapse-' + componente.version">
+                                    <h5 class="bold"> Version @{{ componente.version }} &nbsp;&nbsp;  <small>(@{{componente.dia_inicio}} Hrs. - @{{componente.dia_termino}} Hrs.)</small></h5>
+                                </div>
+
+                                <!-- Contenido colapsable -->
+                                <div :id="'collapse-' + componente.version" class="collapse" :class="{ show: index === 0 }" :aria-labelledby="'heading-' + componente.version" data-parent="#accordionComponentes">
+                                    <div class="card-body">
+                                        <div class="mb-2">
+                                            <h5 class="bold">INFORMACION GENERAL DEL COMPONENTE: </h5>
+                                            <span><strong>Tipo de componente: </strong> @{{componente.info.es_compra ? 'COMPRA' : 'FABRICACION'}}</span><br>
+                                            <span><strong>Cantidad: </strong> @{{componente.info.cantidad}}</span>&nbsp;&nbsp;
+                                            <span><strong>Alto: </strong> @{{componente.info.alto}}</span>&nbsp;&nbsp;
+                                            <span><strong>Largo: </strong> @{{componente.info.largo}}</span>&nbsp;&nbsp;
+                                            <span><strong>Ancho: </strong> @{{componente.info.ancho}}</span>&nbsp;&nbsp;
+                                            <span><strong>Material: </strong> @{{componente.info.material_nombre}}</span>&nbsp;&nbsp;
+                                        </div>
+                                        <div class="mb-2" v-if="!componente.info.es_compra">
+                                            <span><strong>Fecha de Carga:</strong> @{{ componente.info.fecha_cargado }}</span> <br>
+                                            <span><strong>Fecha Términado:</strong> @{{ componente.info.fecha_terminado ?? ' Sin finalizar' }}</span> <br>
+                                            <span><strong>Fecha Ensamblado:</strong> @{{ componente.info.fecha_ensamblado ?? 'Sin ensamblar' }}</span> <br>
+                                            <span><strong>Ultimo estatus:</strong> </span> <span class="badge badge-dark badge-pill px-2 py-2 my-2">@{{determinarEstatus(componente.info)}}</span> <br>
+                                        </div>
+                                        <div v-else>
+                                            <span><strong>Fecha solicitud:</strong> @{{ componente.info.fecha_solicitud }}</span> <br>
+                                            <span><strong>Fecha pedido:</strong> @{{ componente.info.fecha_pedido ?? '-' }}</span> <br>
+                                            <span><strong>Fecha estimada:</strong> @{{ componente.info.fecha_estimada ?? '-' }}</span> <br>
+                                            <span><strong>Fecha compra real:</strong> @{{ componente.info.fecha_real ?? '-' }}</span> <br>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <a class="btn btn-sm btn-default" :href="'/download/' + componente.info.archivo_2d_public">
+                                                <i class="fa fa-download"></i> Descargar Vista 2D
+                                            </a>
+                                            <a class="btn btn-sm btn-default" :href="'/download/' + componente.info.archivo_3d_public">
+                                                <i class="fa fa-download"></i> Descargar Vista 3D
+                                            </a>
+                                            <a class="btn btn-sm btn-default" :href="'/download/' + componente.info.archivo_explosionado_public">
+                                                <i class="fa fa-download"></i> Descargar Vista Explosionado
+                                            </a>
+                                        </div>
+
+                                        <!-- Botones de acciones -->
+                                        <div class="text-center">
+                                            <button v-if="!componente.info.es_compra" class="btn btn-dark mx-2"><i class="fa fa-list"></i> Ver solicitudes</button>
+                                            <button v-if="!componente.info.es_compra" class="btn btn-dark mx-2"><i class="fa fa-calendar"></i> Ver linea de tiempo</button>
+                                            <button v-if="!componente.info.es_compra" class="btn btn-dark mx-2"><i class="fa fa-camera"></i> Ver fotos</button>
+                                            <button v-if="!componente.info.es_compra" class="btn btn-dark mx-2"><i class="fa fa-eye"></i> Visor componente</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
-                        <div class="col-xl-12 text-right">
+                            <div class="col-xl-12 text-right">
                                 <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
-                                <button class="btn btn-dark"><i class="fa fa-camera"></i> Ver fotos</button>
-                                <button class="btn btn-dark"><i class="fa fa-eye"></i> Visor componente</button>
                             </div>
                         </div>
                     </div> 
@@ -389,6 +439,8 @@
             tasks: [],
             procesos: [],
             componente: {},
+            infoComponentes: [],
+            seleccionado: null,
         },
         mounted: async function () {
             let t = this;
@@ -397,7 +449,7 @@
             this.navigateFromUrlParams();
         },
         computed: {
-             duracionTotal() {
+            duracionTotal() {
                 // Extraemos las fechas de inicio y término de las tareas
                 const fechasInicio = this.tasks.flatMap(task => 
                     task.time.map(t => t.dia_inicio.split(' ')[0]) // Solo la fecha en formato YYYY-MM-DD
@@ -421,10 +473,35 @@
             }
 
         },
-        methods:{         
-            verInformacion(task){
+        methods:{
+            determinarEstatus(componente) {
+                const { cargado, enrutado, cortado, programado, ensamblado } = componente;
+
+                let resultado = "Sin estatus";
+                if (cargado) {
+                    resultado = "En enrutamiento";
+                }
+                if (enrutado) {
+                    resultado = "En corte y programacion";
+                }
+                if (cortado) {
+                    resultado = "En programacion";
+                }
+                if (programado) {
+                    resultado = "En corte";
+                }
+                if (programado && cortado) {
+                    resultado = "En Fabricacion";
+                }
+                if (ensamblado) {
+                    resultado = "Ensamblado";
+                }
+                return resultado;
+            },         
+            async verInformacion(task){
                 let t = this;
-                t.componente = task;
+                t.infoComponentes = task;
+
                 $('#modalNuevo').modal('show');
             },  
             getTaskStyle(segment, day) {
@@ -461,7 +538,6 @@
                     width: `${width}%`,
                 };
             },
-
             regresar(step){
                 switch (step) {
                     case 1:

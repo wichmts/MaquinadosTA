@@ -178,7 +178,6 @@ class Componente extends Model
             'minutos' => $minutos,
         ];
     }
-
     public function toArray(){
   		$data = parent::toArray();
         $data['material_nombre'] = $this->material ? $this->material->nombre : '';

@@ -2219,10 +2219,21 @@ class APIController extends Controller
                 $next = $index + 1 < $totalVersiones ? $grupoOrdenado->get($index + 1) : null; 
 
                 $time[] = [
-                    'type' => $componente->refabricado ? 'rework' : 'normal', 
-                    'dia_inicio' => $componente->fecha_cargado,
-                    'dia_termino' => $componente->fecha_terminado ?? ($next ? $next->fecha_cargado : date('Y-m-d H:i')), 
+                    'version' => $componente->version, 
+                    'info' => $componente, 
+                    'type' => $componente->es_compra ? 'normal' : ($componente->refabricado ? 'rework' : 'normal'),
+                    'dia_inicio' => $componente->es_compra 
+                        ? date('Y-m-d H:i', strtotime($componente->fecha_solicitud)) 
+                        : date('Y-m-d H:i', strtotime($componente->fecha_cargado)),
+                    'dia_termino' => $componente->es_compra 
+                        ? ($componente->fecha_real 
+                            ? date('Y-m-d H:i', strtotime($componente->fecha_real)) 
+                            : date('Y-m-d H:i')) 
+                        : ($componente->fecha_terminado 
+                            ? date('Y-m-d H:i', strtotime($componente->fecha_terminado)) 
+                            : ($next ? date('Y-m-d H:i', strtotime($next->fecha_cargado)) : date('Y-m-d H:i'))),
                 ];
+
             });
 
             $componenteActual = $grupoOrdenado->last();
