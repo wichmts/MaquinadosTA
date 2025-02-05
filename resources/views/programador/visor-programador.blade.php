@@ -440,117 +440,117 @@
 
         </div>
     </div>
-</div>
-</div>
 
-<div class="modal fade" id="modalRuta" tabindex="-1" aria-labelledby="modalRutaLabel" aria-hidden="true">
-    <div class="modal-dialog" style="min-width: 60%;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="bold modal-title" id="modalRutaLabel" style="letter-spacing: 1px">RUTA PARA EL COMPONENTE @{{componente.nombre}}</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row d-flex align-items-center">
-                    <div class="col-xl-12">
-                        <div class="row">
-                            <div class="col-xl-12" style="overflow-x:scroll">
-                                <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }">
-                                    <div class="gantt-header general-header">
-                                        <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px">TIEMPO TEÓRICO EN HORAS</div>
-                                    </div>
-                                    <div class="gantt-header">
-                                        <div class="gantt-cell task-name pt-1">ACCIONES</div>
-                                        <div class="gantt-cell pt-1" v-for="hour in duracionTotal" :key="hour">
-                                            @{{ hour }}
+
+    <div class="modal fade" id="modalRuta" tabindex="-1" aria-labelledby="modalRutaLabel" aria-hidden="true">
+        <div class="modal-dialog" style="min-width: 60%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="bold modal-title" id="modalRutaLabel" style="letter-spacing: 1px">RUTA PARA EL COMPONENTE @{{componente.nombre}}</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row d-flex align-items-center">
+                        <div class="col-xl-12">
+                            <div class="row">
+                                <div class="col-xl-12" style="overflow-x:scroll">
+                                    <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }">
+                                        <div class="gantt-header general-header">
+                                            <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px">TIEMPO TEÓRICO EN HORAS</div>
                                         </div>
-                                    </div>
-                                    <div class="gantt-row" v-for="task in tasks" :key="task.id">
-                                        <div class="gantt-cell task-name pt-1">@{{ task.name }}</div>
-                                        <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
-                                            <div
-                                                v-for="segment in task.time"
-                                                data-toggle="tooltip" data-html="true" :title="getContenidoTooltip(task)"
-                                                :key="segment.inicio"
-                                                v-if="isTaskInHour(segment, hour)"
-                                                :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
-                                                :style="getTaskStyle(segment, hour)"></div>
+                                        <div class="gantt-header">
+                                            <div class="gantt-cell task-name pt-1">ACCIONES</div>
+                                            <div class="gantt-cell pt-1" v-for="hour in duracionTotal" :key="hour">
+                                                @{{ hour }}
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-xl-12" style="overflow-x:scroll">
-                                <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }">
-                                    <div class="gantt-header general-header">
-                                        <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px">TIEMPO REAL EN HORAS</div>
-                                    </div>
-                                    <div class="gantt-header">
-                                        <div class="gantt-cell task-name pt-1">ACCIONES</div>
-                                        <div class="gantt-cell pt-1" v-for="hour in duracionTotal" :key="hour">@{{ hour }}</div>
-                                    </div>
-                                    <div class="gantt-row" v-for="task in rutaAvance" :key="task.id">
-                                        <div class="gantt-cell task-name pt-1">@{{ task.name }}</div>
-                                        <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
-                                            <div
-                                                v-for="segment in task.time"
-                                                data-toggle="tooltip" data-html="true" :title="getContenidoTooltip(task)"
-                                                :key="segment.inicio"
-                                                v-if="isTaskInHour(segment, hour)"
-                                                :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
-                                                :style="getTaskStyle(segment, hour)">
+                                        <div class="gantt-row" v-for="task in tasks" :key="task.id">
+                                            <div class="gantt-cell task-name pt-1">@{{ task.name }}</div>
+                                            <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
+                                                <div
+                                                    v-for="segment in task.time"
+                                                    data-toggle="tooltip" data-html="true" :title="getContenidoTooltip(task)"
+                                                    :key="segment.inicio"
+                                                    v-if="isTaskInHour(segment, hour)"
+                                                    :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
+                                                    :style="getTaskStyle(segment, hour)"></div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="limite-tiempo" :style="{ left: `${165 + (40 * totalHoras) + ((40 / 60 ) * totalMinutos) }px` }"></div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-xl-12" style="overflow-x:scroll">
+                                    <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }">
+                                        <div class="gantt-header general-header">
+                                            <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px">TIEMPO REAL EN HORAS</div>
+                                        </div>
+                                        <div class="gantt-header">
+                                            <div class="gantt-cell task-name pt-1">ACCIONES</div>
+                                            <div class="gantt-cell pt-1" v-for="hour in duracionTotal" :key="hour">@{{ hour }}</div>
+                                        </div>
+                                        <div class="gantt-row" v-for="task in rutaAvance" :key="task.id">
+                                            <div class="gantt-cell task-name pt-1">@{{ task.name }}</div>
+                                            <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
+                                                <div
+                                                    v-for="segment in task.time"
+                                                    data-toggle="tooltip" data-html="true" :title="getContenidoTooltip(task)"
+                                                    :key="segment.inicio"
+                                                    v-if="isTaskInHour(segment, hour)"
+                                                    :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
+                                                    :style="getTaskStyle(segment, hour)">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="limite-tiempo" :style="{ left: `${165 + (40 * totalHoras) + ((40 / 60 ) * totalMinutos) }px` }"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="modalRetraso" tabindex="-1" aria-labelledby="modalRetrasoLabel" aria-hidden="true">
-    <div class="modal-dialog" style="min-width: 35%;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalRetrasoLabel">
-                    <span>RETRASO EN EL COMPONENTE @{{componente.nombre}}</span>
-                </h3>
-                <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row px-3">
-                    <div class="mt-3 py-2 col-xl-12 form-group" style="background-color: rgb(254, 195, 195); border-radius: 10px">
-                        <label class="bold text-danger"><i class="fa fa-exclamation-circle"></i> Hubo un retraso en el tiempo estimado de programacion para este componente. Indique el motivo.</label>
-                        <textarea style="border: none !important" v-model="componente.retraso_programacion" class="form-control w-100 text-left px-2 py-1" placeholder="Motivo del retraso..."></textarea>
-                    </div>
+    <div class="modal fade" id="modalRetraso" tabindex="-1" aria-labelledby="modalRetrasoLabel" aria-hidden="true">
+        <div class="modal-dialog" style="min-width: 35%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalRetrasoLabel">
+                        <span>RETRASO EN EL COMPONENTE @{{componente.nombre}}</span>
+                    </h3>
+                    <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="row">
-                    <div class="col-xl-12">
-                        <hr>
+                <div class="modal-body">
+                    <div class="row px-3">
+                        <div class="mt-3 py-2 col-xl-12 form-group" style="background-color: rgb(254, 195, 195); border-radius: 10px">
+                            <label class="bold text-danger"><i class="fa fa-exclamation-circle"></i> Hubo un retraso en el tiempo estimado de programacion para este componente. Indique el motivo.</label>
+                            <textarea style="border: none !important" v-model="componente.retraso_programacion" class="form-control w-100 text-left px-2 py-1" placeholder="Motivo del retraso..."></textarea>
+                        </div>
                     </div>
-                    <div class="col-xl-12 text-right">
-                        <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
-                        <button class="btn btn-secondary" v-if="!loading_button" type="button" @click="guardar(true)"><i class="fa fa-check-circle"></i> LIBERAR COMPONENTE</button>
-                        <button class="btn btn-secondary" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> LIBERANDO, ESPERE ...</button>
+                    <div class="row">
+                        <div class="col-xl-12">
+                            <hr>
+                        </div>
+                        <div class="col-xl-12 text-right">
+                            <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+                            <button class="btn btn-secondary" v-if="!loading_button" type="button" @click="guardar(true)"><i class="fa fa-check-circle"></i> LIBERAR COMPONENTE</button>
+                            <button class="btn btn-secondary" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> LIBERANDO, ESPERE ...</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
 </div>
 @endsection
 
@@ -561,8 +561,8 @@
     var app = new Vue({
         el: '#vue-app',
         data: {
-            // user_id: {{ auth() -> user() -> id }},
             user_id: {{ auth() -> user() -> id }},
+            // user_id: {{ auth() -> user() -> id }},
             componente: {
                 nombre: '',
                 maquinas: []
