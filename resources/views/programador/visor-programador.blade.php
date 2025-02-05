@@ -206,16 +206,7 @@
 
     <div class="wrapper " v-cloak v-show="!cargando">
         <div class="sidebar" data-color="white" data-active-color="danger">
-            <div class="logo text-center">
-                <a href="https://www.creative-tim.com" class="simple-text logo-mini">
-                    <div class="logo-image-small">
-                        <img src="{{ \App\Helpers\SystemHelper::getLogo() }}">
-                    </div>
-                </a>
-                <a href="https://www.creative-tim.com" class="simple-text logo-normal">
-                    PROGRAMADOR
-                </a>
-            </div>
+            
             <div class="sidebar-wrapper">
                 <ul class="nav">
                     <li>
@@ -297,7 +288,7 @@
                         <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE PROGRAMADOR</h2>
                     </div>
 
-                    <div class="col-lg-9" style="border-left: 1px solid  #ededed">
+                    <div class="col-lg-9">
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="row">
@@ -363,18 +354,18 @@
                             </div>
                         </div>
 
-                        <div class="row mb-5">
+                        <div class="row mb-5 mt-3">
                             <div class="col-lg-4 form-group mt-3">
                                 <label class="bold">DESCRIPCION DEL TRABAJO:</label>
-                                <textarea :disabled="componente.programado == true || componente.programador_id != user_id" v-model="componente.descripcion_trabajo" class="form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Descripcion del trabajo..."></textarea>
+                                <textarea :disabled="componente.programado == true || componente.programador_id != user_id" v-model="componente.descripcion_trabajo" class="form-control text-left px-1 py-1" style="min-height: 200px !important" placeholder="Descripcion del trabajo..."></textarea>
                             </div>
                             <div class="col-lg-4 form-group mt-3">
                                 <label class="bold">HERRAMIENTAS DE CORTE:</label>
-                                <textarea :disabled="componente.programado == true || componente.programador_id != user_id" v-model="componente.herramientas_corte" class="form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Agregar herramientas de corte..."></textarea>
+                                <textarea :disabled="componente.programado == true || componente.programador_id != user_id" v-model="componente.herramientas_corte" class="form-control text-left px-1 py-1" style="min-height: 200px !important" placeholder="Agregar herramientas de corte..."></textarea>
                             </div>
                             <div class="col-lg-4 form-group mt-3" v-if="componente.programado != true && componente.programador_id == user_id">
                                 <label class="bold">SELECCIONAR MAQUINA(S):</label>
-                                <ul style="height: 400px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border">
+                                <ul style="height: 200px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border">
                                     <li v-for="m in maquinas" class="dropdown-item" :class="{ maquinaSeleccionada: existeMaquina(m.id)}" @click="incluirMaquina(m.id)"><i class="fa fa-check-circle" v-if="existeMaquina(m.id)"></i> @{{m.nombre}}</li>
                                 </ul>
                             </div>
