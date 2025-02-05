@@ -108,6 +108,7 @@ The above copyright notice and this permission notice shall be included in all c
        font-family: 'HKGrotesk', sans-serif;
     }
     </style>
+     @yield('styles') <!-- Aquí se insertan los estilos -->
 
 </head>
 

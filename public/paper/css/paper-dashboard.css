@@ -2611,32 +2611,32 @@ body {
 .nav-pills .nav-link,
 .navbar,
 .nav-tabs .nav-link,
-.sidebar .nav a,
-.sidebar .nav a i,
+/* .sidebar .nav a, */
+/* .sidebar .nav a i, */
 .animation-transition-general,
-.sidebar .navbar-minimize,
+/* .sidebar .navbar-minimize, */
 .off-canvas-sidebar .navbar-minimize,
-.sidebar .logo a.logo-mini,
-.sidebar .logo a.logo-normal,
+/* .sidebar .logo a.logo-mini, */
+/* .sidebar .logo a.logo-normal, */
 .off-canvas-sidebar .logo a.logo-mini,
 .off-canvas-sidebar .logo a.logo-normal,
 .tag,
 .tag [data-role="remove"],
 .animation-transition-general,
-.sidebar .navbar-minimize,
+/* .sidebar .navbar-minimize, */
 .off-canvas-sidebar .navbar-minimize,
-.sidebar .logo a.logo-mini,
-.sidebar .logo a.logo-normal,
-.off-canvas-sidebar .logo a.logo-mini,
-.off-canvas-sidebar .logo a.logo-normal {
+/* .sidebar .logo a.logo-mini, */
+/* .sidebar .logo a.logo-normal, */
+/* .off-canvas-sidebar .logo a.logo-mini, */
+/* .off-canvas-sidebar .logo a.logo-normal {
   -webkit-transition: all 300ms ease 0s;
   -moz-transition: all 300ms ease 0s;
   -o-transition: all 300ms ease 0s;
   -ms-transition: all 300ms ease 0s;
   transition: all 300ms ease 0s;
-}
+} */
 
-.sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini-icon, .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini-icon, .off-canvas-sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini-icon, .off-canvas-sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini-icon {
+/* .sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini-icon, .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini-icon, .off-canvas-sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini-icon, .off-canvas-sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-mini-icon {
     text-transform: uppercase;
     width: 34px;
     margin-right: 10px;
@@ -2649,9 +2649,9 @@ body {
     z-index: 1;
     display: inherit;
     color: rgba(255, 255, 255, 0.5);
-}
+} */
 
-.sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .off-canvas-sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .off-canvas-sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal {
+/* .sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .off-canvas-sidebar .sidebar-wrapper > .nav [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal, .off-canvas-sidebar .sidebar-wrapper .user .info [data-toggle="collapse"] ~ div > ul > li > a .sidebar-normal {
     margin: 0;
     position: relative;
     -webkit-transform: translateX(0px);
@@ -2659,9 +2659,8 @@ body {
     opacity: 1;
     white-space: nowrap;
     display: block;
-    /* line-height: 20px; */
     z-index: 1;
-}
+} */
 
 
 
@@ -4726,7 +4725,7 @@ License - nucleoapp.com/license/
   background-color: #f5f5f5;
 }
 
-.wrapper {
+/* .wrapper {
   position: relative;
   top: 0;
   height: 100vh;
@@ -4739,11 +4738,11 @@ License - nucleoapp.com/license/
 
 .sidebar,
 .off-canvas-sidebar {
-  position: fixed;
+  position: relative;
   top: 0;
   height: 100%;
   bottom: 0;
-  /* width: 260px; */
+  width: 245px;
   left: 0;
   z-index: 1030;
   border-right: 1px solid #ddd;
@@ -4754,14 +4753,10 @@ License - nucleoapp.com/license/
   position: relative;
   height: calc(100vh - 75px);
   overflow: auto;
-  /* width: 260px; */
+  width: 245px;
   z-index: 4;
   padding-bottom: 100px;
-  /* background-color: #333; */
-    background-color:  #eaeaea ;
-  /* background: linear-gradient(to bottom, #004da7, #003883); */
-  /* background: linear-gradient(to bottom, #007E84, #333); */
-  /* background: linear-gradient(to bottom, #333, #e30f0f); */
+  background-color: rgb(0, 255, 21);
 }
 
 .sidebar .sidebar-wrapper .dropdown .dropdown-backdrop,
@@ -4819,14 +4814,12 @@ License - nucleoapp.com/license/
 
 .sidebar .nav li>a,
 .off-canvas-sidebar .nav li>a {
-  /* margin: 5px 15px 0; */
   color: #FFFFFF;
   display: block;
   text-decoration: none;
   position: relative;
   text-transform: none;
   cursor: pointer;
-  /* font-size: 14px; */
   font-size: calc(.4vw + .4rem) !important;
   padding: 5px 8px;
   line-height: 30px;
@@ -5012,7 +5005,7 @@ License - nucleoapp.com/license/
 .sidebar[data-color="white"]:after,
 .off-canvas-sidebar[data-color="white"]:after {
   background: #333;
-  width: 260px;
+  width: 245px;
 }
 
 .sidebar[data-color="white"] .nav li a,
@@ -5168,13 +5161,12 @@ License - nucleoapp.com/license/
 
 .off-canvas-sidebar .nav>li>a:focus {
   background: rgba(200, 200, 200, 0.2);
-}
+} */
 
-.main-panel {
+/* .main-panel {
   position: relative;
   float: right;
   width: calc(100%);
-  /* background-color: #f1f1f1; */
     background-color: white;
   -webkit-transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
   -moz-transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
@@ -5186,7 +5178,6 @@ License - nucleoapp.com/license/
 .main-panel>.content {
   padding: 0 15px;
   min-height: calc(100vh - 123px);
-  /* margin-top: 70px; */
     background-color: white;
 }
 
@@ -5202,7 +5193,7 @@ License - nucleoapp.com/license/
 .perfect-scrollbar-on .main-panel {
   height: 100%;
   max-height: 100%;
-}
+} */
 
 .panel-header {
   height: 260px;
@@ -5920,7 +5911,8 @@ License - nucleoapp.com/license/
   line-height: 59px;
 }
 
-@media screen and (max-width: 991px) {
+/* @media screen and (max-width: 991px) { */
+@media screen and (max-width: 1025px) {
   .navbar {
     padding: 0;
   }
@@ -5937,9 +5929,9 @@ License - nucleoapp.com/license/
   .button-dropdown {
     display: none;
   }
-  #minimizeSidebar {
+  /* #minimizeSidebar {
     display: none;
-  }
+  } */
   .navbar .container-fluid {
     padding-right: 15px;
     padding-left: 15px;
@@ -6026,13 +6018,13 @@ License - nucleoapp.com/license/
     -ms-transform: translate3d(260px, 0, 0);
     transform: translate3d(260px, 0, 0);
   } */
-  .nav-open .sidebar {
+  /* .nav-open .sidebar {
     -webkit-transform: translate3d(0px, 0, 0);
     -moz-transform: translate3d(0px, 0, 0);
     -o-transform: translate3d(0px, 0, 0);
     -ms-transform: translate3d(0px, 0, 0);
     transform: translate3d(0px, 0, 0);
-  }
+  } */
   .nav-open body {
     position: relative;
     overflow-x: hidden;
@@ -6045,13 +6037,13 @@ License - nucleoapp.com/license/
     transform: translate3d(-260px, 0, 0);
   } */
   .nav-open .menu-on-right .navbar-collapse,
-  .nav-open .menu-on-right .sidebar {
+  /* .nav-open .menu-on-right .sidebar {
     -webkit-transform: translate3d(0px, 0, 0);
     -moz-transform: translate3d(0px, 0, 0);
     -o-transform: translate3d(0px, 0, 0);
     -ms-transform: translate3d(0px, 0, 0);
     transform: translate3d(0px, 0, 0);
-  }
+  } */
   .nav-open .menu-on-right .navbar-translate {
     -webkit-transform: translate3d(-300px, 0, 0);
     -moz-transform: translate3d(-300px, 0, 0);
@@ -6387,9 +6379,9 @@ License - nucleoapp.com/license/
     -ms-transform: translate3d(-260px, 0, 0);
     transform: translate3d(-260px, 0, 0);
   } */
-  .main-panel {
+  /* .main-panel {
     width: 100%;
-  }
+  } */
   .timeline:before {
     left: 5% !important;
   }
@@ -6414,7 +6406,8 @@ License - nucleoapp.com/license/
   }
 }
 
-@media (max-width: 991px) and (min-width: 768px) {
+/* @media (max-width: 991px) and (min-width: 768px) { */
+@media (max-width: 1025px) and (min-width: 768px) {
   .nav-tabs-navigation.verical-navs {
     padding: 0px 2px;
   }
@@ -6429,7 +6422,8 @@ License - nucleoapp.com/license/
   }
 }
 
-@media screen and (min-width: 992px) {
+/* @media screen and (min-width: 992px) { */
+@media screen and (min-width: 1025px) {
   .navbar-collapse {
     background: none !important;
   }
@@ -6450,7 +6444,7 @@ License - nucleoapp.com/license/
     float: right;
     padding-right: 15px;
   }
-  .sidebar .sidebar-wrapper li.active>a:not([data-toggle="collapse"]):before,
+  /* .sidebar .sidebar-wrapper li.active>a:not([data-toggle="collapse"]):before,
   .sidebar .sidebar-wrapper li.active>[data-toggle="collapse"]+div .nav li:before {
     border-right: 17px solid #DDDDDD;
     border-top: 17px solid transparent;
@@ -6479,17 +6473,17 @@ License - nucleoapp.com/license/
   .sidebar .sidebar-wrapper li.active>[data-toggle="collapse"]+div .nav li a:before,
   .sidebar .sidebar-wrapper li.active>[data-toggle="collapse"]+div .nav li a:after {
     top: 0;
-  }
+  } */
 }
 
 @media screen and (max-width: 768px) {
   .card-stats [class*="col-"] .statistics::after {
     display: none;
   }
-  .main-panel .content {
+  /* .main-panel .content {
     padding-left: 15px;
     padding-right: 15px;
-  }
+  } */
   .footer nav {
     display: block;
     margin-bottom: 5px;
@@ -6759,7 +6753,8 @@ License - nucleoapp.com/license/
 .lock-page .navbar .navbar-brand {
   color: #FFFFFF !important; }
 
-@media screen and (max-width: 991px) {
+/* @media screen and (max-width: 991px) { */
+@media screen and (max-width: 1025px) {
   .register-page .navbar.bg-white .navbar-toggler .navbar-toggler-bar.navbar-kebab,
   .login-page .navbar.bg-white .navbar-toggler .navbar-toggler-bar.navbar-kebab,
   .lock-page .navbar.bg-white .navbar-toggler .navbar-toggler-bar.navbar-kebab {
@@ -7903,87 +7898,5 @@ i {
   text-decoration: underline;
 }
 
-/* Cambia el punto de quiebre de col-xl para que se aplique desde 1024px */
-@media screen and (min-width: 1024px) {
-  [class*="col-xl"] {
-    flex: 0 0 auto;
-    /* Permite ajustar el ancho según la clase aplicada (por ejemplo, col-xl-6) */
-    max-width: 100%;
-    /* Ajusta dinámicamente el ancho */
-  }
-
-  /* Ejemplo: Ajuste específico para col-xl-1 a col-xl-12 */
-  .col-xl-1 {
-    flex: 0 0 8.333333%;
-    /* 1 de 12 columnas */
-    max-width: 8.333333%;
-  }
-
-  .col-xl-2 {
-    flex: 0 0 16.666667%;
-    /* 2 de 12 columnas */
-    max-width: 16.666667%;
-  }
-
-  .col-xl-3 {
-    flex: 0 0 25%;
-    /* 3 de 12 columnas */
-    max-width: 25%;
-  }
-
-  .col-xl-4 {
-    flex: 0 0 33.333333%;
-    /* 4 de 12 columnas */
-    max-width: 33.333333%;
-  }
-
-  .col-xl-5 {
-    flex: 0 0 41.666667%;
-    /* 5 de 12 columnas */
-    max-width: 41.666667%;
-  }
-
-  .col-xl-6 {
-    flex: 0 0 50%;
-    /* 6 de 12 columnas */
-    max-width: 50%;
-  }
-
-  .col-xl-7 {
-    flex: 0 0 58.333333%;
-    /* 7 de 12 columnas */
-    max-width: 58.333333%;
-  }
-
-  .col-xl-8 {
-    flex: 0 0 66.666667%;
-    /* 8 de 12 columnas */
-    max-width: 66.666667%;
-  }
-
-  .col-xl-9 {
-    flex: 0 0 75%;
-    /* 9 de 12 columnas */
-    max-width: 75%;
-  }
-
-  .col-xl-10 {
-    flex: 0 0 83.333333%;
-    /* 10 de 12 columnas */
-    max-width: 83.333333%;
-  }
-
-  .col-xl-11 {
-    flex: 0 0 91.666667%;
-    /* 11 de 12 columnas */
-    max-width: 91.666667%;
-  }
-
-  .col-xl-12 {
-    flex: 0 0 100%;
-    /* 12 de 12 columnas */
-    max-width: 100%;
-  }
-}
 
 

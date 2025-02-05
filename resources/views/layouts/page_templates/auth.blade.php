@@ -1,11 +1,7 @@
-<div class="wrapper">
-
+<div>
     {{-- @include('layouts.navbars.admin') --}}
 
-    
-    <div class="main-panel">    
-        @include('layouts.navbars.navs.auth')
-        @yield('content')
-        @include('layouts.footer')
-    </div>
+    @include('layouts.navbars.navs.auth')
+    @yield('content')
+    @include('layouts.footer')
 </div>

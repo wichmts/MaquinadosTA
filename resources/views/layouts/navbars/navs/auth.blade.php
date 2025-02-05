@@ -67,9 +67,17 @@ input:checked + .slider:before {
     /* text-decoration-color: #c3d312 !important; */
 }
 
+.navbar11 {
+    position: relative; /* Cambiar a fixed si se debe mantener siempre en pantalla */
+    top: 0;
+    width: 100%;
+    z-index: 1050; /* Mayor que el sidebar */
+    height: 100px; /* Ajusta según el tamaño real del navbar */
+}
+
 </style>
-<div  id="vue-app2" >
-<nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #f1f1f1 !important" v-cloak>
+<div  id="vue-app2">
+<nav class="navbar navbar-expand-xl navbar-light bg-light mb-0 navbar11" style="background-color: #f1f1f1 !important" v-cloak>
     <div class="container-fluid">
         <a class="navbar-brand">
             <img src="{{ \App\Helpers\SystemHelper::getLogo() }}" width="120px" class="pl-2 pr-4 py-0" height="auto">
@@ -81,7 +89,7 @@ input:checked + .slider:before {
             <span class="navbar-toggler-bar navbar-kebab"></span>
         </button>
 
-        <div class="collapse navbar-collapse ml-4" id="navigation" >     
+        <div class="collapse navbar-collapse ml-4 bg-white" id="navigation" >     
            
             <ul class="navbar-nav mr-auto text-center">
                 {{-- DIRECCION --}}
@@ -227,7 +235,6 @@ input:checked + .slider:before {
         </div>
     </div>
 </nav>
-
 </div>
 
 
