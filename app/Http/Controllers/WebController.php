@@ -59,6 +59,19 @@ class WebController extends Controller
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
 
+    public function visorPruebas()
+    {
+        if (auth()->user()->hasAnyRole(['JEFE DE AREA', 'DISEÑO']))
+        return view('jefe-area.visor-pruebas');
+        return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
+    
+    public function pruebasProceso(){
+        if(auth()->user()->hasRole('PROCESOS')) 
+            return view('procesos.pruebas-proceso');
+        return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
+ 
     public function cargaComponentes(){
         if(auth()->user()->hasRole('AUXILIAR DE DISEÑO')) 
             return view('auxiliar-diseno.carga-componentes');

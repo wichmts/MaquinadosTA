@@ -113,7 +113,6 @@
                                     <th scope="col">Nombre</th>
                                     <th scope="col">Correo electronico</th>
                                     <th scope="col">Roles del usuario</th>
-                                    {{-- <th scope="col">Permisos del usuario</th> --}}
                                     <th scope="col">Estatus</th>
                                     <th scope="col" class="no-sort">Acciones</th>
                                 </tr>
@@ -125,9 +124,7 @@
                                     <td style="width: 10%">
                                         <span v-for="r in p.roles" style="font-size: 12px" class="badge-dark badge badge-pill mx-1 my-1 py-2 px-3"> @{{r}}</span>
                                     </td>
-                                    {{-- <td style="width: 40%">
-                                        <span style="font-size: 12px; background-color: #234666 !important" class="badge-dark badge badge-pill mx-1 my-1 py-2 px-3" v-for="per in p.permisos"> @{{per}}</span>
-                                    </td> --}}
+                                    
                                     <td style="width: 10%">
                                         <span style="font-size: 12px" class="badge badge-success py-2 px-4" v-if="p.active"><i class="fa fa-unlock"></i> ACTIVO </span>
                                         <span style="font-size: 12px" class="badge badge-danger py-2 px-4" v-else><i class="fa fa-lock"></i> INACTIVO</span>
@@ -238,7 +235,7 @@
             tipo_usuario: '-1',
             permisos: [],
             maquinas: [],
-            roles: [ 'DIRECCION', 'ALMACENISTA', 'AUXILIAR DE DISEÑO', 'JEFE DE AREA', 'PROGRAMADOR', 'OPERADOR', 'MATRICERO', 'FINANZAS', 'PROYECTOS', 'PROCESOS', 'EXTERNO'],
+            roles: [ 'DIRECCION', 'ALMACENISTA', 'AUXILIAR DE DISEÑO', 'JEFE DE AREA', 'PROGRAMADOR', 'OPERADOR', 'MATRICERO', 'DISEÑO','FINANZAS', 'PROYECTOS', 'PROCESOS', 'EXTERNO'],
         },
         methods:{ 
             incluirRole(role) {

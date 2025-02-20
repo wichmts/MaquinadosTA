@@ -166,9 +166,14 @@ input:checked + .slider:before {
                 </li>
                 @endif
                 
-                @if (auth()->user()->hasRole('JEFE DE AREA'))
+                @if (auth()->user()->hasAnyRole(['DISEÑO', 'JEFE DE AREA']))
                 <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/compra-componentes">Visor pruebas</a>
+                    <a class="nav-link menu-link" href="/visor-pruebas">Pruebas</a>
+                </li>
+                @endif
+                 @if (auth()->user()->hasRole(['PROCESOS']))
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/pruebas-proceso">Pruebas</a>
                 </li>
                 @endif
                 @if (auth()->user()->hasRole('JEFE DE AREA'))
@@ -210,10 +215,10 @@ input:checked + .slider:before {
 
             <ul class="navbar-nav ml-auto text-center">
                 <li class="nav-item dropdown btn-rotate">
-                    <a v-if="!hay_notificaciones" @click="toggleDropdown()" class="cursor-pointer nav-link dropdown-toggle cursor-pointer" style="text-transform: capitalize" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a v-if="!hay_notificaciones" @click="toggleDropdown()" class="menu-link nav-link " style="text-transform: capitalize" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i  class="far fa-bell "></i> <small class="bold ">Ultimas notificaciones&nbsp;</small>
                     </a>
-                    <a v-else @click="toggleDropdown()"  class="cursor-pointer nav-link dropdown-toggle cursor-pointer" style="text-transform: capitalize" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a v-else @click="toggleDropdown()"  class="menu-link nav-link  cursor-pointer" style="text-transform: capitalize" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-bell text-danger"></i> <small class="bold text-danger">Ultimas notificaciones&nbsp;</small>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
@@ -224,7 +229,7 @@ input:checked + .slider:before {
                     </div>
                 </li>
                 <li class="nav-item btn-rotate">
-                    <a class="nav-link cursor-pointer " onclick="document.getElementById('formLogOut').submit();" style="text-transform: capitalize">
+                    <a class="nav-link menu-link " onclick="document.getElementById('formLogOut').submit();" style="text-transform: capitalize">
                         <i class="fa fa-sign-out"></i> <small class="bold">{{ __('system.logout') }}</small>
                     </a>
                 </li>

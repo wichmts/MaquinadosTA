@@ -202,6 +202,8 @@
         z-index: 10;
     }
 
+    
+
     .tooltip {
         max-width: none; /* Elimina el límite de ancho predeterminado */
         width: 400px; /* Asegúrate de que el tooltip se ajuste al contenido */
@@ -593,7 +595,7 @@
             ]
         },
         computed: {
-           duracionTotal() {
+            duracionTotal() {
                 let maxHour = 0;
 
                 const calcularMaxHora = (array) => {

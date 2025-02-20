@@ -328,242 +328,248 @@
                 <div class="loader"></div>
             </div>
         </div>
-        <div class="row" v-cloak v-show="!cargando">
-            <div class="col-xl-2 pt-3" style="background-color: #f1f1f1; height: calc(100vh - 107.3px); overflow-y: scroll">
-                <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                    <a class="nav-link cursor-pointer text-right text-muted" >
-                        <i v-if="menuStep > 1"  @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
-                    </a>
-                    <div v-if="!cargandoMenu && menuStep == 1">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
-                        <a class="nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> 
-                        </a>
-                    </div>    
-                    <div v-if="!cargandoMenu && menuStep == 2">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
-                        <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> 
-                        </a>
-                    </div>
-                    <div v-if="!cargandoMenu && menuStep == 3">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
-                        <a class="nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> 
-                        </a>
-                    </div>
-                    <div v-if="!cargandoMenu && menuStep == 4">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
-                        <a class="nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)" >
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> 
-                        </a>
-                    </div>
-                    <div v-if="!cargandoMenu && menuStep == 5">
-                        <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> COMPONENTES </a>
-                        <a class="nav-link cursor-pointer" v-for="obj in componentes" @click="fetchComponente(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span> 
-                        </a>
-                    </div>
-                    
-                </div>            
-            </div>
-            <div class="col-xl-10 mt-3">
-                <div class="row">
-                    <div class="mb-2 col-xl-12" style="border-bottom: 1px solid #ededed">
-                        <p style="">
-                            <span class="cursor-pointer pb-2" @click="regresar(1)"><i class="fa fa-home"></i> &nbsp;</span>
-                            <span class="cursor-pointer pb-2"  v-if="ruta.anio" @click="regresar(2)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.anio}}</span>    &nbsp;</span>
-                            <span class="cursor-pointer pb-2"  v-if="ruta.cliente" @click="regresar(3)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.cliente}}</span>     &nbsp;</span>
-                            <span class="cursor-pointer pb-2"  v-if="ruta.proyecto" @click="regresar(4)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.proyecto}}</span>     &nbsp;</span>
-                            <span class="cursor-pointer pb-2"  v-if="ruta.herramental" @click="regresar(5)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.herramental}}</span>      </span>
-                            <span class="cursor-pointer pb-2 bold"  v-if="ruta.componente"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.componente}}</span>      </span>
-                        </p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xl-9">
-                        <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE MATRICERO</h2>
-                    </div>
-                    <div class="col-xl-3">
-                        <button class="btn btn-success btn-block" @click="liberarHerramental()" v-if="selectedHerramental && herramental && herramental.estatus_ensamble == 'proceso'"><i class="fa fa-check-double"></i> LIBERAR HERRAMENTAL </button>
-                    </div>
-                </div>
-                <hr>
-                <div class="col-xl-12" v-if="!selectedHerramental">
-                    <h5 class="text-muted my-4"> SELECCIONE UN HERRAMENTAL PARA COMENZAR SU ENSAMBLE</h5>
-                </div>
-                <div class="row mt-3" v-else>
-                    
-                    {{-- vista de carga de archivo --}}
-                    <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'inicial'">
-                        <div class="row">
-                            <h5 class="bold col-xl-12" style="letter-spacing: 1px">Para comenzar el ensamble del herramental @{{herramental.nombre}} es necesario cargar el formato solicitado:</h5>
-                            <div class="col-xl-4">
-                                <input
-                                    class="input-file"
-                                    id="archivo2"
-                                    type="file"
-                                    @change="handleFileChange($event)"
-                                    style="display: none;"
-                                />
-                                <label tabindex="0" for="archivo2" class="input-file-trigger col-12 text-center">
-                                    <i class="fa fa-upload"></i> CARGAR FORMATO F71-03 ANEXO 1
-                                </label>
-                            </div>
-                        </div>
-                        
-                    </div>
-                    
-                    {{-- vista de checklist --}}
-                    <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'checklist'">
-                        <div class="row mb-3">
-                            <div class="col-xl-10">
-                                <h3 class="bold pb-1 mb-0" style="letter-spacing: 1px">Lista de materiales para @{{herramental.nombre}}</h3>
-                                <h5 class="py-1 my-0" style="letter-spacing: 1px; opacity: .6" >Verifique que todos los componentes esten disponibles y listos para comenzar el ensamble:</h5>
-                            </div>
-                            <div class="col-xl-2">
-                                <button class="btn btn-success btn-block" @click="guardarChecklist()"><i class="fa fa-save"></i> GUARDAR CAMBIOS</button>
-                            </div>
-                        </div>
-                        <div class="row" >
-                            <div class="col-xl-12 table-responsive" style="height: 55vh; overflow-y:scroll">
-                                <table class="table table-bordered">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th>#</th>
-                                            <th style="text-transform: none !important">¿Listo para ensamble?</td>
-                                            <th>Componente</td>
-                                            <th>Cantidad</td>
-                                            <th>Procedencia</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(componente, index) in herramental.checklist" :key="index">
-                                            <td>@{{index + 1}}</td>
-                                            <td>
-                                                <div class="form-check" :key="index">
-                                                    <label class="form-check-label">
-                                                        <input class="form-check-input" type="checkbox" :id="'componente-' + index" v-model="componente.checked">
-                                                        <span class="form-check-sign"></span>
-                                                    </label>
-                                                </div>    
-                                            </td>
-                                            <td class="bold">@{{componente.nombre}}</td>
-                                            <td>@{{componente.cantidad}}</td>
-                                            <td>@{{componente.es_compra ? 'COMPRAS' : 'FABRICACIÓN'}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="col-xl-12 mt-2">
-                                <h5 class="text-muted" style="letter-spacing: 1px">Una vez que todos los componentes esten listos, podra comenzar con el ensamblado del herramental.</h5>
-                            </div>
-                        </div>
-                    </div>
 
-                    {{-- vista de componente --}}
-                    <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'proceso'">
-                        <div class="row">
-                            <div class="col-xl-3" style="border-right: 2px dashed #d6d6d6;">  
-                                 <h5 class="bold" style="letter-spacing: 1px">Seleccionar componente a ensamblar: </h5>
-                                 <ul  class="dropdown-menu show w-100 position-static border mt-0" style="height: 65vh; overflow-y: scroll">
-                                     <li v-for="c in componentes" class="dropdown-item" :class="{ componenteSeleccionado: selectedComponente == c.id}" @click="fetchComponente(c.id)"><i class="fa fa-check-circle" v-if="selectedComponente == c.id"></i> @{{c.nombre}} <small>(@{{ c.ensamblado ? 'Ensamblado' : 'Sin ensamblar'}})</small></li>
-                                 </ul>
+        <div class="wrapper" v-cloak v-show="!cargando">
+            <div class="main-panel col-xl-12">
+                <div class="row" v-cloak v-show="!cargando">
+                    <div class="col-xl-2 pt-3" style="background-color: #f1f1f1; height: calc(100vh - 107.3px); overflow-y: scroll">
+                        <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                            <a class="nav-link cursor-pointer text-right text-muted" >
+                                <i v-if="menuStep > 1"  @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
+                            </a>
+                            <div v-if="!cargandoMenu && menuStep == 1">
+                                <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
+                                <a class="nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
+                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span> 
+                                </a>
+                            </div>    
+                            <div v-if="!cargandoMenu && menuStep == 2">
+                                <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
+                                <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
+                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span> 
+                                </a>
                             </div>
-                            <div class="col-xl-9" >
+                            <div v-if="!cargandoMenu && menuStep == 3">
+                                <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
+                                <a class="nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
+                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span> 
+                                </a>
+                            </div>
+                            <div v-if="!cargandoMenu && menuStep == 4">
+                                <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
+                                <a class="nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)" >
+                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span> 
+                                </a>
+                            </div>
+                            <div v-if="!cargandoMenu && menuStep == 5">
+                                <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> COMPONENTES </a>
+                                <a class="nav-link cursor-pointer" v-for="obj in componentes" @click="fetchComponente(obj.id)">
+                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span> 
+                                </a>
+                            </div>
+                            
+                        </div>            
+                    </div>
+                    <div class="col-xl-10 mt-3">
+                        <div class="row">
+                            <div class="mb-2 col-xl-12" style="border-bottom: 1px solid #ededed">
+                                <p style="">
+                                    <span class="cursor-pointer pb-2" @click="regresar(1)"><i class="fa fa-home"></i> &nbsp;</span>
+                                    <span class="cursor-pointer pb-2"  v-if="ruta.anio" @click="regresar(2)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.anio}}</span>    &nbsp;</span>
+                                    <span class="cursor-pointer pb-2"  v-if="ruta.cliente" @click="regresar(3)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.cliente}}</span>     &nbsp;</span>
+                                    <span class="cursor-pointer pb-2"  v-if="ruta.proyecto" @click="regresar(4)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.proyecto}}</span>     &nbsp;</span>
+                                    <span class="cursor-pointer pb-2"  v-if="ruta.herramental" @click="regresar(5)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.herramental}}</span>      </span>
+                                    <span class="cursor-pointer pb-2 bold"  v-if="ruta.componente"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.componente}}</span>      </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-9">
+                                <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE MATRICERO</h2>
+                            </div>
+                            <div class="col-xl-3">
+                                <button class="btn btn-success btn-block" @click="liberarHerramental()" v-if="selectedHerramental && herramental && herramental.estatus_ensamble == 'proceso'"><i class="fa fa-check-double"></i> LIBERAR HERRAMENTAL </button>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="col-xl-12" v-if="!selectedHerramental">
+                            <h5 class="text-muted my-4"> SELECCIONE UN HERRAMENTAL PARA COMENZAR SU ENSAMBLE</h5>
+                        </div>
+                        <div class="row mt-3" v-else>
+                            
+                            {{-- vista de carga de archivo --}}
+                            <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'inicial'">
                                 <div class="row">
-                                    <div class="col-xl-9 form-group mt-4">
-                                        <span style="font-size: 22px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold mt-2 py-2"> <i class="fa fa-cogs" style="font-size: 16px !important" ></i> @{{componente.nombre}}</span>
+                                    <h5 class="bold col-xl-12" style="letter-spacing: 1px">Para comenzar el ensamble del herramental @{{herramental.nombre}} es necesario cargar el formato solicitado:</h5>
+                                    <div class="col-xl-4">
+                                        <input
+                                            class="input-file"
+                                            id="archivo2"
+                                            type="file"
+                                            @change="handleFileChange($event)"
+                                            style="display: none;"
+                                        />
+                                        <label tabindex="0" for="archivo2" class="input-file-trigger col-12 text-center">
+                                            <i class="fa fa-upload"></i> CARGAR FORMATO F71-03 ANEXO 1
+                                        </label>
                                     </div>
-                                     <div class="col-xl-3 form-group text-center">
-                                        <a v-if="componente.archivo_explosionado_public" class="text-dark cursor-pointer" :href="'/storage/' + componente.archivo_explosionado_public" target="_blank">
-                                            <img src="/paper/img/icons/file.png" height="80px"><br>
-                                            <label class="my-0 py-0 bold pt-2">VISTA EXPLOSIONADA</label>
-                                        </a>
-                                    </div>
-                                    {{-- <div class="col-xl-12 mb-3" ></div> --}}
                                 </div>
+                                
+                            </div>
+                            
+                            {{-- vista de checklist --}}
+                            <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'checklist'">
+                                <div class="row mb-3">
+                                    <div class="col-xl-10">
+                                        <h3 class="bold pb-1 mb-0" style="letter-spacing: 1px">Lista de materiales para @{{herramental.nombre}}</h3>
+                                        <h5 class="py-1 my-0" style="letter-spacing: 1px; opacity: .6" >Verifique que todos los componentes esten disponibles y listos para comenzar el ensamble:</h5>
+                                    </div>
+                                    <div class="col-xl-2">
+                                        <button class="btn btn-success btn-block" @click="guardarChecklist()"><i class="fa fa-save"></i> GUARDAR CAMBIOS</button>
+                                    </div>
+                                </div>
+                                <div class="row" >
+                                    <div class="col-xl-12 table-responsive" style="height: 55vh; overflow-y:scroll">
+                                        <table class="table table-bordered">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th style="text-transform: none !important">¿Listo para ensamble?</td>
+                                                    <th>Componente</td>
+                                                    <th>Cantidad</td>
+                                                    <th>Procedencia</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(componente, index) in herramental.checklist" :key="index">
+                                                    <td>@{{index + 1}}</td>
+                                                    <td>
+                                                        <div class="form-check" :key="index">
+                                                            <label class="form-check-label">
+                                                                <input class="form-check-input" type="checkbox" :id="'componente-' + index" v-model="componente.checked">
+                                                                <span class="form-check-sign"></span>
+                                                            </label>
+                                                        </div>    
+                                                    </td>
+                                                    <td class="bold">@{{componente.nombre}}</td>
+                                                    <td>@{{componente.cantidad}}</td>
+                                                    <td>@{{componente.es_compra ? 'COMPRAS' : 'FABRICACIÓN'}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-xl-12 mt-2">
+                                        <h5 class="text-muted" style="letter-spacing: 1px">Una vez que todos los componentes esten listos, podra comenzar con el ensamblado del herramental.</h5>
+                                    </div>
+                                </div>
+                            </div>
+        
+                            {{-- vista de componente --}}
+                            <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'proceso'">
                                 <div class="row">
-                                    <div class="col-xl-7">
+                                    <div class="col-xl-3" style="border-right: 2px dashed #d6d6d6;">  
+                                         <h5 class="bold" style="letter-spacing: 1px">Seleccionar componente a ensamblar: </h5>
+                                         <ul  class="dropdown-menu show w-100 position-static border mt-0" style="height: 65vh; overflow-y: scroll">
+                                             <li v-for="c in componentes" class="dropdown-item" :class="{ componenteSeleccionado: selectedComponente == c.id}" @click="fetchComponente(c.id)"><i class="fa fa-check-circle" v-if="selectedComponente == c.id"></i> @{{c.nombre}} <small>(@{{ c.ensamblado ? 'Ensamblado' : 'Sin ensamblar'}})</small></li>
+                                         </ul>
+                                    </div>
+                                    <div class="col-xl-9" >
                                         <div class="row">
-                                            <div class="col-xl-6 text-center form-group" >
-                                                <label class="bold ">¿COMPONENTE ENSAMBLADO?</label>
-                                                <div class="checkbox-wrapper-26 mt-4">
-                                                    <input type="checkbox" :id="'_checkbox-26' + componente.id" v-model="componente.ensamblado" @change="cambiarEstatusComponente()" :key="'checkbox-' + componente.id">
-                                                    <label :for="'_checkbox-26' + componente.id">
-                                                        <div class="tick_mark"></div>
-                                                    </label>
+                                            <div class="col-xl-9 form-group mt-4">
+                                                <span style="font-size: 22px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold mt-2 py-2"> <i class="fa fa-cogs" style="font-size: 16px !important" ></i> @{{componente.nombre}}</span>
+                                            </div>
+                                             <div class="col-xl-3 form-group text-center">
+                                                <a v-if="componente.archivo_explosionado_public" class="text-dark cursor-pointer" :href="'/storage/' + componente.archivo_explosionado_public" target="_blank">
+                                                    <img src="/paper/img/icons/file.png" height="80px"><br>
+                                                    <label class="my-0 py-0 bold pt-2">VISTA EXPLOSIONADA</label>
+                                                </a>
+                                            </div>
+                                            {{-- <div class="col-xl-12 mb-3" ></div> --}}
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xl-7">
+                                                <div class="row">
+                                                    <div class="col-xl-6 text-center form-group" >
+                                                        <label class="bold ">¿COMPONENTE ENSAMBLADO?</label>
+                                                        <div class="checkbox-wrapper-26 mt-4">
+                                                            <input type="checkbox" :id="'_checkbox-26' + componente.id" v-model="componente.ensamblado" @change="cambiarEstatusComponente()" :key="'checkbox-' + componente.id">
+                                                            <label :for="'_checkbox-26' + componente.id">
+                                                                <div class="tick_mark"></div>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6 text-center form-group">
+                                                        <label class="bold">FOTO DEL COMPONENTE</label>
+                                                        <a target="_blank" v-if="componente.foto_matricero" :href="'/storage/fotos_matricero/' + componente.foto_matricero">
+                                                            <img :src="'/storage/fotos_matricero/' + componente.foto_matricero" style="border-radius: 10px; width: 100%; height: auto; object-fit: cover" alt="">
+                                                        </a>
+                                                        <img v-else src="{{ asset('paper/img/no-image.png') }}" style="border-radius: 10px; width: 100%; height: 180px; object-fit: cover" alt="">
+                                                        <button :disabled="componente.ensamblado == true" class="btn btn-block mb-0" @click="abrirCamara()"><i class="fa fa-camera"></i> <span v-if="componente.foto_matricero">RETOMAR FOTO</span><span v-else>TOMAR FOTO</span></button>
+                                                        <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;" @change="procesarFoto($event)">
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <button :disabled="componente.ensamblado == true || componente.es_compra == true" @click="abrirSolicitud('ajuste')"  class="btn btn-block btn-dark"><i class="fa fa-exclamation-circle"></i> SOLICITAR AJUSTE</button>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <button :disabled="componente.ensamblado == true" @click="abrirSolicitud('rechazo')"  class="btn btn-block btn-danger"><i class="fa fa-times-circle"></i> RECHAZAR COMPONENTE</button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-xl-6 text-center form-group">
-                                                <label class="bold">FOTO DEL COMPONENTE</label>
-                                                <a target="_blank" v-if="componente.foto_matricero" :href="'/storage/fotos_matricero/' + componente.foto_matricero">
-                                                    <img :src="'/storage/fotos_matricero/' + componente.foto_matricero" style="border-radius: 10px; width: 100%; height: auto; object-fit: cover" alt="">
-                                                </a>
-                                                <img v-else src="{{ asset('paper/img/no-image.png') }}" style="border-radius: 10px; width: 100%; height: 180px; object-fit: cover" alt="">
-                                                <button :disabled="componente.ensamblado == true" class="btn btn-block mb-0" @click="abrirCamara()"><i class="fa fa-camera"></i> <span v-if="componente.foto_matricero">RETOMAR FOTO</span><span v-else>TOMAR FOTO</span></button>
-                                                <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;" @change="procesarFoto($event)">
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <button :disabled="componente.ensamblado == true || componente.es_compra == true" @click="abrirSolicitud('ajuste')"  class="btn btn-block btn-dark"><i class="fa fa-exclamation-circle"></i> SOLICITAR AJUSTE</button>
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <button :disabled="componente.ensamblado == true" @click="abrirSolicitud('rechazo')"  class="btn btn-block btn-danger"><i class="fa fa-times-circle"></i> RECHAZAR COMPONENTE</button>
+                                            <div class="col-xl-5">
+                                                <div class="row" style="height: 60vh">
+                                                    <div class="col-xl-12">
+                                                            <label class="bold"><a v-if="componente.archivo_2d_public" :href="'/storage/' + componente.archivo_2d_public" target="_blank" class="text-dark text-decoration-none">VISTA 2D</a></label>
+                                                        </div>
+                                                        <div class="col-xl-12 h-100" >
+                                                            <iframe v-if="componente.archivo_2d_public" :src="'/storage/' + componente.archivo_2d_public" style="width: 100%; height: 75%; border: none;"></iframe>
+                                                        </div>
+                                                    </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xl-5">
-                                        <div class="row" style="height: 60vh">
-                                            <div class="col-xl-12">
-                                                    <label class="bold"><a v-if="componente.archivo_2d_public" :href="'/storage/' + componente.archivo_2d_public" target="_blank" class="text-dark text-decoration-none">VISTA 2D</a></label>
-                                                </div>
-                                                <div class="col-xl-12 h-100" >
-                                                    <iframe v-if="componente.archivo_2d_public" :src="'/storage/' + componente.archivo_2d_public" style="width: 100%; height: 75%; border: none;"></iframe>
-                                                </div>
-                                            </div>
-                                    </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+        
+                 <div class="modal fade" id="modalSolicitud" tabindex="-1" aria-labelledby="modalSolicitudLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="min-width: 40%;">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <h3 class="text-dark modal-title" id="modalSolicitudLabel">
+                                    <span>@{{solicitud.tipo == 'ajuste' ? 'SOLICITAR AJUSTE PARA EL COMPONENTE ' + componente.nombre : 'RECHAZAR EL COMPONENTE ' + componente.nombre}}</span>
+                                </h3>
+                                <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="py-0 col-xl-12">
+                                        <label class="bold">Comentarios <span class="text-danger">*</span></label>
+                                       <textarea v-model="solicitud.comentarios" class="form-control w-100 text-left px-2 py-1" placeholder="Agregar comentarios..."></textarea>
+                                   </div>                           
+                                </div>
+                                <div class="row">
+                                    <div class="col-xl-12 text-right">
+                                        <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+                                        <button class="btn" :class="{'btn-danger' : solicitud.tipo == 'rechazo'}" v-if="!loading_button" type="button" @click="enviarSolicitud()"><i class="fa fa-paper-plane"></i> @{{solicitud.tipo == 'rechazo' ? 'RECHAZAR COMPONENTE' : 'SOLICITAR AJUSTE'}}</button>
+                                        <button class="btn" :class="{'btn-danger' : solicitud.tipo == 'rechazo'}" type="button" disabled v-if="loading_button"><i class="fa fa-spinner"></i> ENVIANDO, ESPERE ...</button>
+                                    </div>
+                                </div>
+                            </div> 
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-         <div class="modal fade" id="modalSolicitud" tabindex="-1" aria-labelledby="modalSolicitudLabel" aria-hidden="true">
-            <div class="modal-dialog" style="min-width: 40%;">
-                <div class="modal-content" >
-                    <div class="modal-header">
-                        <h3 class="text-dark modal-title" id="modalSolicitudLabel">
-                            <span>@{{solicitud.tipo == 'ajuste' ? 'SOLICITAR AJUSTE PARA EL COMPONENTE ' + componente.nombre : 'RECHAZAR EL COMPONENTE ' + componente.nombre}}</span>
-                        </h3>
-                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="py-0 col-xl-12">
-                                <label class="bold">Comentarios <span class="text-danger">*</span></label>
-                               <textarea v-model="solicitud.comentarios" class="form-control w-100 text-left px-2 py-1" placeholder="Agregar comentarios..."></textarea>
-                           </div>                           
-                        </div>
-                        <div class="row">
-                            <div class="col-xl-12 text-right">
-                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
-                                <button class="btn" :class="{'btn-danger' : solicitud.tipo == 'rechazo'}" v-if="!loading_button" type="button" @click="enviarSolicitud()"><i class="fa fa-paper-plane"></i> @{{solicitud.tipo == 'rechazo' ? 'RECHAZAR COMPONENTE' : 'SOLICITAR AJUSTE'}}</button>
-                                <button class="btn" :class="{'btn-danger' : solicitud.tipo == 'rechazo'}" type="button" disabled v-if="loading_button"><i class="fa fa-spinner"></i> ENVIANDO, ESPERE ...</button>
-                            </div>
-                        </div>
-                    </div> 
-                </div>
-            </div>
-        </div>
     </div>
 
     

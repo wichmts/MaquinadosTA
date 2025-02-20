@@ -30,6 +30,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('ultimas-notificaciones', 'APIController@ultimasNotificaciones');
 
     Route::post('solicitud/{componente_id}', 'APIController@registrarSolicitud');
+    Route::post('solicitud-herramental/{herramental_id}', 'APIController@registrarSolicitudHerramental');
     Route::get('solicitud/{componente_id}', 'APIController@obtenerSolicitudes');
 
     Route::post('documentos/embarque/{categoria}/{id}', 'APIController@cargarDocumentosEmbarque');
@@ -50,6 +51,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('clientes/{cliente}/proyectos', 'APIController@obtenerPorCliente');
     Route::get('proyectos/{proyecto}/herramentales', 'APIController@obtenerPorProyecto');
     Route::get('herramentales/{herramental}/componentes', 'APIController@obtenerPorHerramental');
+    Route::get('herramental/{herramental}/pruebas-diseno', 'APIController@obtenerPruebasDiseno');
+    Route::get('herramental/{herramental}/pruebas-proceso', 'APIController@obtenerPruebasProceso');
     Route::get('componente/{componente}', 'APIController@obtenerComponente');
     Route::get('notificaciones', 'APIController@notificaciones');
     Route::get('hojas/{material_id}', 'APIController@obtenerHojas');
@@ -73,6 +76,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::put('componente/{componente_id}/enrutamiento/{liberar}', 'APIController@guardarComponenteEnrutamiento');
     Route::post('componente/{componente_id}/programacion/{liberar}', 'APIController@guardarComponenteProgramacion');
     Route::post('componente/{fabricacion_id}/fabricacion/{liberar}', 'APIController@guardarComponenteFabricacion');
+    Route::post('prueba-diseno/{prueba_id}/{liberar}', 'APIController@guardarPruebaDiseno');
+    Route::post('prueba-proceso/{prueba_id}/{liberar}', 'APIController@guardarPruebaProceso');
 
     Route::delete('cancelar-componente-cargar/{componente_id}', 'APIController@cancelarComponenteCargar');
     Route::put('liberar-componente-cargar/{herramental_id}', 'APIController@liberarComponenteCargar');
@@ -89,6 +94,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('linea-tiempo/{componente_id}', 'APIController@obtenerLineaTiempoComponente');
 
     Route::get('avance-hr/{herramental_id}', 'APIController@obtenerAvanceHR');
+    Route::post('prueba-diseno/{herramental_id}', 'APIController@generarPruebaDiseno');
+    Route::post('prueba-proceso/{herramental_id}', 'APIController@generarPruebaProceso');
+
 
 
 });

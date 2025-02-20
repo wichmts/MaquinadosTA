@@ -8,7 +8,7 @@
 @endsection
 
 @section('content')
-<div class="content" id="vue-app">
+<div id="vue-app">
 
     @if (session('message'))
     <div class="alert alert-success" role="alert">
@@ -27,183 +27,7 @@
             <div class="loader"></div>
         </div>
     </div>
-
-    <!-- <div class="row" v-cloak v-show="!cargando">
-        <div class="col-xl-2 pt-3" style="background-color: #f1f1f1; height: calc(100vh - 107.3px); overflow-y: scroll">
-            <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                <a class="nav-link cursor-pointer text-right text-muted">
-                    <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
-                </a>
-                <div v-if="!cargandoMenu && menuStep == 1">
-                    <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
-                    <a class="nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
-                        <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
-                        <span class="underline-hover">@{{obj.nombre}}</span>
-                    </a>
-                </div>
-                <div v-if="!cargandoMenu && menuStep == 2">
-                    <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
-                    <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
-                        <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                        <span class="underline-hover">@{{obj.nombre}}</span>
-                    </a>
-                </div>
-                <div v-if="!cargandoMenu && menuStep == 3">
-                    <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
-                    <a class="nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
-                        <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                        <span class="underline-hover">@{{obj.nombre}}</span>
-                    </a>
-                </div>
-                <div v-if="!cargandoMenu && menuStep == 4">
-                    <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
-                    <a class="nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)">
-                        <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
-                        <span class="underline-hover">@{{obj.nombre}}</span>
-                    </a>
-                </div>
-                <div v-if="!cargandoMenu && menuStep == 5">
-                    <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> COMPONENTES </a>
-                    <a class="nav-link cursor-pointer" v-for="obj in componentes" @click="fetchComponente(obj.id)">
-                        <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
-                        <span class="underline-hover">@{{obj.nombre}}</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-10 mt-3">
-            <div class="row">
-                <div class="mb-2 col-xl-12" style="border-bottom: 1px solid #ededed">
-                    <p style="">
-                        <span class="cursor-pointer pb-2" @click="regresar(1)"><i class="fa fa-home"></i> &nbsp;</span>
-                        <span class="cursor-pointer pb-2" v-if="ruta.anio" @click="regresar(2)"><i class="fa fa-angle-right"></i> &nbsp; <span class="underline-hover">@{{ruta.anio}}</span> &nbsp;</span>
-                        <span class="cursor-pointer pb-2" v-if="ruta.cliente" @click="regresar(3)"><i class="fa fa-angle-right"></i> &nbsp; <span class="underline-hover">@{{ruta.cliente}}</span> &nbsp;</span>
-                        <span class="cursor-pointer pb-2" v-if="ruta.proyecto" @click="regresar(4)"><i class="fa fa-angle-right"></i> &nbsp; <span class="underline-hover">@{{ruta.proyecto}}</span> &nbsp;</span>
-                        <span class="cursor-pointer pb-2" v-if="ruta.herramental" @click="regresar(5)"><i class="fa fa-angle-right"></i> &nbsp; <span class="underline-hover">@{{ruta.herramental}}</span> </span>
-                        <span class="cursor-pointer pb-2 bold" v-if="ruta.componente"><i class="fa fa-angle-right"></i> &nbsp; <span class="underline-hover">@{{ruta.componente}}</span> </span>
-                    </p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xl-4">
-                    <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE PROGRAMADOR</h2>
-                </div>
-                <div class="col-xl-2" v-if="selectedComponente" style="border-left: 1px solid  #ededed">
-                    <button :disabled="componente.estatus_programacion == 'proceso' || componente.programado == true || componente.programador_id != user_id" class="btn btn-block btn-default mt-0" @click="cambiarEstatusProgramacion('proceso')"><i class="fa fa-play-circle"></i> INICIAR PROGRAM.</button>
-                </div>
-                <div class="col-xl-2" v-if="selectedComponente">
-                    <button :disabled="componente.estatus_programacion == 'detenido' || componente.estatus_programacion == 'inicial' || componente.programado == true || componente.programador_id != user_id" class="btn btn-block btn-default mt-0" @click="cambiarEstatusProgramacion('detenido')"><i class="fa fa-stop-circle"></i> DETENER PROGRAM.</button>
-                </div>
-                <div class="col-xl-2" v-if="selectedComponente" style="border-left: 1px solid  #ededed">
-                    <button class="btn btn-block mt-0" :disabled="componente.programado == true || componente.programador_id != user_id" @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR</button>
-                </div>
-                <div class="col-xl-2" v-if="selectedComponente">
-                    <button class="btn btn-success btn-block mt-0" @click="liberar()" :disabled="componente.programado == true || componente.programador_id != user_id">
-                        <i class="fa fa-check-double"></i>
-                        <span v-if="componente.programado == true">LIBERADO</span>
-                        <span v-else>LIBERAR</span>
-                    </button>
-                </div>
-            </div>
-            <hr>
-            <div class="col-xl-12" v-if="!selectedComponente">
-                <h5 class="text-muted my-4"> SELECCIONE UN COMPONENTE PARA VER SU PROGRAMACION</h5>
-            </div>
-
-            <div class="row mt-3" v-else>
-
-                <div class="col-xl-8" style="border-right: 1px solid #c6c6c6">
-                    <div class="row">
-                        <div class="col-xl-4 form-group">
-                            <span style="font-size: 22px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold my-4 py-2"> <i class="fa fa-cogs" style="font-size: 16px !important"></i> @{{componente.nombre}}</span>
-                        </div>
-                        <div class="col-xl-2 form-group text-center">
-                            <a class="text-dark" :href="'/storage/' + componente.archivo_2d_public" target="_blank">
-                                <img src="/paper/img/icons/file.png" height="80px">
-                                <h5 class="my-0 py-0 bold pt-2">2D</h5>
-                            </a>
-                        </div>
-                        <div class="col-xl-2 form-group text-center">
-                            <a class="text-dark" :href="'/storage/' + componente.archivo_3d_public" target="_blank">
-                                <img src="/paper/img/icons/file.png" height="80px">
-                                <h5 class="my-0 py-0 bold pt-2">3D</h5>
-                            </a>
-                        </div>
-                        <div class="col-xl-4 form-group">
-                            <button class="btn btn-block btn-default" @click="verModalRuta()"><i class="fa fa-eye"></i> Ver ruta</button>
-                        </div>
-                        <div class="col-xl-4 form-group mt-3" style="height: 200px !important">
-                            <label class="bold">DESCRIPCION DEL TRABAJO:</label>
-                            <textarea :disabled="componente.programado == true || componente.programador_id != user_id" v-model="componente.descripcion_trabajo" class="form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Descripcion del trabajo..."></textarea>
-                        </div>
-                        <div class="col-xl-4 form-group mt-3" style="height: 200px !important">
-                            <label class="bold">HERRAMIENTAS DE CORTE:</label>
-                            <textarea :disabled="componente.programado == true || componente.programador_id != user_id" v-model="componente.herramientas_corte" class="form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Agregar herramientas de corte..."></textarea>
-                        </div>
-                        <div class="col-xl-4 form-group mt-3" v-if="componente.programado != true && componente.programador_id == user_id">
-                            <label class="bold">SELECCIONAR MAQUINA(S):</label>
-                            <ul style="height: 400px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border">
-                                <li v-for="m in maquinas" class="dropdown-item" :class="{ maquinaSeleccionada: existeMaquina(m.id)}" @click="incluirMaquina(m.id)"><i class="fa fa-check-circle" v-if="existeMaquina(m.id)"></i> @{{m.nombre}}</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-xl-4">
-                    <div class="row">
-                        <div class="col-xl-12">
-                            <h3 class="bold mb-2" style="letter-spacing: 1px; ">PROGRAMAS POR MAQUINA</h3>
-                        </div>
-                    </div>
-                    <div class="text-center pt-5" v-if="componente.maquinas.length == 0">
-                        <span class="text-muted">Es necesario seleccionar una o más <strong>máquinas</strong> para poder cargar los programas</span>
-                    </div>
-                    <div class="row" v-for="(m, ind) in componente.maquinas">
-                        <div class="col-xl-4">
-                            <h5 class="bold" style="letter-spacing: 1px"><i class="fa fa-computer"></i> @{{m.nombre}}</h5>
-                        </div>
-                        <div class="col-xl-8 text-right" v-if="componente.programado != true || componente.programador_id != user_id">
-                            <small class="cursor-pointer" style="text-decoration: underline" @click="agregarArchivo(m)"><i class="fa fa-plus-circle"></i> Agregar programa</small>
-                        </div>
-                        <div class="col-xl-12">
-                            <div class="row mb-2" v-for="(a, index) in m.archivos" :key="index + '-' + m.maquina_id">
-                                <div class="col-xl-10 text-center mr-0 pr-0">
-                                    <input
-                                        :disabled="componente.programado == true || componente.programador_id != user_id"
-                                        class="input-file"
-                                        :id="'archivo-' + m.maquina_id + '-' + index"
-                                        type="file"
-                                        :name="'file['+ m.maquina_id +'][' + index + ']'"
-                                        @change="handleFileChange($event, ind, index)"
-                                        style="display: none;"
-                                        accept=".txt" />
-                                    <label
-                                        tabindex="0"
-                                        :for="'archivo-' + m.maquina_id + '-' + index"
-                                        class="input-file-trigger col-12 text-center">
-                                        <i class="fa fa-upload"></i> Subir programa (.txt)
-                                    </label>
-                                    <small style="font-style: italic" v-if="!a.id">
-                                        @{{ a.nombre ? getElipsis(a.nombre) : "Archivo no seleccionado" }}
-                                    </small>
-                                    <small v-else>
-                                        <a :href="'/api/download/programas/' + a.nombre">@{{getElipsis(a.nombre)}}</a>
-                                    </small>
-                                </div>
-                                <div class="col-xl-2 text-center ml-0 pl-0" v-if="componente.programado != true && componente.programador_id == user_id">
-                                    <button class="btn btn-block btn-link my-0" @click="eliminarArchivo(m, index)">
-                                        <i class="fa fa-times-circle text-danger" style="font-size: 20px !important"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div> -->
-
+    
     <div class="wrapper " v-cloak v-show="!cargando">
         <div class="sidebar" data-color="white" data-active-color="danger">
             
@@ -213,42 +37,42 @@
                         <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
                             <div class="d-flex justify-content-end">
                                 <a class="nav-link cursor-pointer text-right text-muted">
-                                    <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
+                                    <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 1">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
-                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span>
+                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
+                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 2">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
-                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span>
+                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 3">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
-                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span>
+                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 4">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)">
-                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span>
+                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
+                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 5">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> COMPONENTES </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in componentes" @click="fetchComponente(obj.id)">
-                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span>
+                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
+                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
                                 </a>
                             </div>
 
@@ -508,7 +332,6 @@
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="modalRetraso" tabindex="-1" aria-labelledby="modalRetrasoLabel" aria-hidden="true">
         <div class="modal-dialog" style="min-width: 35%;">
             <div class="modal-content">

@@ -43,6 +43,10 @@ Route::group(['middleware' => 'auth'], function () {
     // JEFE DE AREA
     Route::get('/enrutador', 'WebController@enrutador');
     Route::get('/visor-avance-hr', 'WebController@visorAvanceHR');
+    Route::get('/visor-pruebas', 'WebController@visorPruebas');
+
+    // PROCESOS
+    Route::get('/pruebas-proceso', 'WebController@pruebasProceso');
 
     // AUXILIAR DE DISENO
     Route::get('/carga-componentes', 'WebController@cargaComponentes');

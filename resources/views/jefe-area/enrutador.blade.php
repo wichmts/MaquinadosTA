@@ -37,42 +37,42 @@
                         <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
                             <div class="d-flex justify-content-end">
                                 <a class="nav-link cursor-pointer text-right text-muted">
-                                    <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
+                                    <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 1">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
-                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span>
+                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
+                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 2">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
-                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span>
+                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 3">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
-                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span>
+                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 4">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)">
-                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span>
+                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
+                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 5">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> COMPONENTES </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in componentes" v-if="!obj.refabricado" @click="fetchComponente(obj.id)">
-                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span>
+                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
+                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
                                 </a>
                             </div>
 
@@ -107,14 +107,14 @@
             <!-- End Navbar -->
             <div class="content">
                 <!-- BOTONES GUARDAR-LIBERADO -->
-                <div class="row mb-2 d-flex justify-content-end">
+                <div class="row mb-2">
                     <div class="col-xl-6 col-lg-4">
                         <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px"> ENRUTADOR</h2>
                     </div>
-                    <div class="col-xl-3 col-lg-4" v-if="selectedComponente">
+                    <div class="col-xl-3 col-lg-4 text-right" v-if="selectedComponente">
                         <button class="btn btn-block" :disabled="componente.enrutado == true" @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR</button>
                     </div>
-                    <div class="col-xl-3 col-lg-4" v-if="selectedComponente">
+                    <div class="col-xl-3 col-lg-4 text-right" v-if="selectedComponente">
                         <button class="btn btn-success btn-block" :disabled="componente.enrutado == true" @click="guardar(true)"><i class="fa fa-check-double"></i> @{{componente.enrutado == true ? 'LIBERADO' : 'LIBERAR'}}</button>
                     </div>
                 </div>
@@ -711,6 +711,7 @@
             programadores: [],
             verVersiones: false,
             lineaTiempo: [],
+            
         },
         watch: {
             procesos: {

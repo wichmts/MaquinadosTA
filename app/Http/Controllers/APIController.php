@@ -17,6 +17,8 @@ use App\Herramental;
 use App\Componente;
 use App\Notificacion;
 use App\Fabricacion;
+use App\PruebaDiseno;
+use App\PruebaProceso;
 use App\Hoja;
 use App\MovimientoHoja;
 use App\SeguimientoTiempo;
@@ -150,7 +152,7 @@ class APIController extends Controller
         ]);
     }
     public function consultarUsuarios(Request $request){
-        $tipos = [ 'DIRECCION', 'ALMACENISTA', 'AUXILIAR DE DISEÑO', 'JEFE DE AREA', 'PROGRAMADOR', 'OPERADOR', 'MATRICERO', 'FINANZAS', 'PROYECTOS', 'PROCESOS', 'EXTERNO'];
+        $tipos = [ 'DIRECCION', 'ALMACENISTA', 'AUXILIAR DE DISEÑO', 'JEFE DE AREA', 'PROGRAMADOR', 'OPERADOR', 'MATRICERO', 'FINANZAS', 'PROYECTOS', 'PROCESOS', 'EXTERNO', 'DISEÑO'];
         $tipos = $request->tipo_usuario == -1 ? $tipos : [$request->tipo_usuario];
         $usuarios = User::whereHas('roles', function ($query) use ($tipos) {
             $query->whereIn('name', $tipos);
@@ -173,6 +175,7 @@ class APIController extends Controller
                 'success' => false,
             ], 200);
         }
+    
 
         $user = new User();
         $user->nombre = $datos['nombre'];
@@ -476,7 +479,7 @@ class APIController extends Controller
             ->orderBy('nombre', 'asc')
             ->get();
         }
-        if($area == 'ensamble'){
+        if($area == 'ensamble' || $area == 'pruebas'){
             $componentes = Componente::where('herramental_id', $herramental)
             ->where('refabricado', false)
             ->where('cargado', true)
@@ -534,7 +537,8 @@ class APIController extends Controller
         $herramental->nombre = $siguiente;
         $herramental->proyecto_id = $proyecto_id;
         $herramental->estatus_ensamble = 'inicial';
-        $herramental->estatus_pruebas = 'inicial';
+        $herramental->estatus_pruebas_diseno = 'inicial';
+        $herramental->estatus_pruebas_proceso = 'inicial';
         $herramental->save();
 
          if ($request->hasFile('archivo')) {
@@ -1477,6 +1481,8 @@ class APIController extends Controller
     }
     public function retrabajoComponente($componente_id){
         $componente = Componente::findOrFail($componente_id);
+        $componente->programado = false;
+        $componente->save();
 
         $herramental = Herramental::findOrFail($componente->herramental_id);
         $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
@@ -1596,8 +1602,6 @@ class APIController extends Controller
         $this->limpiarRuta($nuevoComponente);
         $this->actualizarVersiones($componente->herramental_id);
 
-
-
         $notificacion = new Notificacion();
         $notificacion->roles = json_encode(['JEFE DE AREA']);
         $notificacion->url_base = '/enrutador';
@@ -1702,11 +1706,24 @@ class APIController extends Controller
     }
     public function liberarHerramentalEnsamble($herramental_id){
         $herramental = Herramental::findOrFail($herramental_id);
+
         $herramental->estatus_ensamble = 'finalizado';
         $herramental->termino_ensamble = date('Y-m-d H:i');
-        $herramental->save();   
+        $herramental->save();  
+        
+        $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
+        $cliente = Cliente::findOrFail($proyecto->cliente_id);
+        $anio = Anio::findOrFail($cliente->anio_id);
 
-        // GENERAR NOTIFICACION ENSAMBLE
+        $notificacion = new Notificacion();
+        $notificacion->roles = json_encode(['JEFE DE AREA', 'DISEÑO']);
+        $notificacion->url_base = '/visor-pruebas';
+        $notificacion->anio_id = $anio->id;
+        $notificacion->cliente_id = $cliente->id;
+        $notificacion->proyecto_id = $proyecto->id;
+        $notificacion->herramental_id = $herramental->id;
+        $notificacion->descripcion = 'SE HA LIBERADO UN HERRAMENTAL PARA PRUEBAS DE DISEÑO.';
+        $notificacion->save();
 
         return response()->json([
             'success' => true,
@@ -2264,12 +2281,59 @@ class APIController extends Controller
             'tasks' => $resultados,
         ]);
     }
+    public function registrarSolicitudHerramental(Request $request, $id){
+        $data = $request->json()->all();
+        $herramental = Herramental::findOrFail($id);
+        $herramental->estatus_ensamble = 'proceso';
+        $herramental->estatus_pruebas_diseno = 'inicial';
+        $herramental->estatus_pruebas_proceso = 'inicial';
+        $herramental->save();
+        
 
+        $componentesSeleccionados = Componente::whereIn('id', $data['componentes'])->get();
+        $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
+        $cliente = Cliente::findOrFail($proyecto->cliente_id);
+        $anio = Anio::findOrFail($cliente->anio_id);
 
+        foreach ($componentesSeleccionados as $componente) {
+            $componente->ensamblado = false;        
+            $componente->programado = false;
 
+            $solicitud = new Solicitud();
+            $solicitud->tipo = $data['tipo'];
+            $solicitud->componente_id = $componente->id;
+            $solicitud->comentarios = $data['comentarios'];
+            $solicitud->area_solicitante = $data['area_solicitante'];
+            $solicitud->usuario_id = auth()->user()->id;
+            $solicitud->save();
+    
+            $notificacion = new Notificacion();
+            $notificacion->roles = json_encode(['JEFE DE AREA']);
+            $notificacion->url_base = '/enrutador';
+            $notificacion->anio_id = $anio->id;
+            $notificacion->cliente_id = $cliente->id;
+            $notificacion->proyecto_id = $proyecto->id;
+            $notificacion->herramental_id = $herramental->id;
+            $notificacion->componente_id = $componente->id;
+            $notificacion->cantidad = $componente->cantidad;
+            $notificacion->descripcion = 'SOLICITUD DE MODIFICACION, AREA: ' . $solicitud->area_solicitante . ', COMENTARIOS:' . $solicitud->comentarios;
+            $notificacion->save();
+    
+            $users = User::role('JEFE DE AREA')->get();
+            foreach ($users as $user) {
+                $user->hay_notificaciones = true;
+                $user->save();
+            }
+        }
 
+        return response()->json([
+            'success' => true,
+        ], 200);
+
+    }
     public function registrarSolicitud(Request $request, $id){
         $data = $request->json()->all();
+        
         $componente = Componente::findOrFail($id);
         $componente->ensamblado = false;        
         $componente->programado = false;
@@ -2318,7 +2382,6 @@ class APIController extends Controller
                     $user->save();
                 }
             break;
-
             // viene del operador 
             case 'retrabajo':
                 if($solicitud->fabricacion_id) {
@@ -2347,7 +2410,6 @@ class APIController extends Controller
                     $user->save();
                 }
             break;
-
             // viene del matricero
             case 'ajuste':
                 $notificacion = new Notificacion();
@@ -2368,7 +2430,6 @@ class APIController extends Controller
                     $user->save();
                 }
             break;
-
             // viene del matricero
             case 'rechazo':
                 $userIds = User::role('JEFE DE AREA')->pluck('id')->toArray();
@@ -2438,5 +2499,139 @@ class APIController extends Controller
             'solicitudes' => $solicitudes,
             'success' => true,
         ], 200);
+    }
+    public function obtenerPruebasDiseno($herramental_id){
+        $pruebas = PruebaDiseno::where('herramental_id', $herramental_id)->get();
+         return response()->json([
+            'pruebas' => $pruebas,
+            'success' => true,
+        ], 200);
+    }
+    public function generarPruebaDiseno(Request $request, $herramental_id) {
+
+        $ultimaPrueba = PruebaDiseno::where('herramental_id', $herramental_id)->orderBy('id', 'desc')->first();
+        $numeroPrueba = $ultimaPrueba ? intval(substr($ultimaPrueba->nombre, 7)) + 1 : 1;
+        $nombrePrueba = 'Prueba ' . $numeroPrueba;
+
+        $prueba = new PruebaDiseno();
+        $prueba->nombre = $nombrePrueba;
+        $prueba->fecha_inicio = date('Y-m-d H:i');
+        $prueba->herramental_id = $herramental_id;
+        $prueba->liberada = false;
+        $prueba->usuario_id = auth()->user()->id;
+        $prueba->save();
+
+        return response()->json([
+            'success' => true,
+            'id' => $prueba->id,
+        ], 200);
+    }
+    public function guardarPruebaDiseno(Request $request, $prueba_id, $liberar){
+        $liberar = filter_var($liberar, FILTER_VALIDATE_BOOLEAN);
+        $prueba = PruebaDiseno::findOrFail($prueba_id);
+        $data = json_decode($request->data, true);
+        $herramental = Herramental::findOrFail($prueba->herramental_id);
+
+        $prueba->descripcion = $data['descripcion'];
+        $prueba->involucrados = $data['involucrados'];
+        $prueba->herramienta_medicion = $data['herramienta_medicion'];
+        $prueba->hallazgos = $data['hallazgos'];
+        $prueba->plan_accion = $data['plan_accion'];
+        $prueba->altura_cierre = $data['altura_cierre'];
+        $prueba->altura_medidas = $data['altura_medidas'];
+        $prueba->checklist = json_encode($data['checklist']);
+        $prueba->save();
+
+        $archivo = $request->file('archivo_dimensional');
+        if ($archivo) {
+            $name = time() . '_' . $archivo->getClientOriginalName();
+            Storage::disk('public')->put("pruebas-diseno/" . $name, \File::get($archivo));
+            $prueba->archivo_dimensional = $name;
+            $prueba->save();
+        }
+
+        if($liberar){
+            $prueba->fecha_liberada = date('Y-m-d H:i');
+            $prueba->liberada = true;
+            $prueba->save();
+
+            //Falta generar la notifiacion dependiendo que decida Enrique...
+        }
+
+        return response()->json([
+            'success' => true,
+        ], 200);
+        
+    }
+
+    public function obtenerPruebasProceso($herramental_id){
+         $pruebas = PruebaProceso::where('herramental_id', $herramental_id)->get();
+         return response()->json([
+            'pruebas' => $pruebas,
+            'success' => true,
+        ], 200);
+    }
+
+     public function generarPruebaProceso(Request $request, $herramental_id) {
+
+        $ultimaPrueba = PruebaProceso::where('herramental_id', $herramental_id)->orderBy('id', 'desc')->first();
+        $numeroPrueba = $ultimaPrueba ? intval(substr($ultimaPrueba->nombre, 7)) + 1 : 1;
+        $nombrePrueba = 'Prueba ' . $numeroPrueba;
+
+        $prueba = new PruebaProceso();
+        $prueba->nombre = $nombrePrueba;
+        $prueba->fecha_inicio = date('Y-m-d H:i');
+        $prueba->herramental_id = $herramental_id;
+        $prueba->liberada = false;
+        $prueba->usuario_id = auth()->user()->id;
+        $prueba->save();
+
+        return response()->json([
+            'success' => true,
+            'id' => $prueba->id,
+        ], 200);
+    }
+
+    public function guardarPruebaProceso(Request $request, $prueba_id, $liberar){
+        $liberar = filter_var($liberar, FILTER_VALIDATE_BOOLEAN);
+        $prueba = PruebaProceso::findOrFail($prueba_id);
+        $data = json_decode($request->data, true);
+        $herramental = Herramental::findOrFail($prueba->herramental_id);
+
+        $prueba->lista_refacciones = $data['lista_refacciones'];
+        $prueba->kit_conversion = $data['kit_conversion'];
+        $prueba->descripcion = $data['descripcion'];
+        $prueba->comentarios = $data['comentarios'];
+        $prueba->plan_accion = $data['plan_accion'];
+        $prueba->save();
+
+        $archivo = $request->file('archivo');
+        if ($archivo) {
+            $name = time() . '_' . $archivo->getClientOriginalName();
+            Storage::disk('public')->put("pruebas-proceso/" . $name, \File::get($archivo));
+            $prueba->archivo = $name;
+            $prueba->save();
+        }
+
+        $foto = $request->file('foto');
+        if ($foto) {
+            $name = time() . '_' . $foto->getClientOriginalName();
+            Storage::disk('public')->put("pruebas-proceso/" . $name, \File::get($foto));
+            $prueba->foto = $name;
+            $prueba->save();
+        }
+
+        if($liberar){
+            $prueba->fecha_liberada = date('Y-m-d H:i');
+            $prueba->liberada = true;
+            $prueba->save();
+
+            //Falta generar la notifiacion dependiendo que decida Enrique...
+        }
+
+        return response()->json([
+            'success' => true,
+        ], 200);
+        
     }
 }
