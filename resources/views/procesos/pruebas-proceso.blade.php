@@ -38,36 +38,36 @@
                     <li>
                         <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
                             <div class="d-flex justify-content-end">
-                                <a class="nav-link cursor-pointer text-right text-muted">
-                                    <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
+                                <a class="nav-link py-0 cursor-pointer text-right text-muted">
+                                    <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 1">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
-                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
+                                    <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
+                                    <span class="underline-hover ">@{{obj.nombre}}</span>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 2">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
-                                <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
+                                <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)" v-if="obj.nombre != 'ORDENES EXTERNAS'">
+                                    <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                    <span class="underline-hover ">@{{obj.nombre}}</span>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 3">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
+                                    <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                    <span class="underline-hover ">@{{obj.nombre}}</span>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep >= 4">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchPruebasHerramental(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
-                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
+                                    <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
+                                    <span class="underline-hover ">@{{obj.nombre}}</span>
                                 </a>
                             </div>
 
@@ -223,7 +223,7 @@
                                         <div class="row px-2 pt-3 pb-1 my-2 bg-warning" style="border-radius: 10px; background-color: #f7dc6f !important">
                                             <div class="col-xl-2 text-right">
                                                 <div class="checkbox-wrapper-19">
-                                                   <input :disabled="prueba.liberada == true" type="checkbox" id="cbtest-191" v-model="prueba.kit_cenversion" />
+                                                   <input :disabled="prueba.liberada == true" type="checkbox" id="cbtest-191" v-model="prueba.kit_conversion" />
                                                    <label for="cbtest-191" class="check-box"></label>
                                                 </div>
                                             </div>
@@ -331,7 +331,11 @@
         },
         computed: {
             deshabilitarBotones(){
-                return this.pruebas.some(c => c.liberada == false);
+                if(this.selectedHerramental){
+                    let herramental = this.herramentales.find(h => h.id == this.selectedHerramental);                   
+                    return this.pruebas.some(c => c.liberada == false) || herramental.estatus_pruebas_diseno != 'finalizado' || herramental.estatus_ensamble != 'finalizado';
+                }
+                return true
             }
         },
         methods: {
@@ -380,7 +384,7 @@
                     tipo: 'modificacion',
                     prueba_id: t.selectedPrueba,
                     comentarios: '',
-                    area_solicitante: 'PRUEBAS',
+                    area_solicitante: 'PRUEBAS DE PROCESOS',
                     componentes: []
                 }
                 try {
@@ -584,9 +588,6 @@
                 let t = this;
                 this.selectedPrueba = id;
                 this.prueba = this.pruebas.find(obj => obj.id == id)
-                if(!this.prueba.checklist){
-                    this.inicializarChecklist();
-                }
                 this.ruta.prueba = this.prueba.nombre;
 
                 Vue.nextTick(function() {
@@ -676,52 +677,6 @@
                         })
                     }
                 });
-            },
-            inicializarChecklist(){
-                this.prueba.checklist = [
-                    { id: 1, nombre: "Es congruente con el diseño a simple vista", valor: -1},
-                    { id: 2, nombre: "Las dimensiones exteriores coinciden con la prensa asignada", valor: -1},
-                    { id: 3, nombre: "Está pintado con el color definido por el cliente o T/A", valor: -1},
-                    { id: 4, nombre: "Está identificado con el nombre de la parte aplicable", valor: -1},
-                    { id: 5, nombre: "Está identificado con el número de parte aplicable", valor: -1},
-                    { id: 6, nombre: "Está identificado el número de operación", valor: -1},
-                    { id: 7, nombre: "Está identificado con el peso (Kg)", valor: -1},
-                    { id: 8, nombre: "Espesor de materia prima", valor: -1},
-                    { id: 9, nombre: "Ancho de Materia Prima", valor: -1},
-                    { id: 10, nombre: "Paso", valor: -1},
-                    { id: 11, nombre: "Altura de Cierre", valor: -1},
-                    { id: 12, nombre: "Carrera requerida", valor: -1},
-                    { id: 13, nombre: "Tonelaje requerido para desarrollo", valor: -1},
-                    { id: 14, nombre: "Si utiliza cojin neumático", valor: -1},
-                    { id: 15, nombre: "Especificar el tipo de lubricante", valor: -1},
-                    { id: 16, nombre: "Tiene el nombre del fabricante", valor: -1},
-                    { id: 17, nombre: "Tiene forma de sujetarse con tornillos y tuercas 'T'", valor: -1},
-                    { id: 18, nombre: "Se requieren hacer perforaciones para sujeción", valor: -1},
-                    { id: 19, nombre: "Cuenta con guías para la lámina", valor: -1},
-                    { id: 20, nombre: "Minuta", valor: -1},
-                    { id: 21, nombre: "Hay concentricidad en cada Matriz-Punzón, checar con Pza muestra, recortes de rebaba o CAD", valor: -1},
-                    { id: 22, nombre: "Los pilotos guía son suficientes", valor: -1},
-                    { id: 23, nombre: "Cuenta con dispositivos para sensar el paso", valor: -1},
-                    { id: 24, nombre: "Cuenta con acabado superficial aceptable", valor: -1},
-                    { id: 25, nombre: "El alimentador es capaz de alimentar p/ la lamina requerida", valor: -1},
-                    { id: 26, nombre: "Es confiable la sujeción del alimentador", valor: -1},
-                    { id: 27, nombre: "El alimentador cuenta con un programa específico para el producto", valor: -1},
-                    { id: 28, nombre: "Garantiza la alineación", valor: -1},
-                    { id: 29, nombre: "Garantiza entrada en prensa", valor: -1},
-                    { id: 30, nombre: "Facilita la instalación del alimentador", valor: -1},
-                    { id: 31, nombre: "Recepción de planos e componentes a último nivel", valor: -1},
-                    { id: 32, nombre: "Frecuencia de mantenimiento recomendada por el cliente", valor: -1},
-                    { id: 33, nombre: "Formato proporcionado por cliente para mantenimiento preventivo", valor: -1},
-                    { id: 34, nombre: "Número de piezas de vida del herramental", valor: -1},
-                    { id: 35, nombre: "Están los Uretanos y/o resortes correctamente calculados, se checara en el momento que este trabajando el troquel. Hacer prueba antes de liberación.", valor: -1},
-                    { id: 36, nombre: "Están respetados los radios y desahogos para prevenir la concentración de esfuerzos, se checará en el momento que este trabajando el troquel. Hacer prueba antes de liberación.", valor: -1},
-                    { id: 37, nombre: "Este Herramental se encuentra dado de alta en el registro de Inventario F7515-02", valor: -1},
-                    { id: 38, nombre: "Este Herramental está en el programa de Mantto Prev F7515-05 y en Sistema Touch", valor: -1},
-                    { id: 39, nombre: "Este Herramental cuenta con su registro de Mantto Prev F7515-01 y en Sistema Touch", valor: -1},
-                    { id: 40, nombre: "Este Herramental cuenta con su registro de Mantto Prev F7515-06 y en Sistema Touch", valor: -1},
-                    { id: 41, nombre: "Los resortes expuestos al operador están protegidos con guardas de seguridad.", valor: -1},
-                    { id: 42, nombre: "Pernos de registro cuentan con roscas de extracción", valor: -1}
-                ];
             },
             async handleFileChange(event) {
                 let t =  this

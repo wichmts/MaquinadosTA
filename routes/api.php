@@ -83,6 +83,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::put('liberar-componente-cargar/{herramental_id}', 'APIController@liberarComponenteCargar');
     Route::put('liberar-herramental-cargar/{herramental_id}', 'APIController@liberarHerramentalCargar');
     Route::put('liberar-herramental-ensamble/{herramental_id}', 'APIController@liberarHerramentalEnsamble');
+    Route::put('liberar-herramental-pruebas-diseno/{herramental_id}', 'APIController@liberarHerramentalPruebasDiseno');
 
     Route::put('fabricacion/cambio-estatus/{id}', 'APIController@cambiarEstatusFabricacion');
     Route::put('programacion/cambio-estatus/{id}', 'APIController@cambiarEstatusProgramacion');
@@ -97,7 +98,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('prueba-diseno/{herramental_id}', 'APIController@generarPruebaDiseno');
     Route::post('prueba-proceso/{herramental_id}', 'APIController@generarPruebaProceso');
 
-
+    Route::post('orden-trabajo', 'APIController@generarOrdenTrabajo');
+    Route::get('mis-solicitudes-externas', 'APIController@misSolicitudesExternas');
+    Route::get('solicitud-externa/{componente_id}', 'APIController@obtenerSolicitudExterna');
 
 });
 

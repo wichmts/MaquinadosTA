@@ -88,7 +88,8 @@
 
 @section('content')
     <div class="content" id="vue-app">
-        @if (session('message'))
+        <div class="col-xl-12 main-panel">
+             @if (session('message'))
             <div class="alert alert-success" role="alert">
                 {{ session('message') }}
             </div>
@@ -127,7 +128,7 @@
                             <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
                             <span class="underline-hover">Nueva carpeta...</span>
                         </a>
-                        <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
+                        <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)" v-if="obj.nombre != 'ORDENES EXTERNAS'">
                             <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
                             <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
                         </a>
@@ -282,7 +283,6 @@
                 </div>
             </div>
         </div>
-
         <div class="modal fade" id="modalNuevo" tabindex="-1" aria-labelledby="modalNuevoLabel" aria-hidden="true">
             <div class="modal-dialog" style="min-width: 25%;">
                 <div class="modal-content" >
@@ -341,6 +341,7 @@
                     </div> 
                 </div>
             </div>
+        </div>
         </div>
     </div>
 @endsection

@@ -2890,7 +2890,7 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
 .navbar .navbar-nav .nav-link {
     text-transform: uppercase;
     font-size: 0.7142em;
-    padding: 0.5rem 0.7rem;
+    /* padding: 0.5rem 0.7rem; */
     line-height: 1.625rem;
     margin-right: 3px;
 }
@@ -4758,7 +4758,7 @@ License - nucleoapp.com/license/
 .off-canvas-sidebar[data-color="white"] .nav li a[data-toggle="collapse"]~div>ul>li .sidebar-mini-icon,
 .off-canvas-sidebar[data-color="white"] .nav li a[data-toggle="collapse"]~div>ul>li>a {
     color: #66615B;
-    opacity: .7;
+    /* opacity: .7; */
 }
 
 .sidebar[data-color="white"] .nav li:hover:not(.active)>a,

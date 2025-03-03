@@ -1,7 +1,7 @@
 <?php
 
 namespace App;
-
+use App\Componente;
 use Illuminate\Database\Eloquent\Model;
 
 class Herramental extends Model
@@ -11,6 +11,16 @@ class Herramental extends Model
     public function proyecto(){
         return $this->belongsTo(Proyecto::class);
     }
+
+    public function esHerramentalExterno(){
+        return Componente::where('herramental_id', $this->id)
+            ->get()
+            ->first(function($componente) {
+                return $componente->esComponenteExterno();
+            }) !== null;
+    }
+
+
 
     public function toArray(){
         $array = parent::toArray();

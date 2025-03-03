@@ -5,6 +5,7 @@ namespace App;
 use App\SeguimientoTiempo;
 use Carbon\Carbon;
 use App\Maquina;
+use App\SolciitudExterna;
 use Illuminate\Database\Eloquent\Model;
 
 class Componente extends Model
@@ -12,15 +13,12 @@ class Componente extends Model
     public function material(){
         return $this->belongsTo(Material::class);
     }
-
     public function herramental(){
         return $this->belongsTo(Herramental::class);
     }
-
     public function fabricaciones(){
         return $this->hasMany(Fabricacion::class);
     }
-
     public function refabricaciones() {
         $refabricaciones = Componente::where('herramental_id', $this->herramental_id)
             ->where('nombre', $this->nombre)
@@ -39,9 +37,6 @@ class Componente extends Model
 
         return $refabricaciones; // Devuelve el array con los componentes
     }
-
-
-    
     public function maquinas(){
         $maquinas = Maquina::select('maquinas.id as maquina_id', 'maquinas.nombre', 'fabricaciones.id as documento_id', 'fabricaciones.archivo as documento_nombre')
             ->leftJoin('fabricaciones', function($join) {
@@ -178,6 +173,9 @@ class Componente extends Model
             'minutos' => $minutos,
         ];
     }
+    public function esComponenteExterno(){
+        return SolicitudExterna::where('componente_id', $this->id)->exists();
+    }
     public function toArray(){
   		$data = parent::toArray();
         $data['material_nombre'] = $this->material ? $this->material->nombre : '';
@@ -188,9 +186,8 @@ class Componente extends Model
         $data['fabricaciones'] = $this->fabricaciones ? $this->fabricaciones : [];
         $data['rutaAvance'] = $this->rutaAvance();
         $data['maquinas'] = $this->maquinas();
+        $data['esComponenteExterno'] = $this->esComponenteExterno();
         $data['refabricaciones'] = $this->refabricaciones();
-        
-        
         return $data;
     }
 

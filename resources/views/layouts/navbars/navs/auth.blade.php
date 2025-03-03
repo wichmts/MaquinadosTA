@@ -109,26 +109,15 @@ input:checked + .slider:before {
                 </li>
                 @endif
                 @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="">Visor componentes externos</a>
-                </li>
-                @endif
-                @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="/visor-avance-hr">Visor de avance</a>
                 </li>
                 @endif
-
-                @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="">Orden de trabajo</a>
-                </li>
-                @endif
-                @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
+                {{-- @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="">Modificaciones de componentes</a>
                 </li>
-                @endif
+                @endif --}}
                 
                 {{-- JEFE DE AREA --}}
                 @if (auth()->user()->hasRole('JEFE DE AREA'))
@@ -181,11 +170,6 @@ input:checked + .slider:before {
                     <a class="nav-link menu-link" href="/visor-avance-hr">Visor Avance</a>
                 </li>
                 @endif
-                @if (auth()->user()->hasRole('JEFE DE AREA'))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/compra-componentes">Visor Avance componentes externos</a>
-                </li>
-                @endif
                 
                 {{-- ALMACENISTA --}}
                 @if (auth()->user()->hasRole('ALMACENISTA'))
@@ -208,6 +192,9 @@ input:checked + .slider:before {
                     <a class="nav-link menu-link" href="/temple">Temple</a>
                 </li>
                 @endif
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="orden-trabajo">Orden de trabajo</a>
+                </li>
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/centro-notificaciones">Centro de notificaciones</a>
                 </li>

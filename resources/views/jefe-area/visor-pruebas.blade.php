@@ -38,36 +38,36 @@
                     <li>
                         <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
                             <div class="d-flex justify-content-end">
-                                <a class="nav-link cursor-pointer text-right text-muted">
-                                    <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
+                                <a class="nav-link py-0 cursor-pointer text-right text-muted">
+                                    <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 1">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
-                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
+                                    <i class="nc-icon" style="top: -3px !important"><img height="20px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 2">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
-                                <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
+                                <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)" v-if="obj.nombre != 'ORDENES EXTERNAS'">
+                                    <i class="nc-icon" style="top: -3px !important"><img height="20px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 3">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
+                                    <i class="nc-icon" style="top: -3px !important"><img height="20px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep >= 4">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchPruebasHerramental(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
-                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
+                                    <i class="nc-icon" style="top: -3px !important"><img height="20px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span>
                                 </a>
                             </div>
 
@@ -109,7 +109,7 @@
                         <button :disabled="deshabilitarBotones" class="btn btn-dark btn-block" @click="iniciarNuevaPrueba()"><i class="fa fa-plus-circle"></i> Iniciar nueva prueba</button>
                     </div>
                     <div class="col-lg-3" v-if="selectedHerramental && !selectedPrueba">
-                        <button :disabled="deshabilitarBotones" class="btn btn-success btn-block"><i class="fa fa-check-double"></i> Liberar a pruebas de procesos</button>
+                        <button :disabled="deshabilitarBotones" @click="liberarAProcesos" class="btn btn-success btn-block"><i class="fa fa-check-double"></i> Liberar a pruebas de procesos</button>
                     </div>
                      <div class="col-lg-2" v-if="selectedPrueba">
                         <button class="btn btn-default btn-block" @click="regresar(5)"><i class="fa fa-arrow-left"></i> Volver</button>
@@ -352,17 +352,48 @@
         },
         computed: {
             deshabilitarBotones(){
-                return this.pruebas.some(c => c.liberada == false);
+                if(this.selectedHerramental){
+                    let herramental = this.herramentales.find(h => h.id == this.selectedHerramental);
+                    return herramental.estatus_pruebas_diseno == 'finalizado' || this.pruebas.some(c => c.liberada == false) || herramental.estatus_ensamble != 'finalizado';
+                }
+                return true;
             }
         },
         methods: {
+            async liberarAProcesos(){
+                let t = this;
+
+                if(t.pruebas.some(c => c.liberada == false)){
+                    swal('Error', 'No se puede liberar a pruebas de procesos si hay pruebas pendientes de liberar.', 'error');
+                    return;
+                }
+
+                swal({
+                    title: "¿Está seguro?",
+                    text: "¿Desea liberar este herramental a pruebas de procesos?",
+                    icon: "info",
+                    buttons: ["Cancelar", "Sí, estoy seguro"],
+                    dangerMode: false,
+                }).then((willCreate) => {
+                    if (willCreate) {
+                        axios.put(`/api/liberar-herramental-pruebas-diseno/${t.selectedHerramental}`).then(response => {
+                            if(response.data.success){
+                                swal('Correcto', 'Herramental liberado a pruebas de proceso correctamente', 'success');
+                                Vue.nextTick(function(){
+                                    t.fetchHerramentales(t.selectedProyecto)
+                                })
+                            }
+                        })
+                    }
+                });
+            },
             async abrirSolicitud(){
                 let t = this;
                 t.solicitud = {
                     tipo: 'modificacion',
                     prueba_id: t.selectedPrueba,
                     comentarios: '',
-                    area_solicitante: 'PRUEBAS',
+                    area_solicitante: 'PRUEBAS DE DISEÑO',
                     componentes: []
                 }
                 try {

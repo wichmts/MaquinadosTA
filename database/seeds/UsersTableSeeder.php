@@ -108,6 +108,32 @@ class UsersTableSeeder extends Seeder
         $user->save();
         $user->assignRole('MATRICERO');
 
+        $user = new User();
+        $user->nombre = 'PRUEBAS DE DISEÑO';
+        $user->ap_paterno = '';
+        $user->ap_materno = '';
+        $user->email = 'diseño@maquinados.com';
+        $user->codigo_acceso = '0939';
+        $user->api_token = Str::random(60);
+        $user->token = Str::random(60);
+        $user->celular = '';
+        $user->active = true;
+        $user->save();
+        $user->assignRole('DISEÑO');
+
+        $user = new User();
+        $user->nombre = 'PRUEBAS DE PROCESOS';
+        $user->ap_paterno = '';
+        $user->ap_materno = '';
+        $user->email = 'procesos@maquinados.com';
+        $user->codigo_acceso = '0940';
+        $user->api_token = Str::random(60);
+        $user->token = Str::random(60);
+        $user->celular = '';
+        $user->active = true;
+        $user->save();
+        $user->assignRole('PROCESOS');
+
 
         $material = new Material();
         $material->nombre = 'PLANCHON';

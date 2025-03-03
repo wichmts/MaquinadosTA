@@ -50,6 +50,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     // AUXILIAR DE DISENO
     Route::get('/carga-componentes', 'WebController@cargaComponentes');
+    Route::get('/orden-trabajo', 'WebController@ordenTrabajo');
 
     // ALMACENISTA
     Route::get('/compra-componentes', 'WebController@compraComponentes');

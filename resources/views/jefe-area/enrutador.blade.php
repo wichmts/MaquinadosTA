@@ -36,43 +36,43 @@
                     <li>
                         <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
                             <div class="d-flex justify-content-end">
-                                <a class="nav-link cursor-pointer text-right text-muted">
-                                    <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
+                                <a class="nav-link py-0 cursor-pointer text-right text-muted">
+                                    <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 1">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
-                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
+                                    <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 2">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
+                                    <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 3">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
+                                    <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 4">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
-                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
+                                    <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span>
                                 </a>
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 5">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> COMPONENTES </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in componentes" v-if="!obj.refabricado" @click="fetchComponente(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
-                                    <h5 class="underline-hover pt-4">@{{obj.nombre}}</h5>
+                                    <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span>
                                 </a>
                             </div>
 
@@ -104,9 +104,7 @@
                     </div>
                 </div>
             </nav>
-            <!-- End Navbar -->
             <div class="content">
-                <!-- BOTONES GUARDAR-LIBERADO -->
                 <div class="row mb-2">
                     <div class="col-xl-6 col-lg-4">
                         <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px"> ENRUTADOR</h2>
@@ -118,28 +116,19 @@
                         <button class="btn btn-success btn-block" :disabled="componente.enrutado == true" @click="guardar(true)"><i class="fa fa-check-double"></i> @{{componente.enrutado == true ? 'LIBERADO' : 'LIBERAR'}}</button>
                     </div>
                 </div>
-                <!-- END NAVBAR RUTA -->
 
-                <!-- LABEL -->
                 <div class="col-12" v-if="!selectedComponente">
                     <h5 class="text-muted my-4"> SELECCIONE UN COMPONENTE PARA VER SU ENRUTAMIENTO</h5>
                 </div>
-                <!-- END LABEL -->
-                <!-- COMPONENTE -->
                 <div v-else>
                     <div class="row mb-3">
-                        <!-- NAVCOMPONENTES -->
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
                             <li class="nav-item" v-for="c in componente.refabricaciones">
                                 <a :class="{active: c.version == componente.version}" @click="fetchComponente(c.id)" class="bold nav-link cursor-pointer">@{{componente.nombre}}.v@{{c.version}}</a>
                             </li>
                         </ul>
-                        <!-- END NAVCOMPONENTES -->
                     </div>
-                    <!-- CUERPO COMPONENTE -->
                     <div class="row">
-
-                        <!-- BLOQUE DE TIEMPO -->
                         <div class="col-xl-7">
                             <div class="row">
                                 <div class="col-lg-2 px-2 my-3 d-flex justify-content-center align-items-center">
@@ -240,14 +229,11 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="limite-tiempo" :style="{ left: `${150 + (40 * totalHoras) + ((40 / 60 ) * totalMinutos) }px` }"></div>
+                                        <div class="limite-tiempo" :style="{ left: `${165 + (40 * totalHoras) + ((40 / 60 ) * totalMinutos) }px !important` }"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- END BLOQUE DE TIMEPO -->
-
-                        <!-- BLOQUE TABLA -->
                         <div class="col-xl-5">
                             <div class="row">
                                 <div class="col-12 table-responsive">
@@ -384,6 +370,9 @@
                                 </div>
                             </div>
                             <div class="row mt-3">
+                                <div class="col-xl-12" v-if="componente && componente.esComponenteExterno">
+                                    <button @click="verSolicitudExterna(componente.id)" class="btn btn-block my-0 btn-default"><i class="fa fa-info-circle"></i> VER ORDEN DE TRABAJO </button>
+                                </div>
                                 <div class="col-lg-6">
                                     <button @click="mostrarLineaDeTiempo" class="btn btn-block btn-default"><i class="fa fa-calendar"></i> LINEA DEL TIEMPO </button>
                                 </div>
@@ -392,7 +381,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- END BLOQUE TABLA -->
                     </div>
                 </div>
             </div>
@@ -605,6 +593,42 @@
         </div>
     </div>
 
+     <div class="modal fade" id="modalSolicitudExterna" tabindex="-1" aria-labelledby="modalSolicitudExternaLabel" aria-hidden="true">
+        <div class="modal-dialog" style="min-width: 40%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="bold modal-title" id="modalSolicitudExternaLabel">
+                        INFORMACIÓN DE LA ORDEN DE TRABAJO EXTERNA
+                    </h3>
+                    <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xl-12 text-center">
+                            <p><strong>Fecha de solicitud </strong><br>@{{solicitudExterna.fecha_solicitud_show}}</p>
+                            <p><strong>Fecha deseada entrega </strong><br> @{{solicitudExterna.fecha_deseada_show}}</p>
+                            <p><strong>Nombre del solicitante </strong><br> @{{solicitudExterna.solicitante.nombre_completo}}</p>
+                            <p><strong>Area de solicitud </strong><br> @{{solicitudExterna.area_solicitud}}</p>
+                            <p><strong>Comentarios e intrucciones </strong><br> @{{solicitudExterna.comentarios}}</p>
+                            <p><strong>¿Requiere tratamiento térmico? </strong><br> @{{solicitudExterna.tratamiento_termico ? 'Si' : 'No'}}</p>
+                            <p><strong>Archivos</strong></p>
+                            <a :href="'/api/download/ordenes_trabajo/' + solicitudExterna.archivo_2d" v-if="solicitudExterna.archivo_2d" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo 2D</a>
+                            <a :href="'/api/download/ordenes_trabajo/' + solicitudExterna.archivo_3d" v-if="solicitudExterna.archivo_3d" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo 3D</a>
+                            <a :href="'/api/download/ordenes_trabajo/' + solicitudExterna.dibujo" v-if="solicitudExterna.dibujo" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Dibujo a mano</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-12 text-center mt-4">
+                            <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 @endsection
 
@@ -711,7 +735,12 @@
             programadores: [],
             verVersiones: false,
             lineaTiempo: [],
-            
+            solicitudExterna: {
+                solicitante: {nombre_completo: ''},
+                archivo_2d: null,
+                archivo_3d: null,
+                dibujo: null
+            }
         },
         watch: {
             procesos: {
@@ -847,6 +876,21 @@
             }
         },
         methods: {
+            async verSolicitudExterna(){
+                let t = this
+                this.cargando = true;
+
+                try {
+                    const response = await axios.get(`/api/solicitud-externa/${t.componente.id}`);
+                    t.solicitudExterna = response.data.solicitud;
+
+                } catch (error) {
+                    console.error('Error fetching solicitudes:', error);
+                } finally {
+                    this.cargando = false;
+                    $('#modalSolicitudExterna').modal();
+                }
+            },
             async generarRefabricacion() {
                 let t = this
                 const acepto = await this.aceptarRefabricacion();

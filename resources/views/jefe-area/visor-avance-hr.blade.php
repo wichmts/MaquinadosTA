@@ -51,7 +51,7 @@
         height: 17px !important;
      }
      input[type="file"] {
-        width: 150px; /* Ajusta el valor según lo que necesites */
+        width: 200px; /* Ajusta el valor según lo que necesites */
         max-width: 100%; /* Para asegurarte de que no se salga del contenedor */
     }
 
@@ -132,7 +132,7 @@
 
     .gantt-header, .gantt-row {
         display: grid;
-        grid-template-columns: 150px repeat(var(--columns, 200), 1fr); /* var(--columns) es una variable CSS */
+        grid-template-columns: 200px repeat(var(--columns, 200), 1fr); /* var(--columns) es una variable CSS */
         height: 40px;
     }
 
@@ -148,7 +148,7 @@
         background-color: #f0f0f0;
         text-align: center;
         font-weight: bold;
-        width: 150px;
+        width: 200px;
         font-size: 15px;
     }
 
@@ -179,7 +179,7 @@
 
     .general-header {
         display: grid;
-        grid-template-columns: 150px repeat(var(--columns, 200), 1fr); /* var(--columns) es una variable CSS */
+        grid-template-columns: 200px repeat(var(--columns, 200), 1fr); /* var(--columns) es una variable CSS */
         background-color: #f0f0f0;
         font-weight: bold;
         text-align: center;
@@ -211,7 +211,7 @@
 
     .gantt-header2, .gantt-row2 {
         display: grid;
-        grid-template-columns: 150px repeat(var(--columns, 200), 1fr); /* var(--columns) es una variable CSS */
+        grid-template-columns: 200px repeat(var(--columns, 200), 1fr); /* var(--columns) es una variable CSS */
         height: 30px;
     }
 
@@ -228,7 +228,7 @@
         background-color: #f0f0f0;
         text-align: center;
         font-weight: bold;
-        width: 150px;
+        width: 200px;
         font-size: 15px;
     }
 
@@ -255,7 +255,7 @@
 
     .general-header2 {
         display: grid;
-        grid-template-columns: 150px repeat(var(--columns, 200), 1fr); /* var(--columns) es una variable CSS */
+        grid-template-columns: 200px repeat(var(--columns, 200), 1fr); /* var(--columns) es una variable CSS */
         background-color: #f0f0f0;
         font-weight: bold;
         text-align: center;
@@ -276,6 +276,25 @@
      .tipoParoSeleccionado {
         background-color: #d34040 !important;
         color: white !important;
+    }
+
+      .gallery-img {
+        width: 100%;
+        height: 150px; /* Tamaño fijo para todas las imágenes */
+        object-fit: cover; /* Recorta y ajusta la imagen sin deformarla */
+        border-radius: 5px;
+    }
+
+    .gallery-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%; /* Hace que todas las tarjetas tengan la misma altura */
+    }
+
+    .gallery-card .card-body {
+        text-align: center;
+        padding: 5px;
     }
      
 
@@ -311,28 +330,37 @@
                         <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
                         <a class="nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
                             <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span>  {{--<i class="fa fa-caret-right"></i>    --}}
+                            <span class="underline-hover">@{{obj.nombre}}</span> 
                         </a>
                     </div>    
                     <div v-if="!cargandoMenu && menuStep == 2">
                         <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
                         <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
                             <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span>  {{--<i class="fa fa-caret-right"></i>    --}}
+                            <span class="underline-hover">@{{obj.nombre}}</span> 
                         </a>
                     </div>
                     <div v-if="!cargandoMenu && menuStep == 3">
                         <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
-                        <a class="nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
-                            <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span>  {{--<i class="fa fa-caret-right"></i>    --}}
-                        </a>
+                        <template v-for="obj in proyectos">
+                            @if(auth()->user()->hasRole('JEFE DE AREA'))
+                            <a class="nav-link cursor-pointer"  @click="fetchHerramentales(obj.id)">
+                                <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                <span class="underline-hover">@{{obj.nombre}}</span> 
+                            </a>
+                            @else
+                             <a class="nav-link cursor-pointer"  @click="fetchHerramentales(obj.id)" v-if="esMiCarpeta(obj.nombre)">
+                                <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                <span class="underline-hover">@{{obj.nombre}}</span> 
+                            </a>
+                            @endif
+                        </template>
                     </div>
                     <div v-if="!cargandoMenu && menuStep == 4">
                         <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
                         <a class="nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)" >
                             <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
-                            <span class="underline-hover">@{{obj.nombre}}</span>  {{--<i class="fa fa-caret-right"></i>    --}}
+                            <span class="underline-hover">@{{obj.nombre}}</span> 
                         </a>
                     </div>
                     
@@ -393,11 +421,11 @@
         </div>
 
 
-        <div class="modal fade" id="modalNuevo" tabindex="-1" aria-labelledby="modalNuevoLabel" aria-hidden="true">
+        <div class="modal fade" id="modalComponente" tabindex="-1" aria-labelledby="modalComponenteLabel" aria-hidden="true">
             <div class="modal-dialog" style="min-width: 60%;">
                 <div class="modal-content" >
                     <div class="modal-header">
-                        <h3 class="modal-title" id="modalNuevoLabel">
+                        <h3 class="modal-title" id="modalComponenteLabel">
                             <span class="bold">INFORMACIÓN DE @{{infoComponentes.componente}}</span>
                         </h3>
                         <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -479,6 +507,147 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div> 
+                    <div class="modal-footer my-0 py-1">
+                        <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modalEnsamble" tabindex="-1" aria-labelledby="modalEnsambleLabel" aria-hidden="true">
+            <div class="modal-dialog" style="min-width: 50%;">
+                <div class="modal-content" >
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="modalEnsambleLabel">
+                            <span class="bold">INFORMACIÓN DE ENSAMBLE</span>
+                        </h3>
+                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                   <div class="modal-body">
+                        <div class="col-xl-12">
+                            <div class="row">
+                                <div class="col-xl-9" style="border-right: 1px solid #ededed">
+                                    <div class="mb-2">
+                                        <span><strong>Estatus de ensamble:</strong> </span> <span class="badge badge-dark badge-pill px-2 py-1 my-2">@{{herramental.estatus_ensamble.toUpperCase()}}</span> <br>
+                                        <span><strong>Fecha de inicio ensamble: </strong> @{{herramental.inicio_ensamble ?? 'Sin iniciar'}}</span><br>
+                                        <span><strong>Fecha de fin ensamble: </strong> @{{herramental.termino_ensamble ?? 'Sin terminar'}}</span><br>
+                                    </div>
+                                    <div class="mb-2 row">
+                                        <div class="col-lg-6">
+                                            <a class="btn btn-block btn-sm btn-default" :href="'/download/' + herramental.archivo2">
+                                                <i class="fa fa-download"></i> FORMATO F71-03 ANEXO 1.1
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="text-center">
+                                        <button class="btn btn-block btn-dark mx-2" @click="verFotografiasEnsamble"><i class="fa fa-camera"></i> Ver fotos</button>
+                                    </div>
+                                </div>
+                            </div>
+                                    
+                        </div>
+                    </div> 
+                    <div class="modal-footer my-0 py-1">
+                        <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modalPruebasDiseño" tabindex="-1" aria-labelledby="modalPruebasDiseñoLabel" aria-hidden="true">
+            <div class="modal-dialog" style="min-width: 35%;">
+                <div class="modal-content" >
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="modalPruebasDiseñoLabel">
+                            <span class="bold">INFORMACIÓN DE LA PRUEBA DISEÑO (@{{prueba.nombre}})</span>
+                        </h3>
+                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                   <div class="modal-body">
+                        <div class="col-xl-12">
+                            <div class="row">
+                                <div class="col-xl-12 text-center">
+                                    <div class="mb-2">
+                                        <span><strong>Estatus de la prueba:</strong> <br> </span> 
+                                            <span v-if="prueba.liberada == true" class="badge badge-success badge-pill px-2 py-1 my-2">LIBERADA</span>
+                                            <span v-else class="badge badge-dark badge-pill px-2 py-1 my-2">NO LIBERADA</span>
+                                         <br>
+                                        <span><strong>Fecha de inicio: </strong> <br> @{{ prueba.fecha_inicio }}</span><br>
+                                        <span><strong>Fecha de liberación: </strong> <br> @{{ prueba.fecha_liberada??'Sin liberar' }}</span><br>
+                                        <span><strong>Involucrados en la prueba: </strong> <br> @{{ prueba.involucrados }}</span><br>
+                                        <span><strong>Descripcion de la prueba: </strong> <br> @{{prueba.descripcion}}</span><br>
+                                        <span><strong>Hallazgos: </strong> <br> @{{prueba.hallazgos}}</span><br>
+                                        <span><strong>Plan de accion: </strong> <br> @{{prueba.plan_accion}}</span><br>
+                                    </div>
+                                    <div class="mb-2 row">
+                                        <div class="col-lg-12 text-center">
+                                            <a class="btn btn-sm btn-default" :href="'/download/pruebas-diseno/' + prueba.archivo_dimensional">
+                                                <i class="fa fa-download"></i> ARCHIVO DIMENSIONAL
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                    
+                        </div>
+                    </div> 
+                    <div class="modal-footer my-0 py-1">
+                        <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modalPruebasProceso" tabindex="-1" aria-labelledby="modalPruebasProcesoLabel" aria-hidden="true">
+            <div class="modal-dialog" style="min-width: 35%;">
+                <div class="modal-content" >
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="modalPruebasProcesoLabel">
+                            <span class="bold">INFORMACIÓN DE LA PRUEBA PROCESO (@{{prueba.nombre}})</span>
+                        </h3>
+                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                   <div class="modal-body">
+                        <div class="col-xl-12">
+                            <div class="row">
+                                <div class="col-xl-12 text-center" >
+                                    <div class="mb-2">
+                                        <span><strong>Estatus de la prueba:</strong> <br> </span> 
+                                            <span v-if="prueba.liberada == true" class="badge badge-success badge-pill px-2 py-1 my-2">LIBERADA</span>
+                                            <span v-else class="badge badge-dark badge-pill px-2 py-1 my-2">NO LIBERADA</span>
+                                         <br>
+                                        <span><strong>Fecha de inicio: </strong> <br> @{{ prueba.fecha_inicio }}</span><br>
+                                        <span><strong>Fecha de liberación: </strong> <br> @{{ prueba.fecha_liberada??'Sin liberar' }}</span><br>
+                                        <span><strong>Descripcion de la prueba: </strong> <br> @{{prueba.descripcion}}</span><br>
+                                        <span><strong>Comentarios: </strong> <br> @{{prueba.comentarios}}</span><br>
+                                        <span><strong>Plan de accion: </strong> <br> @{{prueba.plan_accion}}</span><br>
+                                    </div>
+                                    <div class="mb-2 row">
+                                        <div class="col-lg-12 text-center">
+                                            <a class="btn btn-sm btn-default" :href="'/download/pruebas-proceso/' + prueba.archivo">
+                                                <i class="fa fa-download"></i> FORMATO F71-03 ANEXO 2
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-12 text-center">
+                                    <h5 class="bold">Fotografia del herramental</h5>
+                                    <div class="card">
+                                        <a class="px-0 mx-0" :href="'/storage/pruebas-proceso/' + prueba.foto" v-if="prueba.foto" data-lightbox="prueba-proceso">
+                                            <img :src="'/storage/pruebas-proceso/' + prueba.foto" class="gallery-img" alt="Foto de fabricación">
+                                        </a>
+                                        <img v-else src="/paper/img/no-image.png" class="gallery-img" alt="Sin imagen">
+                                    </div>
+                                </div>
+                            </div>
+                                    
                         </div>
                     </div> 
                     <div class="modal-footer my-0 py-1">
@@ -579,57 +748,84 @@
             </div>
         </div>
         <div class="modal fade" id="modalFotografias" tabindex="-1" aria-labelledby="modalFotografiasLabel" aria-hidden="true">
-            <div class="modal-dialog" style="min-width: 60%;">
+            <div class="modal-dialog modal-lg" style="min-width: 70%; min-height: 70%">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3 class="bold modal-title" id="modalFotografiasLabel">
-                            GALERIA DEL COMPONENTE @{{componente.nombre}}
+                        <h3 class="modal-title font-weight-bold" id="modalFotografiasLabel">
+                            Galería de Imágenes @{{ componente.nombre }}
                         </h3>
                         <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
+
                     <div class="modal-body">
-                        <div class="row justify-content-center">
-                            <div class="col-xl-12 text-center">
-                                <h5 class="bold" style="letter-spacing: 2px">FABRICACIÓN</h5>
-                            </div>
-                            <div class="col-xl-4 px-3 py-2" v-for="f in componente.fabricaciones" :key="f.id" style="padding: 10px">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <span class="card-title"><strong>@{{getMaquina(f.maquina_id)}} </strong> (@{{f.updated_at.substring(0, 10)}})</span>
-                                    </div>
-                                    <div class="card-body">
-                                        <a :href="'/storage/fabricaciones/' + f.foto" v-if="f.foto" target="_blank">
-                                            <img :src="'/storage/fabricaciones/' + f.foto" class="img-fluid" alt="Foto de fabricacion">
-                                        </a>
-                                        <img v-else src="/paper/img/no-image.png" class="img-fluid" alt="Foto de fabricacion">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-12 text-center">
-                                <h5 class="bold" style="letter-spacing: 2px">ENSAMBLADO</h5>
-                            </div>
-                            <div class="col-xl-4 px-3 py-2" style="padding: 10px">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <span class="card-title"><strong>Fecha: </strong> @{{componente.fecha_ensamblado ? componente.fecha_ensamblado.substring(0,10) : 'Sin ensamblar'}}</span>
-                                    </div>
-                                    <div class="card-body">
-                                        <a href="'/storage/fotos_matricero/' + componente.foto_matricero" v-if="componente.foto_matricero" target="_blank">
-                                            <img :src="'/storage/fotos_matricero/' + componente.foto_matricero" class="img-fluid" alt="Foto de fabricacion">
-                                        </a>
-                                        <img v-else src="/paper/img/no-image.png" class="img-fluid" alt="Foto de fabricacion">
+                        <div class="container">
+                            <div v-if="componente.fabricaciones.length">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3" v-for="f in componente.fabricaciones" :key="f.id">
+                                        <div class="card gallery-card">
+                                            <a class="px-0 mx-0" :href="'/storage/fabricaciones/' + f.foto" v-if="f.foto" data-lightbox="fabricacion" :data-title="getMaquina(f.maquina_id) + ' (' + f.updated_at.substring(0,10) + ')'">
+                                                <img :src="'/storage/fabricaciones/' + f.foto" class="gallery-img" alt="Foto de fabricación">
+                                            </a>
+                                            <img v-else src="/paper/img/no-image.png" class="gallery-img" alt="Sin imagen">
+                                            <div class="card-body">
+                                                <p class="card-text mb-0"><strong>@{{ getMaquina(f.maquina_id) }}</strong></p>
+                                                <small class="text-muted">@{{ f.updated_at.substring(0,10) }}</small>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-12 text-center">
-                                <h5 class="bold" style="letter-spacing: 2px">PRUEBAS</h5>
+                            <div v-if="!componente.fabricaciones.length && !componente.foto_matricero && (!componente.pruebas || !componente.pruebas.length)" class="text-center text-muted">
+                                <p>No hay imágenes disponibles para este componente.</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-12 text-right">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer my-0 py-1">
-                        <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modalFotografiasEnsamble" tabindex="-1" aria-labelledby="modalFotografiasEnsambleLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" style="min-width: 70%;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title font-weight-bold" id="modalFotografiasEnsambleLabel">
+                            Fotografias de ensamblado para @{{ herramental.nombre }}
+                        </h3>
+                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container">
+                            <div v-if="componentes.length">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3" v-for="componente in componentes" :key="componente.id">
+                                        <div class="card gallery-card">
+                                            <a class="px-0 mx-0" :href="'/storage/fotos_matricero/' + componente.foto_matricero" v-if="componente.foto_matricero" data-lightbox="fabricacion" :data-title="componente.nombre + ' (' + componente.fecha_ensamblado??'Sin ensamblar' + ')'">
+                                                <img :src="'/storage/fotos_matricero/' + componente.foto_matricero" class="gallery-img" alt="Foto de ensamble">
+                                            </a>
+                                            <img v-else src="/paper/img/no-image.png" class="gallery-img" alt="Sin imagen">
+                                            <div class="card-body">
+                                                <p class="card-text mb-0"><strong>@{{ componente.nombre }} v@{{componente.version}}</strong></p>
+                                                <small class="text-muted">@{{ componente.fecha_ensamblado??'Sin ensamblar' }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-12 text-right">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -710,10 +906,15 @@
                 </div>
             </div>
         </div>
+
     </div>
 @endsection
 
 @push('scripts')
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+
 
     <script type="text/javascript">
         Vue.component('v-select', VueSelect.VueSelect)
@@ -745,14 +946,27 @@
             },
             tasks: [],
             procesos: [],
-            componente: {},
-            infoComponentes: [],
+            componente: {
+                fabricaciones: [],
+                pruebas: [],
+            },
+            infoComponentes: [
+                {
+                    time: [
+                        { es_compra: false }
+                    ],
+                }
+            ],
             seleccionado: null,
             solicitudes: [],
             lineaTiempo: [],
             maquinas: [],
             tasks2: [],
             rutaAvance: [],
+            herramental: {estatus_ensamble: 'Sin ensamblar'},
+            pruebasProceso: [],
+            pruebasDiseno: [],
+            prueba: {},
         },
         mounted: async function () {
             let t = this;
@@ -891,9 +1105,16 @@
             }
         },
         methods:{
+             esMiCarpeta(nombreCarpeta) {
+                let userId = {{auth()->user()->id}};
+                return nombreCarpeta.startsWith(userId + '.');
+            },
             verFotografias(componente){
                 this.componente = {...componente};
                 $('#modalFotografias').modal();
+            },
+            verFotografiasEnsamble(){
+                $('#modalFotografiasEnsamble').modal();
             },
             async fetchSolicitudes(id) {
                 let t = this;
@@ -968,7 +1189,7 @@
 
                 }
             },
-             generarDescripcion(accion, tipo, tipo_paro, motivo) {
+            generarDescripcion(accion, tipo, tipo_paro, motivo) {
                 let descripcion = "";
 
                 switch (accion) {
@@ -1044,7 +1265,7 @@
                 return maquina ? maquina.nombre : '-';
             },
             determinarEstatus(componente) {
-                const { cargado, enrutado, cortado, programado, ensamblado } = componente;
+                const { cargado, enrutado, cortado, programado, ensamblado, fecha_terminado, esComponenteExterno } = componente;
 
                 let resultado = "Sin estatus";
                 if (cargado) {
@@ -1062,6 +1283,9 @@
                 if (programado && cortado) {
                     resultado = "En Fabricacion";
                 }
+                if(esComponenteExterno && fecha_terminado){
+                    resultado = "Terminado";
+                }
                 if (ensamblado) {
                     resultado = "Ensamblado";
                 }
@@ -1070,7 +1294,22 @@
             async verInformacion(task){
                 let t = this;
                 t.infoComponentes = task;
-                $('#modalNuevo').modal('show');
+
+                if(t.infoComponentes.componente_id == -1){ //ensamble
+                    $('#modalEnsamble').modal('show');
+                    return;
+                }
+                if(t.infoComponentes.componente_id == -2){ //pruebas diseño
+                    t.prueba = t.pruebasDiseno.find(p => p.id == t.infoComponentes.prueba_id);
+                    $('#modalPruebasDiseño').modal('show');
+                    return;
+                }
+                if(t.infoComponentes.componente_id == -3){ // pruebas de procesos
+                    t.prueba = t.pruebasProceso.find(p => p.id == t.infoComponentes.prueba_id);
+                    $('#modalPruebasProceso').modal('show');
+                    return;
+                }
+                $('#modalComponente').modal('show');
             },  
             getTaskStyle(segment, day) {
                 const startDate = new Date(segment.dia_inicio);
@@ -1209,8 +1448,10 @@
                 try {
                     const response = await axios.get(`/api/avance-hr/${herramentalId}`);
                     this.tasks = response.data.tasks;
-
-                    console.log(this.tasks);
+                    this.pruebasProceso = response.data.pruebasProceso
+                    this.pruebasDiseno = response.data.pruebasDiseno
+                    this.herramental = response.data.herramental
+                    this.componentes = response.data.componentes
                 } catch (error) {
                     console.error('Error fetching tasks:', error);
                 } finally {

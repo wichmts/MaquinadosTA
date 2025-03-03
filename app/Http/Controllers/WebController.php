@@ -71,6 +71,10 @@ class WebController extends Controller
             return view('procesos.pruebas-proceso');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
+
+    public function ordenTrabajo(){
+        return view('generales.orden-trabajo');
+    }
  
     public function cargaComponentes(){
         if(auth()->user()->hasRole('AUXILIAR DE DISEÑO')) 
