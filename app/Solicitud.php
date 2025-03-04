@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use App\Componente;
 
 class Solicitud extends Model
 {
@@ -29,7 +30,7 @@ class Solicitud extends Model
         $result2 = Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at)->isoFormat('h:mm a');
         $array['fecha_show'] = $result1;
         $array['hora_show'] = $result2;
-
+        $array['componente'] = Componente::find($this->componente_id)->nombre ?? 'Sin nombre';
         return $array;
     }
 }

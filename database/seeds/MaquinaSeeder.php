@@ -42,7 +42,7 @@ class MaquinaSeeder extends Seeder
         foreach ($maquinas as $nombre) {
             Maquina::create([
                 'nombre' => $nombre,
-                'tipo_proceso' => 1, 
+                'tipo_proceso' => 3, 
             ]);
         }
     }

@@ -14,6 +14,7 @@ class CreateComponentesTable extends Migration
     public function up()
     {
         Schema::create('componentes', function (Blueprint $table) {
+
             $table->id();
             $table->string('nombre');
             $table->string('archivo_2d')->nullable();
@@ -43,8 +44,6 @@ class CreateComponentesTable extends Migration
             $table->string('fecha_envio_temple')->nullable();
             $table->string('fecha_estimada_temple')->nullable();
             $table->string('fecha_recibido_temple')->nullable();
-            
-            
             $table->string('foto_matricero')->nullable();
             
             // enrutamiento
@@ -82,6 +81,8 @@ class CreateComponentesTable extends Migration
             $table->integer('programador_id')->nullable();
             $table->integer('herramental_id')->nullable();
             $table->integer('material_id')->nullable();
+
+            $table->boolean('refaccion')->nullable();
 
             $table->timestamps();
         });

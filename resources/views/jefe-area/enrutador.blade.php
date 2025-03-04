@@ -366,7 +366,8 @@
                                     <button :disabled="!componente.enrutado " class="px-1 btn btn-block btn-dark my-1" @click="generarRefabricacion()"><i class="fa fa-redo"></i> REFABRICACIÓN</button>
                                 </div>
                                 <div class="col-lg-6 py-0 px-1">
-                                    <button :disabled="!componente.enrutado " class="px-1 btn btn-block btn-dark my-1"><i class="fa fa-puzzle-piece"></i> REFACCIÓN</button>
+                                    <button v-if="componente.refaccion == true" @click="esRefaccion(false)" class="px-1 btn btn-block btn-success my-1"><i class="fa fa-puzzle-piece"></i> REFACCIÓN - Si</button>
+                                    <button v-else @click="esRefaccion(true)" class="px-1 btn btn-block btn-dark my-1"><i class="fa fa-puzzle-piece"></i> REFACCIÓN - No</button>
                                 </div>
                             </div>
                             <div class="row mt-3">
@@ -568,7 +569,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="bold modal-title" id="modalModificacionLabel">
-                        SOLICITAR MODIFICACION AL AUXILIAR DE DISEÑO
+                        SOLICITAR MODIFICACIÓN AL @{{!componente.esComponenteExterno?'AUXILIAR DE DISEÑO':'SOLICITANTE DEL COMPONENTE EXTERNO'}}
                     </h3>
                     <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -576,9 +577,9 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-xl-12 form-group mt-3">
+                        <div class="col-xl-12 form-group">
                             <label class="bold">Descripción del problema detectado: <span class="text-danger">*</span> </label>
-                            <textarea v-model="componente.notificacion_texto" class="form-control w-100 text-left px-1 py-1" style="height: 120px" placeholder="Describe de problema para que el disenador pueda realizar los ajustes requeridos ..."></textarea>
+                            <textarea v-model="componente.notificacion_texto" class="form-control w-100 text-left px-1 py-1" style="height: 120px" placeholder="Describe de problema para que se puedan realizar los ajustes requeridos al diseño..."></textarea>
                         </div>
 
                     </div>
@@ -876,6 +877,74 @@
             }
         },
         methods: {
+            async enviarRefaccion(band) {
+                let t = this
+                t.cargando = true;
+                try {
+                    const response = await axios.put(`/api/componente/${t.componente.id}/refaccion/${band}`);
+                    if (response.data.success) {
+                        t.cargando = false;
+                        swal('Correcto', 'Se ha actualizado el componente correctamente.', 'success');
+                        await t.fetchComponentes(t.selectedHerramental);
+                        await t.fetchComponente(t.selectedComponente);
+                    }else{
+                        t.cargando = false;
+                        swal('Error', 'Ocurrió un error al intentar actualizar el componente.', 'error');
+                    }
+                } catch (error) {
+                    t.cargando = false;
+                    swal('Error', 'Ocurrió un error al intentar actualizar el componente.', 'error');
+                }
+            },
+            esRefaccion(band){
+                if(band){ 
+                    swal({
+                        title: "¿Está seguro de marcar este componente como refacción?",
+                        text: "",
+                        icon: "info",
+                        buttons: {
+                            cancel: {
+                                text: "Cancelar",
+                                value: null,
+                                visible: true,
+                            },
+                            confirm: {
+                                text: "Aceptar",
+                                value: true,
+                                visible: true,
+                            },
+                        },
+                        dangerMode: false,
+                    }).then((willMark) => {
+                        if (willMark) {
+                            this.enviarRefaccion(true);
+                        }
+                    });
+                }else{ //no es refaccion
+                    swal({
+                        title: "¿Está seguro de eliminar este componente como refacción?",
+                        text: "",
+                        icon: "info",
+                        buttons: {
+                            cancel: {
+                                text: "Cancelar",
+                                value: null,
+                                visible: true,
+                            },
+                            confirm: {
+                                text: "Aceptar",
+                                value: true,
+                                visible: true,
+                            },
+                        },
+                        dangerMode: false,
+                    }).then((willMark) => {
+                        if (willMark) {
+                            this.enviarRefaccion(false);
+                        }
+                    });
+                }
+            },
             async verSolicitudExterna(){
                 let t = this
                 this.cargando = true;
@@ -963,9 +1032,15 @@
                     const response = await axios.put(`/api/componente/${t.selectedComponente}/enrutamiento/${false}`, t.componente);
 
                     $('#modalModificacion').modal('hide');
-                    swal('Correcto', 'Se ha notificacado correctamente al auxiliar de diseno sobre una modificacion en el componente.', 'success');
+
+                    if(t.componente.esComponenteExterno){
+                        swal('Correcto', 'Se ha notificado correctamente al solicitante del componente externo sobre una modificación en el componente.', 'success');
+                    }else{
+                        swal('Correcto', 'Se ha notificacado correctamente al auxiliar de diseno sobre una modificación en el componente.', 'success');
+                    }
                     await t.fetchComponentes(t.selectedHerramental);
                     await t.fetchComponente(t.selectedComponente);
+
                 } catch (error) {
                     t.cargando = false
                     return false;

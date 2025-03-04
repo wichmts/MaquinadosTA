@@ -296,6 +296,10 @@
         text-align: center;
         padding: 5px;
     }
+    .square {
+        width: 8px;
+        height: 8px;
+    }
      
 
 
@@ -314,14 +318,14 @@
                 {{ session('error') }}
             </div>
         @endif
-        <div class="col-xl-12" v-show="cargando">
+        <div class="col-lg-12" v-show="cargando">
             <div style="margin-top: 200px; max-width: 100% !important; margin-bottom: auto; text-align:center; letter-spacing: 2px">
                 <h5 class="mb-5">CARGANDO...</h5>
                 <div class="loader"></div>
             </div>
         </div>
         <div class="row" v-cloak v-show="!cargando">
-            <div class="col-xl-2 pt-3" style="background-color: #f1f1f1; height: calc(100vh - 107.3px); overflow-y: scroll">
+            <div class="col-lg-2 pt-3" style="background-color: #f1f1f1; height: calc(100vh - 107.3px); overflow-y: scroll">
                 <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
                     <a class="nav-link cursor-pointer text-right text-muted" >
                         <i v-if="menuStep > 1"  @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
@@ -349,7 +353,7 @@
                                 <span class="underline-hover">@{{obj.nombre}}</span> 
                             </a>
                             @else
-                             <a class="nav-link cursor-pointer"  @click="fetchHerramentales(obj.id)" v-if="esMiCarpeta(obj.nombre)">
+                             <a class="nav-link cursor-pointer"  @click="fetchHerramentales(obj.id)" v-if="esMiCarpeta(obj.nombre) || ruta.cliente != 'ORDENES EXTERNAS'">
                                 <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
                                 <span class="underline-hover">@{{obj.nombre}}</span> 
                             </a>
@@ -366,9 +370,9 @@
                     
                 </div>            
             </div>
-            <div class="col-xl-10 mt-3">
+            <div class="col-lg-10 mt-3">
                 <div class="row">
-                    <div class="mb-2 col-xl-12" style="border-bottom: 1px solid #ededed">
+                    <div class="mb-2 col-lg-12" style="border-bottom: 1px solid #ededed">
                         <p style="">
                             <span class="cursor-pointer pb-2" @click="regresar(1)"><i class="fa fa-home"></i> &nbsp;</span>
                             <span class="cursor-pointer pb-2"  v-if="ruta.anio" @click="regresar(2)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.anio}}</span>    &nbsp;</span>
@@ -379,18 +383,32 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl-12">
-                        <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE AVANCE DE HR</h2>
+                    <div class="col-lg-8">
+                        <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE AVANCE @{{ruta.herramental}}</h2> 
+                        <div v-if="selectedHerramental" class="d-flex gap-1 align-items-center">
+                            <div class="square bg-danger"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Retrabajos &nbsp;&nbsp;&nbsp; </span>
+                            <div class="square bg-warning"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Retrasos &nbsp;&nbsp;&nbsp; </span>
+                            <div class="square bg-dark"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Refabricaciones &nbsp;&nbsp;&nbsp;  </span>
+                            <div class="square bg-success"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Refacción </span>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 text-right">
+                        <span v-if="selectedHerramental" class="bold" style="letter-spacing: 1px">Fecha de creación:</span>  <br>
+                        <span v-if="selectedHerramental" class="bold" style="letter-spacing: 1px">Fecha de finalización:</span> 
+                    </div>
+                    <div class="col-lg-2">
+                        <span v-if="selectedHerramental" style="letter-spacing: 1px">@{{herramental.fecha_creacion}}</span> <br>
+                        <span v-if="selectedHerramental" style="letter-spacing: 1px">@{{herramental.fecha_finalizado}}</span>
                     </div>
                 </div>
-                <div class="col-xl-12" v-if="!selectedHerramental">
+                <div class="col-lg-12" v-if="!selectedHerramental">
                     <h5 class="text-muted my-4"> SELECCIONE UN HERRAMENTAL PARA VER SU AVANCE</h5>
                 </div>
                 <div class="row" v-else>
-                    <div class="col-xl-12 " v-if="tasks.length == 0">
+                    <div class="col-lg-12 " v-if="tasks.length == 0">
                         <h5 class="text-muted">Este herramental aun no tiene componentes cargados...</h5>
                     </div>
-                    <div class="col-xl-12" v-else style="overflow-x:scroll">
+                    <div class="col-lg-12" v-else style="overflow-x:scroll">
                        <div class="gantt-chart" >
                             <div class="gantt-header general-header">
                                 <div class="time-header pb-2" >TIEMPO (DIAS)</div>
@@ -402,7 +420,15 @@
                                 </div>
                             </div>
                             <div class="gantt-row cursor-pointer" v-for="task in tasks" :key="task.id" @click="verInformacion(task)">
-                                <div class="gantt-cell task-name pt-2">@{{ task.componente }}</div>
+                                <div class="gantt-cell task-name pt-2">
+                                    @{{ task.componente }} 
+                                    <div class="d-flex gap-1 align-items-center">
+                                        <div v-if="task.componente_id > 0 && task.tieneRetrabajos" class="square bg-danger"></div>
+                                        <div v-if="task.componente_id > 0 && task.tieneRetrasos" class="square bg-warning"></div>
+                                        <div v-if="task.componente_id > 0 && task.tieneRefabricaciones" class="square bg-dark"></div>
+                                        <div v-if="task.componente_id > 0 && task.esRefaccion" class="square bg-success"></div>
+                                    </div>
+                                </div>
                                 <div class="gantt-cell gantt-bar" v-for="day in duracionTotal" :key="day" >
                                     <div
                                         v-for="segment in task.time"
@@ -433,7 +459,7 @@
                         </button>
                     </div>
                    <div class="modal-body">
-                        <div class="col-xl-12 accordion" id="accordionComponentes" v-if="infoComponentes.time && infoComponentes.time.length > 0">
+                        <div class="col-lg-12 accordion" id="accordionComponentes" v-if="infoComponentes.time && infoComponentes.time.length > 0">
                             <div class="card" v-for="(component, index) in infoComponentes.time.slice().reverse()" :key="component.version" style="border-radius: 20px !important">
                                 <!-- Cabecera del acordeón -->
                                 <div class="card-header cursor-pointer" :id="'heading-' + component.version" :class="{'bg-success text-white': component.type == 'normal', 'bg-danger text-white': component.type == 'rework'}" data-toggle="collapse"  :data-target="'#collapse-' + component.version"  :aria-expanded="index === 0"  :aria-controls="'collapse-' + component.version">
@@ -444,7 +470,7 @@
                                 <div :id="'collapse-' + component.version" class="collapse" :class="{ show: index === 0 }" :aria-labelledby="'heading-' + component.version" data-parent="#accordionComponentes">
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-xl-9" style="border-right: 1px solid #ededed">
+                                            <div class="col-lg-9" style="border-right: 1px solid #ededed">
                                                 <div class="mb-2">
                                                     <span><strong>Tipo de componente: </strong> @{{component.info.es_compra ? 'COMPRA' : 'FABRICACIÓN'}}</span><br>
                                                     <span><strong>Cantidad: </strong> @{{component.info.cantidad}}</span>&nbsp;&nbsp;
@@ -495,7 +521,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-xl-3">
+                                            <div class="col-lg-3">
                                                 <div class="text-center">
                                                     <button @click="fetchSolicitudes(component.info.id)" v-if="!component.info.es_compra" class="btn btn-block btn-dark mx-2"><i class="fa fa-list"></i> Ver solicitudes</button>
                                                     <button @click="mostrarLineaDeTiempo(component.info.id)" v-if="!component.info.es_compra" class="btn btn-block btn-dark mx-2"><i class="fa fa-calendar"></i> Ver linea de tiempo</button>
@@ -516,7 +542,7 @@
             </div>
         </div>
         <div class="modal fade" id="modalEnsamble" tabindex="-1" aria-labelledby="modalEnsambleLabel" aria-hidden="true">
-            <div class="modal-dialog" style="min-width: 50%;">
+            <div class="modal-dialog" style="min-width: 70%;">
                 <div class="modal-content" >
                     <div class="modal-header">
                         <h3 class="modal-title" id="modalEnsambleLabel">
@@ -527,29 +553,53 @@
                         </button>
                     </div>
                    <div class="modal-body">
-                        <div class="col-xl-12">
-                            <div class="row">
-                                <div class="col-xl-9" style="border-right: 1px solid #ededed">
-                                    <div class="mb-2">
-                                        <span><strong>Estatus de ensamble:</strong> </span> <span class="badge badge-dark badge-pill px-2 py-1 my-2">@{{herramental.estatus_ensamble.toUpperCase()}}</span> <br>
-                                        <span><strong>Fecha de inicio ensamble: </strong> @{{herramental.inicio_ensamble ?? 'Sin iniciar'}}</span><br>
-                                        <span><strong>Fecha de fin ensamble: </strong> @{{herramental.termino_ensamble ?? 'Sin terminar'}}</span><br>
-                                    </div>
-                                    <div class="mb-2 row">
-                                        <div class="col-lg-6">
-                                            <a class="btn btn-block btn-sm btn-default" :href="'/download/' + herramental.archivo2">
-                                                <i class="fa fa-download"></i> FORMATO F71-03 ANEXO 1.1
-                                            </a>
-                                        </div>
-                                    </div>
+                        <div class="col-lg-12">
+                            <div class="mb-2">
+                                <span><strong>Estatus de ensamble:</strong> </span> <span class="badge badge-dark badge-pill px-2 py-1 my-2">@{{herramental.estatus_ensamble.toUpperCase()}}</span> <br>
+                                <span><strong>Fecha de inicio ensamble: </strong> @{{herramental.inicio_ensamble ?? 'Sin iniciar'}}</span><br>
+                                <span><strong>Fecha de fin ensamble: </strong> @{{herramental.termino_ensamble ?? 'Sin terminar'}}</span><br>
+                            </div>
+                            <div class="mb-2 row">
+                                <div class="col-lg-4">
+                                    <a class="btn btn-block btn-default" :href="'/download/' + herramental.archivo2">
+                                        <i class="fa fa-download"></i> FORMATO F71-03 ANEXO 1.1
+                                    </a>
                                 </div>
-                                <div class="col-xl-3">
-                                    <div class="text-center">
-                                        <button class="btn btn-block btn-dark mx-2" @click="verFotografiasEnsamble"><i class="fa fa-camera"></i> Ver fotos</button>
-                                    </div>
+                                <div class="col-lg-4">
+                                    <button class="btn btn-block btn-dark" @click="verFotografiasEnsamble"><i class="fa fa-camera"></i> Ver fotos</button>
                                 </div>
                             </div>
-                                    
+                            <div class="mb-2 row">
+                                <div class="col-lg-12">
+                                    <h5 class="bold">RECHAZOS Y AJUSTES </h5>
+                                </div>
+                                <div class="col-lg-12">
+                                    <table class="table">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th class="py-1">Fecha</th>
+                                                <th class="py-1">Componente</th>
+                                                <th class="py-1">Tipo</th>
+                                                <th class="py-1">Descripcion</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template v-if="solicitudesEnsamble && solicitudesEnsamble.length > 0">
+                                                <tr v-for="sol in solicitudesEnsamble" :key="sol.id">
+                                                    <td>@{{sol.fecha_show}}</td>
+                                                    <td>@{{sol.componente}}</td>
+                                                    <td>@{{sol.tipo.toUpperCase()}}</td>
+                                                    <td>@{{sol.comentarios}}</td>
+                                                </tr>
+                                            </template>
+                                            <tr v-else>
+                                                <td colspan="4">No hay rechazos ni ajustes para este herramental</td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>  
                         </div>
                     </div> 
                     <div class="modal-footer my-0 py-1">
@@ -570,16 +620,16 @@
                         </button>
                     </div>
                    <div class="modal-body">
-                        <div class="col-xl-12">
+                        <div class="col-lg-12">
                             <div class="row">
-                                <div class="col-xl-12 text-center">
+                                <div class="col-lg-12 text-center">
                                     <div class="mb-2">
                                         <span><strong>Estatus de la prueba:</strong> <br> </span> 
                                             <span v-if="prueba.liberada == true" class="badge badge-success badge-pill px-2 py-1 my-2">LIBERADA</span>
                                             <span v-else class="badge badge-dark badge-pill px-2 py-1 my-2">NO LIBERADA</span>
                                          <br>
-                                        <span><strong>Fecha de inicio: </strong> <br> @{{ prueba.fecha_inicio }}</span><br>
-                                        <span><strong>Fecha de liberación: </strong> <br> @{{ prueba.fecha_liberada??'Sin liberar' }}</span><br>
+                                        <span><strong>Fecha de inicio: </strong> <br> @{{ prueba.fecha_inicio_show }}</span><br>
+                                        <span><strong>Fecha de liberación: </strong> <br> @{{ prueba.fecha_liberada_show??'Sin liberar' }}</span><br>
                                         <span><strong>Involucrados en la prueba: </strong> <br> @{{ prueba.involucrados }}</span><br>
                                         <span><strong>Descripcion de la prueba: </strong> <br> @{{prueba.descripcion}}</span><br>
                                         <span><strong>Hallazgos: </strong> <br> @{{prueba.hallazgos}}</span><br>
@@ -615,16 +665,16 @@
                         </button>
                     </div>
                    <div class="modal-body">
-                        <div class="col-xl-12">
+                        <div class="col-lg-12">
                             <div class="row">
-                                <div class="col-xl-12 text-center" >
+                                <div class="col-lg-12 text-center" >
                                     <div class="mb-2">
                                         <span><strong>Estatus de la prueba:</strong> <br> </span> 
                                             <span v-if="prueba.liberada == true" class="badge badge-success badge-pill px-2 py-1 my-2">LIBERADA</span>
                                             <span v-else class="badge badge-dark badge-pill px-2 py-1 my-2">NO LIBERADA</span>
                                          <br>
-                                        <span><strong>Fecha de inicio: </strong> <br> @{{ prueba.fecha_inicio }}</span><br>
-                                        <span><strong>Fecha de liberación: </strong> <br> @{{ prueba.fecha_liberada??'Sin liberar' }}</span><br>
+                                        <span><strong>Fecha de inicio: </strong> <br> @{{ prueba.fecha_inicio_show }}</span><br>
+                                        <span><strong>Fecha de liberación: </strong> <br> @{{ prueba.fecha_liberada_show??'Sin liberar' }}</span><br>
                                         <span><strong>Descripcion de la prueba: </strong> <br> @{{prueba.descripcion}}</span><br>
                                         <span><strong>Comentarios: </strong> <br> @{{prueba.comentarios}}</span><br>
                                         <span><strong>Plan de accion: </strong> <br> @{{prueba.plan_accion}}</span><br>
@@ -637,7 +687,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xl-12 text-center">
+                                <div class="col-lg-12 text-center">
                                     <h5 class="bold">Fotografia del herramental</h5>
                                     <div class="card">
                                         <a class="px-0 mx-0" :href="'/storage/pruebas-proceso/' + prueba.foto" v-if="prueba.foto" data-lightbox="prueba-proceso">
@@ -669,7 +719,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-xl-12 table-responsive table-stripped" style="max-height: 75vh !important; overflow-y: scroll !important">
+                            <div class="col-lg-12 table-responsive table-stripped" style="max-height: 75vh !important; overflow-y: scroll !important">
                                 <table class="table">
                                     <thead class="thead-light">
                                         <tr>
@@ -717,7 +767,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-xl-12 table-responsive table-stripped" style="height: 75vh !important; overflow-y: scroll !important">
+                            <div class="col-lg-12 table-responsive table-stripped" style="height: 75vh !important; overflow-y: scroll !important">
                                 <table class="table">
                                     <thead class="thead-light">
                                         <tr>
@@ -782,7 +832,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xl-12 text-right">
+                            <div class="col-lg-12 text-right">
                                 <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
                             </div>
                         </div>
@@ -822,7 +872,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xl-12 text-right">
+                            <div class="col-lg-12 text-right">
                                 <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
                             </div>
                         </div>
@@ -841,9 +891,9 @@
                     </div>
                     <div class="modal-body">
                          <div class="row d-flex align-items-center">
-                            <div class="col-xl-12">
+                            <div class="col-lg-12">
                                 <div class="row">
-                                    <div class="col-xl-12" style="overflow-x:scroll">
+                                    <div class="col-lg-12" style="overflow-x:scroll">
                                         <div class="gantt-chart" :style="{ '--columns': duracionTotal2.length }" >
                                             <div class="gantt-header2 general-header2">
                                                 <div class=" time-header2 pb-2" :colspan="duracionTotal2.length" style="letter-spacing: 1px" >TIEMPO TEÓRICO EN HORAS</div>
@@ -871,7 +921,7 @@
                                     </div>
                                 </div>
                                 <div class="row mt-3">
-                                    <div class="col-xl-12" style="overflow-x:scroll">
+                                    <div class="col-lg-12" style="overflow-x:scroll">
                                         <div class="gantt-chart" :style="{ '--columns': duracionTotal2.length }" >
                                             <div class="gantt-header2 general-header2">
                                                 <div class=" time-header2 pb-2" :colspan="duracionTotal2.length" style="letter-spacing: 1px" >TIEMPO REAL EN HORAS</div>
@@ -967,6 +1017,7 @@
             pruebasProceso: [],
             pruebasDiseno: [],
             prueba: {},
+            solicitudesEnsamble: []
         },
         mounted: async function () {
             let t = this;
@@ -1105,7 +1156,7 @@
             }
         },
         methods:{
-             esMiCarpeta(nombreCarpeta) {
+            esMiCarpeta(nombreCarpeta) {
                 let userId = {{auth()->user()->id}};
                 return nombreCarpeta.startsWith(userId + '.');
             },
@@ -1290,14 +1341,29 @@
                     resultado = "Ensamblado";
                 }
                 return resultado;
-            },         
+            },   
+            async fetchSolicitudesEnsamble(){
+                let t = this;
+                t.cargando = true;
+                try {
+                    let response = await axios.get(`/api/solicitud-ensamble/${t.selectedHerramental}`);
+                    return response.data.solicitudes
+                } catch (error) {
+                    console.error('Error fetching solicitudes:', error);
+                } finally {
+                    this.cargando = false;
+                }
+            },      
             async verInformacion(task){
                 let t = this;
                 t.infoComponentes = task;
 
                 if(t.infoComponentes.componente_id == -1){ //ensamble
-                    $('#modalEnsamble').modal('show');
-                    return;
+                    t.solicitudesEnsamble = await t.fetchSolicitudesEnsamble();
+                    Vue.nextTick(function(){
+                        $('#modalEnsamble').modal('show');
+                        return;
+                    })
                 }
                 if(t.infoComponentes.componente_id == -2){ //pruebas diseño
                     t.prueba = t.pruebasDiseno.find(p => p.id == t.infoComponentes.prueba_id);
@@ -1309,7 +1375,9 @@
                     $('#modalPruebasProceso').modal('show');
                     return;
                 }
-                $('#modalComponente').modal('show');
+                if(t.infoComponentes.componente_id > 0){
+                    $('#modalComponente').modal('show');
+                }
             },  
             getTaskStyle(segment, day) {
                 const startDate = new Date(segment.dia_inicio);

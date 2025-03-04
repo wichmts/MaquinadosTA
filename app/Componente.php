@@ -5,6 +5,10 @@ namespace App;
 use App\SeguimientoTiempo;
 use Carbon\Carbon;
 use App\Maquina;
+use App\Herramental;
+use App\Anio;
+use App\Proyecto;
+use App\Cliente;
 use App\SolciitudExterna;
 use Illuminate\Database\Eloquent\Model;
 
@@ -176,6 +180,29 @@ class Componente extends Model
     public function esComponenteExterno(){
         return SolicitudExterna::where('componente_id', $this->id)->exists();
     }
+    public function tieneRetrasos(){
+        return $this->fabricaciones()->whereNotNull('motivo_retraso')->exists();
+    }
+    public function tieneRefabricaciones() {
+        return Componente::where('herramental_id', $this->herramental_id)
+            ->where('nombre', $this->nombre)
+            ->where('cargado', true)
+            ->where('es_compra', false)
+            ->count() > 1;
+    }
+    public function tieneRetrabajos(){
+        $ruta = json_decode($this->ruta, true); // Convertir JSON a array
+
+        foreach ($ruta as $proceso) {
+            foreach ($proceso['time'] as $tiempo) {
+                if ($tiempo['type'] === 'rework') {
+                    return true; // Si encuentra un retrabajo, devuelve true
+                }
+            }
+        }
+
+        return false; // No hay retrabajos
+    }
     public function toArray(){
   		$data = parent::toArray();
         $data['material_nombre'] = $this->material ? $this->material->nombre : '';
@@ -188,6 +215,16 @@ class Componente extends Model
         $data['maquinas'] = $this->maquinas();
         $data['esComponenteExterno'] = $this->esComponenteExterno();
         $data['refabricaciones'] = $this->refabricaciones();
+        $data['tieneRetrasos'] = $this->tieneRetrasos();
+        $data['tieneRetrabajos'] = $this->tieneRetrabajos();
+        $data['tieneRefabricaciones'] = $this->tieneRefabricaciones();
+
+        $herramental = Herramental::findOrFail($this->herramental_id);
+        $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
+        $cliente = Cliente::findOrFail($proyecto->cliente_id);
+        $anio = Anio::findOrFail($cliente->anio_id);
+        $data['rutaComponente'] = "?a={$anio->id}&c={$cliente->id}&p={$proyecto->id}&h={$herramental->id}&co={$this->id}";
+
         return $data;
     }
 

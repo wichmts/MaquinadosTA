@@ -26,6 +26,8 @@ class CreateHerramentalesTable extends Migration
             $table->string('inicio_ensamble')->nullable();
             $table->string('termino_ensamble')->nullable();
 
+            $table->string('fecha_terminado')->nullable();
+
             $table->text('checklist')->nullable();
             $table->timestamps();
         });

@@ -118,10 +118,10 @@
                         <button :disabled="prueba.liberada == true" class="btn btn-dark btn-block" @click="guardar(false)"><i class="fa fa-save"></i> Guardar</button>
                     </div>
                     <div class="col-lg-2" v-if="selectedPrueba && !prueba.liberada">
-                        <button class="btn btn-success btn-block" @click="liberar()"><i class="fa fa-check-double"></i> Liberar prueba</button>
+                        <button class="btn btn-success btn-block" @click="liberar()"><i class="fa fa-check-circle"></i> Finalizar prueba</button>
                     </div>
                     <div class="col-lg-2" v-if="selectedPrueba && prueba.liberada">
-                        <button class="btn btn-success btn-block" disabled><i class="fa fa-check-double"></i> Liberada</button>
+                        <button class="btn btn-success btn-block" disabled><i class="fa fa-check-circle"></i> Finalizada</button>
                     </div>
                     
                     <div class="col-12" v-if="!selectedHerramental && !selectedPrueba">
@@ -136,7 +136,7 @@
                                             <th>Prueba</th>
                                             <th>Descripción</th>
                                             <th>Fecha de inicio</th>
-                                            <th>Fecha de liberación</th>
+                                            <th>Fecha finalización</th>
                                             <th>Estatus</th>
                                             <th>Acciones</th>
                                         </tr>
@@ -148,10 +148,10 @@
                                         <tr v-for="p in pruebas" v-else>
                                             <td class="bold">@{{p.nombre}}</td>
                                             <td>@{{p.descripcion}}</td>
-                                            <td>@{{p.fecha_inicio}}Hrs.</td>
-                                            <td>@{{p.fecha_liberada ? p.fecha_liberada + 'Hrs.' : '-'}}</td>
+                                            <td>@{{p.fecha_inicio_show}}</td>
+                                            <td>@{{p.fecha_liberada ? p.fecha_liberada_show : '-'}}</td>
                                             <td>
-                                                <span v-if="p.liberada" class="w-100 py-2 badge badge-pill badge-success"><i class="fa fa-check-circle"></i> LIBERADA</span>
+                                                <span v-if="p.liberada" class="w-100 py-2 badge badge-pill badge-success"><i class="fa fa-check-circle"></i> FINALIZADA</span>
                                                 <span v-else class="w-100 py-2 badge badge-pill badge-dark"><i class="fa fa-clock"></i> EN CURSO...</span>
                                             </td>
                                             <td> 

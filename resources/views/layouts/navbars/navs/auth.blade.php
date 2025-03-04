@@ -92,6 +92,12 @@ input:checked + .slider:before {
         <div class="collapse navbar-collapse ml-4 bg-white" id="navigation" >     
            
             <ul class="navbar-nav mr-auto text-center">
+
+                @if (auth()->user()->hasAnyRole(['PROCESOS', 'DIRECCION', 'JEFE DE AREA']))
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="/herramentales"> Herramentales </a>
+                </li>
+                @endif   
                 {{-- DIRECCION --}}
                 @if (auth()->user()->hasRole('DIRECCION'))
                 <li class="nav-item" >
@@ -108,16 +114,11 @@ input:checked + .slider:before {
                     <a class="nav-link menu-link" href="/carga-componentes">Carga de componentes</a>
                 </li>
                 @endif
-                @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
+                @if (auth()->user()->hasAnyRole(['AUXILIAR DE DISEÑO', 'DIRECCION']))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="/visor-avance-hr">Visor de avance</a>
                 </li>
                 @endif
-                {{-- @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="">Modificaciones de componentes</a>
-                </li>
-                @endif --}}
                 
                 {{-- JEFE DE AREA --}}
                 @if (auth()->user()->hasRole('JEFE DE AREA'))
@@ -143,13 +144,9 @@ input:checked + .slider:before {
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/matricero">Matricero</a>
                 </li>
-                @endif
-                @if (auth()->user()->hasRole('MATRICERO'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/visor-avance-hr">Visor de avance</a>
                 </li>
-                @endif
-                @if (auth()->user()->hasRole('MATRICERO'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/matricero/lista-componentes">Lista de componentes</a>
                 </li>
@@ -176,18 +173,12 @@ input:checked + .slider:before {
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/compra-componentes">Compra de componentes</a>
                 </li>
-                @endif
-                @if (auth()->user()->hasRole('ALMACENISTA'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/almacen-mp">AlmacÉn de MP</a>
                 </li>
-                @endif
-                @if (auth()->user()->hasRole('ALMACENISTA'))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="/corte">Corte</a>
                 </li>
-                @endif
-                @if (auth()->user()->hasRole('ALMACENISTA'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/temple">Temple</a>
                 </li>

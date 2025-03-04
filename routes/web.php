@@ -63,6 +63,7 @@ Route::group(['middleware' => 'auth'], function () {
     // ADMIN
     Route::get('usuario', 'WebController@usuarios');
     Route::get('maquina', 'WebController@maquinas');
+    Route::get('herramentales', 'WebController@herramentales');
     Route::get('profile', ['as' => 'profile.edit', 'uses' => 'ProfileController@edit']);
     Route::put('profile', ['as' => 'profile.update', 'uses' => 'ProfileController@update']);
     Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'ProfileController@password']);

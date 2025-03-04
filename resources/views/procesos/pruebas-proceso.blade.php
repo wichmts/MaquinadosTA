@@ -109,7 +109,7 @@
                         <button :disabled="deshabilitarBotones" class="btn btn-dark btn-block" @click="iniciarNuevaPrueba()"><i class="fa fa-plus-circle"></i> Iniciar nueva prueba</button>
                     </div>
                     <div class="col-lg-3" v-if="selectedHerramental && !selectedPrueba">
-                        <button :disabled="deshabilitarBotones" class="btn btn-success btn-block"><i class="fa fa-check-double"></i> Liberar herramental</button>
+                        <button :disabled="deshabilitarBotones" @click="liberarHerramental()" class="btn btn-success btn-block"><i class="fa fa-check-double"></i> Liberar herramental</button>
                     </div>
                      <div class="col-lg-2" v-if="selectedPrueba">
                         <button class="btn btn-default btn-block" @click="regresar(5)"><i class="fa fa-arrow-left"></i> Volver</button>
@@ -118,10 +118,10 @@
                         <button :disabled="prueba.liberada == true" class="btn btn-dark btn-block" @click="guardar(false)"><i class="fa fa-save"></i> Guardar</button>
                     </div>
                     <div class="col-lg-2" v-if="selectedPrueba && !prueba.liberada">
-                        <button class="btn btn-success btn-block" @click="liberar()"><i class="fa fa-check-double"></i> Liberar prueba</button>
+                        <button class="btn btn-success btn-block" @click="liberar()"><i class="fa fa-check-circle"></i> Finalizar prueba</button>
                     </div>
                     <div class="col-lg-2" v-if="selectedPrueba && prueba.liberada">
-                        <button class="btn btn-success btn-block" disabled><i class="fa fa-check-double"></i> Liberada</button>
+                        <button class="btn btn-success btn-block" disabled><i class="fa fa-check-circle"></i> FINALIZADA</button>
                     </div>
                     
                     <div class="col-12" v-if="!selectedHerramental && !selectedPrueba">
@@ -136,7 +136,7 @@
                                             <th>Prueba</th>
                                             <th>Descripción</th>
                                             <th>Fecha de inicio</th>
-                                            <th>Fecha de liberación</th>
+                                            <th>Fecha finalizada</th>
                                             <th>Estatus</th>
                                             <th>Acciones</th>
                                         </tr>
@@ -148,10 +148,10 @@
                                         <tr v-for="p in pruebas" v-else>
                                             <td class="bold">@{{p.nombre}}</td>
                                             <td>@{{p.descripcion}}</td>
-                                            <td>@{{p.fecha_inicio}}Hrs.</td>
-                                            <td>@{{p.fecha_liberada ? p.fecha_liberada + 'Hrs.' : '-'}}</td>
+                                            <td>@{{p.fecha_inicio_show}}</td>
+                                            <td>@{{p.fecha_liberada ? p.fecha_liberada_show : '-'}}</td>
                                             <td>
-                                                <span v-if="p.liberada" class="w-100 py-2 badge badge-pill badge-success"><i class="fa fa-check-circle"></i> LIBERADA</span>
+                                                <span v-if="p.liberada" class="w-100 py-2 badge badge-pill badge-success"><i class="fa fa-check-circle"></i> FINALIZADA</span>
                                                 <span v-else class="w-100 py-2 badge badge-pill badge-dark"><i class="fa fa-clock"></i> EN CURSO...</span>
                                             </td>
                                             <td> 
@@ -332,13 +332,47 @@
         computed: {
             deshabilitarBotones(){
                 if(this.selectedHerramental){
-                    let herramental = this.herramentales.find(h => h.id == this.selectedHerramental);                   
-                    return this.pruebas.some(c => c.liberada == false) || herramental.estatus_pruebas_diseno != 'finalizado' || herramental.estatus_ensamble != 'finalizado';
+                    let herramental = this.herramentales.find(h => h.id == this.selectedHerramental);
+                    return herramental.estatus_pruebas_proceso == 'finalizado' || this.pruebas.some(c => c.liberada == false) || herramental.estatus_ensamble != 'finalizado';
                 }
-                return true
+                return true;
             }
         },
         methods: {
+            liberarHerramental() {
+                let t = this;
+
+                if (t.pruebas.some(c => c.liberada == false)) {
+                    swal('Error', 'No se puede liberar el herramental si hay pruebas pendientes de liberar.', 'error');
+                    return;
+                }
+
+                swal({
+                    title: "¿Está seguro?",
+                    text: "¿Desea liberar este herramental a herramentales finalizados?",
+                    icon: "warning",
+                    buttons: ["Cancelar", "Sí, estoy seguro"],
+                    dangerMode: false,
+                }).then((willCreate) => {
+                    if (willCreate) {
+                        axios.put(`/api/liberar-herramental-pruebas-proceso/${t.selectedHerramental}`).then(response => {
+                            if (response.data.success) {
+                                swal({
+                                    title: "Correcto",
+                                    text: "Herramental liberado correctamente",
+                                    icon: "success",
+                                    button: "Aceptar",
+                                    closeOnClickOutside: false
+                                }).then(() => {
+                                    window.location.href = "/herramentales"; // Redirige después de aceptar
+                                });
+                            }
+                        });
+                    }
+                });
+            },  
+
+
             abrirCamara() {
                 const fileInput = document.getElementById('fileInput');
                 fileInput.click();

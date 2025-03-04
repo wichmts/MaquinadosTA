@@ -44,6 +44,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::put('maquina/{id}', 'APIController@editarMaquina');
     Route::delete('maquina/{id}', 'APIController@eliminarMaquina');
     
+    Route::get('herramentales', 'APIController@obtenerHerramentales');
     Route::get('materiales', 'APIController@obtenerMateriales');
     Route::get('programadores', 'APIController@obtenerProgramadores');
     Route::get('anios', 'APIController@obtenerAnios');
@@ -75,6 +76,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::put('retrabajo-componente/{componente_id}', 'APIController@retrabajoComponente');
     Route::put('componente/{componente_id}/enrutamiento/{liberar}', 'APIController@guardarComponenteEnrutamiento');
     Route::post('componente/{componente_id}/programacion/{liberar}', 'APIController@guardarComponenteProgramacion');
+    Route::put('componente/{componente_id}/refaccion/{band}', 'APIController@componenteRefaccion');
     Route::post('componente/{fabricacion_id}/fabricacion/{liberar}', 'APIController@guardarComponenteFabricacion');
     Route::post('prueba-diseno/{prueba_id}/{liberar}', 'APIController@guardarPruebaDiseno');
     Route::post('prueba-proceso/{prueba_id}/{liberar}', 'APIController@guardarPruebaProceso');
@@ -84,6 +86,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::put('liberar-herramental-cargar/{herramental_id}', 'APIController@liberarHerramentalCargar');
     Route::put('liberar-herramental-ensamble/{herramental_id}', 'APIController@liberarHerramentalEnsamble');
     Route::put('liberar-herramental-pruebas-diseno/{herramental_id}', 'APIController@liberarHerramentalPruebasDiseno');
+    Route::put('liberar-herramental-pruebas-proceso/{herramental_id}', 'APIController@liberarHerramentalPruebasProceso');
 
     Route::put('fabricacion/cambio-estatus/{id}', 'APIController@cambiarEstatusFabricacion');
     Route::put('programacion/cambio-estatus/{id}', 'APIController@cambiarEstatusProgramacion');
@@ -99,8 +102,10 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('prueba-proceso/{herramental_id}', 'APIController@generarPruebaProceso');
 
     Route::post('orden-trabajo', 'APIController@generarOrdenTrabajo');
+    Route::post('orden-trabajo/{id}', 'APIController@editarOrdenTrabajo');
     Route::get('mis-solicitudes-externas', 'APIController@misSolicitudesExternas');
     Route::get('solicitud-externa/{componente_id}', 'APIController@obtenerSolicitudExterna');
+    Route::get('solicitud-ensamble/{herramental_id}', 'APIController@obtenerSolicitudesEnsamble');
 
 });
 
