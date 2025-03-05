@@ -15,10 +15,11 @@ class PruebaProceso extends Model
         $data = parent::toArray();
 
         $result1 = Carbon::createFromFormat('Y-m-d H:i', $this->fecha_inicio)->isoFormat('D/M/YYYY h:mm a');
-        $result2 = Carbon::createFromFormat('Y-m-d H:i', $this->fecha_liberada)->isoFormat('D/M/YYYY h:mm a');
         $data['fecha_inicio_show'] = $result1;
-        $data['fecha_liberada_show'] = $result2;
-        
+        if($this->fecha_liberada){
+            $result2 = Carbon::createFromFormat('Y-m-d H:i', $this->fecha_liberada)->isoFormat('D/M/YYYY h:mm a');
+        }
+        $data['fecha_liberada_show'] = $result2??null;
         $data['archivo_show'] = $this->getArchivoShow();
         return $data;
     }

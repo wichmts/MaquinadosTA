@@ -93,7 +93,7 @@ input:checked + .slider:before {
            
             <ul class="navbar-nav mr-auto text-center">
 
-                @if (auth()->user()->hasAnyRole(['PROCESOS', 'DIRECCION', 'JEFE DE AREA']))
+                @if (auth()->user()->hasAnyRole(['PROCESOS', 'DIRECCION', 'JEFE DE AREA', 'PROYECTOS']))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="/herramentales"> Herramentales </a>
                 </li>
@@ -145,7 +145,7 @@ input:checked + .slider:before {
                     <a class="nav-link menu-link" href="/matricero">Matricero</a>
                 </li>
                 <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/visor-avance-hr">Visor de avance</a>
+                    <a class="nav-link menu-link" href="/visor-avance-hr">Visor avance</a>
                 </li>
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/matricero/lista-componentes">Lista de componentes</a>
@@ -163,6 +163,11 @@ input:checked + .slider:before {
                 </li>
                 @endif
                 @if (auth()->user()->hasRole('JEFE DE AREA'))
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/visor-avance-hr">Visor Avance</a>
+                </li>
+                @endif
+                @if (auth()->user()->hasRole('PROYECTOS'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/visor-avance-hr">Visor Avance</a>
                 </li>

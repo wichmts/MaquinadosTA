@@ -21,7 +21,7 @@ class WebController extends Controller
       return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
     public function herramentales(){
-        if(auth()->user()->hasAnyRole(['DIRECCION', 'JEFE DE AREA', 'PROCESOS']))
+        if(auth()->user()->hasAnyRole(['DIRECCION', 'JEFE DE AREA', 'PROCESOS', 'PROYECTOS']))
           return view('generales.herramentales');
       return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
@@ -60,7 +60,7 @@ class WebController extends Controller
     }
 
     public function visorAvanceHR(){
-        if(auth()->user()->hasAnyRole(['JEFE DE AREA', 'PROGRAMADOR', 'MATRICERO', 'AUXILIAR DE DISEÑO', 'DIRECCION', 'PROCESOS'])) 
+        if(auth()->user()->hasAnyRole(['JEFE DE AREA', 'PROGRAMADOR', 'MATRICERO', 'AUXILIAR DE DISEÑO', 'DIRECCION', 'PROCESOS', 'PROYECTOS'])) 
             return view('jefe-area.visor-avance-hr');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }

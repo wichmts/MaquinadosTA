@@ -771,7 +771,7 @@ class APIController extends Controller
                         }
         
                         $herramentalListo = true;
-                        $componentes = Componente::where('herramental_id', $herramental->id)->with('fabricaciones')->get();
+                        $componentes = Componente::where('herramental_id', $herramental->id)->where('refabricado', false)->with('fabricaciones')->get();
                         foreach ($componentes as $comp) {
                             foreach ($comp->fabricaciones as $fabriComp) {
                                 if (!$fabriComp->fabricado) {
@@ -1368,7 +1368,7 @@ class APIController extends Controller
                             $user->save();
                         }
                         $herramentalListo = true;
-                        $otrosComponentes = Componente::where('herramental_id', $herramental->id)->with('fabricaciones')->get();
+                        $otrosComponentes = Componente::where('herramental_id', $herramental->id)->where('refabricado', false)->with('fabricaciones')->get();
 
                         foreach ($otrosComponentes as $comp) {
                             foreach ($comp->fabricaciones as $fabriComp) {
