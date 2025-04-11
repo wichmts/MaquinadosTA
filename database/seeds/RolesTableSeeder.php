@@ -25,7 +25,13 @@ class RolesTableSeeder extends Seeder
       $role = Role::create(['name' => 'FINANZAS']);
       $role = Role::create(['name' => 'PROYECTOS']);
       $role = Role::create(['name' => 'PROCESOS']);
-      $role = Role::create(['name' => 'EXTERNO']);
+      $role = Role::create(['name' => 'SOLICITUD EXTERNA']);
+
+      $role = Role::create(['name' => 'HERRAMENTALES']);
+      $role = Role::create(['name' => 'PRODUCCION']);
+      $role = Role::create(['name' => 'INFRAESTRUCTURA']);
+      $role = Role::create(['name' => 'MANTENIMIENTO']);
+      $role = Role::create(['name' => 'METROLOGIA']);
       
     }
 }

@@ -331,7 +331,7 @@
 
         <div class="wrapper" v-cloak v-show="!cargando">
             <div class="main-panel col-xl-12">
-                <div class="row" v-cloak v-show="!cargando">
+                <div class="row">
                     <div class="col-xl-2 pt-3" style="background-color: #f1f1f1; height: calc(100vh - 107.3px); overflow-y: scroll">
                         <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
                             <a class="nav-link cursor-pointer text-right text-muted" >
@@ -417,54 +417,6 @@
                                         <label tabindex="0" for="archivo2" class="input-file-trigger col-12 text-center">
                                             <i class="fa fa-upload"></i> CARGAR FORMATO F71-03 ANEXO 1
                                         </label>
-                                    </div>
-                                </div>
-                                
-                            </div>
-                            
-                            {{-- vista de checklist --}}
-                            <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'checklist'">
-                                <div class="row mb-3">
-                                    <div class="col-xl-10">
-                                        <h3 class="bold pb-1 mb-0" style="letter-spacing: 1px">Lista de materiales para @{{herramental.nombre}}</h3>
-                                        <h5 class="py-1 my-0" style="letter-spacing: 1px; opacity: .6" >Verifique que todos los componentes esten disponibles y listos para comenzar el ensamble:</h5>
-                                    </div>
-                                    <div class="col-xl-2">
-                                        <button class="btn btn-success btn-block" @click="guardarChecklist()"><i class="fa fa-save"></i> GUARDAR CAMBIOS</button>
-                                    </div>
-                                </div>
-                                <div class="row" >
-                                    <div class="col-xl-12 table-responsive" style="height: 55vh; overflow-y:scroll">
-                                        <table class="table table-bordered">
-                                            <thead class="thead-light">
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th style="text-transform: none !important">¿Listo para ensamble?</td>
-                                                    <th>Componente</td>
-                                                    <th>Cantidad</td>
-                                                    <th>Procedencia</td>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="(componente, index) in herramental.checklist" :key="index">
-                                                    <td>@{{index + 1}}</td>
-                                                    <td>
-                                                        <div class="form-check" :key="index">
-                                                            <label class="form-check-label">
-                                                                <input class="form-check-input" type="checkbox" :id="'componente-' + index" v-model="componente.checked">
-                                                                <span class="form-check-sign"></span>
-                                                            </label>
-                                                        </div>    
-                                                    </td>
-                                                    <td class="bold">@{{componente.nombre}}</td>
-                                                    <td>@{{componente.cantidad}}</td>
-                                                    <td>@{{componente.es_compra ? 'COMPRAS' : 'FABRICACIÓN'}}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="col-xl-12 mt-2">
-                                        <h5 class="text-muted" style="letter-spacing: 1px">Una vez que todos los componentes esten listos, podra comenzar con el ensamblado del herramental.</h5>
                                     </div>
                                 </div>
                             </div>
@@ -706,23 +658,23 @@
                 }
                 await this.guardarFoto()
             },
-            async guardarChecklist(){
-                let t = this;
-                this.loading_button = true;
-                try {
-                    const response = await axios.post(`/api/herramental/${this.selectedHerramental}/checklist`, t.herramental.checklist);
-                    swal('Correcto', 'Checklist guardado correctamente', 'success');
-                    await this.fetchHerramental(this.selectedHerramental);
-                    if(this.herramental.estatus_ensamble == 'proceso'){
-                        this.fetchComponentes(this.selectedHerramental);
-                    }
-                } catch (error) {
-                    console.error('Error guardando checklist:', error);
-                    swal('Error', 'Error al guardar el checklist', 'error');
-                } finally {
-                    this.loading_button = false;
-                }
-            },
+            // async guardarChecklist(){
+            //     let t = this;
+            //     this.loading_button = true;
+            //     try {
+            //         const response = await axios.post(`/api/herramental/${this.selectedHerramental}/checklist`, t.herramental.checklist);
+            //         swal('Correcto', 'Checklist guardado correctamente', 'success');
+            //         await this.fetchHerramental(this.selectedHerramental);
+            //         if(this.herramental.estatus_ensamble == 'proceso'){
+            //             this.fetchComponentes(this.selectedHerramental);
+            //         }
+            //     } catch (error) {
+            //         console.error('Error guardando checklist:', error);
+            //         swal('Error', 'Error al guardar el checklist', 'error');
+            //     } finally {
+            //         this.loading_button = false;
+            //     }
+            // },
             async guardarFoto(){
                 let t = this;
                 this.loading_button = true;

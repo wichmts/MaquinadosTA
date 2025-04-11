@@ -235,7 +235,26 @@
             tipo_usuario: '-1',
             permisos: [],
             maquinas: [],
-            roles: [ 'DIRECCION', 'ALMACENISTA', 'AUXILIAR DE DISEÑO', 'JEFE DE AREA', 'PROGRAMADOR', 'OPERADOR', 'MATRICERO', 'DISEÑO','FINANZAS', 'PROYECTOS', 'PROCESOS', 'EXTERNO'],
+            roles: [
+                'ALMACENISTA',
+                'AUXILIAR DE DISEÑO',
+                'DISEÑO',
+                'DIRECCION',
+                'FINANZAS',
+                'HERRAMENTALES',
+                'INFRAESTRUCTURA',
+                'JEFE DE AREA',
+                'MANTENIMIENTO',
+                'MATRICERO',
+                'METROLOGIA',
+                'OPERADOR',
+                'PROCESOS',
+                'PRODUCCION',
+                'PROYECTOS',
+                'PROGRAMADOR',
+                'SOLICITUD EXTERNA'
+            ]
+
         },
         methods:{ 
             incluirRole(role) {
@@ -293,11 +312,22 @@
             },
             guardar: function(){
                 let t = this;
-                if(t.usuario.nombre == '' || t.usuario.estatus == '' || t.usuario.email == '' || t.usuario.codigo_acceso == '')
-                {
-                    swal('Campos obligatorios', 'Los campos marcados con asterisco son obligatorios.', 'info');
+               if (!t.usuario.nombre || t.usuario.nombre.trim() === '') {
+                    swal('Campo obligatorio', 'El nombre es obligatorio.', 'info');
                     return;
                 }
+
+                if (!t.usuario.email || !/\S+@\S+\.\S+/.test(t.usuario.email)) {
+                    swal('Campo obligatorio', 'El correo electrónico es obligatorio y debe tener un formato válido.', 'info');
+                    return;
+                }
+
+                if (!t.usuario.codigo_acceso || t.usuario.codigo_acceso.trim() === '') {
+                    swal('Campo obligatorio', 'El código de acceso es obligatorio.', 'info');
+                    return;
+                }
+
+
                 if(t.usuario.roles.length == 0){
                     swal('Role obligatorio', 'El usuario debe tener al menos un role asignado.', 'info');
                     return;
@@ -363,9 +393,6 @@
                     roles: [],
                     maquinas: [],
                 };
-                // t.permisos.map(obj => {
-                //     obj.value = true;
-                // });
                  Vue.nextTick(function () {
                     $('#modalUsuario').modal();
                 });
@@ -374,9 +401,6 @@
             editar: function(index){
                 let t = this;
                 t.usuario =  JSON.parse(JSON.stringify(t.usuarios[index]));
-                // t.permisos.map(obj => {
-                //     obj.value = t.usuario.permisos.includes(obj.title);
-                // });
                 Vue.nextTick(function () {
                     $('#modalUsuario').modal();
                 });
@@ -387,7 +411,7 @@
                 $('#tabla').dataTable().fnDestroy();
 
                 axios.get('api/maquinas').then(response => {
-                    t.maquinas = response.data.maquinas;
+                    t.maquinas = response.data.maquinas.filter(maq => maq.tipo_proceso != 10)
                 }).catch(e => {
                     console.log(e);
                 });
@@ -401,14 +425,19 @@
                         $('#tabla').DataTable({
                             "searching": false,
                             "ordering": true,
+                            "pageLength": 25, 
+                            "order": [[2, "asc"]], // Ordenar por la segunda columna (índice 1) en orden ascendente
+                            "lengthMenu": [[25, 50, 100], [25, 50, 100]], // Eliminar la opción de 10
                             "columnDefs": [{
                                 orderable: false,
                                 targets: "no-sort"
                             }],
-                            language: {
+                            "language": {
                                 url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
-                            }
+                            },
+                            "pagingType": "simple_numbers" // Paginación más amplia (usa 'full_numbers' si prefieres)
                         });
+
                         t.cargando = false;
                     })
                 })
@@ -417,56 +446,7 @@
                     t.cargando = false;    
                 })
             },
-            // inicializarPermisos: function(){
-            //    this.permisos = [
-            //         {
-            //             "title": "Programacion de cargas",
-            //             "description": "Acceso y gestión de la información relacionada con las cargas y su transportacion.",
-            //             "value": true
-            //         },
-            //         {
-            //             "title": "Clientes",
-            //             "description": "Acceso y gestión de la información relacionada con los clientes del sistema.",
-            //             "value": true
-            //         },
-            //          {
-            //             "title": "Prospectos",
-            //             "description": "Acceso y gestión de la información relacionada con los prospectos o futuros clientes asi como el seguimiento de estos.",
-            //             "value": true
-            //         },
-            //         {
-            //             "title": "Licitaciones",
-            //             "description": "Acceso y gestión de la información relacionada con la licitacion de cargas a transportistas externos.",
-            //             "value": true
-            //         },
-            //         {
-            //             "title": "Salidas y Destinos",
-            //             "description": "Acceso y gestión de la información relacionada con los puntos de salida y destino de las cargas.",
-            //             "value": true
-            //         },
-            //         {
-            //             "title": "Conductores",
-            //             "description": "Acceso y gestión de la información relacionada con los conductores.",
-            //             "value": true
-            //         },
-            //         {
-            //             "title": "Camiones y  Remolques",
-            //             "description": "Acceso y gestión de la información relacionada con los vehiculos que transportan la carga.",
-            //             "value": true
-            //         },
-            //         {
-            //             "title": "Transportistas externos",
-            //             "description": "Acceso y gestión de la información relacionada con los transportistas externos del sistema.",
-            //             "value": true
-            //         },
-            //         {
-            //             "title": "Usuarios y Vendedores",
-            //             "description": "Administración de usuarios con acceso al sistema, asignando distintos niveles de permisos y roles.",
-            //             "value": true
-            //         }
-            //     ];
-
-            // }
+           
         },
         mounted: function () {
             this.$nextTick(function () {

@@ -6517,6 +6517,69 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /*END ENRUTADOR BLADE*/
+.gantt-chart3 {
+    display: grid;
+    grid-template-rows: auto;
+    font-family: Arial, sans-serif;
+}
+
+.gantt-header3,
+.gantt-row3 {
+    display: grid;
+    grid-template-columns: 200px repeat(var(--columns, 200), 1fr);
+    /* var(--columns) es una variable CSS */
+    height: 50px;
+}
+
+.gantt-cell3 {
+    border: .5px solid #ddd;
+    padding: 0px;
+    text-align: center;
+    font-size: 12px;
+    width: 80px;
+}
+
+.task-name3 {
+    background-color: #f0f0f0;
+    text-align: center;
+    font-weight: bold;
+    width: 200px;
+    font-size: 15px;
+}
+
+.gantt-bar3 {
+    position: relative;
+}
+
+.general-header3 {
+    display: grid;
+    grid-template-columns: 200px repeat(var(--columns, 200), 1fr);
+    /* var(--columns) es una variable CSS */
+    background-color: #f0f0f0;
+    font-weight: bold;
+    text-align: center;
+}
+
+.time-header3 {
+    grid-column: span var(--columns, 200);
+    /* Cambia este número si tienes más o menos horas */
+    font-size: 14px;
+    padding: 8px 0;
+}
+
+.limite-tiempo1 {
+    position: absolute;
+    top: 50px;
+    bottom: 0;
+    left: 50%;
+    /* O la posición que desees */
+    width: 0;
+    /* El width se debe poner a 0, ya que la línea será con borde */
+    border-left: 4px dotted orange;
+    /* Agregar borde punteado */
+    z-index: 10;
+}
+
 
 /* VISOR PROGRAMADOR */
 .maquinaSeleccionada {
@@ -6524,6 +6587,11 @@ input[type="number"]::-webkit-outer-spin-button {
     color: black !important;
 }
 /* END VISOR PROGRAMADOR */
+
+.tipoParoSeleccionado {
+    background-color: #d34040 !important;
+    color: white !important;
+}
 
 .switch-light.switch-candy span span,
 .switch-light.switch-candy input:checked~span span:first-child,
@@ -6535,6 +6603,126 @@ input[type="number"]::-webkit-outer-spin-button {
     box-sizing: border-box;
     --background-color: #f7dc6f;
     --checkbox-height: 25px;
+}
+
+.checkbox-wrapper-10 .tgl {
+    display: none;
+}
+
+.checkbox-wrapper-10 .tgl,
+.checkbox-wrapper-10 .tgl:after,
+.checkbox-wrapper-10 .tgl:before,
+.checkbox-wrapper-10 .tgl *,
+.checkbox-wrapper-10 .tgl *:after,
+.checkbox-wrapper-10 .tgl *:before,
+.checkbox-wrapper-10 .tgl+.tgl-btn {
+    box-sizing: border-box;
+}
+
+.checkbox-wrapper-10 .tgl::-moz-selection,
+.checkbox-wrapper-10 .tgl:after::-moz-selection,
+.checkbox-wrapper-10 .tgl:before::-moz-selection,
+.checkbox-wrapper-10 .tgl *::-moz-selection,
+.checkbox-wrapper-10 .tgl *:after::-moz-selection,
+.checkbox-wrapper-10 .tgl *:before::-moz-selection,
+.checkbox-wrapper-10 .tgl+.tgl-btn::-moz-selection,
+.checkbox-wrapper-10 .tgl::selection,
+.checkbox-wrapper-10 .tgl:after::selection,
+.checkbox-wrapper-10 .tgl:before::selection,
+.checkbox-wrapper-10 .tgl *::selection,
+.checkbox-wrapper-10 .tgl *:after::selection,
+.checkbox-wrapper-10 .tgl *:before::selection,
+.checkbox-wrapper-10 .tgl+.tgl-btn::selection {
+    background: none;
+}
+
+.checkbox-wrapper-10 .tgl+.tgl-btn {
+    outline: 0;
+    display: block;
+    width: 80%;
+    height: 40px;
+    position: relative;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.checkbox-wrapper-10 .tgl+.tgl-btn:after,
+.checkbox-wrapper-10 .tgl+.tgl-btn:before {
+    position: relative;
+    display: block;
+    content: "";
+    width: 50%;
+    height: 100%;
+}
+
+.checkbox-wrapper-10 .tgl+.tgl-btn:after {
+    left: 0;
+}
+
+.checkbox-wrapper-10 .tgl+.tgl-btn:before {
+    display: none;
+}
+
+.checkbox-wrapper-10 .tgl:checked+.tgl-btn:after {
+    left: 50%;
+}
+
+.checkbox-wrapper-10 .tgl-flip+.tgl-btn {
+    padding: 2px;
+    transition: all 0.2s ease;
+    font-family: sans-serif;
+    perspective: 100px;
+}
+
+.checkbox-wrapper-10 .tgl-flip+.tgl-btn:after,
+.checkbox-wrapper-10 .tgl-flip+.tgl-btn:before {
+    display: inline-block;
+    transition: all 0.4s ease;
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    line-height: 40px;
+    font-size: 12px !important;
+    font-weight: bold;
+    color: #fff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 4px;
+}
+
+.checkbox-wrapper-10 .tgl-flip+.tgl-btn:after {
+    content: attr(data-tg-on);
+    background: #02C66F;
+    transform: rotateY(-180deg);
+}
+
+.checkbox-wrapper-10 .tgl-flip+.tgl-btn:before {
+    background: #FF3A19;
+    content: attr(data-tg-off);
+}
+
+.checkbox-wrapper-10 .tgl-flip+.tgl-btn:active:before {
+    transform: rotateY(-20deg);
+}
+
+.checkbox-wrapper-10 .tgl-flip:checked+.tgl-btn:before {
+    transform: rotateY(180deg);
+}
+
+.checkbox-wrapper-10 .tgl-flip:checked+.tgl-btn:after {
+    transform: rotateY(0);
+    left: 0;
+    background: #7FC6A6;
+}
+
+.checkbox-wrapper-10 .tgl-flip:checked+.tgl-btn:active:after {
+    transform: rotateY(20deg);
 }
 
 @-moz-keyframes dothabottomcheck-19 {
@@ -6696,3 +6884,7 @@ input[type="number"]::-webkit-outer-spin-button {
     -webkit-animation: dothatopcheck-19 0.4s ease 0s forwards;
     animation: dothatopcheck-19 0.4s ease 0s forwards;
 }
+
+        
+
+

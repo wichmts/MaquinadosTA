@@ -208,15 +208,18 @@
                             <span class="text-muted">Es necesario seleccionar una o más <strong>máquinas</strong> para poder cargar los programas</span>
                         </div>
                         <div class="row" v-for="(m, ind) in componente.maquinas">
-                            <div class="col-xl-4">
+                            <div class="col-xl-6">
                                 <h5 class="bold" style="letter-spacing: 1px"><i class="fa fa-computer"></i> @{{m.nombre}}</h5>
                             </div>
-                            <div class="col-xl-8 text-right" v-if="componente.programado != true || componente.programador_id != user_id">
+                            <div class="col-xl-6 text-right" v-if="componente.programado != true && componente.programador_id == user_id  && m.nombre !== 'CAREO MANUAL'">
                                 <small class="cursor-pointer" style="text-decoration: underline" @click="agregarArchivo(m)"><i class="fa fa-plus-circle"></i> Agregar programa</small>
                             </div>
                             <div class="col-xl-12">
                                 <div class="row mb-2" v-for="(a, index) in m.archivos" :key="index + '-' + m.maquina_id">
-                                    <div class="col-xl-10 text-center mr-0 pr-0">
+                                    <div class="col-xl-12 mb-2" v-if="m.nombre == 'CAREO MANUAL'">
+                                        <small> Esta maquina no requiere programa </small>
+                                    </div>
+                                    <div class="col-xl-10 text-center mr-0 pr-0" v-if="m.nombre != 'CAREO MANUAL'">
                                         <input
                                             :disabled="componente.programado == true || componente.programador_id != user_id"
                                             class="input-file"
@@ -239,7 +242,7 @@
                                             <a :href="'/api/download/programas/' + a.nombre">@{{getElipsis(a.nombre)}}</a>
                                         </small>
                                     </div>
-                                    <div class="col-xl-2 text-center ml-0 pl-0" v-if="componente.programado != true && componente.programador_id == user_id">
+                                    <div class="col-xl-2 text-center ml-0 pl-0" v-if="componente.programado != true && componente.programador_id == user_id  && m.nombre !== 'CAREO MANUAL'">
                                         <button class="btn btn-block btn-link my-0" @click="eliminarArchivo(m, index)">
                                             <i class="fa fa-times-circle text-danger" style="font-size: 20px !important"></i>
                                         </button>
@@ -375,8 +378,7 @@
     var app = new Vue({
         el: '#vue-app',
         data: {
-            user_id: {{ auth() -> user() -> id }},
-            // user_id: {{ auth() -> user() -> id }},
+            user_id: {{ auth()->user()->id }},
             componente: {
                 nombre: '',
                 maquinas: []
@@ -423,15 +425,15 @@
                 {
                     id: 3,
                     prioridad: 3,
-                    nombre: 'Maquinar',
+                    nombre: 'Carear',
                     horas: 0,
                     minutos: 0,
                     incluir: false
                 },
                 {
                     id: 4,
-                    prioridad: 4,
-                    nombre: 'Tornear',
+                    prioridad: 5,
+                    nombre: 'Maquinar',
                     horas: 0,
                     minutos: 0,
                     incluir: false
@@ -439,6 +441,14 @@
                 {
                     id: 5,
                     prioridad: 5,
+                    nombre: 'Tornear',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 6,
+                    prioridad: 6,
                     nombre: 'Roscar/Rebabear',
                     horas: 0,
                     minutos: 0,
@@ -446,16 +456,16 @@
                 },
                 // {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
                 {
-                    id: 7,
-                    prioridad: 7,
+                    id: 8,
+                    prioridad: 8,
                     nombre: 'Rectificar',
                     horas: 0,
                     minutos: 0,
                     incluir: false
                 },
                 {
-                    id: 8,
-                    prioridad: 8,
+                    id: 9,
+                    prioridad: 9,
                     nombre: 'EDM',
                     horas: 0,
                     minutos: 0,
@@ -594,15 +604,29 @@
                 if (indiceMaquina !== -1) {
                     this.componente.maquinas.splice(indiceMaquina, 1); // Elimina la máquina
                 } else {
-                    // Si no existe, agrégala al arreglo
-                    this.componente.maquinas.push({
-                        maquina_id: maquina_id,
-                        nombre: this.maquinas.find(obj => obj.id === maquina_id)?.nombre,
-                        archivos: [{
-                            nombre: '',
-                            archivo: null
-                        }]
-                    });
+                    if(this.maquinas.find(obj => obj.id === maquina_id)?.nombre == 'CAREO MANUAL'){
+                        this.componente.maquinas.push({
+                            maquina_id: maquina_id,
+                            nombre: 'CAREO MANUAL',
+                            archivos: [{
+                                nombre: 'No requiere',
+                                archivo: new File(
+                                    ['Esta maquina no requiere programación'], // contenido del archivo
+                                    'no requiere programa',                         // nombre del archivo
+                                    { type: 'text/plain' }                     // tipo MIME
+                                    )
+                            }]
+                        });
+                    }else{
+                        this.componente.maquinas.push({
+                            maquina_id: maquina_id,
+                            nombre: this.maquinas.find(obj => obj.id === maquina_id)?.nombre,
+                            archivos: [{
+                                nombre: '',
+                                archivo: null
+                            }]
+                        });
+                    }
 
                     Vue.nextTick(function() {
                         document.querySelector("html").classList.add('js');
@@ -647,15 +671,15 @@
                     {
                         id: 3,
                         prioridad: 3,
-                        nombre: 'Maquinar',
+                        nombre: 'Carear',
                         horas: 0,
                         minutos: 0,
                         incluir: false
                     },
                     {
                         id: 4,
-                        prioridad: 4,
-                        nombre: 'Tornear',
+                        prioridad: 5,
+                        nombre: 'Maquinar',
                         horas: 0,
                         minutos: 0,
                         incluir: false
@@ -663,7 +687,7 @@
                     {
                         id: 5,
                         prioridad: 5,
-                        nombre: 'Roscar/Rebabear',
+                        nombre: 'Tornear',
                         horas: 0,
                         minutos: 0,
                         incluir: false
@@ -671,22 +695,23 @@
                     {
                         id: 6,
                         prioridad: 6,
-                        nombre: 'Templar',
+                        nombre: 'Roscar/Rebabear',
                         horas: 0,
                         minutos: 0,
                         incluir: false
                     },
+                    {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
                     {
-                        id: 7,
-                        prioridad: 7,
+                        id: 8,
+                        prioridad: 8,
                         nombre: 'Rectificar',
                         horas: 0,
                         minutos: 0,
                         incluir: false
                     },
                     {
-                        id: 8,
-                        prioridad: 8,
+                        id: 9,
+                        prioridad: 9,
                         nombre: 'EDM',
                         horas: 0,
                         minutos: 0,
@@ -813,6 +838,9 @@
             },
             eliminarArchivo(maquina, index) {
                 maquina.archivos.splice(index, 1);
+                if(maquina.archivos.length == 0){
+                    this.componente.maquinas.splice(this.componente.maquinas.findIndex(m => m.maquina_id == maquina.maquina_id), 1);
+                }
             },
             ajustarRutaAvance(tasks, rutaAvance) {
                 let convertirAMinutos = (horas, minutos) => horas * 60 + minutos;
@@ -1144,7 +1172,7 @@
                 this.cargando = true
                 try {
                     const response = await axios.get('/api/maquinas');
-                    this.maquinas = response.data.maquinas;
+                    this.maquinas = response.data.maquinas.filter(maq => maq.tipo_proceso != 10);
                 } catch (error) {
                     console.error('Error fetching maquinas:', error);
                 } finally {

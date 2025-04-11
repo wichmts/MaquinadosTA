@@ -18,13 +18,22 @@ class CreateHojasTable extends Migration
             $table->boolean('estatus')->nullable();
             $table->integer('consecutivo')->nullable();
             $table->string('calidad')->nullable();
+            
             $table->string('espesor')->nullable();
+
             $table->string('largo_entrada')->nullable();
             $table->string('ancho_entrada')->nullable();
+            $table->string('longitud_entrada')->nullable();
+            $table->string('diametro_entrada')->nullable();
             $table->string('peso_entrada')->nullable();
+
+
             $table->string('largo_saldo')->nullable();
             $table->string('ancho_saldo')->nullable();
+            $table->string('longitud_saldo')->nullable();
+            $table->string('diametro_saldo')->nullable();
             $table->string('peso_saldo')->nullable();
+            
             $table->float('precio_kilo')->nullable();
             $table->string('fecha_entrada')->nullable();
             $table->string('fecha_salida')->nullable();

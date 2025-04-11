@@ -46,7 +46,6 @@ The above copyright notice and this permission notice shall be included in all c
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@200&family=Yeseva+One&display=swap" rel="stylesheet"> 
 
 
-    {{-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet"> --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.3.0/main.css">
 
@@ -56,28 +55,12 @@ The above copyright notice and this permission notice shall be included in all c
     <link href="{{ asset('paper') }}/demo/demo.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" /> 
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">   
-    
-    {{-- <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@200&display=swap" rel="stylesheet">    --}}
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@voerro/vue-tagsinput@2.7.0/dist/style.css">
-
-    {{-- <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" /> --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-
-
-    <script src="https://unpkg.com/vue-select@latest"></script>
-    <link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
-
-    {{-- <link href="https://cdn.jsdelivr.net/npm/jsgantt-improved@2.8.10/dist/jsgantt.min.css" rel="stylesheet"> --}}
+    <script src="{{ asset('paper') }}/js/vue-select.js"></script>
+    <link href="{{ asset('paper') }}/css/vue-select.css" rel="stylesheet" />
     <link href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" rel="stylesheet" type="text/css">
-    
     <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css">
-    
-
-
-
-
-
 
     <style >
     

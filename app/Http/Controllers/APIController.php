@@ -329,7 +329,10 @@ class APIController extends Controller
         ]);
     }
     public function obtenerPorCliente($cliente){
-        $proyectos = Proyecto::where('cliente_id', $cliente)->get();
+        if($cliente == '-1')
+            $proyectos = Proyecto::all();
+        else
+            $proyectos = Proyecto::where('cliente_id', $cliente)->get();
 
         return response()->json([
             'success' => true,
@@ -483,6 +486,10 @@ class APIController extends Controller
             ->where('enrutado', true)
             ->where('es_compra', false)
             ->where('refabricado', '!=', true)
+            ->where(function ($query) {
+                  $query->where('cancelado', false)
+                        ->orWhereNull('cancelado');
+            })
             ->when(!auth()->user()->hasRole('JEFE DE AREA'), function($query) {
                 $query->where('programador_id', auth()->user()->id);
             })
@@ -493,6 +500,10 @@ class APIController extends Controller
             $componentes = Componente::where('herramental_id', $herramental)
             ->where('refabricado', false)
             ->where('cargado', true)
+            ->where(function ($query) {
+                  $query->where('cancelado', false)
+                        ->orWhereNull('cancelado');
+            })
             ->orderBy('nombre', 'asc')
             ->get();
         }
@@ -583,7 +594,7 @@ class APIController extends Controller
                     $name = uniqid().'_'.$file->getClientOriginalName();
                     Storage::disk('public')->put($herramental->proyecto_id . '/' . $herramental->id . '/formato2/' . $name, \File::get($file));
                     $herramental->archivo2 = $name;
-                    $herramental->estatus_ensamble = 'checklist';
+                    $herramental->estatus_ensamble = 'proceso';
                     $herramental->save();
                 }else{
                     return response()->json([
@@ -592,22 +603,22 @@ class APIController extends Controller
                     ], 200);
                 }
             break;
-            case 'checklist':
-                $herramental = Herramental::findOrFail($id);
-                $checklist = $datos;
-                $allChecked = true;
+            // case 'checklist':
+            //     $herramental = Herramental::findOrFail($id);
+            //     $checklist = $datos;
+            //     $allChecked = true;
 
-                foreach ($checklist as $item) {
-                    if (!$item['checked']) {
-                        $allChecked = false;
-                        break;
-                    }
-                }
-                $herramental->checklist = json_encode($checklist);
-                if ($allChecked)
-                    $herramental->estatus_ensamble = 'proceso';
-                $herramental->save();
-            break;
+            //     foreach ($checklist as $item) {
+            //         if (!$item['checked']) {
+            //             $allChecked = false;
+            //             break;
+            //         }
+            //     }
+            //     $herramental->checklist = json_encode($checklist);
+            //     if ($allChecked)
+            //         $herramental->estatus_ensamble = 'proceso';
+            //     $herramental->save();
+            // break;
             case 'foto':
                 $componente = Componente::findOrFail($id);
                 if ($request->hasFile('foto')) {
@@ -990,9 +1001,6 @@ class APIController extends Controller
 
             // Si el componente termino el proceso de corte y programacion entonces avisar al operador o al matricero...
             if($componente->cortado){
-
-
-
 
                 $fabricacionOrden1 = $fabricacionesOrdenadas->first(function ($fabricacion) {
                     return !$fabricacion->fabricado;
@@ -1438,6 +1446,22 @@ class APIController extends Controller
             'success' => true,
         ], 200);
     }
+    public function cargarVistaExplosionada(Request $request, $id){
+        $herramental = Herramental::findOrFail($id);
+        if ($request->hasFile("archivo")) {
+            if ($herramental->archivo_explosionado){
+                Storage::disk('public')->delete("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$herramental->archivo_explosionado}");
+            }
+            $fileExplosionada = $request->file("archivo");
+            $nameExplosionada = uniqid() . '_' . $fileExplosionada->getClientOriginalName();
+            Storage::disk('public')->put("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$nameExplosionada}", \File::get($fileExplosionada));
+            $herramental->archivo_explosionado = $nameExplosionada;
+            $herramental->save();
+        }
+        return response()->json([
+            'success' => true,
+        ], 200);
+    }
     public function guardarComponentes(Request $request, $herramental_id){
         $herramental = Herramental::findOrFail($herramental_id);
         $componentes = json_decode($request->data, true);
@@ -1485,9 +1509,13 @@ class APIController extends Controller
                 $nuevoComponente->nombre = $this->emptyToNull($componente['nombre']);
                 $nuevoComponente->largo = $this->emptyToNull($componente['largo']);
                 $nuevoComponente->ancho = $this->emptyToNull($componente['ancho']);
-                $nuevoComponente->alto = $this->emptyToNull($componente['alto']);
+                $nuevoComponente->espesor = $this->emptyToNull($componente['espesor']);
+                $nuevoComponente->longitud = $this->emptyToNull($componente['longitud']);
+                $nuevoComponente->diametro = $this->emptyToNull($componente['diametro']);
                 $nuevoComponente->es_compra = $this->emptyToNull($componente['es_compra']);
                 $nuevoComponente->cantidad = $this->emptyToNull($componente['cantidad']);
+                $nuevoComponente->proveedor = $this->emptyToNull($componente['proveedor']);
+                $nuevoComponente->descripcion = $this->emptyToNull($componente['descripcion']);
                 $nuevoComponente->material_id = $this->emptyToNull($componente['material_id']);
                 $nuevoComponente->fecha_solicitud = $this->emptyToNull($componente['fecha_solicitud']);
                 $nuevoComponente->fecha_pedido = $this->emptyToNull($componente['fecha_pedido']);
@@ -1529,14 +1557,14 @@ class APIController extends Controller
                 $nuevoComponente->archivo_3d = $name3D;
             }
 
-            if ($request->hasFile("files.{$index}.vistaExplosionada")) {
-                if ($nuevoComponente->archivo_explosionado)
-                    Storage::disk('public')->delete("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$nuevoComponente->archivo_explosionado}");
-                $fileExplosionada = $request->file("files.{$index}.vistaExplosionada");
-                $nameExplosionada = uniqid() . '_' . $fileExplosionada->getClientOriginalName();
-                Storage::disk('public')->put("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$nameExplosionada}", \File::get($fileExplosionada));
-                $nuevoComponente->archivo_explosionado = $nameExplosionada;
-            }
+            // if ($request->hasFile("files.{$index}.vistaExplosionada")) {
+            //     if ($nuevoComponente->archivo_explosionado)
+            //         Storage::disk('public')->delete("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$nuevoComponente->archivo_explosionado}");
+            //     $fileExplosionada = $request->file("files.{$index}.vistaExplosionada");
+            //     $nameExplosionada = uniqid() . '_' . $fileExplosionada->getClientOriginalName();
+            //     Storage::disk('public')->put("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$nameExplosionada}", \File::get($fileExplosionada));
+            //     $nuevoComponente->archivo_explosionado = $nameExplosionada;
+            // }
             $nuevoComponente->save();
 
         }
@@ -1645,7 +1673,9 @@ class APIController extends Controller
         $nuevoComponente->cantidad = $componente->cantidad;
         $nuevoComponente->largo = $componente->largo;
         $nuevoComponente->ancho = $componente->ancho;
-        $nuevoComponente->alto = $componente->alto;
+        $nuevoComponente->espesor = $componente->espesor;
+        $nuevoComponente->longitud = $componente->longitud;
+        $nuevoComponente->diametro = $componente->diametro;
         $nuevoComponente->peso = $componente->peso;
         $nuevoComponente->precio_kilo = $componente->precio_kilo;
         $nuevoComponente->fecha_cargado = date('Y-m-d H:i');
@@ -1847,37 +1877,82 @@ class APIController extends Controller
         $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
         $cliente = Cliente::findOrFail($proyecto->cliente_id);
         $anio = Anio::findOrFail($cliente->anio_id);
-
+        $componente->fecha_terminado = date('Y-m-d');
         $componente->cancelado = true;
+        $componente->estatus_corte = 'finalizado';
+        $componente->estatus_programacion = 'detenido';
         $componente->save();
 
-        // ya no se uso area, ahora es con varias banderas para saber a donde se va
-        // if($componente->area == 'almacenista'){
-        //     $notificacion = new Notificacion();
-        //     $notificacion->roles = json_encode(['ALMACENISTA']);
-        //     $notificacion->url_base = $componente->area == 'corte' ? '/corte' : '/compra-componentes';
-        //     $notificacion->anio_id = $anio->id;
-        //     $notificacion->cliente_id = $cliente->id;
-        //     $notificacion->proyecto_id = $proyecto->id;
-        //     $notificacion->herramental_id = $herramental->id;
-        //     $notificacion->componente_id = $componente->id;
-        //     $notificacion->cantidad = $componente->cantidad;
-        //     $notificacion->descripcion = 'COMPONENTE CANCELADO';
-        //     $notificacion->save();
-        // }
-        // if($componente->area == 'jefe de area'){
-        //     $notificacion = new Notificacion();
-        //     $notificacion->roles = json_encode(['JEFE DE AREA']);
-        //     $notificacion->url_base = '/enrutador';
-        //     $notificacion->anio_id = $anio->id;
-        //     $notificacion->cliente_id = $cliente->id;
-        //     $notificacion->proyecto_id = $proyecto->id;
-        //     $notificacion->herramental_id = $herramental->id;
-        //     $notificacion->componente_id = $componente->id;
-        //     $notificacion->cantidad = $componente->cantidad;
-        //     $notificacion->descripcion = 'COMPONENTE CANCELADO';
-        //     $notificacion->save();
-        // }
+
+        $ultimoSeguimiento = SeguimientoTiempo::where('componente_id', $id)
+            ->where('accion', 'corte')
+            ->orderBy('id', 'desc') 
+            ->first();
+
+        if ($ultimoSeguimiento && $ultimoSeguimiento->tipo == true) {
+            $seguimiento = new SeguimientoTiempo();
+            $seguimiento->accion_id = 1;
+            $seguimiento->accion = 'corte';
+            $seguimiento->tipo = false;
+            $seguimiento->fecha = date('Y-m-d');
+            $seguimiento->hora = date('H:i');
+            $seguimiento->componente_id = $id;
+            $seguimiento->usuario_id = auth()->user()->id;
+            $seguimiento->save();
+        }
+
+        $ultimoSeguimiento = SeguimientoTiempo::where('componente_id', $componente_id)
+            ->where('accion', 'programacion')
+            ->orderBy('id', 'desc') 
+            ->first();
+
+        if ($ultimoSeguimiento && $ultimoSeguimiento->tipo == true) {
+            $seguimiento = new SeguimientoTiempo();
+            $seguimiento->accion_id = 2;
+            $seguimiento->accion = 'programacion';
+            $seguimiento->tipo = false;
+            $seguimiento->fecha = date('Y-m-d');
+            $seguimiento->hora = date('H:i');
+            $seguimiento->componente_id = $componente_id;
+            $seguimiento->usuario_id = auth()->user()->id;
+            $seguimiento->save();
+        }
+
+        $notificacion = new Notificacion();
+        $notificacion->roles = json_encode(['JEFE DE AREA']);
+        $notificacion->url_base = '/enrutador';
+        $notificacion->anio_id = $anio->id;
+        $notificacion->cliente_id = $cliente->id;
+        $notificacion->proyecto_id = $proyecto->id;
+        $notificacion->herramental_id = $herramental->id;
+        $notificacion->componente_id = $componente->id;
+        $notificacion->cantidad = $componente->cantidad;
+        $notificacion->descripcion = 'SE HA CANCELADO UN COMPONENTE';
+        $notificacion->save();
+        $users = User::role('JEFE DE AREA')->get();
+        foreach ($users as $user) {
+            $user->hay_notificaciones = true;
+            $user->save();
+        }
+        
+        if($componente->enrutado){
+            $notificacion = new Notificacion();
+            $notificacion->roles = json_encode(['ALMACENISTA']);
+            $notificacion->url_base = $componente->es_compra ? '/compra-componentes' : '/corte';
+            $notificacion->anio_id = $anio->id;
+            $notificacion->cliente_id = $cliente->id;
+            $notificacion->proyecto_id = $proyecto->id;
+            $notificacion->herramental_id = $herramental->id;
+            $notificacion->componente_id = $componente->id;
+            $notificacion->cantidad = $componente->cantidad;
+            $notificacion->descripcion = 'SE HA CANCELADO UN COMPONENTE';
+            $notificacion->save();
+            $users = User::role('ALMACENISTA')->get();
+            foreach ($users as $user) {
+                $user->hay_notificaciones = true;
+                $user->save();
+            }
+        }
 
         return response()->json([
             'success' => true,
@@ -2050,9 +2125,13 @@ class APIController extends Controller
         $hoja->espesor = $data['espesor'];
         $hoja->largo_entrada = $data['largo_entrada'];
         $hoja->ancho_entrada = $data['ancho_entrada'];
+        $hoja->longitud_entrada = $data['longitud_entrada'];
+        $hoja->diametro_entrada = $data['diametro_entrada'];
         $hoja->peso_entrada = $data['peso_entrada'];
         $hoja->largo_saldo = $data['largo_entrada'];
         $hoja->ancho_saldo = $data['ancho_entrada'];
+        $hoja->longitud_saldo = $data['longitud_entrada'];
+        $hoja->diametro_saldo = $data['diametro_entrada'];
         $hoja->peso_saldo = $data['peso_entrada'];
         $hoja->precio_kilo = $data['precio_kilo'];
         $hoja->fecha_entrada = $data['fecha_entrada'];
@@ -2164,12 +2243,16 @@ class APIController extends Controller
         $hoja->peso_saldo = $request->movimiento['peso'];
         $hoja->largo_saldo = $request->movimiento['largo'];
         $hoja->ancho_saldo = $request->movimiento['ancho'];
+        $hoja->longitud_saldo = $request->movimiento['longitud'];
+        $hoja->diametro_saldo = $request->movimiento['diametro'];
         $hoja->save();
 
         $movimiento = new MovimientoHoja();
         $movimiento->largo = $request->movimiento['largo'];
         $movimiento->ancho = $request->movimiento['ancho'];
         $movimiento->peso = $request->movimiento['peso'];
+        $movimiento->longitud = $request->movimiento['longitud'];
+        $movimiento->diametro = $request->movimiento['diametro'];
         $movimiento->hoja_id = $request->movimiento['hoja_id'];
         $movimiento->proyecto_id = $herramental->proyecto_id;
         $movimiento->componente_id = $componente->id;
@@ -2330,7 +2413,8 @@ class APIController extends Controller
     public function obtenerAvanceHR($herramental_id) {
         $herramental = Herramental::findOrFail($herramental_id);
         $componentes = Componente::where('herramental_id', $herramental_id)
-            ->orderBy('nombre') 
+            ->where('cargado', true)
+            ->orderBy('nombre')
             ->orderBy('version', 'asc') 
             ->get();
 
@@ -2559,6 +2643,32 @@ class APIController extends Controller
                     $user->save();
                 }
             break;
+            case 'refabricacion':
+                if($solicitud->fabricacion_id) {
+                    $fabricacion = Fabricacion::findOrFail($solicitud->fabricacion_id);
+                }
+                $descripcion = 'SOLICITUD DE REFABRICACIÓN, AREA: ' . $solicitud->area_solicitante . ', COMENTARIOS:' . $solicitud->comentarios;
+                
+                $notificacion = new Notificacion();
+                $notificacion->roles = json_encode(['JEFE DE AREA']);
+                $notificacion->url_base = '/enrutador';
+                $notificacion->anio_id = $anio->id;
+                $notificacion->cliente_id = $cliente->id;
+                $notificacion->proyecto_id = $proyecto->id;
+                $notificacion->herramental_id = $herramental->id;
+                $notificacion->componente_id = $componente->id;
+                $notificacion->fabricacion_id = $solicitud->fabricacion_id;
+                $notificacion->maquina_id = $fabricacion?$fabricacion->maquina_id: null;
+                $notificacion->cantidad = $componente->cantidad;
+                $notificacion->descripcion = $descripcion;
+                $notificacion->save();
+
+                $users = User::role('JEFE DE AREA')->get();
+                foreach ($users as $user) {
+                    $user->hay_notificaciones = true;
+                    $user->save();
+                }
+            break;
             // viene del operador 
             case 'retrabajo':
                 if($solicitud->fabricacion_id) {
@@ -2629,26 +2739,27 @@ class APIController extends Controller
                     $user->save();
                 }
                 
-                $userIds = Fabricacion::where('componente_id', $componente->id)->pluck('usuario_id')->toArray();
-                $notificacion = new Notificacion();
-                $notificacion->roles = json_encode(['OPERADOR']);
-                $notificacion->url_base = null;
-                $notificacion->anio_id = $anio->id;
-                $notificacion->cliente_id = $cliente->id;
-                $notificacion->proyecto_id = $proyecto->id;
-                $notificacion->herramental_id = $herramental->id;
-                $notificacion->componente_id = $componente->id;
-                $notificacion->cantidad = $componente->cantidad;
-                $notificacion->responsables = json_encode($userIds);
-                $notificacion->descripcion = 'SE HA RECHAZADO UN COMPONENTE, AREA: ' . $solicitud->area_solicitante  . ', COMENTARIOS:' . $solicitud->comentarios;;
-                $notificacion->save();
-                $users = User::whereIn('id', $userIds)->get();
-                foreach ($users as $user) {
-                    $user->hay_notificaciones = true;
-                    $user->save();
-                }
+                // $userIds = Fabricacion::where('componente_id', $componente->id)->pluck('usuario_id')->toArray();
+                // $notificacion = new Notificacion();
+                // $notificacion->roles = json_encode(['OPERADOR']);
+                // $notificacion->url_base = null;
+                // $notificacion->anio_id = $anio->id;
+                // $notificacion->cliente_id = $cliente->id;
+                // $notificacion->proyecto_id = $proyecto->id;
+                // $notificacion->herramental_id = $herramental->id;
+                // $notificacion->componente_id = $componente->id;
+                // $notificacion->cantidad = $componente->cantidad;
+                // $notificacion->responsables = json_encode($userIds);
+                // $notificacion->descripcion = 'SE HA RECHAZADO UN COMPONENTE, AREA: ' . $solicitud->area_solicitante  . ', COMENTARIOS:' . $solicitud->comentarios;;
+                // $notificacion->save();
+
+                // $users = User::whereIn('id', $userIds)->get();
+                // foreach ($users as $user) {
+                //     $user->hay_notificaciones = true;
+                //     $user->save();
+                // }
                 
-                $user = $componente->programador_id;
+                $user = User::findOrFail($componente->programador_id);
                 $notificacion = new Notificacion();
                 $notificacion->roles = json_encode(['PROGRAMADOR']);
                 $notificacion->url_base = '/visor-programador';
@@ -2661,9 +2772,34 @@ class APIController extends Controller
                 $notificacion->responsables = json_encode([$user->id]);
                 $notificacion->descripcion = 'SE HA RECHAZADO UN COMPONENTE, AREA: ' . $solicitud->area_solicitante  . ', COMENTARIOS:' . $solicitud->comentarios;;
                 $notificacion->save();
+
                 $user->hay_notificaciones = true;
                 $user->save();
             break;
+        }
+
+        //Pausar el seguimiento en caso de que haya quedado activo en las fabricaciones
+        if($solicitud->fabricacion_id){
+            $fabricacion = Fabricacion::findOrFail($solicitud->fabricacion_id);     
+            $maquina = Maquina::findOrFail($fabricacion->maquina_id);
+            $ultimoSeguimiento = SeguimientoTiempo::where('componente_id', $componente->id)
+                ->where('accion', 'fabricacion')
+                ->where('accion_id', $maquina->tipo_proceso)
+                ->orderBy('id', 'desc') 
+                ->first();
+    
+            if ($ultimoSeguimiento && $ultimoSeguimiento->tipo == true) {
+                $seguimiento = new SeguimientoTiempo();
+                $seguimiento->accion_id = $maquina->tipo_proceso;
+                $seguimiento->accion = 'fabricacion';
+                $seguimiento->tipo = false;
+                $seguimiento->fecha = date('Y-m-d');
+                $seguimiento->hora = date('H:i');
+                $seguimiento->componente_id = $componente->id;
+                $seguimiento->usuario_id = auth()->user()->id;
+                $seguimiento->fabricacion_id = isset($fabricacion) ? $fabricacion->id : null;
+                $seguimiento->save();
+            }
         }
 
         return response()->json([
@@ -2671,7 +2807,7 @@ class APIController extends Controller
         ], 200);
     }
     public function obtenerSolicitudes($componente_id){
-        $solicitudes = Solicitud::where('componente_id', $componente_id)->get();
+        $solicitudes = Solicitud::where('componente_id', $componente_id)->orderBy('created_at', 'DESC')->get();
         return response()->json([
             'solicitudes' => $solicitudes,
             'success' => true,
@@ -3144,7 +3280,26 @@ class APIController extends Controller
             'solicitudes' => $solicitudes
         ]);
     }
+    public function solicitudAtendida(Request $request, $id){
+        $atendida = filter_var($request->atendida, FILTER_VALIDATE_BOOLEAN);
+        $solicitud = Solicitud::findOrFail($id);
+        $solicitud->atendida = $atendida;
+        $solicitud->save();
 
+        return response()->json([
+            'success' => true,
+        ]);
+
+    }
+    public function fechaLimiteHerramental(Request $request, $id){
+        $herramental = Herramental::findOrFail($id);
+        $herramental->fecha_limite = $request->fechaLimite;
+        $herramental->save();
+
+        return response()->json([
+            'success' => true,
+        ], 200);
+    }
 
 }
 

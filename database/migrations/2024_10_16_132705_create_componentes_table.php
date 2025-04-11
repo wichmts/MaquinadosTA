@@ -19,11 +19,15 @@ class CreateComponentesTable extends Migration
             $table->string('nombre');
             $table->string('archivo_2d')->nullable();
             $table->string('archivo_3d')->nullable();
-            $table->string('archivo_explosionado')->nullable();
+            // $table->string('archivo_explosionado')->nullable();
             $table->integer('cantidad')->nullable();
+            $table->string('proveedor')->nullable();
+            $table->text('descripcion')->nullable();
             $table->string('largo')->nullable();
             $table->string('ancho')->nullable();
-            $table->string('alto')->nullable();
+            $table->string('espesor')->nullable();
+            $table->string('longitud')->nullable();
+            $table->string('diametro')->nullable();
             $table->string('peso')->nullable();
             $table->string('precio_kilo')->nullable();
             

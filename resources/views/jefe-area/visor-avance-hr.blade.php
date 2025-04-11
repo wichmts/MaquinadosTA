@@ -3,159 +3,11 @@
     'elementActive' => 'dashboard'
 ])
 
+
+@section('styles')
+<link rel="stylesheet" href="{{ asset('paper/css/paper-dashboard-responsivo.css') }}?v={{ time() }}">
+@endsection
 <style>
-    .btn-group i{
-        letter-spacing: 0px !important;
-    }
-    .btn-group .actions{
-        padding-left: 10px !important;
-        padding-right: 10px !important;
-    }
-    .loader {
-        border: 16px solid hsla(0,0%,87%,.3); /* Light grey */
-        border-top: 16px solid #121935;
-        border-radius: 50%;
-        width: 100px;
-        height: 100px;
-        animation: spin 2s linear infinite;
-        margin: auto;
-    }
-    .fade-enter-active, .fade-leave-active {
-      transition: opacity .2s
-    }
-    .fade-enter, .fade-leave-to {
-      opacity: 0
-    }
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    [v-cloak] {
-        display: none !important;
-    }
-    .no-border {
-        border: none !important;
-     }
-     .vs__dropdown-toggle{
-        height: calc(2.25rem + 2px);
-     }
-
-     .incard{
-        box-shadow:none !important;
-     }
-    .form-group{
-    }
-
-     input[type=checkbox], input[type=radio]{
-        width: 17px !important;
-        height: 17px !important;
-     }
-     input[type="file"] {
-        width: 200px; /* Ajusta el valor según lo que necesites */
-        max-width: 100%; /* Para asegurarte de que no se salga del contenedor */
-    }
-
-    .custom-file-input {
-        display: none;
-    }
-
-    .custom-file-label {
-        display: inline-block;
-        padding: 5px 10px;
-        cursor: pointer;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background-color: #f7f7f7;
-    }
-
-    .custom-file-label:hover {
-        background-color: #e7e7e7;
-    }
-
-    .checkbox-wrapper-18 {
-        display: flex;               /* Usa Flexbox para centrar */
-        justify-content: center;     /* Centra horizontalmente */
-        align-items: center;         /* Centra verticalmente si es necesario */
-        height: 100%;                /* Asegúrate de que el contenedor tenga altura */
-    }
-
-    .checkbox-wrapper-18 .round {
-        position: relative;
-    }
-
-    .checkbox-wrapper-18 .round label {
-        background-color: #fff;
-        border: 1px solid #ccc;
-        border-radius: 50%;
-        cursor: pointer;
-        height: 28px;
-        width: 28px;
-        display: block;
-    }
-
-    .checkbox-wrapper-18 .round label:after {
-        border: 2px solid #fff;
-        border-top: none;
-        border-right: none;
-        content: "";
-        height: 6px;
-        left: 8px;
-        opacity: 0;
-        position: absolute;
-        top: 9px;
-        transform: rotate(-45deg);
-        width: 12px;
-    }
-
-    .checkbox-wrapper-18 .round input[type="checkbox"] {
-        visibility: hidden;
-        display: none;
-        opacity: 0;
-    }
-
-    .checkbox-wrapper-18 .round input[type="checkbox"]:checked + label {
-        background-color: #66bb6a;
-        border-color: #66bb6a;
-    }
-
-    .checkbox-wrapper-18 .round input[type="checkbox"]:checked + label:after {
-        opacity: 1;
-    }
-
-
-
-    .gantt-chart {
-        display: grid;
-        grid-template-rows: auto;
-        font-family: Arial, sans-serif;
-    }
-
-    .gantt-header, .gantt-row {
-        display: grid;
-        grid-template-columns: 200px repeat(var(--columns, 200), 1fr); /* var(--columns) es una variable CSS */
-        height: 40px;
-    }
-
-    .gantt-cell {
-        border: .5px solid #ddd;
-        padding: 0px;
-        text-align: center;
-        font-size: 12px;
-        width: 80px;
-    }
-
-    .task-name {
-        background-color: #f0f0f0;
-        text-align: center;
-        font-weight: bold;
-        width: 200px;
-        font-size: 15px;
-    }
-
-    .gantt-bar {
-        position: relative;
-    }
-
     .normal-task {
         position: absolute;
         height: 100%;
@@ -166,7 +18,7 @@
     .rework-task {
         position: absolute;
         height: 100%;
-        background-color: #f44336;
+        background-color: black;
         border-radius: 0px;
     }
 
@@ -176,21 +28,6 @@
         background-color: #ff9430;
         border-radius: 0px;
     }
-
-    .general-header {
-        display: grid;
-        grid-template-columns: 200px repeat(var(--columns, 200), 1fr); /* var(--columns) es una variable CSS */
-        background-color: #f0f0f0;
-        font-weight: bold;
-        text-align: center;
-    }
-
-    .time-header {
-        grid-column: span var(--columns, 200); /* Cambia este número si tienes más o menos horas */
-        font-size: 14px;
-        padding: 8px 0;
-    }
-
     .limite-tiempo {
         position: absolute;
         top: 30px;
@@ -200,6 +37,8 @@
         border-left: 3px dotted orange; /* Agregar borde punteado */
         z-index: 10;
     }
+
+  
 
 
     .gantt-chart2 {
@@ -214,7 +53,6 @@
         grid-template-columns: 200px repeat(var(--columns, 200), 1fr); /* var(--columns) es una variable CSS */
         height: 30px;
     }
-
     .gantt-cell2 {
         border: .5px solid #ddd;
         padding: 0px;
@@ -222,8 +60,6 @@
         font-size: 12px;
         width: 40px;
     }
-
-
     .task-name2 {
         background-color: #f0f0f0;
         text-align: center;
@@ -266,9 +102,6 @@
         font-size: 14px;
         padding: 8px 0;
     }
-
-
-
     .tooltip {
         max-width: none; /* Elimina el límite de ancho predeterminado */
         width: 400px; /* Asegúrate de que el tooltip se ajuste al contenido */
@@ -296,675 +129,704 @@
         text-align: center;
         padding: 5px;
     }
-    .square {
-        width: 8px;
-        height: 8px;
+    .square2 {
+        width: 25%;
+        height: 12px;
+        margin-top: 7px;
     }
-     
+    .square {
+        width: 15px;
+        height: 10px;
+    }
 
-
+    .dotted-line {
+        border-bottom: 4px dotted orange;
+        width: 20px;
+        display: inline-block;
+        margin-left: 10px !important;
+    }
+    
     .table .form-check label .form-check-sign::before, .table .form-check label .form-check-sign::after {top: -10px !important}
 </style>
 
 @section('content')
-<div class="content">
-    <div class="wrapper">
-        <div class="main-panel col-xl-12" id="vue-app">
-            @if (session('message'))
-                <div class="alert alert-success" role="alert">
-                    {{ session('message') }}
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="alert alert-danger" role="alert">
-                    {{ session('error') }}
-                </div>
-            @endif
-            <div class="row">
-                <div class="col-lg-12" v-show="cargando">
-                    <div style="margin-top: 200px; max-width: 100% !important; margin-bottom: auto; text-align:center; letter-spacing: 2px">
-                        <h5 class="mb-5">CARGANDO...</h5>
-                        <div class="loader"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row" v-cloak v-show="!cargando">
-                <div class="col-lg-2 pt-3" style="background-color: #f1f1f1; height: calc(100vh - 107.3px); overflow-y: scroll">
-                    <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                        <a class="nav-link cursor-pointer text-right text-muted" >
-                            <i v-if="menuStep > 1"  @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
-                        </a>
-                        <div v-if="!cargandoMenu && menuStep == 1">
-                            <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
-                            <a class="nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
-                                <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
-                                <span class="underline-hover">@{{obj.nombre}}</span> 
-                            </a>
-                        </div>    
-                        <div v-if="!cargandoMenu && menuStep == 2">
-                            <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
-                            <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
-                                <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                <span class="underline-hover">@{{obj.nombre}}</span> 
-                            </a>
-                        </div>
-                        <div v-if="!cargandoMenu && menuStep == 3">
-                            <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
-                            <template v-for="obj in proyectos">
-                                @if(auth()->user()->hasRole('JEFE DE AREA'))
-                                <a class="nav-link cursor-pointer"  @click="fetchHerramentales(obj.id)">
-                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span> 
+<div id="vue-app">
+
+    <div class="wrapper " v-cloak v-show="!cargando">
+       <div class="sidebar" data-color="white" data-active-color="danger">
+            <div class="sidebar-wrapper">
+                <ul class="nav">
+                    <li>
+                        <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                            <div class="d-flex justify-content-end">
+                                <a class="nav-link py-0 cursor-pointer text-right text-muted">
+                                    <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                                 </a>
-                                @else
-                                 <a class="nav-link cursor-pointer"  @click="fetchHerramentales(obj.id)" v-if="esMiCarpeta(obj.nombre) || ruta.cliente != 'ORDENES EXTERNAS'">
-                                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span> 
+                            </div>
+                            <div v-if="!cargandoMenu && menuStep == 1">
+                                <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
+                                <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
+                                    <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span>
                                 </a>
-                                @endif
-                            </template>
-                        </div>
-                        <div v-if="!cargandoMenu && menuStep == 4">
-                            <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
-                            <a class="nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)" >
-                                <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
-                                <span class="underline-hover">@{{obj.nombre}}</span> 
-                            </a>
-                        </div>
-                        
-                    </div>            
-                </div>
-                <div class="col-lg-10 mt-3">
-                    <div class="row">
-                        <div class="mb-2 col-lg-12" style="border-bottom: 1px solid #ededed">
-                            <p style="">
-                                <span class="cursor-pointer pb-2" @click="regresar(1)"><i class="fa fa-home"></i> &nbsp;</span>
-                                <span class="cursor-pointer pb-2"  v-if="ruta.anio" @click="regresar(2)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.anio}}</span>    &nbsp;</span>
-                                <span class="cursor-pointer pb-2"  v-if="ruta.cliente" @click="regresar(3)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.cliente}}</span>     &nbsp;</span>
-                                <span class="cursor-pointer pb-2"  v-if="ruta.proyecto" @click="regresar(4)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.proyecto}}</span>     &nbsp;</span>
-                                <span class="cursor-pointer pb-2"  v-if="ruta.herramental"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.herramental}}</span>      </span>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE AVANCE @{{ruta.herramental}}</h2> 
-                            <div v-if="selectedHerramental" class="d-flex gap-1 align-items-center">
-                                <div class="square bg-danger"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Retrabajos &nbsp;&nbsp;&nbsp; </span>
-                                <div class="square bg-warning"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Retrasos &nbsp;&nbsp;&nbsp; </span>
-                                <div class="square bg-dark"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Refabricaciones &nbsp;&nbsp;&nbsp;  </span>
-                                <div class="square bg-success"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Refacción </span>
+                            </div>
+                            <div v-if="!cargandoMenu && menuStep == 2">
+                                <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
+                                <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)">
+                                    <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span>
+                                </a>
+                            </div>
+                            <div v-if="!cargandoMenu && menuStep == 3">
+                                <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
+                                <template v-for="obj in proyectos">
+                                    @if(auth()->user()->hasRole('JEFE DE AREA'))
+                                    <a class="nav-link cursor-pointer"  @click="fetchHerramentales(obj.id)">
+                                        <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                        <span class="underline-hover">@{{obj.nombre}}</span> 
+                                    </a>
+                                    @else
+                                    <a class="nav-link cursor-pointer"  @click="fetchHerramentales(obj.id)" v-if="esMiCarpeta(obj.nombre) || ruta.cliente != 'ORDENES EXTERNAS'">
+                                        <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
+                                        <span class="underline-hover">@{{obj.nombre}}</span> 
+                                    </a>
+                                    @endif
+                                </template>
+                            </div>
+                            <div v-if="!cargandoMenu && menuStep == 4">
+                                <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> HERRAMENTALES </a>
+                                <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)">
+                                    <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">@{{obj.nombre}}</span>
+                                </a>
+                            </div>
+                            <div v-if="!cargandoMenu && menuStep == 5">
+                                <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> COMPONENTES </a>
+                                <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in componentes" v-if="!obj.refabricado" @click="fetchComponente(obj.id)">
+                                    <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
+                                    <span class="underline-hover">
+                                        @{{obj.nombre}} 
+                                    </span>
+                                </a>
                             </div>
                         </div>
-                        <div class="col-lg-2 text-right">
-                            <span v-if="selectedHerramental" class="bold" style="letter-spacing: 1px">Fecha de creación:</span>  <br>
-                            <span v-if="selectedHerramental" class="bold" style="letter-spacing: 1px">Fecha de finalización:</span> 
-                        </div>
-                        <div class="col-lg-2">
-                            <span v-if="selectedHerramental" style="letter-spacing: 1px">@{{herramental.fecha_creacion}}</span> <br>
-                            <span v-if="selectedHerramental" style="letter-spacing: 1px">@{{herramental.fecha_finalizado}}</span>
-                        </div>
-                    </div>
-                    <div class="col-lg-12" v-if="!selectedHerramental">
-                        <h5 class="text-muted my-4"> SELECCIONE UN HERRAMENTAL PARA VER SU AVANCE</h5>
-                    </div>
-                    <div class="row" v-else>
-                        <div class="col-lg-12 " v-if="tasks.length == 0">
-                            <h5 class="text-muted">Este herramental aun no tiene componentes cargados...</h5>
-                        </div>
-                        <div class="col-lg-12" v-else style="overflow-x:scroll">
-                           <div class="gantt-chart" >
-                                <div class="gantt-header general-header">
-                                    <div class="time-header pb-2" >TIEMPO (DIAS)</div>
-                                </div>
-                                <div class="gantt-header">
-                                    <div class="gantt-cell task-name pt-2">ACCIONES</div>
-                                    <div class="gantt-cell pt-2" v-for="day in duracionTotal" :key="day">
-                                        <span class="bold">@{{ day }}</span>
-                                    </div>
-                                </div>
-                                <div class="gantt-row cursor-pointer" v-for="task in tasks" :key="task.id" @click="verInformacion(task)">
-                                    <div class="gantt-cell task-name pt-2">
-                                        @{{ task.componente }} 
-                                        <div class="d-flex gap-1 align-items-center">
-                                            <div v-if="task.componente_id > 0 && task.tieneRetrabajos" class="square bg-danger"></div>
-                                            <div v-if="task.componente_id > 0 && task.tieneRetrasos" class="square bg-warning"></div>
-                                            <div v-if="task.componente_id > 0 && task.tieneRefabricaciones" class="square bg-dark"></div>
-                                            <div v-if="task.componente_id > 0 && task.esRefaccion" class="square bg-success"></div>
-                                        </div>
-                                    </div>
-                                    <div class="gantt-cell gantt-bar" v-for="day in duracionTotal" :key="day" >
-                                        <div
-                                            v-for="segment in task.time"
-                                            class=""
-                                            :key="segment.dia_inicio"
-                                            :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
-                                            :style="getTaskStyle(segment, day)">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-    
-                        </div>
-                    </div>
-                </div>
+                    </li>
+                </ul>
             </div>
-    
-    
-            <div class="modal fade" id="modalComponente" tabindex="-1" aria-labelledby="modalComponenteLabel" aria-hidden="true">
-                <div class="modal-dialog" style="min-width: 60%;">
-                    <div class="modal-content" >
-                        <div class="modal-header">
-                            <h3 class="modal-title" id="modalComponenteLabel">
-                                <span class="bold">INFORMACIÓN DE @{{infoComponentes.componente}}</span>
-                            </h3>
-                            <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+        </div>
+         <div class="main-panel">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-xl navbar-absolute fixed-top navbar-transparent">
+                <div class="container-fluid">
+                    <div class="navbar-wrapper">
+                        <div class="navbar-toggle">
+                            <button type="button" class="navbar-toggler">
+                                <span class="navbar-toggler-bar bar1"></span>
+                                <span class="navbar-toggler-bar bar2"></span>
+                                <span class="navbar-toggler-bar bar3"></span>
                             </button>
                         </div>
-                       <div class="modal-body">
-                            <div class="col-lg-12 accordion" id="accordionComponentes" v-if="infoComponentes.time && infoComponentes.time.length > 0">
-                                <div class="card" v-for="(component, index) in infoComponentes.time.slice().reverse()" :key="component.version" style="border-radius: 20px !important">
-                                    <!-- Cabecera del acordeón -->
-                                    <div class="card-header cursor-pointer" :id="'heading-' + component.version" :class="{'bg-success text-white': component.type == 'normal', 'bg-danger text-white': component.type == 'rework'}" data-toggle="collapse"  :data-target="'#collapse-' + component.version"  :aria-expanded="index === 0"  :aria-controls="'collapse-' + component.version">
-                                        <h5 class="bold"> Version @{{ component.version }} &nbsp;&nbsp;  <small>(@{{component.dia_inicio}} Hrs. - @{{component.dia_termino}} Hrs.)</small></h5>
+                        <p style="">
+                            <span class="cursor-pointer pb-2" @click="regresar(1)"><i class="fa fa-home"></i> &nbsp;</span>
+                            <span class="cursor-pointer pb-2" v-if="ruta.anio" @click="regresar(2)"><i class="fa fa-angle-right"></i> &nbsp; <span class="underline-hover">@{{ruta.anio}}</span> &nbsp;</span>
+                            <span class="cursor-pointer pb-2" v-if="ruta.cliente" @click="regresar(3)"><i class="fa fa-angle-right"></i> &nbsp; <span class="underline-hover">@{{ruta.cliente}}</span> &nbsp;</span>
+                            <span class="cursor-pointer pb-2" v-if="ruta.proyecto" @click="regresar(4)"><i class="fa fa-angle-right"></i> &nbsp; <span class="underline-hover">@{{ruta.proyecto}}</span> &nbsp;</span>
+                            <span class="cursor-pointer pb-2" v-if="ruta.herramental" @click="regresar(5)"><i class="fa fa-angle-right"></i> &nbsp; <span class="underline-hover">@{{ruta.herramental}}</span> </span>
+                            <span class="cursor-pointer pb-2 bold" v-if="ruta.componente"><i class="fa fa-angle-right"></i> &nbsp; <span class="underline-hover">@{{ruta.componente}}</span> </span>
+                        </p>
+                    </div>
+                </div>
+            </nav>
+            <div class="content" style="height: 75vh; overflow-y: scroll !important">
+                <div class="row mb-2" v-cloak v-show="!cargando">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE AVANCE @{{ruta.herramental}}</h2> 
+                                <div v-if="selectedHerramental" class="d-flex gap-1 align-items-center">
+                                    <div class="square bg-danger"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Retrabajos &nbsp;&nbsp;&nbsp; </span>
+                                    <div class="square bg-warning"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Retrasos &nbsp;&nbsp;&nbsp; </span>
+                                    <div class="square bg-dark"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Refabricaciones &nbsp;&nbsp;&nbsp;  </span>
+                                    <div class="square bg-success"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Refacción </span>
+                                    <div class="dotted-line"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Fecha Límite </span>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 text-right">
+                                <span v-if="selectedHerramental" class="bold">Fecha de creación:</span>  <br>
+                                <span v-if="selectedHerramental" class="bold">Fecha límite:</span> <br>
+                                <span v-if="selectedHerramental" class="bold"> Fecha de finalización:</span> 
+                            </div>
+                            <div class="col-lg-2">
+                                <span  v-if="selectedHerramental">@{{herramental.fecha_creacion}}</span> <br>
+                                <span  v-if="selectedHerramental">@{{herramental.fecha_limite_show??' Sin fecha'}}</span> <br>
+                                <span  v-if="selectedHerramental">@{{herramental.fecha_finalizado}}</span>
+                                @if(auth()->user()->hasRole('PROYECTOS'))
+                                <button v-if="selectedHerramental" @click="agregarFechaLimite()" class=" btn-block btn btn-sm mt-2 mb-1"><i class="fa fa-calendar-day"></i> Agregar fecha limite </button>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-lg-12" v-if="!selectedHerramental">
+                            <h5 class="text-muted my-4"> SELECCIONE UN HERRAMENTAL PARA VER SU AVANCE</h5>
+                        </div>
+                        <div class="row" v-else>
+                            <div class="col-lg-12 " v-if="tasks.length == 0">
+                                <h5 class="text-muted">Este herramental aun no tiene componentes cargados...</h5>
+                            </div>
+                            <div class="col-lg-12" v-else style="overflow-x:scroll">
+                            <div class="gantt-chart3" >
+                                    <div class="gantt-header3 general-header">
+                                        <div class="time-header pb-2" >TIEMPO (DIAS)</div>
                                     </div>
-    
-                                    <!-- Contenido colapsable -->
-                                    <div :id="'collapse-' + component.version" class="collapse" :class="{ show: index === 0 }" :aria-labelledby="'heading-' + component.version" data-parent="#accordionComponentes">
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-lg-9" style="border-right: 1px solid #ededed">
-                                                    <div class="mb-2">
-                                                        <span><strong>Tipo de componente: </strong> @{{component.info.es_compra ? 'COMPRA' : 'FABRICACIÓN'}}</span><br>
-                                                        <span><strong>Cantidad: </strong> @{{component.info.cantidad}}</span>&nbsp;&nbsp;
-                                                        <span><strong>Alto: </strong> @{{component.info.alto}}</span>&nbsp;&nbsp;
-                                                        <span><strong>Largo: </strong> @{{component.info.largo}}</span>&nbsp;&nbsp;
-                                                        <span><strong>Ancho: </strong> @{{component.info.ancho}}</span>&nbsp;&nbsp;
-                                                        <span><strong>Material: </strong> @{{component.info.material_nombre}}</span>&nbsp;&nbsp;
-                                                    </div>
-                                                    <div class="mb-2" v-if="!component.info.es_compra">
-                                                        <span><strong>Fecha de Carga:</strong> @{{ component.info.fecha_cargado }}</span> <br>
-                                                        <span><strong>Fecha Términado:</strong> @{{ component.info.fecha_terminado ?? ' Sin finalizar' }}</span> <br>
-                                                        <span><strong>Fecha Ensamblado:</strong> @{{ component.info.fecha_ensamblado ?? 'Sin ensamblar' }}</span> <br>
-                                                        <span><strong>Ultimo estatus:</strong> </span> <span class="badge badge-dark badge-pill px-2 py-1 my-2">@{{determinarEstatus(component.info)}}</span> <br>
-                                                        <div v-if="component.info.requiere_temple">
-                                                            <span class="bold">Detalles de temple: <br></span>
-                                                            <div class="ml-2">
-                                                                <small><strong>Fecha solicitud:</strong> @{{ component.info.fecha_solicitud_temple }}</small> <br>
-                                                                <small><strong>Fecha envio:</strong> @{{ component.info.fecha_envio_temple ?? '-' }}</small> <br>
-                                                                <small><strong>Fecha estimada:</strong> @{{ component.info.fecha_estimada_temple ?? '-' }}</small><br>
-                                                                <small><strong>Fecha recibido:</strong> @{{ component.info.fecha_recibido_temple ?? '-' }}</small><br>
+                                    <div class="gantt-header3">
+                                        <div class="gantt-cell3 task-name3 pt-2">ACCIONES</div>
+                                        <div class="gantt-cell3 pt-2" v-for="day in duracionTotal" :key="day">
+                                            <span class="bold">@{{ day }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="gantt-row3 cursor-pointer" v-for="task in tasks" :key="task.id" @click="verInformacion(task)">
+                                        <div class="gantt-cell3 task-name3 pt-2">
+                                            @{{ task.componente }} 
+                                            <div class="d-flex gap-1 align-items-center">
+                                                <div v-if="task.componente_id > 0 && task.tieneRetrabajos" class="square2 bg-danger"></div>
+                                                <div v-if="task.componente_id > 0 && task.tieneRetrasos" class="square2 bg-warning"></div>
+                                                <div v-if="task.componente_id > 0 && task.tieneRefabricaciones" class="square2 bg-dark"></div>
+                                                <div v-if="task.componente_id > 0 && task.esRefaccion" class="square2 bg-success"></div>
+                                            </div>
+                                        </div>
+                                        <div class="gantt-cell3 gantt-bar3" v-for="day in duracionTotal" :key="day" >
+                                            <div
+                                                v-for="segment in task.time"
+                                                class=""
+                                                :key="segment.dia_inicio"
+                                                :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
+                                                :style="getTaskStyle(segment, day)">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div v-if="herramental.fecha_limite" class="limite-tiempo1" :style="{ left: `${215 + (80 * (totalDias)) }px` }"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="modalComponente" tabindex="-1" aria-labelledby="modalComponenteLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="min-width: 60%;">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="modalComponenteLabel">
+                                    <span class="bold">INFORMACIÓN DE @{{infoComponentes.componente}}</span>
+                                </h3>
+                                <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        <div class="modal-body">
+                                <div class="col-lg-12 accordion" id="accordionComponentes" v-if="infoComponentes.time && infoComponentes.time.length > 0">
+                                    <div class="card" v-for="(component, index) in infoComponentes.time.slice().reverse()" :key="component.version" style="border-radius: 20px !important">
+                                        <!-- Cabecera del acordeón -->
+                                        <div class="card-header cursor-pointer" :id="'heading-' + component.version" :class="{'bg-success text-white': component.type == 'normal', 'bg-dark text-white': component.type == 'rework'}" data-toggle="collapse"  :data-target="'#collapse-' + component.version"  :aria-expanded="index === 0"  :aria-controls="'collapse-' + component.version">
+                                            <h5 class="bold"> Version @{{ component.version }} &nbsp;&nbsp;  <small>(@{{component.dia_inicio}} Hrs. - @{{component.dia_termino}} Hrs.)</small></h5>
+                                        </div>
+        
+                                        <!-- Contenido colapsable -->
+                                        <div :id="'collapse-' + component.version" class="collapse" :class="{ show: index === 0 }" :aria-labelledby="'heading-' + component.version" data-parent="#accordionComponentes">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-lg-9" style="border-right: 1px solid #ededed">
+                                                        <div class="mb-2">
+                                                            <span><strong>Tipo de componente: </strong> @{{component.info.es_compra ? 'COMPRA' : 'FABRICACIÓN'}}</span><br>
+                                                            <span><strong>Cantidad: </strong> @{{component.info.cantidad}}&nbsp;&nbsp;</span>
+                                                            <span v-if="!component.info.es_compra"><strong>Material: </strong> @{{component.info.material_nombre}}&nbsp;&nbsp;</span>
+                                                            <span v-if="component.info.es_compra"><strong>Proveedor / Material: </strong> @{{component.info.proveedor}}&nbsp;&nbsp; <br>            </span>
+                                                            <span v-if="component.info.es_compra"><strong>Descripción: </strong> @{{component.info.descripcion}}&nbsp;&nbsp;</span>
+
+                                                            <span v-if="component.info.material_id == 2 || component.info.material_id == 2 || component.info.material_id == 5 || component.info.material_id == 4"><strong>Largo: </strong> @{{component.info.largo}}&nbsp;&nbsp;</span>
+                                                            <span v-if="component.info.material_id == 1 || component.info.material_id == 2 || component.info.material_id == 5 || component.info.material_id == 4"><strong>Ancho: </strong> @{{component.info.ancho}}&nbsp;&nbsp;</span>
+                                                            <span v-if="component.info.material_id == 1 || component.info.material_id == 2 || component.info.material_id == 5 "><strong>Espesor: </strong> @{{component.info.espesor}}&nbsp;&nbsp;</span>
+                                                            <span v-if="component.info.material_id == 3"><strong>Longitud: </strong> @{{component.info.longitud}}&nbsp;&nbsp;</span>
+                                                            <span v-if="component.info.material_id == 3"><strong>Diametro: </strong> @{{component.info.diametro}}&nbsp;&nbsp;</span>
+                                                        </div>
+                                                        <div class="mb-2" v-if="!component.info.es_compra">
+                                                            <span><strong>Fecha de Carga:</strong> @{{ component.info.fecha_cargado }}</span> <br>
+                                                            <span><strong>Fecha Términado:</strong> @{{ component.info.fecha_terminado ?? ' Sin finalizar' }}</span> <br>
+                                                            <span><strong>Fecha Ensamblado:</strong> @{{ component.info.fecha_ensamblado ?? 'Sin ensamblar' }}</span> <br>
+                                                            <span><strong>Ultimo estatus:</strong> </span> <span class="badge badge-dark badge-pill px-2 py-1 my-2">@{{determinarEstatus(component.info)}}</span> <br>
+                                                            <div v-if="component.info.requiere_temple">
+                                                                <span class="bold">Detalles de temple: <br></span>
+                                                                <div class="ml-2">
+                                                                    <small><strong>Fecha solicitud:</strong> @{{ component.info.fecha_solicitud_temple }}</small> <br>
+                                                                    <small><strong>Fecha envio:</strong> @{{ component.info.fecha_envio_temple ?? '-' }}</small> <br>
+                                                                    <small><strong>Fecha estimada:</strong> @{{ component.info.fecha_estimada_temple ?? '-' }}</small><br>
+                                                                    <small><strong>Fecha recibido:</strong> @{{ component.info.fecha_recibido_temple ?? '-' }}</small><br>
+                                                                </div>
+                                                            </div>
+        
+                                                        </div>
+                                                        <div v-else>
+                                                            <span><strong>Fecha solicitud:</strong> @{{ component.info.fecha_solicitud }}</span> <br>
+                                                            <span><strong>Fecha pedido:</strong> @{{ component.info.fecha_pedido ?? '-' }}</span> <br>
+                                                            <span><strong>Fecha estimada:</strong> @{{ component.info.fecha_estimada ?? '-' }}</span> <br>
+                                                            <span><strong>Fecha compra real:</strong> @{{ component.info.fecha_real ?? '-' }}</span> <br>
+                                                        </div>
+                
+                                                        <div class="mb-2 row">
+                                                            
+                                                            <div class="col">
+                                                                <a class="btn btn-block btn-sm btn-default" :href="'/storage/' + component.info.archivo_2d_public" target="_blank">
+                                                                    <i class="fa fa-download"></i> Vista 2D
+                                                                </a>
+                                                            </div>
+                                                            <div class="col">
+                                                                <a class="btn btn-block btn-sm btn-default" :href="'/storage/' + component.info.archivo_3d_public" target="_blank">
+                                                                    <i class="fa fa-download"></i> Vista 3D
+                                                                </a>
+                                                            </div>
+                                                            <div class="col">
+                                                                <a class="btn btn-block btn-sm btn-default" :href="'/storage/' + component.info.archivo_explosionado_public" target="_blank">
+                                                                    <i class="fa fa-download"></i> Explosionado
+                                                                </a>
                                                             </div>
                                                         </div>
-    
                                                     </div>
-                                                    <div v-else>
-                                                        <span><strong>Fecha solicitud:</strong> @{{ component.info.fecha_solicitud }}</span> <br>
-                                                        <span><strong>Fecha pedido:</strong> @{{ component.info.fecha_pedido ?? '-' }}</span> <br>
-                                                        <span><strong>Fecha estimada:</strong> @{{ component.info.fecha_estimada ?? '-' }}</span> <br>
-                                                        <span><strong>Fecha compra real:</strong> @{{ component.info.fecha_real ?? '-' }}</span> <br>
-                                                    </div>
-            
-                                                    <div class="mb-2 row">
-                                                        
-                                                        <div class="col">
-                                                            <a class="btn btn-block btn-sm btn-default" :href="'/download/' + component.info.archivo_2d_public">
-                                                                <i class="fa fa-download"></i> Vista 2D
-                                                            </a>
+                                                    <div class="col-lg-3">
+                                                        <div class="text-center">
+                                                            <button @click="fetchSolicitudes(component.info.id)" v-if="!component.info.es_compra" class="btn btn-block btn-dark mx-2"><i class="fa fa-list"></i> Ver solicitudes</button>
+                                                            <button @click="mostrarLineaDeTiempo(component.info.id)" v-if="!component.info.es_compra" class="btn btn-block btn-dark mx-2"><i class="fa fa-calendar"></i> Ver linea de tiempo</button>
+                                                            <button @click="verFotografias(component.info)" v-if="!component.info.es_compra" class="btn btn-block btn-dark mx-2"><i class="fa fa-camera"></i> Ver fotos</button>
+                                                            <button @click="verModalRuta(component.info.id)" v-if="!component.info.es_compra" class="btn btn-block btn-dark mx-2"><i class="fa fa-eye"></i> Visor componente</button>
                                                         </div>
-                                                        <div class="col">
-                                                            <a class="btn btn-block btn-sm btn-default" :href="'/download/' + component.info.archivo_3d_public">
-                                                                <i class="fa fa-download"></i> Vista 3D
-                                                            </a>
-                                                        </div>
-                                                        <div class="col">
-                                                            <a class="btn btn-block btn-sm btn-default" :href="'/download/' + component.info.archivo_explosionado_public">
-                                                                <i class="fa fa-download"></i> Explosionado
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-3">
-                                                    <div class="text-center">
-                                                        <button @click="fetchSolicitudes(component.info.id)" v-if="!component.info.es_compra" class="btn btn-block btn-dark mx-2"><i class="fa fa-list"></i> Ver solicitudes</button>
-                                                        <button @click="mostrarLineaDeTiempo(component.info.id)" v-if="!component.info.es_compra" class="btn btn-block btn-dark mx-2"><i class="fa fa-calendar"></i> Ver linea de tiempo</button>
-                                                        <button @click="verFotografias(component.info)" v-if="!component.info.es_compra" class="btn btn-block btn-dark mx-2"><i class="fa fa-camera"></i> Ver fotos</button>
-                                                        <button @click="verModalRuta(component.info.id)" v-if="!component.info.es_compra" class="btn btn-block btn-dark mx-2"><i class="fa fa-eye"></i> Visor componente</button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div> 
+                            <div class="modal-footer my-0 py-1">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
                             </div>
-                        </div> 
-                        <div class="modal-footer my-0 py-1">
-                            <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal fade" id="modalEnsamble" tabindex="-1" aria-labelledby="modalEnsambleLabel" aria-hidden="true">
-                <div class="modal-dialog" style="min-width: 70%;">
-                    <div class="modal-content" >
-                        <div class="modal-header">
-                            <h3 class="modal-title" id="modalEnsambleLabel">
-                                <span class="bold">INFORMACIÓN DE ENSAMBLE</span>
-                            </h3>
-                            <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                <div class="modal fade" id="modalEnsamble" tabindex="-1" aria-labelledby="modalEnsambleLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="min-width: 70%;">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="modalEnsambleLabel">
+                                    <span class="bold">INFORMACIÓN DE ENSAMBLE</span>
+                                </h3>
+                                <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        <div class="modal-body">
+                                <div class="col-lg-12">
+                                    <div class="mb-2">
+                                        <span><strong>Estatus de ensamble:</strong> </span> <span class="badge badge-dark badge-pill px-2 py-1 my-2">@{{herramental.estatus_ensamble.toUpperCase()}}</span> <br>
+                                        <span><strong>Fecha de inicio ensamble: </strong> @{{herramental.inicio_ensamble ?? 'Sin iniciar'}}</span><br>
+                                        <span><strong>Fecha de fin ensamble: </strong> @{{herramental.termino_ensamble ?? 'Sin terminar'}}</span><br>
+                                    </div>
+                                    <div class="mb-2 row">
+                                        <div class="col-lg-4">
+                                            <a class="btn btn-block btn-default" :href="'/download/' + herramental.archivo2">
+                                                <i class="fa fa-download"></i> FORMATO F71-03 ANEXO 1.1
+                                            </a>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <button class="btn btn-block btn-dark" @click="verFotografiasEnsamble"><i class="fa fa-camera"></i> Ver fotos</button>
+                                        </div>
+                                    </div>
+                                    <div class="mb-2 row">
+                                        <div class="col-lg-12">
+                                            <h5 class="bold">RECHAZOS Y AJUSTES </h5>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <table class="table">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th class="py-1">Fecha</th>
+                                                        <th class="py-1">Componente</th>
+                                                        <th class="py-1">Tipo</th>
+                                                        <th class="py-1">Descripcion</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <template v-if="solicitudesEnsamble && solicitudesEnsamble.length > 0">
+                                                        <tr v-for="sol in solicitudesEnsamble" :key="sol.id">
+                                                            <td>@{{sol.fecha_show}}</td>
+                                                            <td>@{{sol.componente}}</td>
+                                                            <td>@{{sol.tipo.toUpperCase()}}</td>
+                                                            <td>@{{sol.comentarios}}</td>
+                                                        </tr>
+                                                    </template>
+                                                    <tr v-else>
+                                                        <td colspan="4">No hay rechazos ni ajustes para este herramental</td>
+                                                    </tr>
+        
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>  
+                                </div>
+                            </div> 
+                            <div class="modal-footer my-0 py-1">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                            </div>
                         </div>
-                       <div class="modal-body">
-                            <div class="col-lg-12">
-                                <div class="mb-2">
-                                    <span><strong>Estatus de ensamble:</strong> </span> <span class="badge badge-dark badge-pill px-2 py-1 my-2">@{{herramental.estatus_ensamble.toUpperCase()}}</span> <br>
-                                    <span><strong>Fecha de inicio ensamble: </strong> @{{herramental.inicio_ensamble ?? 'Sin iniciar'}}</span><br>
-                                    <span><strong>Fecha de fin ensamble: </strong> @{{herramental.termino_ensamble ?? 'Sin terminar'}}</span><br>
+                    </div>
+                </div>
+                <div class="modal fade" id="modalPruebasDiseño" tabindex="-1" aria-labelledby="modalPruebasDiseñoLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="min-width: 35%;">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="modalPruebasDiseñoLabel">
+                                    <span class="bold">INFORMACIÓN DE LA PRUEBA DISEÑO (@{{prueba.nombre}})</span>
+                                </h3>
+                                <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        <div class="modal-body">
+                                <div class="col-lg-12">
+                                    <div class="row">
+                                        <div class="col-lg-12 text-center">
+                                            <div class="mb-2">
+                                                <span><strong>Estatus de la prueba:</strong> <br> </span> 
+                                                    <span v-if="prueba.liberada == true" class="badge badge-success badge-pill px-2 py-1 my-2">LIBERADA</span>
+                                                    <span v-else class="badge badge-dark badge-pill px-2 py-1 my-2">NO LIBERADA</span>
+                                                <br>
+                                                <span><strong>Fecha de inicio: </strong> <br> @{{ prueba.fecha_inicio_show }}</span><br>
+                                                <span><strong>Fecha de liberación: </strong> <br> @{{ prueba.fecha_liberada_show??'Sin liberar' }}</span><br>
+                                                <span><strong>Involucrados en la prueba: </strong> <br> @{{ prueba.involucrados }}</span><br>
+                                                <span><strong>Descripcion de la prueba: </strong> <br> @{{prueba.descripcion}}</span><br>
+                                                <span><strong>Hallazgos: </strong> <br> @{{prueba.hallazgos}}</span><br>
+                                                <span><strong>Plan de accion: </strong> <br> @{{prueba.plan_accion}}</span><br>
+                                            </div>
+                                            <div class="mb-2 row">
+                                                <div class="col-lg-12 text-center">
+                                                    <a class="btn btn-sm btn-default" :href="'/download/pruebas-diseno/' + prueba.archivo_dimensional">
+                                                        <i class="fa fa-download"></i> ARCHIVO DIMENSIONAL
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                            
                                 </div>
-                                <div class="mb-2 row">
-                                    <div class="col-lg-4">
-                                        <a class="btn btn-block btn-default" :href="'/download/' + herramental.archivo2">
-                                            <i class="fa fa-download"></i> FORMATO F71-03 ANEXO 1.1
-                                        </a>
+                            </div> 
+                            <div class="modal-footer my-0 py-1">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="modalPruebasProceso" tabindex="-1" aria-labelledby="modalPruebasProcesoLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="min-width: 35%;">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="modalPruebasProcesoLabel">
+                                    <span class="bold">INFORMACIÓN DE LA PRUEBA PROCESO (@{{prueba.nombre}})</span>
+                                </h3>
+                                <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        <div class="modal-body">
+                                <div class="col-lg-12">
+                                    <div class="row">
+                                        <div class="col-lg-12 text-center" >
+                                            <div class="mb-2">
+                                                <span><strong>Estatus de la prueba:</strong> <br> </span> 
+                                                    <span v-if="prueba.liberada == true" class="badge badge-success badge-pill px-2 py-1 my-2">LIBERADA</span>
+                                                    <span v-else class="badge badge-dark badge-pill px-2 py-1 my-2">NO LIBERADA</span>
+                                                <br>
+                                                <span><strong>Fecha de inicio: </strong> <br> @{{ prueba.fecha_inicio_show }}</span><br>
+                                                <span><strong>Fecha de liberación: </strong> <br> @{{ prueba.fecha_liberada_show??'Sin liberar' }}</span><br>
+                                                <span><strong>Descripcion de la prueba: </strong> <br> @{{prueba.descripcion}}</span><br>
+                                                <span><strong>Comentarios: </strong> <br> @{{prueba.comentarios}}</span><br>
+                                                <span><strong>Plan de accion: </strong> <br> @{{prueba.plan_accion}}</span><br>
+                                            </div>
+                                            <div class="mb-2 row">
+                                                <div class="col-lg-12 text-center">
+                                                    <a class="btn btn-sm btn-default" :href="'/download/pruebas-proceso/' + prueba.archivo">
+                                                        <i class="fa fa-download"></i> FORMATO F71-03 ANEXO 2
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 text-center">
+                                            <h5 class="bold">Fotografia del herramental</h5>
+                                            <div class="card">
+                                                <a class="px-0 mx-0" :href="'/storage/pruebas-proceso/' + prueba.foto" v-if="prueba.foto" data-lightbox="prueba-proceso">
+                                                    <img :src="'/storage/pruebas-proceso/' + prueba.foto" class="gallery-img" alt="Foto de fabricación">
+                                                </a>
+                                                <img v-else src="/paper/img/no-image.png" class="gallery-img" alt="Sin imagen">
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-lg-4">
-                                        <button class="btn btn-block btn-dark" @click="verFotografiasEnsamble"><i class="fa fa-camera"></i> Ver fotos</button>
-                                    </div>
+                                            
                                 </div>
-                                <div class="mb-2 row">
-                                    <div class="col-lg-12">
-                                        <h5 class="bold">RECHAZOS Y AJUSTES </h5>
-                                    </div>
-                                    <div class="col-lg-12">
+                            </div> 
+                            <div class="modal-footer my-0 py-1">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="modalSolicitudes" tabindex="-1" aria-labelledby="modalSolicitudesLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="min-width: 70%;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="bold modal-title" id="modalSolicitudesLabel">
+                                    SOLICITUDES ASOCIADAS AL COMPONENTE @{{componente.nombre}}
+                                </h3>
+                                <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-lg-12 table-responsive table-stripped" style="max-height: 75vh !important; overflow-y: scroll !important">
                                         <table class="table">
                                             <thead class="thead-light">
                                                 <tr>
-                                                    <th class="py-1">Fecha</th>
-                                                    <th class="py-1">Componente</th>
-                                                    <th class="py-1">Tipo</th>
-                                                    <th class="py-1">Descripcion</th>
+                                                    <th>Fecha</th>
+                                                    <th>Hora</th>
+                                                    <th>Tipo</th>
+                                                    <th>Programa</th>
+                                                    <th>Comentarios</th>
+                                                    <th>Solicita</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <template v-if="solicitudesEnsamble && solicitudesEnsamble.length > 0">
-                                                    <tr v-for="sol in solicitudesEnsamble" :key="sol.id">
-                                                        <td>@{{sol.fecha_show}}</td>
-                                                        <td>@{{sol.componente}}</td>
-                                                        <td>@{{sol.tipo.toUpperCase()}}</td>
-                                                        <td>@{{sol.comentarios}}</td>
-                                                    </tr>
-                                                </template>
-                                                <tr v-else>
-                                                    <td colspan="4">No hay rechazos ni ajustes para este herramental</td>
+                                                <tr v-if="solicitudes.length == 0">
+                                                    <td colspan="6"> No hay ninguna solicitud de retrabajo, modificacion o ajuste pendiente para este componente </td>
                                                 </tr>
-    
+                                                <tr v-for="(l, index) in solicitudes" :key="'linea- ' + index + '-' + l.created_at">
+                                                    <td>@{{ l.fecha }}</td>
+                                                    <td>@{{ l.hora }}</td>
+                                                    <td class="bold">@{{ l.tipo.toUpperCase() }}</td>
+                                                    <td>@{{ l.programa }}</td>
+                                                    <td><span v-html="l.comentarios"></span></td>
+                                                    <td>@{{ l.usuario.nombre_completo }} <br><small>@{{l.area_solicitante}}</small></td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>  
+                                </div>
                             </div>
-                        </div> 
-                        <div class="modal-footer my-0 py-1">
-                            <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                            <div class="modal-footer my-0 py-1">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal fade" id="modalPruebasDiseño" tabindex="-1" aria-labelledby="modalPruebasDiseñoLabel" aria-hidden="true">
-                <div class="modal-dialog" style="min-width: 35%;">
-                    <div class="modal-content" >
-                        <div class="modal-header">
-                            <h3 class="modal-title" id="modalPruebasDiseñoLabel">
-                                <span class="bold">INFORMACIÓN DE LA PRUEBA DISEÑO (@{{prueba.nombre}})</span>
-                            </h3>
-                            <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                       <div class="modal-body">
-                            <div class="col-lg-12">
+                <div class="modal fade" id="modalLineaTiempo" tabindex="-1" aria-labelledby="modalLineaTiempoLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="min-width: 70%;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="bold modal-title" id="modalLineaTiempoLabel">
+                                    LINEA DE TIEMPO PARA EL COMPONENTE @{{componente.nombre}}
+                                </h3>
+                                <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-lg-12 text-center">
-                                        <div class="mb-2">
-                                            <span><strong>Estatus de la prueba:</strong> <br> </span> 
-                                                <span v-if="prueba.liberada == true" class="badge badge-success badge-pill px-2 py-1 my-2">LIBERADA</span>
-                                                <span v-else class="badge badge-dark badge-pill px-2 py-1 my-2">NO LIBERADA</span>
-                                             <br>
-                                            <span><strong>Fecha de inicio: </strong> <br> @{{ prueba.fecha_inicio_show }}</span><br>
-                                            <span><strong>Fecha de liberación: </strong> <br> @{{ prueba.fecha_liberada_show??'Sin liberar' }}</span><br>
-                                            <span><strong>Involucrados en la prueba: </strong> <br> @{{ prueba.involucrados }}</span><br>
-                                            <span><strong>Descripcion de la prueba: </strong> <br> @{{prueba.descripcion}}</span><br>
-                                            <span><strong>Hallazgos: </strong> <br> @{{prueba.hallazgos}}</span><br>
-                                            <span><strong>Plan de accion: </strong> <br> @{{prueba.plan_accion}}</span><br>
-                                        </div>
-                                        <div class="mb-2 row">
-                                            <div class="col-lg-12 text-center">
-                                                <a class="btn btn-sm btn-default" :href="'/download/pruebas-diseno/' + prueba.archivo_dimensional">
-                                                    <i class="fa fa-download"></i> ARCHIVO DIMENSIONAL
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                        
-                            </div>
-                        </div> 
-                        <div class="modal-footer my-0 py-1">
-                            <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="modalPruebasProceso" tabindex="-1" aria-labelledby="modalPruebasProcesoLabel" aria-hidden="true">
-                <div class="modal-dialog" style="min-width: 35%;">
-                    <div class="modal-content" >
-                        <div class="modal-header">
-                            <h3 class="modal-title" id="modalPruebasProcesoLabel">
-                                <span class="bold">INFORMACIÓN DE LA PRUEBA PROCESO (@{{prueba.nombre}})</span>
-                            </h3>
-                            <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                       <div class="modal-body">
-                            <div class="col-lg-12">
-                                <div class="row">
-                                    <div class="col-lg-12 text-center" >
-                                        <div class="mb-2">
-                                            <span><strong>Estatus de la prueba:</strong> <br> </span> 
-                                                <span v-if="prueba.liberada == true" class="badge badge-success badge-pill px-2 py-1 my-2">LIBERADA</span>
-                                                <span v-else class="badge badge-dark badge-pill px-2 py-1 my-2">NO LIBERADA</span>
-                                             <br>
-                                            <span><strong>Fecha de inicio: </strong> <br> @{{ prueba.fecha_inicio_show }}</span><br>
-                                            <span><strong>Fecha de liberación: </strong> <br> @{{ prueba.fecha_liberada_show??'Sin liberar' }}</span><br>
-                                            <span><strong>Descripcion de la prueba: </strong> <br> @{{prueba.descripcion}}</span><br>
-                                            <span><strong>Comentarios: </strong> <br> @{{prueba.comentarios}}</span><br>
-                                            <span><strong>Plan de accion: </strong> <br> @{{prueba.plan_accion}}</span><br>
-                                        </div>
-                                        <div class="mb-2 row">
-                                            <div class="col-lg-12 text-center">
-                                                <a class="btn btn-sm btn-default" :href="'/download/pruebas-proceso/' + prueba.archivo">
-                                                    <i class="fa fa-download"></i> FORMATO F71-03 ANEXO 2
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 text-center">
-                                        <h5 class="bold">Fotografia del herramental</h5>
-                                        <div class="card">
-                                            <a class="px-0 mx-0" :href="'/storage/pruebas-proceso/' + prueba.foto" v-if="prueba.foto" data-lightbox="prueba-proceso">
-                                                <img :src="'/storage/pruebas-proceso/' + prueba.foto" class="gallery-img" alt="Foto de fabricación">
-                                            </a>
-                                            <img v-else src="/paper/img/no-image.png" class="gallery-img" alt="Sin imagen">
-                                        </div>
-                                    </div>
-                                </div>
-                                        
-                            </div>
-                        </div> 
-                        <div class="modal-footer my-0 py-1">
-                            <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="modalSolicitudes" tabindex="-1" aria-labelledby="modalSolicitudesLabel" aria-hidden="true">
-                <div class="modal-dialog" style="min-width: 70%;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3 class="bold modal-title" id="modalSolicitudesLabel">
-                                SOLICITUDES ASOCIADAS AL COMPONENTE @{{componente.nombre}}
-                            </h3>
-                            <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-lg-12 table-responsive table-stripped" style="max-height: 75vh !important; overflow-y: scroll !important">
-                                    <table class="table">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>Fecha</th>
-                                                <th>Hora</th>
-                                                <th>Tipo</th>
-                                                <th>Programa</th>
-                                                <th>Comentarios</th>
-                                                <th>Solicita</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-if="solicitudes.length == 0">
-                                                <td colspan="6"> No hay ninguna solicitud de retrabajo, modificacion o ajuste pendiente para este componente </td>
-                                            </tr>
-                                            <tr v-for="(l, index) in solicitudes" :key="'linea- ' + index + '-' + l.created_at">
-                                                <td>@{{ l.fecha }}</td>
-                                                <td>@{{ l.hora }}</td>
-                                                <td class="bold">@{{ l.tipo.toUpperCase() }}</td>
-                                                <td>@{{ l.programa }}</td>
-                                                <td><span v-html="l.comentarios"></span></td>
-                                                <td>@{{ l.usuario.nombre_completo }} <br><small>@{{l.area_solicitante}}</small></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer my-0 py-1">
-                            <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="modalLineaTiempo" tabindex="-1" aria-labelledby="modalLineaTiempoLabel" aria-hidden="true">
-                <div class="modal-dialog" style="min-width: 70%;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3 class="bold modal-title" id="modalLineaTiempoLabel">
-                                LINEA DE TIEMPO PARA EL COMPONENTE @{{componente.nombre}}
-                            </h3>
-                            <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-lg-12 table-responsive table-stripped" style="height: 75vh !important; overflow-y: scroll !important">
-                                    <table class="table">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>Fecha</th>
-                                                <th>Hora</th>
-                                                <th>Descripción</th>
-                                                <th>Maquina</th>
-                                                <th>Encargado</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-for="(l, index) in lineaTiempo" :key="'linea- ' + index + '-' + l.created_at">
-                                                <td style="width: 15% !important">@{{ l.fecha }}</td>
-                                                <td style="width: 10% !important">@{{ l.hora }}</td>
-                                                <td style="width: 40% !important"><span v-html="l.descripcion"></span></td>
-                                                <td style="width: 15% !important">@{{ l.maquina }}</td>
-                                                <td style="width: 20% !important">@{{ l.area }} <br><small>@{{l.encargado}}</small></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer my-0 py-1">
-                            <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="modalFotografias" tabindex="-1" aria-labelledby="modalFotografiasLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg" style="min-width: 70%; min-height: 70%">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3 class="modal-title font-weight-bold" id="modalFotografiasLabel">
-                                Galería de Imágenes @{{ componente.nombre }}
-                            </h3>
-                            <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-    
-                        <div class="modal-body">
-                            <div class="container">
-                                <div v-if="componente.fabricaciones.length">
-                                    <div class="row">
-                                        <div class="col-md-4 mb-3" v-for="f in componente.fabricaciones" :key="f.id">
-                                            <div class="card gallery-card">
-                                                <a class="px-0 mx-0" :href="'/storage/fabricaciones/' + f.foto" v-if="f.foto" data-lightbox="fabricacion" :data-title="getMaquina(f.maquina_id) + ' (' + f.updated_at.substring(0,10) + ')'">
-                                                    <img :src="'/storage/fabricaciones/' + f.foto" class="gallery-img" alt="Foto de fabricación">
-                                                </a>
-                                                <img v-else src="/paper/img/no-image.png" class="gallery-img" alt="Sin imagen">
-                                                <div class="card-body">
-                                                    <p class="card-text mb-0"><strong>@{{ getMaquina(f.maquina_id) }}</strong></p>
-                                                    <small class="text-muted">@{{ f.updated_at.substring(0,10) }}</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div v-if="!componente.fabricaciones.length && !componente.foto_matricero && (!componente.pruebas || !componente.pruebas.length)" class="text-center text-muted">
-                                    <p>No hay imágenes disponibles para este componente.</p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12 text-right">
-                                    <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="modalFotografiasEnsamble" tabindex="-1" aria-labelledby="modalFotografiasEnsambleLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg" style="min-width: 70%;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3 class="modal-title font-weight-bold" id="modalFotografiasEnsambleLabel">
-                                Fotografias de ensamblado para @{{ herramental.nombre }}
-                            </h3>
-                            <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-    
-                        <div class="modal-body">
-                            <div class="container">
-                                <div v-if="componentes.length">
-                                    <div class="row">
-                                        <div class="col-md-4 mb-3" v-for="componente in componentes" :key="componente.id">
-                                            <div class="card gallery-card">
-                                                <a class="px-0 mx-0" :href="'/storage/fotos_matricero/' + componente.foto_matricero" v-if="componente.foto_matricero" data-lightbox="fabricacion" :data-title="componente.nombre + ' (' + componente.fecha_ensamblado??'Sin ensamblar' + ')'">
-                                                    <img :src="'/storage/fotos_matricero/' + componente.foto_matricero" class="gallery-img" alt="Foto de ensamble">
-                                                </a>
-                                                <img v-else src="/paper/img/no-image.png" class="gallery-img" alt="Sin imagen">
-                                                <div class="card-body">
-                                                    <p class="card-text mb-0"><strong>@{{ componente.nombre }} v@{{componente.version}}</strong></p>
-                                                    <small class="text-muted">@{{ componente.fecha_ensamblado??'Sin ensamblar' }}</small>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="col-lg-12 table-responsive table-stripped" style="height: 75vh !important; overflow-y: scroll !important">
+                                        <table class="table">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Fecha</th>
+                                                    <th>Hora</th>
+                                                    <th>Descripción</th>
+                                                    <th>Maquina</th>
+                                                    <th>Encargado</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(l, index) in lineaTiempo" :key="'linea- ' + index + '-' + l.created_at">
+                                                    <td style="width: 15% !important">@{{ l.fecha }}</td>
+                                                    <td style="width: 10% !important">@{{ l.hora }}</td>
+                                                    <td style="width: 40% !important"><span v-html="l.descripcion"></span></td>
+                                                    <td style="width: 15% !important">@{{ l.maquina }}</td>
+                                                    <td style="width: 20% !important">@{{ l.area }} <br><small>@{{l.encargado}}</small></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-lg-12 text-right">
-                                    <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
-                                </div>
+                            <div class="modal-footer my-0 py-1">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal fade" id="modalRuta" tabindex="-1" aria-labelledby="modalRutaLabel" aria-hidden="true" >
-                <div class="modal-dialog"  style="min-width: 60%;">
-                    <div class="modal-content" >
-                        <div class="modal-header">
-                            <h3 class="my-0 py-0 bold">RUTA PARA EL COMPONENTE @{{componente.nombre}}</h3>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                             <div class="row d-flex align-items-center">
-                                <div class="col-lg-12">
-                                    <div class="row">
-                                        <div class="col-lg-12" style="overflow-x:scroll">
-                                            <div class="gantt-chart" :style="{ '--columns': duracionTotal2.length }" >
-                                                <div class="gantt-header2 general-header2">
-                                                    <div class=" time-header2 pb-2" :colspan="duracionTotal2.length" style="letter-spacing: 1px" >TIEMPO TEÓRICO EN HORAS</div>
-                                                </div>
-                                                <div class="gantt-header2">
-                                                    <div class="gantt-cell2 task-name2 pt-1">ACCIONES</div>
-                                                    <div class="gantt-cell2 pt-1" v-for="hour in duracionTotal2" :key="hour">
-                                                        @{{ hour }}
-                                                    </div>
-                                                </div>
-                                                <div class="gantt-row2" v-for="task in tasks2" :key="task.id" >
-                                                    <div class="gantt-cell2 task-name2 pt-1">@{{ task.name }}</div>
-                                                    <div class="gantt-cell2 gantt-bar" v-for="hour in duracionTotal2" :key="hour">
-                                                        <div
-                                                        v-for="segment in task.time"
-                                                        data-toggle="tooltip" data-html="true" :title="getContenidoTooltip(task)"
-                                                        :key="segment.inicio"
-                                                        v-if="isTaskInHour(segment, hour)"
-                                                        :class="segment.type === 'normal' ? 'normal-task2' : segment.type === 'rework' ? 'rework-task2' : 'delay-task2'"
-                                                        :style="getTaskStyle2(segment, hour)"
-                                                        ></div>
+                <div class="modal fade" id="modalFotografias" tabindex="-1" aria-labelledby="modalFotografiasLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" style="min-width: 70%; min-height: 70%">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title font-weight-bold" id="modalFotografiasLabel">
+                                    Galería de Imágenes @{{ componente.nombre }}
+                                </h3>
+                                <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+        
+                            <div class="modal-body">
+                                <div class="container">
+                                    <div v-if="componente.fabricaciones.length">
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3" v-for="f in componente.fabricaciones" :key="f.id">
+                                                <div class="card gallery-card">
+                                                    <a class="px-0 mx-0" :href="'/storage/fabricaciones/' + f.foto" v-if="f.foto" data-lightbox="fabricacion" :data-title="getMaquina(f.maquina_id) + ' (' + f.updated_at.substring(0,10) + ')'">
+                                                        <img :src="'/storage/fabricaciones/' + f.foto" class="gallery-img" alt="Foto de fabricación">
+                                                    </a>
+                                                    <img v-else src="/paper/img/no-image.png" class="gallery-img" alt="Sin imagen">
+                                                    <div class="card-body">
+                                                        <p class="card-text mb-0"><strong>@{{ getMaquina(f.maquina_id) }}</strong></p>
+                                                        <small class="text-muted">@{{ f.updated_at.substring(0,10) }}</small>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mt-3">
-                                        <div class="col-lg-12" style="overflow-x:scroll">
-                                            <div class="gantt-chart" :style="{ '--columns': duracionTotal2.length }" >
-                                                <div class="gantt-header2 general-header2">
-                                                    <div class=" time-header2 pb-2" :colspan="duracionTotal2.length" style="letter-spacing: 1px" >TIEMPO REAL EN HORAS</div>
+                                    <div v-if="!componente.fabricaciones.length && !componente.foto_matricero && (!componente.pruebas || !componente.pruebas.length)" class="text-center text-muted">
+                                        <p>No hay imágenes disponibles para este componente.</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12 text-right">
+                                        <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="modalFotografiasEnsamble" tabindex="-1" aria-labelledby="modalFotografiasEnsambleLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" style="min-width: 70%;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title font-weight-bold" id="modalFotografiasEnsambleLabel">
+                                    Fotografias de ensamblado para @{{ herramental.nombre }}
+                                </h3>
+                                <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+        
+                            <div class="modal-body">
+                                <div class="container">
+                                    <div v-if="componentes.length">
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3" v-for="componente in componentes" :key="componente.id">
+                                                <div class="card gallery-card">
+                                                    <a class="px-0 mx-0" :href="'/storage/fotos_matricero/' + componente.foto_matricero" v-if="componente.foto_matricero" data-lightbox="fabricacion" :data-title="componente.nombre + ' (' + componente.fecha_ensamblado??'Sin ensamblar' + ')'">
+                                                        <img :src="'/storage/fotos_matricero/' + componente.foto_matricero" class="gallery-img" alt="Foto de ensamble">
+                                                    </a>
+                                                    <img v-else src="/paper/img/no-image.png" class="gallery-img" alt="Sin imagen">
+                                                    <div class="card-body">
+                                                        <p class="card-text mb-0"><strong>@{{ componente.nombre }} v@{{componente.version}}</strong></p>
+                                                        <small class="text-muted">@{{ componente.fecha_ensamblado??'Sin ensamblar' }}</small>
+                                                    </div>
                                                 </div>
-                                                <div class="gantt-header2">
-                                                    <div class="gantt-cell2 task-name2 pt-1">ACCIONES</div>
-                                                    <div class="gantt-cell2 pt-1" v-for="hour in duracionTotal2" :key="hour">@{{ hour }}</div>
-                                                </div>
-                                                <div class="gantt-row2" v-for="task in rutaAvance" :key="task.id" >
-                                                    <div class="gantt-cell2 task-name2 pt-1">@{{ task.name }}</div>
-                                                    <div class="gantt-cell2 gantt-bar" v-for="hour in duracionTotal2" :key="hour">
-                                                        <div
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12 text-right">
+                                        <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="modalRuta" tabindex="-1" aria-labelledby="modalRutaLabel" aria-hidden="true" >
+                    <div class="modal-dialog"  style="min-width: 80%;">
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <h3 class="my-0 py-0 bold">RUTA PARA EL COMPONENTE @{{componente.nombre}}</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row d-flex align-items-center">
+                                    <div class="col-lg-12">
+                                        <div class="row">
+                                            <div class="col-lg-12" style="overflow-x:scroll">
+                                                <div class="gantt-chart" :style="{ '--columns': duracionTotal2.length }" >
+                                                    <div class="gantt-header2 general-header2">
+                                                        <div class=" time-header2 pb-2" :colspan="duracionTotal2.length" style="letter-spacing: 1px" >TIEMPO TEÓRICO EN HORAS</div>
+                                                    </div>
+                                                    <div class="gantt-header2">
+                                                        <div class="gantt-cell2 task-name2 pt-1">ACCIONES</div>
+                                                        <div class="gantt-cell2 pt-1" v-for="hour in duracionTotal2" :key="hour">
+                                                            @{{ hour }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="gantt-row2" v-for="task in tasks2" :key="task.id" >
+                                                        <div class="gantt-cell2 task-name2 pt-1">@{{ task.name }}</div>
+                                                        <div class="gantt-cell2 gantt-bar" v-for="hour in duracionTotal2" :key="hour">
+                                                            <div
                                                             v-for="segment in task.time"
                                                             data-toggle="tooltip" data-html="true" :title="getContenidoTooltip(task)"
                                                             :key="segment.inicio"
                                                             v-if="isTaskInHour(segment, hour)"
                                                             :class="segment.type === 'normal' ? 'normal-task2' : segment.type === 'rework' ? 'rework-task2' : 'delay-task2'"
-                                                            :style="getTaskStyle2(segment, hour)">
+                                                            :style="getTaskStyle2(segment, hour)"
+                                                            ></div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="limite-tiempo" :style="{ left: `${215 + (40 * totalHoras) + ((40 / 60 ) * totalMinutos) }px` }"></div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-lg-12" style="overflow-x:scroll">
+                                                <div class="gantt-chart" :style="{ '--columns': duracionTotal2.length }" >
+                                                    <div class="gantt-header2 general-header2">
+                                                        <div class=" time-header2 pb-2" :colspan="duracionTotal2.length" style="letter-spacing: 1px" >TIEMPO REAL EN HORAS</div>
+                                                    </div>
+                                                    <div class="gantt-header2">
+                                                        <div class="gantt-cell2 task-name2 pt-1">ACCIONES</div>
+                                                        <div class="gantt-cell2 pt-1" v-for="hour in duracionTotal2" :key="hour">@{{ hour }}</div>
+                                                    </div>
+                                                    <div class="gantt-row2" v-for="task in rutaAvance" :key="task.id" >
+                                                        <div class="gantt-cell2 task-name2 pt-1">@{{ task.name }}</div>
+                                                        <div class="gantt-cell2 gantt-bar" v-for="hour in duracionTotal2" :key="hour">
+                                                            <div
+                                                                v-for="segment in task.time"
+                                                                data-toggle="tooltip" data-html="true" :title="getContenidoTooltip(task)"
+                                                                :key="segment.inicio"
+                                                                v-if="isTaskInHour(segment, hour)"
+                                                                :class="segment.type === 'normal' ? 'normal-task2' : segment.type === 'rework' ? 'rework-task2' : 'delay-task2'"
+                                                                :style="getTaskStyle2(segment, hour)">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="limite-tiempo" :style="{ left: `${215 + (40 * totalHoras) + ((40 / 60 ) * totalMinutos) }px` }"></div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>  
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                                </div>  
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
+                </div>
             </div>
-    
         </div>
-
     </div>
-
 </div>
 @endsection
 
@@ -1036,7 +898,6 @@
         },
         computed: {
             duracionTotal() {
-                // Extraemos las fechas de inicio y término de las tareas
                 const fechasInicio = this.tasks.flatMap(task => 
                     task.time.map(t => t.dia_inicio.split(' ')[0]) // Solo la fecha en formato YYYY-MM-DD
                 );
@@ -1045,17 +906,23 @@
                     task.time.map(t => t.dia_termino.split(' ')[0]) // Solo la fecha en formato YYYY-MM-DD
                 );
 
-                // Convertimos las fechas a objetos Date
                 const minFecha = new Date(Math.min(...fechasInicio.map(fecha => new Date(fecha).getTime())));
-                const maxFecha = new Date(Math.max(...fechasFin.map(fecha => new Date(fecha).getTime())));
+                let maxFecha = new Date(Math.max(...fechasFin.map(fecha => new Date(fecha).getTime())));
 
-                // Creamos un array de días entre la fecha mínima y máxima
+                if (this.herramental?.fecha_limite) {
+                    const fechaLimite = new Date(this.herramental.fecha_limite);
+                    maxFecha = fechaLimite > maxFecha ? fechaLimite : maxFecha;
+                    maxFecha.setDate(maxFecha.getDate() + 1);
+                }
+
                 const diasTotales = [];
                 for (let d = new Date(minFecha); d <= maxFecha; d.setDate(d.getDate() + 1)) {
                     diasTotales.push(new Date(d).toISOString().split('T')[0]); // YYYY-MM-DD
                 }
+
                 return diasTotales;
             },
+
             duracionTotal2() {
                 let maxHour = 0;
 
@@ -1161,9 +1028,73 @@
                 }
 
                 return totalMinutos;
+            },
+            totalDias() {
+                if (!this.duracionTotal || !this.herramental?.fecha_limite) return 0;
+
+                const fechaLimite = new Date(this.herramental.fecha_limite);
+
+                for (let i = 0; i < this.duracionTotal.length; i++) {
+                const fechaActual = new Date(this.duracionTotal[i]);
+
+                if (fechaActual.toDateString() === fechaLimite.toDateString()) {
+                    return i + 1; // +1 si quieres contar días en forma humana (no índice)
+                }
+                }
+                return 0; // Si no se encontró la fecha
             }
         },
         methods:{
+            async agregarFechaLimite() {
+                let t = this;
+
+                try {
+                    const value = await swal({
+                        title: "¿Asignar una fecha límite para el herramental?",
+                        text: "Debe seleccionar una fecha límite para continuar.",
+                        icon: 'info',
+                        content: {
+                            element: "input",
+                            attributes: {
+                                type: "date",
+                                id: "fechaLimite",
+                                class: "swal-input",
+                                required: true
+                            }
+                        },
+                        buttons: {
+                            cancel: "Cancelar",
+                            confirm: {
+                                text: "Asignar",
+                                closeModal: false
+                            }
+                        }
+                    });
+                    
+                    if(value == null)
+                        return 
+
+                    if (value == '') {
+                        await swal("Error", "Debe ingresar una fecha límite.", "error");
+                        return;
+                    }
+                    let fechaLimite = document.getElementById("fechaLimite").value;
+                    
+                    t.cargando = true;
+                    await axios.put(`/api/herramental/${t.selectedHerramental}/fecha-limite`, { fechaLimite });
+                    
+                    await swal("Correcto", "Fecha límite establecida correctamente.", "success");
+                    await this.fetchClientes(t.selectedAnio);
+                    await this.fetchProyectos(t.selectedCliente);
+                    await this.fetchHerramentales(t.selectedProyecto);
+                    await this.fetchComponentes(t.selectedHerramental);
+
+                } catch (error) {
+                    await swal("Error", "Inténtelo de nuevo más tarde.", "error");
+                } finally {
+                    t.cargando = false;
+                }
+            },
             esMiCarpeta(nombreCarpeta) {
                 let userId = {{auth()->user()->id}};
                 return nombreCarpeta.startsWith(userId + '.');
@@ -1854,12 +1785,13 @@
                 t.procesos = [
                     {id: 1, prioridad: 1, nombre: 'Cortar', horas: 0, minutos: 0, incluir: false},
                     {id: 2, prioridad: 2, nombre: 'Programar', horas: 0, minutos: 0, incluir: false},
-                    {id: 3, prioridad: 3, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
-                    {id: 4, prioridad: 4, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
-                    {id: 5, prioridad: 5, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
-                    {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-                    {id: 7, prioridad: 7, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
-                    {id: 8, prioridad: 8, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
+                    {id: 3, prioridad: 3, nombre: 'Carear', horas: 0, minutos: 0, incluir: false},
+                    {id: 4, prioridad: 4, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
+                    {id: 5, prioridad: 5, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
+                    {id: 6, prioridad: 6, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
+                    {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                    {id: 8, prioridad: 8, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
+                    {id: 9, prioridad: 9, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
                 ];
     
                 t.tasks2.forEach(task => {

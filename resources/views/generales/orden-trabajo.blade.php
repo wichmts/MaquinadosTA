@@ -71,6 +71,11 @@
     .custom-file-label:hover {
         background-color: #e7e7e7;
     }
+
+   .content-2 :is(label, input, textarea, button, select) {
+        font-size: 0.875rem !important;
+    }
+
      
 
 
@@ -78,7 +83,7 @@
 </style>
 
 @section('content')
-    <div class="content" id="vue-app">
+    <div class="content content-2" id="vue-app">
         @if (session('message'))
             <div class="alert alert-success" role="alert">
                 {{ session('message') }}
@@ -107,14 +112,7 @@
                     <div class="col-lg-6 form-group">
                         <label class="bold">Área solicitante <span class="text-danger">*</span></label>
                         <select :disabled="modo_edicion" class="form-control" v-model="nuevo.area_solicitud">
-                            <option value="Herramentales">Herramentales</option>
-                            <option value="Producción">Producción</option>
-                            <option value="Diseño">Diseño</option>
-                            <option value="Proyectos">Proyectos</option>
-                            <option value="Dirección">Dirección</option>
-                            <option value="Infraestructura">Infraestructura</option>
-                            <option value="Mantenimiento">Mantenimiento</option>
-                            <option value="Metrologia">Metrologia</option>
+                            <option v-for="obj in areas_solicitantes" :value="obj">@{{obj}}</option>
                         </select>
                     </div>
                     <div class="col-lg-6 form-group">
@@ -296,12 +294,33 @@
                 desde: "auxiliar_diseno",
                 solicitante_id: {{auth()->user()->id}}
             },
+            roles_usuario: JSON.parse('{!! json_encode(auth()->user()->roles->pluck("name")) !!}'),
             solicitudes: [],
             archivo_2d: null,
             archivo_3d: null,
             dibujo: null,
+            areas_solicitantes: [],
         },
         methods:{
+            obtenerAreasSolicitud(){
+                let t = this;
+                let disponibles = [
+                    'DISEÑO',
+                    'DIRECCION',
+                    'HERRAMENTALES',
+                    'INFRAESTRUCTURA',
+                    'MANTENIMIENTO',
+                    'METROLOGIA',
+                    'PRODUCCION',
+                    'PROYECTOS'
+                ];
+                t.areas_solicitantes = disponibles.filter(area => this.roles_usuario.includes(area));
+                Vue.nextTick(() => {
+                    if(t.areas_solicitantes.length > 0){
+                        t.nuevo.area_solicitud = t.areas_solicitantes[0];
+                    }
+                });
+            },
             async validarFormulario(nuevo){
                 let t = this;
                 if(t.nuevo.fecha_deseada_entrega == "" || t.nuevo.area_solicitud == "" || t.nuevo.solicitante_id == "" || t.nuevo.numero_hr == "" || t.nuevo.numero_componente == "" || t.nuevo.cantidad == "" || t.nuevo.comentarios == ""){
@@ -560,6 +579,7 @@
                 return false;
             });
 
+            t.obtenerAreasSolicitud();
             await t.fetchMateriales();
             await t.fetchUsuarios();
             await t.fetchSolicitudes();

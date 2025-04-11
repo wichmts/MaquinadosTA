@@ -3,317 +3,13 @@
     'elementActive' => 'dashboard'
 ])
 
-<style>
-    .btn-group i{
-        letter-spacing: 0px !important;
-    }
-    .btn-group .actions{
-        padding-left: 10px !important;
-        padding-right: 10px !important;
-    }
-    .loader {
-        border: 16px solid hsla(0,0%,87%,.3); /* Light grey */
-        border-top: 16px solid #121935;
-        border-radius: 50%;
-        width: 100px;
-        height: 100px;
-        animation: spin 2s linear infinite;
-        margin: auto;
-    }
-    .fade-enter-active, .fade-leave-active {
-      transition: opacity .2s
-    }
-    .fade-enter, .fade-leave-to {
-      opacity: 0
-    }
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    [v-cloak] {
-        display: none !important;
-    }
-    .no-border {
-        border: none !important;
-     }
-     .vs__dropdown-toggle{
-        height: calc(2.25rem + 2px);
-     }
-
-     .incard{
-        box-shadow:none !important;
-     }
-    .form-group{
-    }
-
-     input[type=checkbox], input[type=radio]{
-        width: 17px !important;
-        height: 17px !important;
-     }
-     input[type="file"] {
-        width: 100%;
-        max-width: 100%; /* Para asegurarte de que no se salga del contenedor */
-    }
-
-    .custom-file-input {
-        display: none;
-    }
-
-    .custom-file-label {
-        display: inline-block;
-        padding: 5px 10px;
-        cursor: pointer;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background-color: #000000 !important;
-    }
-
-    .custom-file-label:hover {
-        background-color: #e7e7e7;
-    }
-    
-     #tabla-principal {
-        table-layout: fixed;
-        min-width: 1200px; /* Ajusta el ancho mínimo según el contenido */
-    }
-
-     #gantt_here {
-        width: 100%;
-        height: 600px; /* Ajusta este valor según tus necesidades */
-    }
-
-    .btn-dark{
-        background-color: #333 !important;
-        color: white !important;
-        border-color: #333;
-    }
-
-
-    input[type="number"] {
-        -moz-appearance: textfield; /* Firefox */
-        -webkit-appearance: none;  /* Chrome, Safari, Edge */
-        appearance: none;          /* Soporte estándar */
-    }
-
-    /* Opcional: Para evitar padding adicional en algunos navegadores */
-    input[type="number"]::-webkit-inner-spin-button, 
-    input[type="number"]::-webkit-outer-spin-button {
-        -webkit-appearance: none; 
-        margin: 0; /* Opcional: Ajustar márgenes */
-    }
-
-
-    .table .form-check label .form-check-sign::before, .table .form-check label .form-check-sign::after {top: -10px !important}
-
-    .gantt-chart {
-        display: grid;
-        grid-template-rows: auto;
-        font-family: Arial, sans-serif;
-    }
-
-
-    .gantt-header, .gantt-row {
-        display: grid;
-        grid-template-columns: 150px repeat(var(--columns, 200), 1fr); /* var(--columns) es una variable CSS */
-        height: 30px;
-    }
-
-    .gantt-cell {
-        border: .5px solid #ddd;
-        padding: 0px;
-        text-align: center;
-        font-size: 12px;
-        width: 40px;
-    }
-
-
-    .task-name {
-        background-color: #f0f0f0;
-        text-align: center;
-        font-weight: bold;
-        width: 150px;
-        font-size: 15px;
-    }
-
-    .gantt-bar {
-        position: relative;
-    }
-
-    .normal-task {
-        position: absolute;
-        height: 100%;
-        background-color: #4caf50;
-        border-radius: 0px;
-    }
-
-    .rework-task {
-        position: absolute;
-        height: 100%;
-        background-color: #f44336;
-        border-radius: 0px;
-    }
-
-     .delay-task {
-        position: absolute;
-        height: 100%;
-        background-color: #ff9430;
-        border-radius: 0px;
-    }
-
-    .general-header {
-        display: grid;
-        grid-template-columns: 150px repeat(var(--columns, 200), 1fr); /* var(--columns) es una variable CSS */
-        background-color: #f0f0f0;
-        font-weight: bold;
-        text-align: center;
-    }
-
-    .time-header {
-        grid-column: span var(--columns, 200); /* Cambia este número si tienes más o menos horas */
-        font-size: 14px;
-        padding: 8px 0;
-    }
-
-    .limite-tiempo {
-        position: absolute;
-        top: 30px;
-        bottom: 0;
-        left: 50%; /* O la posición que desees */
-        width: 0;  /* El width se debe poner a 0, ya que la línea será con borde */
-        border-left: 3px dotted orange; /* Agregar borde punteado */
-        z-index: 10;
-    }
-
-    .tooltip {
-        max-width: none; /* Elimina el límite de ancho predeterminado */
-        width: 400px; /* Asegúrate de que el tooltip se ajuste al contenido */
-    }
-
-    .tipoParoSeleccionado {
-        background-color: #d34040 !important;
-        color: white !important;
-    }
-
-
-    /*  */
-
-
-
-
-  .checkbox-wrapper-10 .tgl {
-    display: none;
-  }
-  .checkbox-wrapper-10 .tgl,
-  .checkbox-wrapper-10 .tgl:after,
-  .checkbox-wrapper-10 .tgl:before,
-  .checkbox-wrapper-10 .tgl *,
-  .checkbox-wrapper-10 .tgl *:after,
-  .checkbox-wrapper-10 .tgl *:before,
-  .checkbox-wrapper-10 .tgl + .tgl-btn {
-    box-sizing: border-box;
-  }
-  .checkbox-wrapper-10 .tgl::-moz-selection,
-  .checkbox-wrapper-10 .tgl:after::-moz-selection,
-  .checkbox-wrapper-10 .tgl:before::-moz-selection,
-  .checkbox-wrapper-10 .tgl *::-moz-selection,
-  .checkbox-wrapper-10 .tgl *:after::-moz-selection,
-  .checkbox-wrapper-10 .tgl *:before::-moz-selection,
-  .checkbox-wrapper-10 .tgl + .tgl-btn::-moz-selection,
-  .checkbox-wrapper-10 .tgl::selection,
-  .checkbox-wrapper-10 .tgl:after::selection,
-  .checkbox-wrapper-10 .tgl:before::selection,
-  .checkbox-wrapper-10 .tgl *::selection,
-  .checkbox-wrapper-10 .tgl *:after::selection,
-  .checkbox-wrapper-10 .tgl *:before::selection,
-  .checkbox-wrapper-10 .tgl + .tgl-btn::selection {
-    background: none;
-  }
-  .checkbox-wrapper-10 .tgl + .tgl-btn {
-    outline: 0;
-    display: block;
-    width: 80%;
-    height: 40px;
-    position: relative;
-    cursor: pointer;
-    -webkit-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
-  }
-  .checkbox-wrapper-10 .tgl + .tgl-btn:after,
-  .checkbox-wrapper-10 .tgl + .tgl-btn:before {
-    position: relative;
-    display: block;
-    content: "";
-    width: 50%;
-    height: 100%;
-  }
-  .checkbox-wrapper-10 .tgl + .tgl-btn:after {
-    left: 0;
-  }
-  .checkbox-wrapper-10 .tgl + .tgl-btn:before {
-    display: none;
-  }
-  .checkbox-wrapper-10 .tgl:checked + .tgl-btn:after {
-    left: 50%;
-  }
-
-  .checkbox-wrapper-10 .tgl-flip + .tgl-btn {
-    padding: 2px;
-    transition: all 0.2s ease;
-    font-family: sans-serif;
-    perspective: 100px;
-  }
-  .checkbox-wrapper-10 .tgl-flip + .tgl-btn:after,
-  .checkbox-wrapper-10 .tgl-flip + .tgl-btn:before {
-    display: inline-block;
-    transition: all 0.4s ease;
-    width: 100%;
-    text-align: center;
-    position: absolute;
-    line-height: 40px;
-    font-size: 14px !important;
-    font-weight: bold;
-    color: #fff;
-    position: absolute;
-    top: 0;
-    left: 0;
-    -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-    border-radius: 4px;
-  }
-  .checkbox-wrapper-10 .tgl-flip + .tgl-btn:after {
-    content: attr(data-tg-on);
-    background: #02C66F;
-    transform: rotateY(-180deg);
-  }
-  .checkbox-wrapper-10 .tgl-flip + .tgl-btn:before {
-    background: #FF3A19;
-    content: attr(data-tg-off);
-  }
-  .checkbox-wrapper-10 .tgl-flip + .tgl-btn:active:before {
-    transform: rotateY(-20deg);
-  }
-  .checkbox-wrapper-10 .tgl-flip:checked + .tgl-btn:before {
-    transform: rotateY(180deg);
-  }
-  .checkbox-wrapper-10 .tgl-flip:checked + .tgl-btn:after {
-    transform: rotateY(0);
-    left: 0;
-    background: #7FC6A6;
-  }
-  .checkbox-wrapper-10 .tgl-flip:checked + .tgl-btn:active:after {
-    transform: rotateY(20deg);
-  }
-
-
-
-</style>
+@section('styles')
+<link rel="stylesheet" href="{{ asset('paper/css/paper-dashboard-responsivo.css') }}?v={{ time() }}">
+@endsection
 
 @section('content')
 
-
-    <div class="content" id="vue-app">
+    <div id="vue-app">
         @if (session('message'))
            <div class="alert alert-success" role="alert">
                {{ session('message') }}
@@ -325,189 +21,210 @@
            </div>
        @endif
 
-       <div class="col-xl-12" v-show="cargando">
+       <div class="col-lg-12" v-show="cargando">
            <div style="margin-top: 200px; max-width: 100% !important; margin-bottom: auto; text-align:center; letter-spacing: 2px">
                <h5 class="mb-5">CARGANDO...</h5>
                <div class="loader"></div>
            </div>
        </div>
+
+
+
         <div class="wrapper" v-cloak v-show="!cargando">
-            <div class="main-panel col-xl-12">
-                
-                <div class="row" >
-                    <div class="col-xl-2 pt-3" style="background-color: #f1f1f1; height: calc(100vh - 107.3px); overflow-y: scroll">
-                        <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                            <a class="nav-link cursor-pointer text-right text-muted" >
-                                <i v-if="menuStep > 1"  @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
-                            </a>
-                            <div v-if="!cargandoMenu && menuStep == 1">
-                                @if (auth()->user()->hasRole('JEFE DE AREA'))
-                                
-                                <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> MAQUINAS ASIGNADAS</a>
-                                <a v-for="obj in maquinas_todas" class="nav-link cursor-pointer" @click="fetchComponentes(obj.id)" v-if="esMiMaquina(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/maquina.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span> 
+            <div class="sidebar" data-color="white" data-active-color="danger">
+                <div class="sidebar-wrapper">
+                    <ul class="nav">
+                        <li>
+                            <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                <a class="nav-link py-0 cursor-pointer text-right text-muted" >
+                                    <i v-if="menuStep > 1"  @click="regresar(menuStep - 1)" class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                                 </a>
-                                <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> OTRAS MAQUINAS</a>
-                                <a v-for="obj in maquinas_todas" class="nav-link cursor-pointer" @click="fetchComponentes(obj.id)" v-if="!esMiMaquina(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/maquina.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span> 
-                                </a>
-                                @else
-                                <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> MAQUINAS ASIGNADAS </a>
-                                <a class="nav-link cursor-pointer" v-for="obj in maquinas" @click="fetchComponentes(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/maquina.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span> 
-                                </a>
-                                @endif
-
-
-                            </div>    
-                            <div v-if="!cargandoMenu && menuStep == 2">
-                                <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> COMPONENTES EN COLA DE PRODUCCION</a>
-                                <a class="nav-link cursor-pointer" v-for="obj in componentes" @click="fetchComponente(obj.id)">
-                                    <i class="nc-icon"><img height="20px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}} &nbsp; 
-                                        <small v-if="obj.prioridad == 'A'" class="badge badge-danger badge-pill px-2 py-1"> Prioridad @{{obj.prioridad}}</small>
-                                        <small v-if="obj.prioridad == 'B'" class="badge badge-warning badge-pill px-2 py-1"> Prioridad @{{obj.prioridad}}</small>
-                                        <small v-if="obj.prioridad == 'C'" class="badge badge-info badge-pill px-2 py-1"> Prioridad @{{obj.prioridad}}</small>
-                                    </span> 
-                                </a>
+                                <div v-if="!cargandoMenu && menuStep == 1">
+                                    @if (auth()->user()->hasRole('JEFE DE AREA'))
+                                    
+                                    <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> MAQUINAS ASIGNADAS</a>
+                                    <a v-for="obj in maquinas_todas" class="nav-link cursor-pointer" @click="fetchComponentes(obj.id)" v-if="esMiMaquina(obj.id)">
+                                        <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/maquina.png') }}"></i> &nbsp;
+                                        <span class="underline-hover">@{{obj.nombre}}</span> 
+                                    </a>
+                                    <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> OTRAS MAQUINAS</a>
+                                    <a v-for="obj in maquinas_todas" class="nav-link cursor-pointer" @click="fetchComponentes(obj.id)" v-if="!esMiMaquina(obj.id)">
+                                        <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/maquina.png') }}"></i> &nbsp;
+                                        <span class="underline-hover">@{{obj.nombre}}</span> 
+                                    </a>
+                                    @else
+                                    <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> MAQUINAS ASIGNADAS </a>
+                                    <a class="nav-link cursor-pointer" v-for="obj in maquinas" @click="fetchComponentes(obj.id)">
+                                        <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/maquina.png') }}"></i> &nbsp;
+                                        <span class="underline-hover">@{{obj.nombre}}</span> 
+                                    </a>
+                                    @endif
+                                </div>    
+                                <div v-if="!cargandoMenu && menuStep == 2">
+                                    <a class="nav-link" style="font-size: 12px !important; color:#939393 !important; letter-sapcing: 2px !important"> EN COLA DE PRODUCCIÓN</a>
+                                    <a class="nav-link cursor-pointer" v-for="obj in componentes" @click="fetchComponente(obj.id)">
+                                        <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
+                                        <span class="underline-hover">@{{obj.nombre}} &nbsp; 
+                                            <small v-if="obj.prioridad == 'A'" class="badge badge-danger badge-pill px-2 py-1"> Prioridad @{{obj.prioridad}}</small>
+                                            <small v-if="obj.prioridad == 'B'" class="badge badge-warning badge-pill px-2 py-1"> Prioridad @{{obj.prioridad}}</small>
+                                            <small v-if="obj.prioridad == 'C'" class="badge badge-info badge-pill px-2 py-1"> Prioridad @{{obj.prioridad}}</small>
+                                        </span> 
+                                    </a>
+                                </div>
+                            </div>   
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="main-panel">
+                <nav class="navbar navbar-expand-xl navbar-absolute fixed-top navbar-transparent">
+                    <div class="container-fluid">
+                        <div class="navbar-wrapper">
+                            <div class="navbar-toggle">
+                                <button type="button" class="navbar-toggler">
+                                    <span class="navbar-toggler-bar bar1"></span>
+                                    <span class="navbar-toggler-bar bar2"></span>
+                                    <span class="navbar-toggler-bar bar3"></span>
+                                </button>
                             </div>
-                        </div>            
+                             <p style="">
+                                <span class="cursor-pointer pb-2" @click="regresar(1)"><i class="fa fa-home"></i> &nbsp;</span>
+                                <span class="cursor-pointer pb-2"  v-if="ruta.maquina" @click="regresar(2)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.maquina}}</span>      </span>
+                                <span class="cursor-pointer pb-2 bold"  v-if="ruta.componente"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.componente}}</span>      </span>
+                            </p>
+                        </div>
                     </div>
-                    <div class="col-xl-10 mt-3">
-                        <div class="row">
-                            <div class="mb-2 col-xl-12" style="border-bottom: 1px solid #ededed">
-                                <p style="">
-                                    <span class="cursor-pointer pb-2" @click="regresar(1)"><i class="fa fa-home"></i> &nbsp;</span>
-                                    <span class="cursor-pointer pb-2"  v-if="ruta.maquina" @click="regresar(2)"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.maquina}}</span>      </span>
-                                    <span class="cursor-pointer pb-2 bold"  v-if="ruta.componente"><i class="fa fa-angle-right"></i>   &nbsp; <span class="underline-hover">@{{ruta.componente}}</span>      </span>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xl-12">
-                                <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE OPERADOR</h2>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="col-xl-12" v-if="!selectedComponente">
-                            <h5 class="text-muted my-4"> SELECCIONE UN COMPONENTE PARA SU FABRICACION</h5>
-                        </div>
-                        <div class="row mt-3 pb-3" v-else>
-                            <div class="col-xl-6 form-group mb-0">
-                                <span style="font-size: 22px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold my-4 py-2"> <i class="fa fa-cogs" style="font-size: 16px !important" ></i> @{{componente.nombre}}</span>
-                            </div>
-                            <div class="col-xl-2 form-group mb-0">
-                                <label class="bold">CANTIDAD</label>
-                                <input type="text" class="form-control text-center" v-model="componente.cantidad" placeholder="Cantidad" disabled>
-                            </div>
-                            <div class="col-xl-2 form-group mb-0 mt-2">
-                                <a :href="'/storage/' + componente.archivo_2d_public" target="_blank" class="btn btn-block btn-default"><i class="fa fa-file"></i> Ver 2D</a>
-                            </div>
-                            <div class="col-xl-2 form-group mb-0 mt-2">
-                                <button class="btn btn-block btn-default" @click="verModalRuta()"><i class="fa fa-eye"></i> Ver ruta</button>
-                            </div>
-                            <div class="col-xl-4 form-group mb-0" style="height: 120px !important">
-                                <label class="bold">DESCRIPCION DEL TRABAJO</label>
-                                <textarea disabled v-model="componente.descripcion_trabajo" class="mt-0 form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Descripcion del trabajo..."></textarea>
-                            </div>
-                            <div class="col-xl-4 form-group mb-0" style="height: 120px !important">
-                                <label class="bold">HERRAMIENTAS DE CORTE</label>
-                                <textarea disabled  v-model="componente.herramientas_corte" class="mt-0 form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Agregar herramientas de corte..."></textarea>
-                            </div>
-                            <div class="col-xl-4">
-                                <div class="row">
-                                    <div class="col-xl-12 form-group">
-                                        <label class="bold">SELECCIONAR PROGRAMA (TXT)</label>
-                                        <select class="form-control" v-model="programaSeleccionado" @change="seleccionarPrograma()">
-                                            <option v-for="f in componente.fabricaciones" :value="f.id"> @{{f.archivo_show}}</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-xl-12 mt-2 form-group">
-                                        <label class="bold">MAQUNA</label>
-                                        <input type="text" :value="ruta.maquina" class="form-control" disabled>
-                                    </div>
+                </nav>
+                <div class="content">
+                    <div class="row">
+                        <div class="col-lg-12 mt-0" style="height: 79vh !important; overflow-y: scroll !important">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE OPERADOR</h2>
                                 </div>
                             </div>
-                        </div>
-                        <Transition name="fade" mode="out-in">
-                            <div class="row py-3" style="border-top: 2px dashed #d6d6d6; " v-if="fabricacion && selectedComponente" :key="fabricacion.id">
-                            
-                                <div class="col-xl-4 mb-3">
-                                    <span style="font-size: 14px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold py-2"> <i class="fa fa-computer" style="font-size: 13px !important" ></i> PROGRAMA SELECCIONADO: @{{fabricacion.archivo_show}}</span>
+                            <div class="col-lg-12" v-if="!selectedComponente">
+                                <h5 class="text-muted my-4"> SELECCIONE UN COMPONENTE PARA SU FABRICACION</h5>
+                            </div>
+                            <div class="row mt-0 pt-0 pb-3" v-else>
+                                <div class="col-lg-6 form-group mb-0">
+                                    <span style="font-size: 22px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold my-4 py-2"> <i class="fa fa-cogs" style="font-size: 16px !important" ></i> @{{componente.nombre}}</span>
                                 </div>
-
-                                <div class="col-xl-2 mb-3"  v-if="selectedComponente">
-                                    <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.estatus_fabricacion == 'proceso' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="btn btn-block btn-default mt-0" @click="cambiarEstatusFabricacion('proceso')"><i class="fa fa-play-circle"></i>    INICIAR FABRIC.</button>
+                                <div class="col-lg-2 form-group mb-0">
+                                    <label class="bold">CANTIDAD</label>
+                                    <input type="text" class="form-control text-center" v-model="componente.cantidad" placeholder="Cantidad" disabled>
                                 </div>
-                                <div class="col-xl-2 mb-3"  v-if="selectedComponente" style="border-right: 1px solid #efefef">
-                                    <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.estatus_fabricacion == 'detenido' || fabricacion.estatus_fabricacion == 'inicial' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="btn btn-block btn-default mt-0" @click="cambiarEstatusFabricacion('detenido')"><i class="fa fa-stop-circle"></i>    DETENER FABRIC.</button>
+                                <div class="col-lg-2 form-group mb-0 mt-2">
+                                    <a :href="'/storage/' + componente.archivo_2d_public" target="_blank" class="btn btn-block btn-default"><i class="fa fa-file"></i> Ver 2D</a>
                                 </div>
-
-                                <div class="col-xl-2 mb-3"  v-if="selectedComponente">
-                                    <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="btn btn-block mt-0"  @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR </button>
+                                <div class="col-lg-2 form-group mb-0 mt-2">
+                                    <button class="btn btn-block btn-default" @click="verModalRuta()"><i class="fa fa-eye"></i> Ver ruta</button>
                                 </div>
-                                <div class="col-xl-2 mb-3"  v-if="selectedComponente" >
-                                    <button class="btn btn-success btn-block mt-0" @click="liberar()" :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)">
-                                        <i class="fa fa-check-circle"></i> 
-                                        <span v-if="fabricacion.fabricado != true">FINALIZAR</span>
-                                        <span v-else>FINALIZADA</span>
-                                    </button>
+                                <div class="col-lg-4 form-group mb-0" style="height: 120px !important">
+                                    <label class="bold">DESCRIPCION DEL TRABAJO</label>
+                                    <textarea disabled v-model="componente.descripcion_trabajo" class="mt-0 form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Descripcion del trabajo..."></textarea>
                                 </div>
-                                <div class="col-xl-9">
+                                <div class="col-lg-4 form-group mb-0" style="height: 120px !important">
+                                    <label class="bold">HERRAMIENTAS DE CORTE</label>
+                                    <textarea disabled  v-model="componente.herramientas_corte" class="mt-0 form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Agregar herramientas de corte..."></textarea>
+                                </div>
+                                <div class="col-lg-4">
                                     <div class="row">
-                                        <div class="col-xl-5 form-group" style="height: 150px !important">
-                                            <label class="bold">COMENTARIOS DE COMPONENTE TERMINADO</label>
-                                            <textarea :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-0 form-control text-left px-1 py-1" style="min-height: 150px !important" placeholder="Comentarios..." v-model="fabricacion.comentarios_terminado"></textarea>
+                                        <div class="col-lg-9 form-group">
+                                            <label class="bold">SELECCIONAR PROGRAMA (TXT)</label>
+                                            <select class="form-control" v-model="programaSeleccionado" @change="seleccionarPrograma()">
+                                                <option v-for="f in componente.fabricaciones" :value="f.id"> @{{f.archivo_show}}</option>
+                                            </select>
                                         </div>
-                                        <div class="col-xl-4 form-group" style="height: 150px !important">
-                                            <label class="bold">REGISTRO DE MEDIDAS</label>
-                                            <textarea :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-0 form-control text-left px-1 py-1" style="min-height: 150px !important" placeholder="Registro de medidas..." v-model="fabricacion.registro_medidas"></textarea>
+                                        <div class="col-lg-3" >
+                                            <a :href="'/api/download/programas/' + fabricacion.archivo" target="_blank" :disabled="fabricacion.archivo_show == 'no requiere programa'" class="btn btn-block" style="margin-top: 28px"><i class="fa fa-download"></i></a>
                                         </div>
-                                        <div class="col-xl-3 form-group">
-                                            <label class="bold">FOTO COMPONENTE TERMINADO</label>
-                                            <a target="_blank" v-if="fabricacion.foto" :href="'/storage/fabricaciones/' + fabricacion.foto">
-                                                <img :src="'/storage/fabricaciones/' + fabricacion.foto" style="border-radius: 10px; width: 100%; height: auto; object-fit: cover" alt="">
-                                            </a>
-                                            <img v-else src="{{ asset('paper/img/no-image.png') }}" style="border-radius: 10px; width: 100%; height: 100px; object-fit: cover" alt="">
-                                            <div class="row mt-2">
-                                                <div class="col-xl-12">
-                                                    <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="btn btn-dark btn-block mt-0" @click="abrirCamara()"><i class="fa fa-camera"></i> <span v-if="fabricacion.foto">RETOMAR FOTO</span><span v-else>TOMAR FOTO</span></button>
-                                                    <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;" @change="procesarFoto($event)">
+                                        <div class="col-lg-12 mt-2 form-group">
+                                            <label class="bold">MAQUNA</label>
+                                            <input type="text" :value="ruta.maquina" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <Transition name="fade" mode="out-in">
+                                <div class="row py-3" style="border-top: 2px dashed #d6d6d6; " v-if="fabricacion && selectedComponente" :key="fabricacion.id">
+                                
+                                    <div class="col-lg-4 mb-3">
+                                        <span style="font-size: 14px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold py-2"> <i class="fa fa-computer" style="font-size: 13px !important" ></i> PROGRAMA SELECCIONADO: @{{fabricacion.archivo_show}}</span>
+                                    </div>
+    
+                                    <div class="col-lg-2 mb-3"  v-if="selectedComponente">
+                                        <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.estatus_fabricacion == 'proceso' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="btn btn-block btn-default mt-0" @click="cambiarEstatusFabricacion('proceso')"><i class="fa fa-play-circle"></i>    INICIAR FABRIC.</button>
+                                    </div>
+                                    <div class="col-lg-2 mb-3"  v-if="selectedComponente" style="border-right: 1px solid #efefef">
+                                        <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.estatus_fabricacion == 'detenido' || fabricacion.estatus_fabricacion == 'inicial' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="btn btn-block btn-default mt-0" @click="cambiarEstatusFabricacion('detenido')"><i class="fa fa-stop-circle"></i>    DETENER FABRIC.</button>
+                                    </div>
+    
+                                    <div class="col-lg-2 mb-3"  v-if="selectedComponente">
+                                        <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="btn btn-block mt-0"  @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR </button>
+                                    </div>
+                                    <div class="col-lg-2 mb-3"  v-if="selectedComponente" >
+                                        <button class="btn btn-success btn-block mt-0" @click="liberar()" :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)">
+                                            <i class="fa fa-check-circle"></i> 
+                                            <span v-if="fabricacion.fabricado != true">FINALIZAR</span>
+                                            <span v-else>FINALIZADA</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-lg-9">
+                                        <div class="row">
+                                            <div class="col-lg-5 form-group" style="height: 150px !important">
+                                                <label class="bold">COMENTARIOS DE COMPONENTE TERMINADO</label>
+                                                <textarea :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-0 form-control text-left px-1 py-1" style="min-height: 150px !important" placeholder="Comentarios..." v-model="fabricacion.comentarios_terminado"></textarea>
+                                            </div>
+                                            <div class="col-lg-4 form-group" style="height: 150px !important">
+                                                <label class="bold">REGISTRO DE MEDIDAS</label>
+                                                <textarea :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-0 form-control text-left px-1 py-1" style="min-height: 150px !important" placeholder="Registro de medidas..." v-model="fabricacion.registro_medidas"></textarea>
+                                            </div>
+                                            <div class="col-lg-3 form-group">
+                                                <label class="bold">FOTO COMPONENTE TERMINADO</label>
+                                                <a target="_blank" v-if="fabricacion.foto" :href="'/storage/fabricaciones/' + fabricacion.foto">
+                                                    <img :src="'/storage/fabricaciones/' + fabricacion.foto" style="border-radius: 10px; width: 100%; height: auto; object-fit: cover" alt="">
+                                                </a>
+                                                <img v-else src="{{ asset('paper/img/no-image.png') }}" style="border-radius: 10px; width: 100%; height: 100px; object-fit: cover" alt="">
+                                                <div class="row mt-2">
+                                                    <div class="col-lg-12">
+                                                        <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="btn btn-dark btn-block mt-0" @click="abrirCamara()"><i class="fa fa-camera"></i> <span v-if="fabricacion.foto">RETOMAR FOTO</span><span v-else>TOMAR FOTO</span></button>
+                                                        <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;" @change="procesarFoto($event)">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        
-                                        <div class="col-xl-12 mt-3 mb-0 pb-0">
-                                            <label class="bold" style="letter-spacing: 1px">SELECCIONE UN SUBCOMPONENTE PARA MARCARLO COMO FABRICADO UNA VEZ QUE HAYA FINALIZADO SU FABRICACIÓN:</label>
+                                        <div class="row">
+                                            <div class="col-lg-12 mt-3 mb-0 pb-0">
+                                                <label class="bold" style="letter-spacing: 1px">SELECCIONE UN SUBCOMPONENTE PARA MARCARLO COMO FABRICADO UNA VEZ QUE HAYA FINALIZADO SU FABRICACIÓN:</label>
+                                            </div>
+                                            <div class="checkbox-wrapper-10 col-lg-2" v-for="(x, index) in fabricacion.checklist_fabricadas">
+                                                <input class="tgl tgl-flip" :id="'cb5' + index" type="checkbox" v-model="x.terminado" />
+                                                <label class="tgl-btn" :data-tg-off="'✘ ' +x.nombre" :data-tg-on="'✔ ' + x.nombre" :for="'cb5' + index"></label>
+                                            </div>                               
                                         </div>
-                                        <div class="checkbox-wrapper-10 col-xl-2" v-for="(x, index) in fabricacion.checklist_fabricadas">
-                                            <input class="tgl tgl-flip" :id="'cb5' + index" type="checkbox" v-model="x.terminado" />
-                                            <label class="tgl-btn" :data-tg-off="'✘ ' +x.nombre" :data-tg-on="'✔ ' + x.nombre" :for="'cb5' + index"></label>
-                                        </div>                               
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="row">
+                                            
+                                            <div class="col-lg-12">
+                                                <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" @click="abrirSolicitud('modificacion')" class="btn btn-dark btn-block mt-0"><i class="fa fa-edit"></i> SOLICITAR MODIFICACIÓN</button>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" @click="abrirSolicitud('retrabajo')" class="btn btn-dark btn-block mt-0"><i class="fa fa-retweet"></i> SOLICITAR RETRABAJO</button>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" @click="abrirSolicitud('refabricacion')" class="btn btn-dark btn-block mt-0"><i class="fa fa-recycle"></i> SOLICITAR REFABRICACIÓN</button>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <button v-if="fabricacion.estatus_fabricacion != 'paro'" @click="registrarParo()" :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-1 btn btn-danger btn-block"><i class="fa fa-stop-circle"></i> Iniciar paro</button>
+                                                <button  v-else @click="eliminarParo()" :disabled="!fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-1 btn btn-danger btn-block"><i class="fa fa-play-circle"></i> Reanudar operacion</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-xl-3">
-                                    <div class="row">
-                                        
-                                        <div class="col-xl-12">
-                                            <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" @click="abrirSolicitud('modificacion')" class="btn btn-dark btn-block mt-0"><i class="fa fa-edit"></i> SOLICITAR MODIFICACION</button>
-                                        </div>
-                                        <div class="col-xl-12">
-                                            <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" @click="abrirSolicitud('retrabajo')" class="btn btn-dark btn-block mt-0"><i class="fa fa-retweet"></i> SOLICITAR RETRABAJO</button>
-                                        </div>
-                                        <div class="col-xl-12">
-                                            <button v-if="fabricacion.estatus_fabricacion != 'paro'" @click="registrarParo()" :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-1 btn btn-danger btn-block"><i class="fa fa-stop-circle"></i> Iniciar paro</button>
-                                            <button  v-else @click="eliminarParo()" :disabled="!fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-1 btn btn-danger btn-block"><i class="fa fa-play-circle"></i> Reanudar operacion</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </Transition>
+                            </Transition>
+                        </div>
                     </div>
                 </div>
 
@@ -524,19 +241,19 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-xl-12 form-group">
+                                    <div class="col-lg-12 form-group">
                                         <label class="bold">Seleccionar motivo <span style="color: red">*</span></label>
                                         <ul style="height: 300px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border mt-0">
                                             <li v-for="p in paros" class="dropdown-item" :class="{ tipoParoSeleccionado: paro.tipo_paro == p}" @click="paro.tipo_paro = p"><i class="fa fa-check-circle" v-if="paro.tipo_paro == p"></i> @{{p}}</li>
                                         </ul>
                                     </div>
-                                    <div class="py-0 col-xl-12">
+                                    <div class="py-0 col-lg-12">
                                         <label class="bold">Comentarios de paro</label>
                                     <textarea v-model="paro.comentarios_paro" class="form-control w-100 text-left px-2 py-1" placeholder="Comentarios de paro..."></textarea>
                                 </div>                           
                                 </div>
                                 <div class="row">
-                                    <div class="col-xl-12 text-right">
+                                    <div class="col-lg-12 text-right">
                                         <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
                                         <button class="btn btn-danger" v-if="!loading_button" type="button" @click="registrarParoAPI()"><i class="fa fa-stop-circle"></i> INICAR PARO</button>
                                         <button class="btn btn-danger" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> PROCESANDO, ESPERE ...</button>
@@ -547,7 +264,7 @@
                     </div>
                 </div>
                 <div class="modal fade" id="modalRuta" tabindex="-1" aria-labelledby="modalRutaLabel" aria-hidden="true" >
-                    <div class="modal-dialog"  style="min-width: 60%;">
+                    <div class="modal-dialog"  style="min-width: 80%;">
                         <div class="modal-content" >
                             <div class="modal-header">
                                 <h3 class="bold modal-title" id="modalRutaLabel" style="letter-spacing: 1px">RUTA PARA EL COMPONENTE @{{componente.nombre}}</h3>
@@ -557,9 +274,9 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row d-flex align-items-center">
-                                    <div class="col-xl-12">
+                                    <div class="col-lg-12">
                                         <div class="row">
-                                            <div class="col-xl-12" style="overflow-x:scroll">
+                                            <div class="col-lg-12" style="overflow-x:scroll">
                                                 <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }" >
                                                     <div class="gantt-header general-header">
                                                         <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px" >TIEMPO TEÓRICO EN HORAS</div>
@@ -587,7 +304,7 @@
                                             </div>
                                         </div>
                                         <div class="row mt-3">
-                                            <div class="col-xl-12" style="overflow-x:scroll">
+                                            <div class="col-lg-12" style="overflow-x:scroll">
                                                 <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }" >
                                                     <div class="gantt-header general-header">
                                                         <div class=" time-header pb-2" :colspan="duracionTotal.length" style="letter-spacing: 1px" >TIEMPO REAL EN HORAS</div>
@@ -635,14 +352,14 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row px-3">
-                                    <div class="mt-3 py-2 col-xl-12 form-group" style="background-color: rgb(254, 195, 195); border-radius: 10px">
+                                    <div class="mt-3 py-2 col-lg-12 form-group" style="background-color: rgb(254, 195, 195); border-radius: 10px">
                                         <label class="bold text-danger"><i class="fa fa-exclamation-circle"></i> Hubo un retraso en el tiempo estimado de fabricacion para este componente. Indique el motivo.</label>
                                         <textarea style="border: none !important" v-model="fabricacion.motivo_retraso" class="form-control w-100 text-left px-2 py-1" placeholder="Motivo del retraso..."></textarea>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-xl-12"><hr></div>
-                                    <div class="col-xl-12 text-right">
+                                    <div class="col-lg-12"><hr></div>
+                                    <div class="col-lg-12 text-right">
                                         <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
                                         <button class="btn btn-secondary" v-if="!loading_button" type="button" @click="guardar(true)"><i class="fa fa-check-circle"></i> LIBERAR COMPONENTE</button>
                                         <button class="btn btn-secondary" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> LIBERANDO, ESPERE ...</button>
@@ -665,13 +382,13 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="py-0 col-xl-12">
+                                    <div class="py-0 col-lg-12">
                                         <label class="bold">Comentarios <span class="text-danger">*</span></label>
                                     <textarea v-model="solicitud.comentarios" class="form-control w-100 text-left px-2 py-1" placeholder="Agregar comentarios..."></textarea>
                                 </div>                           
                                 </div>
                                 <div class="row">
-                                    <div class="col-xl-12 text-right">
+                                    <div class="col-lg-12 text-right">
                                         <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
                                         <button class="btn" v-if="!loading_button" type="button" @click="enviarSolicitud()"><i class="fa fa-paper-plane"></i> ENVIAR SOLICITUD</button>
                                         <button class="btn" type="button" disabled v-if="loading_button"><i class="fa fa-spinner"></i> ENVIANDO, ESPERE ...</button>
@@ -732,14 +449,14 @@
             procesos: [
                 {id: 1, prioridad: 1, nombre: 'Cortar', horas: 0, minutos: 0, incluir: false},
                 {id: 2, prioridad: 2, nombre: 'Programar', horas: 0, minutos: 0, incluir: false},
-                {id: 3, prioridad: 3, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
-                {id: 4, prioridad: 4, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
-                {id: 5, prioridad: 5, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
-                // {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-                {id: 7, prioridad: 7, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
-                {id: 8, prioridad: 8, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
+                {id: 3, prioridad: 3, nombre: 'Carear', horas: 0, minutos: 0, incluir: false},
+                {id: 4, prioridad: 4, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
+                {id: 5, prioridad: 5, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
+                {id: 6, prioridad: 6, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
+                // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                {id: 8, prioridad: 8, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
+                {id: 9, prioridad: 9, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
             ],
-
             tasks: [],
             rutaAvance: [],
             archivos: [],
@@ -1011,12 +728,13 @@
                 t.procesos = [
                     {id: 1, prioridad: 1, nombre: 'Cortar', horas: 0, minutos: 0, incluir: false},
                     {id: 2, prioridad: 2, nombre: 'Programar', horas: 0, minutos: 0, incluir: false},
-                    {id: 3, prioridad: 3, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
-                    {id: 4, prioridad: 4, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
-                    {id: 5, prioridad: 5, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
-                    // {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-                    {id: 7, prioridad: 7, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
-                    {id: 8, prioridad: 8, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
+                    {id: 3, prioridad: 3, nombre: 'Carear', horas: 0, minutos: 0, incluir: false},
+                    {id: 4, prioridad: 4, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
+                    {id: 5, prioridad: 5, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
+                    {id: 6, prioridad: 6, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
+                    // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                    {id: 8, prioridad: 8, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
+                    {id: 9, prioridad: 9, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
                 ];
     
                 t.tasks.forEach(task => {

@@ -72,7 +72,18 @@
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> COMPONENTES </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in componentes" v-if="!obj.refabricado" @click="fetchComponente(obj.id)">
                                     <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span>
+                                    <span class="underline-hover" :style=" obj.cancelado == true ? 'text-decoration: line-through' : ''">
+                                        @{{obj.nombre}} 
+                                    </span>&nbsp;&nbsp;
+                                     <small 
+
+                                        v-if="tienePendientes(obj)" 
+                                        :key="'componente' + obj.id" 
+                                        class="cursor-info text-danger fa fa-info-circle" 
+                                        data-toggle="tooltip" 
+                                        data-placement="bottom" 
+                                        :title="getContenidoTooltipComponente(obj)" >
+                                    </small>
                                 </a>
                             </div>
 
@@ -104,16 +115,21 @@
                     </div>
                 </div>
             </nav>
-            <div class="content">
+            <div class="content" style="height: 75vh; overflow-y: scroll !important">
                 <div class="row mb-2">
                     <div class="col-xl-6 col-lg-4">
                         <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px"> ENRUTADOR</h2>
                     </div>
-                    <div class="col-xl-3 col-lg-4 text-right" v-if="selectedComponente">
+                    <div class="col-xl-3 col-lg-4 text-right" v-if="selectedComponente && componente.cancelado != true">
                         <button class="btn btn-block" :disabled="componente.enrutado == true" @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR</button>
                     </div>
-                    <div class="col-xl-3 col-lg-4 text-right" v-if="selectedComponente">
-                        <button class="btn btn-success btn-block" :disabled="componente.enrutado == true" @click="guardar(true)"><i class="fa fa-check-double"></i> @{{componente.enrutado == true ? 'LIBERADO' : 'LIBERAR'}}</button>
+                    <div class="col-xl-3 col-lg-4 text-right" v-if="selectedComponente && componente.cancelado != true">
+                        <button class="btn btn-success btn-block" :disabled="componente.enrutado == true" @click="guardar(true)"><i class="fa fa-check-double"></i>
+                             @{{componente.enrutado == true ? 'LIBERADO' : 'LIBERAR'}}
+                        </button>
+                    </div>
+                    <div class="col-xl-6" v-if="selectedComponente && componente.cancelado == true">
+                        <button class="btn btn-block btn-danger" disabled><i class="fa fa-exclamation-circle"></i> ESTE COMPONENTE HA SIDO CANCELADO</button>
                     </div>
                 </div>
 
@@ -161,7 +177,7 @@
                                     </div>
                                     <div class="form-group px-1">
                                         <label class="bold">Prioridad</label>
-                                        <select class="form-control" v-model="componente.prioridad" :disabled="componente.enrutado == true">
+                                        <select class="form-control" v-model="componente.prioridad" :disabled="componente.enrutado == true || componente.cancelado == true">
                                             <option :value="null" disabled>Asignar...</option>
                                             <option value="A">A</option>
                                             <option value="B">B</option>
@@ -170,7 +186,7 @@
                                     </div>
                                     <div class="form-group px-1">
                                         <label class="bold">Programador</label>
-                                        <select class="form-control" v-model="componente.programador_id" :disabled="componente.enrutado == true">
+                                        <select class="form-control" v-model="componente.programador_id" :disabled="componente.enrutado == true || componente.cancelado == true">
                                             <option :value="null" disabled>Seleccionar programador...</option>
                                             <option v-for="p in programadores" :value="p.id">@{{p.nombre_completo}}</option>
                                         </select>
@@ -252,7 +268,7 @@
                                                     <div class="form-group">
                                                         <div class="form-check">
                                                             <label class="form-check-label" style="font-size: 10px">
-                                                                <input type="checkbox" class="form-check-input" @change="toggleTask(p)" v-model="p.incluir" :disabled="componente.enrutado == true">
+                                                                <input type="checkbox" class="form-check-input" @change="toggleTask(p)" v-model="p.incluir" :disabled="componente.enrutado == true || componente.cancelado == true">
                                                                 <span class="form-check-sign"></span>
                                                             </label>
                                                         </div>
@@ -264,11 +280,11 @@
                                                         <div class="col-xl-12">
                                                             <div class="input-group mb-0">
                                                                 <div class="input-group-prepend">
-                                                                    <button :disabled="componente.enrutado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.horas > 0 ? p.horas-- : p.horas"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
+                                                                    <button :disabled="componente.enrutado == true || componente.cancelado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.horas > 0 ? p.horas-- : p.horas"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
                                                                 </div>
                                                                 <input type="number" v-model="p.horas" class="form-control text-center px-1 py-1" step="1" @change="calcularInicio()">
                                                                 <div class="input-group-append">
-                                                                    <button :disabled="componente.enrutado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.horas++"> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
+                                                                    <button :disabled="componente.enrutado == true || componente.cancelado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.horas++"> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -279,11 +295,11 @@
                                                         <div class="col-xl-12">
                                                             <div class="input-group mb-0">
                                                                 <div class="input-group-prepend">
-                                                                    <button :disabled="componente.enrutado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.minutos > 0 ? p.minutos-- : p.minutos"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
+                                                                    <button :disabled="componente.enrutado == true || componente.cancelado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.minutos > 0 ? p.minutos-- : p.minutos"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
                                                                 </div>
                                                                 <input type="number" v-model="p.minutos" class="form-control text-center px-1 py-1" step="1" @change="calcularInicio()">
                                                                 <div class="input-group-append">
-                                                                    <button :disabled="componente.enrutado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.minutos < 60 ? p.minutos++ : p.minutos "> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
+                                                                    <button :disabled="componente.enrutado == true || componente.cancelado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.minutos < 60 ? p.minutos++ : p.minutos "> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -295,7 +311,7 @@
                                                     <div class="form-group">
                                                         <div class="form-check">
                                                             <label class="form-check-label" style="font-size: 10px">
-                                                                <input type="checkbox" class="form-check-input" v-model="componente.requiere_temple" :disabled="componente.enrutado == true">
+                                                                <input type="checkbox" class="form-check-input" v-model="componente.requiere_temple" :disabled="componente.enrutado == true || componente.cancelado == true">
                                                                 <span class="form-check-sign"></span>
                                                             </label>
                                                         </div>
@@ -310,7 +326,7 @@
                                                     <div class="form-group">
                                                         <div class="form-check">
                                                             <label class="form-check-label" style="font-size: 10px">
-                                                                <input type="checkbox" class="form-check-input" @change="toggleTask(p)" v-model="p.incluir" :disabled="componente.enrutado == true">
+                                                                <input type="checkbox" class="form-check-input" @change="toggleTask(p)" v-model="p.incluir" :disabled="componente.enrutado == true || componente.cancelado == true">
                                                                 <span class="form-check-sign"></span>
                                                             </label>
                                                         </div>
@@ -322,11 +338,11 @@
                                                         <div class="col-xl-12">
                                                             <div class="input-group mb-0">
                                                                 <div class="input-group-prepend">
-                                                                    <button :disabled="componente.enrutado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.horas > 0 ? p.horas-- : p.horas"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
+                                                                    <button :disabled="componente.enrutado == true || componente.cancelado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.horas > 0 ? p.horas-- : p.horas"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
                                                                 </div>
                                                                 <input type="number" v-model="p.horas" class="form-control text-center px-1 py-1" step="1" @change="calcularInicio()">
                                                                 <div class="input-group-append">
-                                                                    <button :disabled="componente.enrutado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.horas++"> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
+                                                                    <button :disabled="componente.enrutado == true || componente.cancelado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.horas++"> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -337,11 +353,11 @@
                                                         <div class="col-xl-12">
                                                             <div class="input-group mb-0">
                                                                 <div class="input-group-prepend">
-                                                                    <button :disabled="componente.enrutado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.minutos > 0 ? p.minutos-- : p.minutos"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
+                                                                    <button :disabled="componente.enrutado == true || componente.cancelado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.minutos > 0 ? p.minutos-- : p.minutos"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
                                                                 </div>
                                                                 <input type="number" v-model="p.minutos" class="form-control text-center px-1 py-1" step="1" @change="calcularInicio()">
                                                                 <div class="input-group-append">
-                                                                    <button :disabled="componente.enrutado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.minutos < 60 ? p.minutos++ : p.minutos "> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
+                                                                    <button :disabled="componente.enrutado == true || componente.cancelado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.minutos < 60 ? p.minutos++ : p.minutos "> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -355,29 +371,29 @@
                                     <h5 class="badge badge-dark badge-pill px-3 py-2 w-100" style="background-color: #c0d340 !important; color: black !important"> Tiempo estimado: @{{totalHoras}} horas y @{{totalMinutos}} minutos. </h5>
                                 </div>
                             </div>
-                            <div class="row mt-3" v-if="!componente.refabricado">
+                            <div class="row" v-if="!componente.refabricado">
                                 <div class="col-lg-6 py-0 px-1">
-                                    <button :disabled="!componente.enrutado " class="px-1 btn btn-block btn-dark my-1" @click="abrirModalSolicitud('retrabajo')"><i class="fa fa-retweet"></i> RETRABAJO</button>
+                                    <button :disabled="!componente.enrutado || componente.cancelado" class="px-1 btn btn-block btn-dark my-1" @click="abrirModalSolicitud('retrabajo')"><i class="fa fa-retweet"></i> RETRABAJO</button>
                                 </div>
                                 <div class="col-lg-6 py-0 px-1">
-                                    <button :disabled="!componente.enrutado " class="px-1 btn btn-block btn-dark my-1" @click="abrirModalSolicitud('modificacion')"><i class="fa fa-edit"></i> MODIFICACIÓN</button>
+                                    <button :disabled="!componente.enrutado || componente.cancelado" class="px-1 btn btn-block btn-dark my-1" @click="abrirModalSolicitud('modificacion')"><i class="fa fa-edit"></i> MODIFICACIÓN</button>
                                 </div>
                                 <div class="col-lg-6 py-0 px-1">
-                                    <button :disabled="!componente.enrutado " class="px-1 btn btn-block btn-dark my-1" @click="generarRefabricacion()"><i class="fa fa-redo"></i> REFABRICACIÓN</button>
+                                    <button :disabled="!componente.enrutado || componente.cancelado" class="px-1 btn btn-block btn-dark my-1" @click="generarRefabricacion()"><i class="fa fa-recycle"></i> REFABRICACIÓN</button>
                                 </div>
                                 <div class="col-lg-6 py-0 px-1">
-                                    <button v-if="componente.refaccion == true" @click="esRefaccion(false)" class="px-1 btn btn-block btn-success my-1"><i class="fa fa-puzzle-piece"></i> REFACCIÓN - Si</button>
-                                    <button v-else @click="esRefaccion(true)" class="px-1 btn btn-block btn-dark my-1"><i class="fa fa-puzzle-piece"></i> REFACCIÓN - No</button>
+                                    <button :disabled="componente.cancelado"  v-if="componente.refaccion == true" @click="esRefaccion(false)" class="px-1 btn btn-block btn-success my-1"><i class="fa fa-puzzle-piece"></i> REFACCIÓN - Si</button>
+                                    <button :disabled="componente.cancelado" v-else @click="esRefaccion(true)" class="px-1 btn btn-block btn-dark my-1"><i class="fa fa-puzzle-piece"></i> REFACCIÓN - No</button>
                                 </div>
                             </div>
-                            <div class="row mt-3">
-                                <div class="col-xl-12" v-if="componente && componente.esComponenteExterno">
+                            <div class="row">
+                                <div class="col-xl-12 px-1" v-if="componente && componente.esComponenteExterno">
                                     <button @click="verSolicitudExterna(componente.id)" class="btn btn-block my-0 btn-default"><i class="fa fa-info-circle"></i> VER ORDEN DE TRABAJO </button>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-6 px-1">
                                     <button @click="mostrarLineaDeTiempo" class="btn btn-block btn-default"><i class="fa fa-calendar"></i> LINEA DEL TIEMPO </button>
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-lg-6 px-1">
                                     <button @click="fetchSolicitudes" class="btn btn-block btn-default"><i class="fa fa-clipboard-list"></i> SOLICITUDES</button>
                                 </div>
                             </div>
@@ -435,7 +451,7 @@
     </div>
 
     <div class="modal fade" id="modalSolicitudes" tabindex="-1" aria-labelledby="modalSolicitudesLabel" aria-hidden="true">
-        <div class="modal-dialog" style="min-width: 70%;">
+        <div class="modal-dialog" style="min-width: 80%;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="bold modal-title" id="modalSolicitudesLabel">
@@ -457,11 +473,12 @@
                                         <th>Programa</th>
                                         <th>Comentarios</th>
                                         <th>Solicita</th>
+                                        <th>¿Atendida?</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-if="solicitudes.length == 0">
-                                        <td colspan="6"> No hay ninguna solicitud de retrabajo, modificacion o ajuste pendiente para este componente </td>
+                                        <td colspan="7"> No hay ninguna solicitud de retrabajo, modificacion o ajuste pendiente para este componente </td>
                                     </tr>
                                     <tr v-for="(l, index) in solicitudes" :key="'linea- ' + index + '-' + l.created_at">
                                         <td>@{{ l.fecha }}</td>
@@ -470,6 +487,9 @@
                                         <td>@{{ l.programa }}</td>
                                         <td><span v-html="l.comentarios"></span></td>
                                         <td>@{{ l.usuario.nombre_completo }} <br><small>@{{l.area_solicitante}}</small></td>
+                                        <td>
+                                            <input class="cursor-pointer" type="checkbox" v-model="l.atendida" @change="solicitudAtendida(l)">
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -689,10 +709,10 @@
                     minutos: 0,
                     incluir: false
                 },
-                {
+                 {
                     id: 3,
                     prioridad: 3,
-                    nombre: 'Maquinar',
+                    nombre: 'Carear',
                     horas: 0,
                     minutos: 0,
                     incluir: false
@@ -700,7 +720,7 @@
                 {
                     id: 4,
                     prioridad: 4,
-                    nombre: 'Tornear',
+                    nombre: 'Maquinar',
                     horas: 0,
                     minutos: 0,
                     incluir: false
@@ -708,23 +728,31 @@
                 {
                     id: 5,
                     prioridad: 5,
+                    nombre: 'Tornear',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 6,
+                    prioridad: 6,
                     nombre: 'Roscar/Rebabear',
                     horas: 0,
                     minutos: 0,
                     incluir: false
                 },
-                // {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
                 {
-                    id: 7,
-                    prioridad: 7,
+                    id: 8,
+                    prioridad: 8,
                     nombre: 'Rectificar',
                     horas: 0,
                     minutos: 0,
                     incluir: false
                 },
                 {
-                    id: 8,
-                    prioridad: 8,
+                    id: 9,
+                    prioridad: 9,
                     nombre: 'EDM',
                     horas: 0,
                     minutos: 0,
@@ -877,6 +905,19 @@
             }
         },
         methods: {
+            async solicitudAtendida(solicitud){
+                try {
+                    const response = await axios.put(`/api/solicitud/${solicitud.id}/atendida`, { atendida: solicitud.atendida });
+                    if (response.data.success) {
+                        swal('Correcto', 'La solicitud ha sido actualizada correctamente.', 'success');
+                    } else {
+                        swal('Error', 'Ocurrió un error al actualizar la solicitud.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error updating solicitud:', error);
+                    swal('Error', 'Ocurrió un error al actualizar la solicitud.', 'error');
+                }
+            },
             async enviarRefaccion(band) {
                 let t = this
                 t.cargando = true;
@@ -1056,55 +1097,62 @@
                             tipo: tipo,
                             reasignar: 'corte',
                             procesos: [{
-                                    id: 1,
-                                    prioridad: 1,
-                                    nombre: 'Cortar',
-                                    horas: 0,
-                                    minutos: 0
-                                },
-                                {
-                                    id: 2,
-                                    prioridad: 2,
-                                    nombre: 'Programar',
-                                    horas: 0,
-                                    minutos: 0
-                                },
-                                {
-                                    id: 3,
-                                    prioridad: 3,
-                                    nombre: 'Maquinar',
-                                    horas: 0,
-                                    minutos: 0
-                                },
-                                {
-                                    id: 4,
-                                    prioridad: 4,
-                                    nombre: 'Tornear',
-                                    horas: 0,
-                                    minutos: 0
-                                },
-                                {
-                                    id: 5,
-                                    prioridad: 5,
-                                    nombre: 'Roscar/Rebabear',
-                                    horas: 0,
-                                    minutos: 0
-                                },
-                                // {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0},
-                                {
-                                    id: 7,
-                                    prioridad: 7,
-                                    nombre: 'Rectificar',
-                                    horas: 0,
-                                    minutos: 0
-                                },
-                                {
-                                    id: 8,
-                                    prioridad: 8,
-                                    nombre: 'EDM',
-                                    horas: 0,
-                                    minutos: 0
-                                }
+                                id: 1,
+                                prioridad: 1,
+                                nombre: 'Cortar',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            {
+                                id: 2,
+                                prioridad: 2,
+                                nombre: 'Programar',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            {
+                                id: 3,
+                                prioridad: 3,
+                                nombre: 'Carear',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            {
+                                id: 4,
+                                prioridad: 4,
+                                nombre: 'Maquinar',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            {
+                                id: 5,
+                                prioridad: 5,
+                                nombre: 'Tornear',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            {
+                                id: 6,
+                                prioridad: 6,
+                                nombre: 'Roscar/Rebabear',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                            {
+                                id: 8,
+                                prioridad: 8,
+                                nombre: 'Rectificar',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            {
+                                id: 9,
+                                prioridad: 9,
+                                nombre: 'EDM',
+                                horas: 0,
+                                minutos: 0,
+                            }
                             ],
                         };
                         this.solicitud.procesos = this.solicitud.procesos.filter(proceso => {
@@ -1192,6 +1240,8 @@
 
                     this.solicitudes = solicitudes.map(s => {
                         return {
+                            id: s.id, 
+                            atendida: s.atendida,
                             fecha: s.fecha_show,
                             hora: s.hora_show,
                             tipo: s.tipo,
@@ -1843,8 +1893,10 @@
                 try {
                     const response = await axios.get(`/api/herramentales/${herramentalId}/componentes?area=enrutador`);
                     this.componentes = response.data.componentes;
-
                     this.menuStep = 5;
+                    Vue.nextTick(function() {
+                        $('[data-toggle="tooltip"]').tooltip();
+                    })
                 } catch (error) {
                     console.error('Error fetching componentes:', error);
                 } finally {
@@ -1871,64 +1923,72 @@
                     }
                 })
 
-                t.procesos = [{
-                        id: 1,
-                        prioridad: 1,
-                        nombre: 'Cortar',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    },
-                    {
-                        id: 2,
-                        prioridad: 2,
-                        nombre: 'Programar',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    },
-                    {
-                        id: 3,
-                        prioridad: 3,
-                        nombre: 'Maquinar',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    },
-                    {
-                        id: 4,
-                        prioridad: 4,
-                        nombre: 'Tornear',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    },
-                    {
-                        id: 5,
-                        prioridad: 5,
-                        nombre: 'Roscar/Rebabear',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    },
-                    // {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-                    {
-                        id: 7,
-                        prioridad: 7,
-                        nombre: 'Rectificar',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    },
-                    {
-                        id: 8,
-                        prioridad: 8,
-                        nombre: 'EDM',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    }
-                ]
+                t.procesos =  [{
+                    id: 1,
+                    prioridad: 1,
+                    nombre: 'Cortar',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 2,
+                    prioridad: 2,
+                    nombre: 'Programar',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                 {
+                    id: 3,
+                    prioridad: 3,
+                    nombre: 'Carear',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 4,
+                    prioridad: 4,
+                    nombre: 'Maquinar',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 5,
+                    prioridad: 5,
+                    nombre: 'Tornear',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 6,
+                    prioridad: 6,
+                    nombre: 'Roscar/Rebabear',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                {
+                    id: 8,
+                    prioridad: 8,
+                    nombre: 'Rectificar',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 9,
+                    prioridad: 9,
+                    nombre: 'EDM',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                }
+                ];
 
                 t.tasks.forEach(task => {
                     let proceso = t.procesos.find(obj => obj.id === task.id);
@@ -2051,6 +2111,23 @@
                     console.error("Error navigating from URL parameters:", error);
                 }
             },
+            tienePendientes(componente) {
+                return componente.bAjuste || componente.bRetrabajo || 
+                    componente.bModificacion || componente.bRefabricacion || 
+                    componente.bRechazo;
+            },
+            getContenidoTooltipComponente(componente) {
+                let pendientes = [];
+                if (componente.bAjuste) pendientes.push("Ajuste");
+                if (componente.bRetrabajo) pendientes.push("Retrabajo");
+                if (componente.bModificacion) pendientes.push("Modificación");
+                if (componente.bRefabricacion) pendientes.push("Refabricación");
+                if (componente.bRechazo) pendientes.push("Rechazo");
+
+                return pendientes.length 
+                    ? `Pendiente: ${pendientes.join(', ')}`
+                    : "No hay pendientes";
+            }
         },
         mounted: async function() {
             let t = this;

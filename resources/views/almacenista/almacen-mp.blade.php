@@ -89,17 +89,17 @@
                 {{ session('error') }}
             </div>
         @endif
-        <div class="col-xl-12" v-show="cargando">
+        <div class="col-lg-12" v-show="cargando">
             <div style="margin-top: 200px; max-width: 100% !important; margin-bottom: auto; text-align:center; letter-spacing: 2px">
                 <h5 class="mb-5">CARGANDO...</h5>
                 <div class="loader"></div>
             </div>
         </div>
         <div class="row mt-3 px-2" v-cloak v-show="!cargando" >
-            <div class="col-xl-6 d-flex align-items-end">
+            <div class="col-lg-6 d-flex align-items-end">
                 <h2 class="bold my-0 py-1 text-decoration-underline" style="letter-spacing: 2px">ALMACÉN DE MATERIA PRIMA</h2>
             </div>
-            <div class="col-xl-2 d-flex align-items-end">
+            <div class="col-lg-2 d-flex align-items-end">
                 <div class="w-100">
                     <label class="bold" style="letter-spacing: 1px">Filtrar por MP</label>
                     <select class="form-control" v-model="materialSelected" @change="fetchHojas">
@@ -107,7 +107,7 @@
                     </select>
                 </div>
             </div>
-            <div class="col-xl-2 d-flex align-items-end">
+            <div class="col-lg-2 d-flex align-items-end">
                 <div class="w-100">
                     <label class="bold" style="letter-spacing: 1px">Filtrar por estatus</label>
                     <select class="form-control" v-model="estatusSelected" @change="fetchHojas">
@@ -116,18 +116,20 @@
                     </select>
                 </div>
             </div>
-            <div class="col-xl-2 d-flex align-items-end">
+            <div class="col-lg-2 d-flex align-items-end">
                 <button class="btn btn-block mb-0" @click="abrirModalNuevo"><i class="fa fa-plus-circle"></i> AÑADIR HOJA</button>
             </div>
-            <div class="col-xl-12 mt-3" >
+            <div class="col-lg-12 mt-3" >
                 <table class="table table-bordered" id="tabla">
                     <thead class="thead-light">
                         <tr>
                             <th  class="py-1" rowspan="2" style="width: 5% ; border: 1px solid #b6b6b6 !important">Consecutivo</th>
                             <th  class="py-1" rowspan="2" style="width: 5% ; border: 1px solid #b6b6b6 !important">Calidad</th>
-                            <th  class="py-1" rowspan="2" style="width: 5% ; border: 1px solid #b6b6b6 !important">Espesor</th>    
+                            <th v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 5"  class="py-1" rowspan="2" style="width: 5% ; border: 1px solid #b6b6b6 !important">Espesor</th>    
+
                             <th  class="py-1 bg-success text-white" colspan="3" style="width: 13% ; border: 1px solid #b6b6b6 !important" >Entrada</th>    
                             <th  class="py-1 bg-warning" colspan="3" style="width: 13% ; border: 1px solid #b6b6b6 !important; text-transform: none !important">Saldo actual</th>    
+
                             <th  class="py-1" rowspan="2" style="width: 7% ; border: 1px solid #b6b6b6 !important">Precio / Kilo</th>
                             <th  class="py-1" rowspan="2" style="width: 7% ; border: 1px solid #b6b6b6 !important">Fecha Entrada</th>
                             <th  class="py-1" rowspan="2" style="width: 12% ; border: 1px solid #b6b6b6 !important">Ultimo movimiento</th>
@@ -135,11 +137,17 @@
                             <th  class="py-1" rowspan="2" style="width: 20% ; border: 1px solid #b6b6b6 !important">Acciones</th>
                         </tr>
                         <tr>
-                            <th class="py-1" style="border: 1px solid #b6b6b6 !important">Largo</th>
-                            <th class="py-1" style="border: 1px solid #b6b6b6 !important">Ancho</th>
+                            {{-- entrada --}}
+                            <th v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5" class="py-1" style="border: 1px solid #b6b6b6 !important">Largo</th>
+                            <th v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5"  class="py-1" style="border: 1px solid #b6b6b6 !important">Ancho</th>
+                            <th v-if="materialSelected == 3" class="py-1" style="border: 1px solid #b6b6b6 !important">Longitud</th>
+                            <th v-if="materialSelected == 3" class="py-1" style="border: 1px solid #b6b6b6 !important">Diametro</th>
                             <th class="py-1" style="border: 1px solid #b6b6b6 !important">Peso</th>
-                            <th class="py-1" style="border: 1px solid #b6b6b6 !important">Ancho</th>
-                            <th class="py-1" style="border: 1px solid #b6b6b6 !important">Largo</th>
+                            {{-- salida --}}
+                            <th v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5" class="py-1" style="border: 1px solid #b6b6b6 !important">Largo</th>
+                            <th v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5"  class="py-1" style="border: 1px solid #b6b6b6 !important">Ancho</th>
+                            <th v-if="materialSelected == 3" class="py-1" style="border: 1px solid #b6b6b6 !important">Longitud</th>
+                            <th v-if="materialSelected == 3" class="py-1" style="border: 1px solid #b6b6b6 !important">Diametro</th>
                             <th class="py-1" style="border: 1px solid #b6b6b6 !important">Peso</th>
                         </tr>
                     </thead>
@@ -147,13 +155,20 @@
                         <tr v-for="h in hojas">
                             <td>@{{h.consecutivo}}</td>
                             <td>@{{h.calidad}}</td>
-                            <td>@{{h.espesor}}</td>
-                            <td>@{{h.largo_entrada}}</td>
-                            <td>@{{h.ancho_entrada}}</td>
+                            <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 5">@{{h.espesor}}</td>
+                            {{-- entrada --}}
+                            <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.largo_entrada}}</td>
+                            <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.ancho_entrada}}</td>
+                            <td v-if="materialSelected == 3">@{{h.longitud_entrada}}</td>
+                            <td v-if="materialSelected == 3">@{{h.diametro_entrada}}</td>
                             <td>@{{h.peso_entrada}}</td>
-                            <td>@{{h.largo_saldo}}</td>
-                            <td>@{{h.ancho_saldo}}</td>
+                            {{-- salida --}}
+                            <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.largo_saldo}}</td>
+                            <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.ancho_saldo}}</td>
+                            <td v-if="materialSelected == 3">@{{h.longitud_saldo}}</td>
+                            <td v-if="materialSelected == 3">@{{h.diametro_saldo}}</td>
                             <td>@{{h.peso_saldo}}</td>
+
                             <td>@{{h.precio_kilo | currency}}</td>
                             <td>@{{h.fecha_entrada}}</td>
                             <td>@{{h.ultimo_movimiento ?? '-' }}</td>
@@ -187,51 +202,62 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                             <div class="col-xl-12 form-group">
+                             <div class="col-lg-12 form-group">
                                 <label class="bold">Materia prima</label>
                                 <select class="form-control" v-model="nuevo.material_id">
                                     <option v-for="m in materiales" :value="m.id">@{{m.nombre}}</option>
                                 </select>
                             </div>
-                            <div class="col-xl-4 form-group">
+                            <div class="col-lg-4 form-group">
                                 <label class="bold">Calidad <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" v-model="nuevo.calidad" placeholder="Calidad de la hoja...">
                             </div>
-                            <div class="col-xl-4 form-group">
-                                <label class="bold">Espesor <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" v-model="nuevo.espesor" placeholder="Espesor de la hoja...">
-                            </div>
-                            <div class="col-xl-4 form-group">
+                            <div class="col-lg-4 form-group">
                                 <label class="bold">Fecha de entrada<span class="text-danger">*</span></label>
                                 <input type="date" step="any" class="form-control" v-model="nuevo.fecha_entrada" >
                             </div>
-                            <div class="col-xl-3 form-group">
-                                <label class="bold">Ancho <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" v-model="nuevo.ancho_entrada" placeholder="Ancho de la hoja...">
+                            <div class="col-lg-4 form-group" v-if="nuevo.material_id == 1 || nuevo.material_id == 2 || nuevo.material_id == 5">
+                                <label class="bold">Espesor <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" v-model="nuevo.espesor" placeholder="Espesor de la hoja...">
                             </div>
-                            <div class="col-xl-3 form-group">
+
+                            <div class="col-lg-4 form-group" v-if="nuevo.material_id == 1 || nuevo.material_id == 2 || nuevo.material_id == 4 || nuevo.material_id == 5">
                                 <label class="bold">Largo <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" v-model="nuevo.largo_entrada" placeholder="Largo de la hoja...">
                             </div>
-                            <div class="col-xl-3 form-group">
+                            <div class="col-lg-4 form-group" v-if="nuevo.material_id == 1 || nuevo.material_id == 2 || nuevo.material_id == 4 || nuevo.material_id == 5">
+                                <label class="bold">Ancho <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" v-model="nuevo.ancho_entrada" placeholder="Ancho de la hoja...">
+                            </div>
+                            <div class="col-lg-4 form-group" v-if="nuevo.material_id == 3">
+                                <label class="bold">Longitud <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" v-model="nuevo.longitud_entrada" placeholder="Longitud de la hoja...">
+                            </div>
+                            <div class="col-lg-4 form-group" v-if="nuevo.material_id == 3">
+                                <label class="bold">Diametro <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" v-model="nuevo.diametro_entrada" placeholder="Diametro de la hoja...">
+                            </div>
+
+                            
+                            <div class="col-lg-4 form-group">
                                 <label class="bold">Peso <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" v-model="nuevo.peso_entrada" placeholder="Peso de la hoja...">
                             </div>
-                            <div class="col-xl-3 form-group">
+                            <div class="col-lg-4 form-group">
                                 <label class="bold">Precio / Kilo <span class="text-danger">*</span></label>
                                 <input type="number" step="any" class="form-control" v-model="nuevo.precio_kilo" >
                             </div>
-                            <div class="col-xl-12 form-group mt-3">
+                            <div class="col-lg-12 form-group mt-3">
                                 <input class="input-file" id="factura" type="file" name="file" @change="seleccionaArchivo($event)" v-show="false">
                                 <label tabindex="0" for="factura" class="input-file-trigger col-12 text-center"><i class="fa fa-upload"></i> Subir factura  </label>
                                 <small>@{{nuevo.factura}}</small>
                             </div>
-                            <div class="col-xl-12" style="letter-spacing: 1px">
+                            <div class="col-lg-12" style="letter-spacing: 1px">
                                 <small>El registro quedara guardado por el usuario: <strong>{{auth()->user()->nombre_completo}}</strong></small>
                             </div> 
                         </div>
                         <div class="row">
-                        <div class="col-xl-12 text-right">
+                        <div class="col-lg-12 text-right">
                                 <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
                                 <button @click="guardarHoja" class="btn btn-secondary" v-if="!loading_button" type="button"><i class="fa fa-save"></i> Guardar</button>
                                 <button class="btn btn-secondary" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> Guardando...</button>
@@ -258,7 +284,7 @@
 
 
                         <div class="row">
-                            <div class="col-xl-12">
+                            <div class="col-lg-12">
                                 <table class="table table-bordered">
                                     <thead class="thead-light">
                                         <tr>
@@ -268,16 +294,20 @@
                                             <th class="py-1" style="border: 1px solid #b6b6b6 !important" rowspan="2">PY</th>
                                         </tr>
                                         <tr>
-                                            <th class="py-1" style="border: 1px solid #b6b6b6 !important">Ancho</th>
-                                            <th class="py-1" style="border: 1px solid #b6b6b6 !important">Largo</th>
+                                            <th v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5" class="py-1" style="border: 1px solid #b6b6b6 !important">Ancho</th>
+                                            <th v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5" class="py-1" style="border: 1px solid #b6b6b6 !important">Largo</th>
+                                            <th v-if="materialSelected == 3" class="py-1" style="border: 1px solid #b6b6b6 !important">Longitud</th>
+                                            <th v-if="materialSelected == 3" class="py-1" style="border: 1px solid #b6b6b6 !important">Diametro</th>
                                             <th class="py-1" style="border: 1px solid #b6b6b6 !important">Peso</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="m in movimientos">
                                             <td>@{{m.fecha}} @{{m.hora}}</td>
-                                            <td>@{{m.ancho}}</td>
-                                            <td>@{{m.largo}}</td>
+                                            <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{m.ancho}}</td>
+                                            <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{m.largo}}</td>
+                                            <td v-if="materialSelected == 3">@{{m.diametro}}</td>
+                                            <td v-if="materialSelected == 3">@{{m.longitud}}</td>
                                             <td>@{{m.peso}}</td>
                                             <td>@{{m.py}}</td>
                                             <td>@{{m.hr}}</td>
@@ -290,7 +320,7 @@
                             </div>
                         </div>
                         <div class="row">
-                        <div class="col-xl-12 text-right">
+                        <div class="col-lg-12 text-right">
                                 <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
                             </div>
                         </div>
@@ -393,8 +423,42 @@
                 let formData = new FormData();
                 let file1 = document.querySelector('#factura');
 
-                if(!t.nuevo.calidad || !t.nuevo.espesor || !t.nuevo.largo_entrada || !t.nuevo.ancho_entrada || !t.nuevo.peso_entrada || !t.nuevo.precio_kilo || !t.nuevo.fecha_entrada || !t.nuevo.material_id ){
-                    swal('Campos obligatorios', 'Todos los campos son obligatorios', 'info');
+                if(!t.nuevo.material_id){
+                    swal('Campo obligatorio', 'Por favor seleccione una materia prima', 'info');
+                    return;
+                }
+                if(t.nuevo.material_id == 1 || t.nuevo.material_id == 2 || t.nuevo.material_id == 5){
+                    if(!t.nuevo.espesor){
+                        swal('Campo obligatorio', 'Por favor ingrese el espesor de la hoja', 'info');
+                        return;
+                    }
+                }
+                if(t.nuevo.material_id == 1 || t.nuevo.material_id == 2 || t.nuevo.material_id == 4 || t.nuevo.material_id == 5){
+                    if(!t.nuevo.largo_entrada || !t.nuevo.ancho_entrada){
+                        swal('Campo obligatorio', 'Por favor ingrese el largo y ancho de la hoja', 'info');
+                        return;
+                    }
+                }
+                if(t.nuevo.material_id == 3){
+                    if(!t.nuevo.longitud_entrada || !t.nuevo.diametro_entrada){
+                        swal('Campo obligatorio', 'Por favor ingrese la longitud y diametro de la hoja', 'info');
+                        return;
+                    }
+                }
+                if(!t.nuevo.peso_entrada){
+                    swal('Campo obligatorio', 'Por favor ingrese el peso de la hoja', 'info');
+                    return;
+                }
+                if(!t.nuevo.precio_kilo){
+                    swal('Campo obligatorio', 'Por favor ingrese el precio por kilo de la hoja', 'info');
+                    return;
+                }
+                if(!t.nuevo.fecha_entrada){
+                    swal('Campo obligatorio', 'Por favor ingrese la fecha de entrada de la hoja', 'info');
+                    return;
+                }
+                if(!t.nuevo.calidad){
+                    swal('Campo obligatorio', 'Por favor ingrese la calidad de la hoja', 'info');
                     return;
                 }
                 

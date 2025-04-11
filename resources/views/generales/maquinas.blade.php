@@ -182,12 +182,14 @@
             procesos:  [
                     // {id: 1, prioridad: 1, nombre: 'Cortar'},
                     // {id: 2, prioridad: 2, nombre: 'Programar'},
-                    {id: 3, prioridad: 3, nombre: 'Maquinar'},
-                    {id: 4, prioridad: 4, nombre: 'Tornear'},
-                    {id: 5, prioridad: 5, nombre: 'Roscar/Rebabear'},
-                    // {id: 6, prioridad: 6, nombre: 'Templar'},
-                    {id: 7, prioridad: 7, nombre: 'Rectificar'},
-                    {id: 8, prioridad: 8, nombre: 'EDM'}
+                    {id: 3, prioridad: 3, nombre: 'Carear'},
+                    {id: 4, prioridad: 4, nombre: 'Maquinar'},
+                    {id: 5, prioridad: 5, nombre: 'Tornear'},
+                    {id: 6, prioridad: 6, nombre: 'Roscar/Rebabear'},
+                    // {id: 7, prioridad: 7, nombre: 'Templar'},
+                    {id: 8, prioridad: 8, nombre: 'Rectificar'},
+                    {id: 9, prioridad: 9, nombre: 'EDM'},
+                    {id: 10, prioridad: 10, nombre: 'Cortar'},
                 ]
         },
         methods:{ 

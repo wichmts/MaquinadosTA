@@ -9,6 +9,7 @@ use App\Herramental;
 use App\Anio;
 use App\Proyecto;
 use App\Cliente;
+use App\Solicitud;
 use App\SolciitudExterna;
 use Illuminate\Database\Eloquent\Model;
 
@@ -203,12 +204,21 @@ class Componente extends Model
 
         return false; // No hay retrabajos
     }
+    public function tieneSolicitudes($tipo){
+       return Solicitud::where('componente_id', $this->id)
+            ->where('tipo', $tipo)
+            ->where(function ($query) {
+                $query->where('atendida', '!=', true)
+                    ->orWhereNull('atendida');
+            })
+            ->exists();
+    }
     public function toArray(){
   		$data = parent::toArray();
         $data['material_nombre'] = $this->material ? $this->material->nombre : '';
         $data['archivo_2d_public'] = $this->archivo_2d ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->archivo_2d : '';
         $data['archivo_3d_public'] = $this->archivo_3d ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->archivo_3d : '';
-        $data['archivo_explosionado_public'] = $this->archivo_explosionado ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->archivo_explosionado : '';
+        $data['archivo_explosionado_public'] = $this->herramental->archivo_explosionado ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->herramental->archivo_explosionado : '';
         $data['ruta'] = $this->ruta ? json_decode($this->ruta, true) : [];
         $data['fabricaciones'] = $this->fabricaciones ? $this->fabricaciones : [];
         $data['rutaAvance'] = $this->rutaAvance();
@@ -219,11 +229,21 @@ class Componente extends Model
         $data['tieneRetrabajos'] = $this->tieneRetrabajos();
         $data['tieneRefabricaciones'] = $this->tieneRefabricaciones();
 
+        $data['archivo_2d_show'] = $this->archivo_2d ? preg_replace('/^[^_]+_/', '', $this->archivo_2d) : null;
+        $data['archivo_3d_show'] = $this->archivo_3d ? preg_replace('/^[^_]+_/', '', $this->archivo_3d) : null;
+        $data['archivo_explosionado_show'] = $this->herramental->archivo_explosionado ? preg_replace('/^[^_]+_/', '', $this->herramental->archivo_explosionado) : null;
+
         $herramental = Herramental::findOrFail($this->herramental_id);
         $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
         $cliente = Cliente::findOrFail($proyecto->cliente_id);
         $anio = Anio::findOrFail($cliente->anio_id);
         $data['rutaComponente'] = "?a={$anio->id}&c={$cliente->id}&p={$proyecto->id}&h={$herramental->id}&co={$this->id}";
+
+        $data['bAjuste'] = $this->tieneSolicitudes('ajuste');
+        $data['bRetrabajo'] = $this->tieneSolicitudes('retrabajo');
+        $data['bModificacion'] = $this->tieneSolicitudes('modificacion');
+        $data['bRefabricacion'] = $this->tieneSolicitudes('refabricacion');
+        $data['bRechazo'] = $this->tieneSolicitudes('rechazo');
 
         return $data;
     }

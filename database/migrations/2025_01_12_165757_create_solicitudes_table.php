@@ -21,6 +21,7 @@ class CreateSolicitudesTable extends Migration
             $table->integer('usuario_id');
             $table->integer('componente_id');
             $table->integer('fabricacion_id')->nullable();
+            $table->boolean('atendida')->nullable();
             $table->timestamps();
         });
     }

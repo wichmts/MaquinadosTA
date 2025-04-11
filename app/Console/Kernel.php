@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        
+        $schedule->command('solicitudes:notificacion')->dailyAt('02:00');
     }
 
     /**

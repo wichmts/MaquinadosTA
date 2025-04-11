@@ -63,6 +63,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('clientes/{anio}', 'APIController@guardarCliente');
     Route::post('proyectos/{cliente_id}', 'APIController@guardarProyecto');
     Route::post('herramental/{proyecto_id}', 'APIController@guardarHerramental');
+    Route::post('herramental/cargar-vista-explosionada/{herramental_id}', 'APIController@cargarVistaExplosionada');
+    Route::put('herramental/{id}/fecha-limite', 'APIController@fechaLimiteHerramental');
     Route::post('herramental/{herramental_id}/{tipo}', 'APIController@actualizarHerramental');
     Route::get('herramental/{herramental_id}', 'APIController@obtenerHerramental');
     
@@ -106,6 +108,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('mis-solicitudes-externas', 'APIController@misSolicitudesExternas');
     Route::get('solicitud-externa/{componente_id}', 'APIController@obtenerSolicitudExterna');
     Route::get('solicitud-ensamble/{herramental_id}', 'APIController@obtenerSolicitudesEnsamble');
+
+    Route::put('solicitud/{id}/atendida', 'APIController@solicitudAtendida');
+    
 
 });
 

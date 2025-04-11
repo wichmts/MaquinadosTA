@@ -188,9 +188,12 @@ input:checked + .slider:before {
                     <a class="nav-link menu-link" href="/temple">Temple</a>
                 </li>
                 @endif
+                
+                @if(auth()->user()->hasRole('SOLICITUD EXTERNA'))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="orden-trabajo">Orden de trabajo</a>
                 </li>
+                @endif
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/centro-notificaciones">Centro de notificaciones</a>
                 </li>

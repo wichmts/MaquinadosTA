@@ -302,9 +302,9 @@
                                             <tr>
                                                 <th class="text-center">Componente</th>
                                                 <th class="text-center">Cantidad</th>
+                                                <th class="text-center">Tipo</th>
                                                 <th class="text-center">Estado</th>
-                                                <th class="text-center" style="text-transform: none !important">Fecha de compra</th>
-                                                <th class="text-center" style="text-transform: none !important">Fecha componente terminado</th>
+                                                <th class="text-center" style="text-transform: none !important">Fecha terminado / Fecha recibido</th>
                                                 <th class="text-center" style="text-transform: none !important">Fecha ensamble</th>
                                             </tr>
                                         </thead>
@@ -317,12 +317,15 @@
                                                     </span>
                                                 </td>
                                                 <td class="text-center">@{{obj.cantidad}}</td>
+                                                <td class="text-center">@{{obj.es_compra ? 'COMPRA' : 'FABRICACIÓN'}}</td>
                                                 <td class="text-center">
                                                     <span v-if="obj.ensamblado == true" class="badge badge-success py-3 w-100">ENSAMBLADO</span>
                                                     <span v-else class="badge badge-dark py-3 w-100">SIN ENSAMBLAR</span>
                                                 </td>
-                                                <td>@{{obj.es_compra && obj.fecha_real ? obj.fecha_real : 'N/A'}}</td>
-                                                <td>@{{!obj.es_compra && obj.fecha_terminado ? obj.fecha_terminado : 'En fabricacion...'}}</td>
+                                                <td>
+                                                    <span v-if="!obj.es_compra">@{{obj.fecha_terminado ? obj.fecha_terminado + 'Hrs.': 'EN FABRICACIÓN...'}}</span>
+                                                    <span v-else>@{{obj.fecha_real ? obj.fecha_real : 'EN COMPRAS...'}}</span>
+                                                </td>
                                                 <td>@{{obj.fecha_ensamblado??'-'}}</td>
                                             </tr>
                                         </tbody>

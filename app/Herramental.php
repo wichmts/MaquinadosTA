@@ -34,7 +34,7 @@ class Herramental extends Model
             
             foreach ($componentes as $componente) {
                 if (!$componente->fecha_terminado) {
-                    return 'En proceso';
+                    return 'En proceso...';
                 }
             }
             $fecha = $componentes->max('fecha_terminado');
@@ -47,7 +47,8 @@ class Herramental extends Model
             if ($this->fecha_terminado) {            
                 return Carbon::createFromFormat('Y-m-d H:i', $this->fecha_terminado)->isoFormat('DD/MM/YYYY h:mm a');
             }else{
-                return $this->updated_at->isoFormat('DD/MM/YYYY h:mm a');
+                // return $this->updated_at->isoFormat('DD/MM/YYYY h:mm a');
+                return 'Sin fecha';
             }
         }
     }
@@ -59,12 +60,15 @@ class Herramental extends Model
         $cliente = Cliente::findOrFail($this->proyecto->cliente_id);
         $anio = Anio::findOrFail($cliente->anio_id);
 
+        $array['archivo_explosionado_show'] = $this->archivo_explosionado ? preg_replace('/^[^_]+_/', '', $this->archivo_explosionado) : null;
         $array['anio'] = $anio->nombre;
         $array['cliente'] = $cliente->nombre;
         $array['proyecto'] = $this->proyecto->nombre;
         $array['rutaHerramental'] = "?a={$anio->id}&c={$cliente->id}&p={$this->proyecto->id}&h={$this->id}";
         $array['fecha_creacion'] = $this->created_at->isoFormat('DD/MM/YYYY h:mm a');
         $array['fecha_finalizado'] = $this->fechaFinalizado();
+        if($this->fecha_limite)
+             $array['fecha_limite_show'] = Carbon::createFromFormat('Y-m-d', $this->fecha_limite)->isoFormat('DD/MM/YYYY');
 
         $array['checklist'] = $this->checklist?json_decode($this->checklist):[];
         $array['archivo2_show'] = preg_replace('/^[^_]*_/', '', $this->archivo2);
