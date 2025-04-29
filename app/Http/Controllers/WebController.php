@@ -11,7 +11,16 @@ use Barryvdh\DomPDF\Facade as PDF;
 
 
 class WebController extends Controller
-{
+{   
+    public function tiemposPersonal(){
+        return view('admin-panel.tiempos-personal');
+    }
+    public function finanzas(){
+        return view('finanzas.finanzas');
+    }
+    public function tiemposMaquinas(){
+        return view('admin-panel.tiempos-maquinas');
+    }
     public function configuracion(){
         return view('admin-panel.configuracion');
     }

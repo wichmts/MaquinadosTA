@@ -25,6 +25,7 @@ use App\SeguimientoTiempo;
 use App\Solicitud;
 use App\SolicitudExterna;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Str;
@@ -1492,7 +1493,7 @@ class APIController extends Controller
                     $notificacion->herramental_id = $herramental->id;
                     $notificacion->componente_id = $nuevoComponente->id;
                     $notificacion->cantidad = $nuevoComponente->cantidad;
-                    $notificacion->descripcion = 'SE HA GENERADO UNA NUEVA VERSION DEL COMPONENTE DEBIDO A UNA REFABRICACION.';
+                    $notificacion->descripcion = 'SE HA GENERADO UNA NUEVA VERSIÓN DEL COMPONENTE DEBIDO A UNA REFABRICACIÓN.';
                     $notificacion->save();
 
                     $users = User::role('JEFE DE AREA')->get();
@@ -3300,6 +3301,511 @@ class APIController extends Controller
             'success' => true,
         ], 200);
     }
+    public function minutosEsperadosFechas($desde, $hasta, $turno){
+        // Definición de horarios por turno
+        $turnoHorario = [
+            1 => ['08:00', '17:30'],
+            2 => ['17:31', '23:59']
+        ];
+
+        // Validar que el turno exista
+        if (!isset($turnoHorario[$turno])) {
+            return 0;
+        }
+
+        // Parsear horas del turno
+        [$inicio, $fin] = $turnoHorario[$turno];
+        $inicioTurno = Carbon::createFromFormat('H:i', $inicio);
+        $finTurno = Carbon::createFromFormat('H:i', $fin);
+
+        // Calcular minutos por día en ese turno
+        $minutosPorDia = $inicioTurno->diffInMinutes($finTurno);
+
+        // Calcular cantidad de días en el rango (inclusive)
+        $periodo = CarbonPeriod::create($desde, $hasta);
+        $cantidadDias = iterator_count($periodo);
+
+        // Total de minutos esperados en ese turno y rango
+        return $cantidadDias * $minutosPorDia;
+    }
+    public function tiemposMaquinas(Request $request){
+        $desde = $request->input('desde'); // formato: '2025-04-11'
+        $hasta = $request->input('hasta'); // formato: '2025-04-11'
+        $turno = intval($request->input('turno')); // 1 = matutino, 2 = vespertino
+
+
+        $turnoHorario = [
+            1 => ['08:00', '17:30'],
+            2 => ['17:31', '23:59']
+        ];
+
+        $horarioInicio = $turnoHorario[$turno][0];
+        $horarioFin = $turnoHorario[$turno][1];
+
+        // Procesos válidos
+        $procesosValidos = [3, 4, 5, 6, 8, 9];
+
+        // Paso 1: obtener máquinas válidas
+        $maquinas = Maquina::whereIn('tipo_proceso', $procesosValidos)->get();
+
+        $resultados = [];
+
+        foreach ($maquinas as $maquina) {
+            // Paso 2: buscar fabricaciones por máquina
+            $fabricaciones = Fabricacion::where('maquina_id', $maquina->id)->pluck('id');
+            
+            // Paso 3: registros de seguimiento de fabricación en el rango
+            $seguimientos = SeguimientoTiempo::whereIn('fabricacion_id', $fabricaciones)
+                ->where('accion', 'fabricacion')
+                ->whereBetween('fecha', [$desde, $hasta])
+                ->orderBy('fabricacion_id')
+                ->orderBy('fecha')
+                ->orderBy('hora')
+                ->get();
+
+            // Paso 4: registros de paros de fabricación en el rango
+            $paros = SeguimientoTiempo::whereIn('fabricacion_id', $fabricaciones)
+                ->where('accion', 'fabricacion_paro')
+                ->whereBetween('fecha', [$desde, $hasta])
+                ->orderBy('fabricacion_id')
+                ->orderBy('fecha')
+                ->orderBy('hora')
+                ->get();
+
+            $tiempoTotal = [
+                'minutos_matutino' => 0,
+                'minutos_vespertino' => 0,
+                'minutos_paro_matutino' => 0,
+                'minutos_paro_vespertino' => 0,
+            ];
+
+            // Agrupar por fabricacion_id para trabajar por cada fabricación
+            $agrupados = $seguimientos->groupBy('fabricacion_id');
+            $parosAgrupados = $paros->groupBy('fabricacion_id');
+
+            foreach ($agrupados as $registros) {
+                $inicio = null;
+
+                foreach ($registros as $registro) {
+                    $fechaHora = Carbon::createFromFormat('Y-m-d H:i', $registro->fecha . ' ' . $registro->hora);
+
+                    if ($registro->tipo == 1) {
+                        $inicio = $fechaHora;
+                    } elseif ($registro->tipo == 0 && $inicio) {
+                        $fin = $fechaHora;
+
+                        // Validar si el rango de tiempo cae dentro del turno solicitado
+                        $inicioTurno = Carbon::createFromFormat('Y-m-d H:i', $inicio->format('Y-m-d') . ' ' . $horarioInicio);
+                        $finTurno = Carbon::createFromFormat('Y-m-d H:i', $inicio->format('Y-m-d') . ' ' . $horarioFin);
+
+                        // Intersección del tiempo trabajado con el turno
+                        $rangoInicio = $inicio->copy()->greaterThan($inicioTurno) ? $inicio : $inicioTurno;
+                        $rangoFin = $fin->copy()->lessThan($finTurno) ? $fin : $finTurno;
+
+                        if ($rangoInicio < $rangoFin) {
+                            $minutos = $rangoInicio->diffInMinutes($rangoFin);
+                            if ($turno == 1) {
+                                $tiempoTotal['minutos_matutino'] += $minutos;
+                            } else {
+                                $tiempoTotal['minutos_vespertino'] += $minutos;
+                            }
+                        }
+
+                        $inicio = null; // reiniciar para el siguiente ciclo
+                    }
+                }
+            }
+
+            // Ahora, calculamos los minutos de paro
+            foreach ($parosAgrupados as $registros) {
+                $inicio = null;
+
+                foreach ($registros as $registro) {
+                    $fechaHora = Carbon::createFromFormat('Y-m-d H:i', $registro->fecha . ' ' . $registro->hora);
+
+                    if ($registro->tipo == 1) {
+                        $inicio = $fechaHora;
+                    } elseif ($registro->tipo == 0 && $inicio) {
+                        $fin = $fechaHora;
+
+                        // Validar si el rango de tiempo cae dentro del turno solicitado
+                        $inicioTurno = Carbon::createFromFormat('Y-m-d H:i', $inicio->format('Y-m-d') . ' ' . $horarioInicio);
+                        $finTurno = Carbon::createFromFormat('Y-m-d H:i', $inicio->format('Y-m-d') . ' ' . $horarioFin);
+
+                        // Intersección del tiempo trabajado con el turno
+                        $rangoInicio = $inicio->copy()->greaterThan($inicioTurno) ? $inicio : $inicioTurno;
+                        $rangoFin = $fin->copy()->lessThan($finTurno) ? $fin : $finTurno;
+
+                        if ($rangoInicio < $rangoFin) {
+                            $minutos = $rangoInicio->diffInMinutes($rangoFin);
+                            if ($turno == 1) {
+                                $tiempoTotal['minutos_paro_matutino'] += $minutos;
+                            } else {
+                                $tiempoTotal['minutos_paro_vespertino'] += $minutos;
+                            }
+                        }
+
+                        $inicio = null; // reiniciar para el siguiente ciclo
+                    }
+                }
+            }
+
+            // Convertir minutos a horas:minutos
+            $resultados[] = [
+                'maquina_id' => $maquina->id,
+                'maquina' => $maquina->nombre ?? 'Sin nombre',
+
+                'horas_activa' => $turno == 1 ? intdiv($tiempoTotal['minutos_matutino'], 60) : intdiv($tiempoTotal['minutos_vespertino'], 60),
+                'minutos_activa' => $turno == 1 ? $tiempoTotal['minutos_matutino'] % 60 : $tiempoTotal['minutos_vespertino'] % 60,
+
+                'horas_paro' => $turno == 1 ? intdiv($tiempoTotal['minutos_paro_matutino'], 60) : intdiv($tiempoTotal['minutos_paro_vespertino'], 60),
+                'minutos_paro' => $turno == 1 ? $tiempoTotal['minutos_paro_matutino'] % 60 : $tiempoTotal['minutos_paro_vespertino'] % 60,
+
+                'minutos_activa_totales' => $turno == 1 ? $tiempoTotal['minutos_matutino'] : $tiempoTotal['minutos_vespertino'],
+                'minutos_paro_totales' => $turno == 1 ? $tiempoTotal['minutos_paro_matutino'] : $tiempoTotal['minutos_paro_vespertino'],
+                'minutos_esperados' =>  $this->minutosEsperadosFechas($desde, $hasta, $turno),
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'tiempos' => $resultados
+        ]);
+    }
+    public function tiemposPersonal(Request $request){
+        $desde = $request->input('desde'); // formato: '2025-04-11'
+        $hasta = $request->input('hasta'); // formato: '2025-04-11'
+        $turno = intval($request->input('turno')); // 1 = matutino, 2 = vespertino
+        
+        $turnoHorario = [
+            1 => ['08:00', '17:30'],
+            2 => ['17:31', '23:59']
+        ];
+
+        $horarioInicio = $turnoHorario[$turno][0];
+        $horarioFin = $turnoHorario[$turno][1];
+
+        $rolesPermitidos = ['OPERADOR', 'PROGRAMADOR', 'ALMACENISTA'];
+        $accionesPorRol = [
+            'OPERADOR' => ['activo' => 'fabricacion', 'paro' => 'fabricacion_paro'],
+            'PROGRAMADOR' => ['activo' => 'programacion', 'paro' => null],
+            'ALMACENISTA' => ['activo' => 'corte', 'paro' => 'corte_paro'],
+        ];
+
+        $usuarios = User::with('roles')->get();
+        $resultados = [];
+        foreach ($usuarios as $usuario) {
+            foreach ($usuario->roles as $rol) {
+                $nombreRol = strtoupper($rol->name);
+
+                if (!in_array($nombreRol, $rolesPermitidos)) continue;
+
+                $acciones = $accionesPorRol[$nombreRol];
+
+                $seguimientos = SeguimientoTiempo::where('usuario_id', $usuario->id)
+                ->where('accion', $acciones['activo'])
+                ->whereBetween('fecha', [$desde, $hasta])
+                ->orderBy('fabricacion_id')
+                ->orderBy('fecha')
+                ->orderBy('hora')
+                ->get();
+                
+                $parosAgrupados = array();
+                if ($acciones['paro']) {
+                    $paros = SeguimientoTiempo::where('usuario_id', $usuario->id)
+                    ->where('accion', $acciones['paro'])
+                    ->whereBetween('fecha', [$desde, $hasta])
+                    ->orderBy('fabricacion_id')
+                    ->orderBy('fecha')
+                    ->orderBy('hora')
+                    ->get();
+
+                    $parosAgrupados = $paros->groupBy('fabricacion_id');
+                }
+                
+                $tiempoActivo = 0;
+                $tiempoParo = 0;
+                $agrupados = $seguimientos->groupBy('fabricacion_id');
+
+                foreach ($agrupados as $registros) {
+                    $inicio = null;
+                    foreach ($registros as $registro) {
+                        $fechaHora = Carbon::createFromFormat('Y-m-d H:i', $registro->fecha . ' ' . $registro->hora);
+                        
+                        if ($registro->tipo == 1) {
+                            $inicio = $fechaHora;
+                        } elseif ($registro->tipo == 0 && $inicio) {
+                            $fin = $fechaHora;
+
+                            $inicioTurno = Carbon::createFromFormat('Y-m-d H:i', $inicio->format('Y-m-d') . ' ' . $horarioInicio);
+                            $finTurno = Carbon::createFromFormat('Y-m-d H:i', $inicio->format('Y-m-d') . ' ' . $horarioFin);
+
+                            $rangoInicio = $inicio->copy()->greaterThan($inicioTurno) ? $inicio : $inicioTurno;
+                            $rangoFin = $fin->copy()->lessThan($finTurno) ? $fin : $finTurno;
+
+                            if ($rangoInicio < $rangoFin) {
+                                $minutos = $rangoInicio->diffInMinutes($rangoFin);
+                                $tiempoActivo += $minutos;
+                            }
+                            $inicio = null; 
+                        }
+                    }
+                }
+
+                foreach ($parosAgrupados as $registros) {
+                    $inicio = null;
+                    foreach ($registros as $registro) {
+                        $fechaHora = Carbon::createFromFormat('Y-m-d H:i', $registro->fecha . ' ' . $registro->hora);
+                        if ($registro->tipo == 1) {
+                            $inicio = $fechaHora;
+                        } elseif ($registro->tipo == 0 && $inicio) {
+                            $fin = $fechaHora;
+
+                            $inicioTurno = Carbon::createFromFormat('Y-m-d H:i', $inicio->format('Y-m-d') . ' ' . $horarioInicio);
+                            $finTurno = Carbon::createFromFormat('Y-m-d H:i', $inicio->format('Y-m-d') . ' ' . $horarioFin);
+
+                            $rangoInicio = $inicio->copy()->greaterThan($inicioTurno) ? $inicio : $inicioTurno;
+                            $rangoFin = $fin->copy()->lessThan($finTurno) ? $fin : $finTurno;
+
+                            if ($rangoInicio < $rangoFin) {
+                                $minutos = $inicio->diffInMinutes($fin);
+                                $tiempoParo += $minutos;
+                            }
+                            $inicio = null; 
+                        }
+                    }
+                }
+
+                $resultados[] = [
+                    'id' => $usuario->id . '_' . $nombreRol,
+                    'usuario_id' => $usuario->id,
+                    'nombre' => $usuario->nombre_completo,
+                    'role' => $nombreRol,
+                    'minutos_activo' => $tiempoActivo,
+                    'minutos_paro' => $tiempoParo,
+                    'minutos_totales' => $this->minutosEsperadosFechas($desde, $hasta, $turno),
+                ];
+            }
+        }
+    
+        return response()->json([
+            'success' => true,
+            'tiempos' => $resultados
+        ]);
+    }
+    public function tiemposFinanzas(Request $request, $proyecto_id){
+        $proyecto = Proyecto::findOrFail($proyecto_id);
+        $herramentalIds = Herramental::where('proyecto_id', $proyecto->id)->pluck('id')->toArray();
+        $componenteIds = Componente::whereIn('herramental_id', $herramentalIds)->pluck('id')->toArray();
+
+
+        if (empty($componenteIds)) {
+            return response()->json(['success' => false, 'message' => 'No se encontraron componentes para el proyecto especificado.'], 404);
+        }
+
+        $seguimientos = SeguimientoTiempo::whereIn('componente_id', $componenteIds)
+            ->where('accion', 'fabricacion') // Solo queremos "fabricacion"
+            ->orderBy('componente_id')
+            ->orderBy('fabricacion_id')
+            ->orderBy('fecha')
+            ->orderBy('hora')
+            ->get();
+
+        $totalSegundos = 0;
+        $componentesAgrupados = $seguimientos->groupBy('fabricacion_id');
+
+        foreach ($componentesAgrupados as $seguimientosComponente) {
+            $inicio = null;
+            foreach ($seguimientosComponente as $seguimiento) {
+                if ($seguimiento->tipo == 1) { // Inicio
+                    $inicio = Carbon::createFromFormat('Y-m-d H:i', $seguimiento->fecha . ' ' . $seguimiento->hora);
+                } elseif ($seguimiento->tipo == 0 && $inicio) { // Fin
+                    $fin = Carbon::createFromFormat('Y-m-d H:i', $seguimiento->fecha . ' ' . $seguimiento->hora);
+                    $totalSegundos += $inicio->diffInSeconds($fin);
+                    $inicio = null;
+                }
+            }
+        }
+        $totalHorasMaquinado = floor($totalSegundos / 3600); // horas completas
+        $restoSegundos = $totalSegundos % 3600; // lo que sobra después de las horas
+        $totalMinutosMaquinado = floor($restoSegundos / 60); // minutos completos
+
+        // OBTENER TIEMPO RETRABAJOS
+        $componentes = Componente::whereIn('id', $componenteIds)->get();
+        $totalMinutosRetrabajo = 0;
+        foreach ($componentes as $componente) {
+            $totalMinutosRetrabajo += $this->calcularRetrabajoMinutos($componente);
+        }
+        $horasRet = intdiv($totalMinutosRetrabajo, 60);
+        $minutosRet = $totalMinutosRetrabajo % 60;
+
+
+        // OBTENER TIEMPO DE PAROS
+        $seguimientos = SeguimientoTiempo::whereIn('componente_id', $componenteIds)
+            ->whereIn('accion', ['fabricacion_paro', 'corte_paro'])
+            ->orderBy('fabricacion_id')
+            ->orderBy('accion')
+            ->orderBy('fecha')
+            ->orderBy('hora')
+            ->get();
+
+        $totalSegundos = 0;
+        $componentesAgrupados = $seguimientos->groupBy('fabricacion_id');
+
+        foreach ($componentesAgrupados as $seguimientosComponente) {
+            $inicio = null;
+            foreach ($seguimientosComponente as $seguimiento) {
+                if ($seguimiento->tipo == 1) { // Inicio
+                    $inicio = Carbon::createFromFormat('Y-m-d H:i', $seguimiento->fecha . ' ' . $seguimiento->hora);
+                } elseif ($seguimiento->tipo == 0 && $inicio) { // Fin
+                    $fin = Carbon::createFromFormat('Y-m-d H:i', $seguimiento->fecha . ' ' . $seguimiento->hora);
+                    $totalSegundos += $inicio->diffInSeconds($fin);
+                    $inicio = null;
+                }
+            }
+        }
+        $totalHorasParo = floor($totalSegundos / 3600); // horas completas
+        $restoSegundos = $totalSegundos % 3600; // lo que sobra después de las horas
+        $totalMinutosParo = floor($restoSegundos / 60); // minutos completos
+
+
+        // MODIFICACIONES
+
+       $notificaciones = Notificacion::whereIn('componente_id', $componenteIds)
+        ->where(function($query) {
+            $query->where('descripcion', 'like', 'UN COMPONENTE REQUIERE MODIFICACION%')
+                ->orWhere('descripcion', 'SE HA GENERADO UNA NUEVA VERSIÓN DEL COMPONENTE DEBIDO A UNA REFABRICACIÓN.')
+                ->orWhere('descripcion', 'EL DISEÑO DEL COMPONENTE HA SIDO MODIFICADO, SE REQUIERE UN RETRABAJO.');
+        })
+        ->orderBy('componente_id')
+        ->orderBy('created_at')
+        ->get();
+
+        $tiemposPorComponente = []; 
+
+        foreach ($notificaciones as $notificacion) {
+            $componenteId = $notificacion->componente_id;
+            $descripcion = $notificacion->descripcion;
+
+            if (str_starts_with($descripcion, 'UN COMPONENTE REQUIERE MODIFICACION')) {
+                $tiemposPorComponente[$componenteId]['inicio'] = $notificacion->created_at;
+            } elseif (
+                $descripcion === 'SE HA GENERADO UNA NUEVA VERSIÓN DEL COMPONENTE DEBIDO A UNA REFABRICACIÓN.' ||
+                $descripcion === 'EL DISEÑO DEL COMPONENTE HA SIDO MODIFICADO, SE REQUIERE UN RETRABAJO.'
+            ) {
+                if (isset($tiemposPorComponente[$componenteId]['inicio'])) {
+                    $inicio = $tiemposPorComponente[$componenteId]['inicio'];
+                    $fin = $notificacion->created_at;
+                    $diferenciaSegundos = strtotime($fin) - strtotime($inicio);
+                    $tiemposPorComponente[$componenteId]['tiempo'] = ($tiemposPorComponente[$componenteId]['tiempo'] ?? 0) + $diferenciaSegundos;
+                    unset($tiemposPorComponente[$componenteId]['inicio']);
+                }
+            }
+        }
+        $totalSegundos = 0;
+        foreach ($tiemposPorComponente as $datos) {
+            if (isset($datos['tiempo'])) {
+                $totalSegundos += $datos['tiempo'];
+            }
+        }
+
+        $totalMinutos = intdiv($totalSegundos, 60);
+        $horasMod = intdiv($totalMinutos, 60);
+        $minutosMod = $totalMinutos % 60;
+
+        // OBTENER TIEMPO DE PRUEBAS
+        $segundosPruebasDiseño = $this->obtenerTiempoPruebasDiseño($herramentalIds);
+        $segundosPruebasProceso = $this->obtenerTiempoPruebasProceso($herramentalIds);
+
+        $horasDiseño = intdiv($segundosPruebasDiseño, 3600);
+        $minutosDiseño = intdiv($segundosPruebasDiseño % 3600, 60);
+        $horasProceso = intdiv($segundosPruebasProceso, 3600);
+        $minutosProceso = intdiv($segundosPruebasProceso % 3600, 60);
+
+
+
+        return response()->json([
+            'success' => true,
+            'tiempos' => [
+                'maquinado_horas' => $totalHorasMaquinado,
+                'maquinado_minutos' => $totalMinutosMaquinado,
+                'paro_horas' => $totalHorasParo,
+                'paro_minutos' => $totalMinutosParo,
+                'retrabajo_horas' => $horasRet,
+                'retrabajo_minutos' => $minutosRet,
+                'modificacion_horas' => $horasMod,
+                'modificacion_minutos' => $minutosMod,
+                'diseno_horas' => $horasDiseño,
+                'diseno_minutos' => $minutosDiseño,
+                'proceso_horas' => $horasProceso,
+                'proceso_minutos' => $minutosProceso
+            ]
+        ]);
+    }
+
+    public function calcularRetrabajoMinutos($componente){
+        $ruta = json_decode($componente->ruta, true);
+
+        if (!$ruta) {
+            return 0; // Si no hay ruta o falla el JSON, no hay retrabajo
+        }
+
+        $totalMinutos = 0;
+
+        foreach ($ruta as $proceso) {
+            if (isset($proceso['time'])) {
+                foreach ($proceso['time'] as $tiempo) {
+                    if (isset($tiempo['type']) && $tiempo['type'] === 'rework') {
+                        $horas = (int)($tiempo['horas'] ?? 0);
+                        $minutos = (int)($tiempo['minutos'] ?? 0);
+
+                        $totalMinutos += ($horas * 60) + $minutos;
+                    }
+                }
+            }
+        }
+
+        return $totalMinutos;
+    }
+
+    public function obtenerTiempoPruebasDiseño($herramentalIds)
+    {
+        $totalSegundos = 0;
+
+        $pruebas = PruebaDiseno::whereIn('herramental_id', $herramentalIds)->get();
+
+        foreach ($pruebas as $prueba) {
+            if ($prueba->fecha_inicio && $prueba->fecha_liberada) {
+                $inicio = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_inicio);
+                $fin = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_liberada);
+
+                $diferencia = $inicio->diffInSeconds($fin);
+                $totalSegundos += $diferencia;
+            }
+        }
+
+        return $totalSegundos;
+    }
+
+    public function obtenerTiempoPruebasProceso($herramentalIds)
+    {
+        $totalSegundos = 0;
+
+        $pruebas = PruebaProceso::whereIn('herramental_id', $herramentalIds)->get();
+
+        foreach ($pruebas as $prueba) {
+            if ($prueba->fecha_inicio && $prueba->fecha_liberada) {
+                $inicio = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_inicio);
+                $fin = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_liberada);
+
+                $diferencia = $inicio->diffInSeconds($fin);
+                $totalSegundos += $diferencia;
+            }
+        }
+
+        return $totalSegundos;
+    }
+
 
 }
 

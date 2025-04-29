@@ -106,6 +106,19 @@ input:checked + .slider:before {
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/maquina">MAQUINAS</a>
                 </li>
+                <li class="nav-item" >
+                   <a class="nav-link menu-link" href="/tiempos-maquinas">TIEMPOS MAQUINA</a>
+               </li>
+                 <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/tiempos-personal">TIEMPOS PERSONAL</a>
+                </li>
+                @endif
+
+                 {{-- FINANZAS --}}
+                @if (auth()->user()->hasRole('FINANZAS'))
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/finanzas">FINANZAS</a>
+                </li>
                 @endif
                 
                 {{-- AUXILIAR DE DISENO --}}

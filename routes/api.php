@@ -25,6 +25,8 @@ Route::group(['middleware' => 'api'], function () {
 // Panel
 Route::group(['middleware' => 'auth:api'], function () {
     
+    Route::get('tiempos-maquinas', 'APIController@tiemposMaquinas');
+    Route::get('tiempos-personal', 'APIController@tiemposPersonal');
 
     Route::put('ver-notificaciones', 'APIController@verNotificaciones');
     Route::get('ultimas-notificaciones', 'APIController@ultimasNotificaciones');
@@ -51,6 +53,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('anios/{anio}/clientes', 'APIController@obtenerPorAnio');
     Route::get('clientes/{cliente}/proyectos', 'APIController@obtenerPorCliente');
     Route::get('proyectos/{proyecto}/herramentales', 'APIController@obtenerPorProyecto');
+    Route::get('proyectos/{proyecto}/finanzas', 'APIController@tiemposFinanzas');
     Route::get('herramentales/{herramental}/componentes', 'APIController@obtenerPorHerramental');
     Route::get('herramental/{herramental}/pruebas-diseno', 'APIController@obtenerPruebasDiseno');
     Route::get('herramental/{herramental}/pruebas-proceso', 'APIController@obtenerPruebasProceso');
