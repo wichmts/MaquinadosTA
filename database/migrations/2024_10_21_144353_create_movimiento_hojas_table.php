@@ -19,7 +19,8 @@ class CreateMovimientoHojasTable extends Migration
             $table->string('ancho')->nullable();
             $table->string('longitud')->nullable();
             $table->string('diametro')->nullable();
-            $table->string('peso')->nullable();
+            $table->decimal('peso_inicial', 12, 2)->nullable();
+            $table->decimal('peso', 12, 2)->nullable();
             $table->integer('hoja_id')->nullable();
             $table->integer('proyecto_id')->nullable();
             $table->integer('componente_id')->nullable();

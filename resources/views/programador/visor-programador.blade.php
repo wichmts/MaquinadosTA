@@ -211,15 +211,15 @@
                             <div class="col-xl-6">
                                 <h5 class="bold" style="letter-spacing: 1px"><i class="fa fa-computer"></i> @{{m.nombre}}</h5>
                             </div>
-                            <div class="col-xl-6 text-right" v-if="componente.programado != true && componente.programador_id == user_id  && m.nombre !== 'CAREO MANUAL'">
+                            <div class="col-xl-6 text-right" v-if="componente.programado != true && componente.programador_id == user_id  && m.requiere_programa">
                                 <small class="cursor-pointer" style="text-decoration: underline" @click="agregarArchivo(m)"><i class="fa fa-plus-circle"></i> Agregar programa</small>
                             </div>
                             <div class="col-xl-12">
                                 <div class="row mb-2" v-for="(a, index) in m.archivos" :key="index + '-' + m.maquina_id">
-                                    <div class="col-xl-12 mb-2" v-if="m.nombre == 'CAREO MANUAL'">
+                                    <div class="col-xl-12 mb-2" v-if="!m.requiere_programa">
                                         <small> Esta maquina no requiere programa </small>
                                     </div>
-                                    <div class="col-xl-10 text-center mr-0 pr-0" v-if="m.nombre != 'CAREO MANUAL'">
+                                    <div class="col-xl-10 text-center mr-0 pr-0" v-if="m.requiere_programa">
                                         <input
                                             :disabled="componente.programado == true || componente.programador_id != user_id"
                                             class="input-file"
@@ -242,7 +242,7 @@
                                             <a :href="'/api/download/programas/' + a.nombre">@{{getElipsis(a.nombre)}}</a>
                                         </small>
                                     </div>
-                                    <div class="col-xl-2 text-center ml-0 pl-0" v-if="componente.programado != true && componente.programador_id == user_id  && m.nombre !== 'CAREO MANUAL'">
+                                    <div class="col-xl-2 text-center ml-0 pl-0" v-if="componente.programado != true && componente.programador_id == user_id  && m.requiere_programa">
                                         <button class="btn btn-block btn-link my-0" @click="eliminarArchivo(m, index)">
                                             <i class="fa fa-times-circle text-danger" style="font-size: 20px !important"></i>
                                         </button>
@@ -604,10 +604,11 @@
                 if (indiceMaquina !== -1) {
                     this.componente.maquinas.splice(indiceMaquina, 1); // Elimina la máquina
                 } else {
-                    if(this.maquinas.find(obj => obj.id === maquina_id)?.nombre == 'CAREO MANUAL'){
+                    if(this.maquinas.find(obj => obj.id === maquina_id)?.requiere_programa != 1){
                         this.componente.maquinas.push({
                             maquina_id: maquina_id,
-                            nombre: 'CAREO MANUAL',
+                            nombre: this.maquinas.find(obj => obj.id === maquina_id)?.nombre,
+                            requiere_programa: this.maquinas.find(obj => obj.id === maquina_id)?.requiere_programa,
                             archivos: [{
                                 nombre: 'No requiere',
                                 archivo: new File(
@@ -621,6 +622,7 @@
                         this.componente.maquinas.push({
                             maquina_id: maquina_id,
                             nombre: this.maquinas.find(obj => obj.id === maquina_id)?.nombre,
+                            requiere_programa: this.maquinas.find(obj => obj.id === maquina_id)?.requiere_programa,
                             archivos: [{
                                 nombre: '',
                                 archivo: null

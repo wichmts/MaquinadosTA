@@ -7,12 +7,9 @@
 <link rel="stylesheet" href="{{ asset('paper/css/paper-dashboard-responsivo.css') }}?v={{ time() }}">
 @endsection
 <style>
-
     .form-group input[type="text"] {
-        height: 32px !important
+        height: 30px !important
     }
-
-
     .table .form-check label .form-check-sign::before, .table .form-check label .form-check-sign::after {top: -10px !important}
 </style>
 
@@ -109,17 +106,18 @@
                             </div>
                             <div class="row" v-else>
                                 <div class="col-lg-12">
-                                    <table class="table">
+                                    <table class="table table-striped">
                                         <thead class="thead-light">
                                             <tr>
-                                                <th style="width: 10% !important" >Componente</th>
-                                                <th style="width: 10% !important" >Proveedor / Material</th>
-                                                <th style="width: 25% !important" >Descripción</th>
-                                                <th style="width: 10% !important" >Cantidad</th>
-                                                <th style="width: 12% !important" style="text-transform: normal !important">Fecha de solicitud</th>
-                                                <th style="width: 12% !important" style="text-transform: normal !important">Fecha pedido</th>
-                                                <th style="width: 12% !important" style="text-transform: normal !important">Fecha estimada recepcion</th>
-                                                <th style="width: 12% !important" style="text-transform: normal !important">Fecha recibido</th>
+                                                <th>Componente</th>
+                                                <th>Proveedor / Material</th>
+                                                <th>Descripción</th>
+                                                <th>Cant.</th>
+                                                <th>Costo unit.</th>
+                                                <th>Fecha de solicitud</th>
+                                                <th>Fecha pedido</th>
+                                                <th>Fecha estimada recepcion</th>
+                                                <th>Fecha recibido</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -130,9 +128,10 @@
                                                 </td>
                                                 <td><input disabled class="form-control text-center" type="text" v-model="c.proveedor"></td>
                                                 <td>
-                                                    <textarea class="form-control w-100 px-1 py-1 text-left" v-model="c.descripcion" style="font-size: 11px !important; min-width: 200px !important" disabled></textarea>
+                                                    <small>@{{c.descripcion}}</small>
                                                 </td>
                                                 <td><input disabled class="form-control text-center" type="number" step="1" v-model="c.cantidad"></td>
+                                                <td><input class="form-control text-center" type="number" step="any" v-model="c.costo_unitario"></td>
                                                 <td><input class="form-control text-center" type="date" :disabled="c.cancelado"  v-model="c.fecha_solicitud"></td>
                                                 <td><input class="form-control text-center" type="date" :disabled="c.cancelado"  v-model="c.fecha_pedido"></td>
                                                 <td><input class="form-control text-center" type="date" :disabled="c.cancelado"  v-model="c.fecha_estimada"></td>

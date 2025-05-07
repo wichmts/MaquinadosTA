@@ -17,6 +17,7 @@ class CreateMaquinasTable extends Migration
             $table->id();
             $table->string('nombre');
             $table->string('tipo_proceso')->nullable();
+            $table->boolean('requiere_programa')->nullable();
             $table->timestamps();
         });
     }

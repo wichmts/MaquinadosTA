@@ -103,15 +103,17 @@
                         <table class="table align-items-center" id="tabla">
                             <thead class="thead-light">
                                 <tr>
-                                    <th scope="col">Nombre de maquina</th>
-                                    <th scope="col">Tipo de proceso</th>
-                                    <th scope="col" class="no-sort">Acciones</th>
+                                    <th style="text-transform: none !important"  scope="col">Nombre de maquina</th>
+                                    <th style="text-transform: none !important"  scope="col">Tipo de proceso</th>
+                                    <th style="text-transform: none !important"  scope="col">¿Requiere programa?</th>
+                                    <th style="text-transform: none !important"  scope="col" class="no-sort">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="(p, index) in maquinas" :key="index">
-                                    <td style="width: 40%">@{{p.nombre}}</td>
-                                    <td style="width: 40%">@{{getTipoProcesoString(p.tipo_proceso)}}</td>
+                                    <td style="width: 30%">@{{p.nombre}}</td>
+                                    <td style="width: 30%">@{{getTipoProcesoString(p.tipo_proceso)}}</td>
+                                    <td style="width: 20%">@{{p.requiere_programa ? 'SI' : 'NO'}}</td>
                                     <td style="width: 20%">
                                         <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
                                              <button class="btn btn-sm btn-link actions" @click="editar(index)" data-toggle="tooltip" data-placement="bottom" title="Editar información">
@@ -153,6 +155,12 @@
                                     <option v-for="p in procesos" :value="p.id"> @{{p.nombre}}</option>
                                 </select>
                             </div>
+                            <div class="col-lg-12 form-group">
+                                <div class="checkbox-wrapper-19">
+                                    <input type="checkbox" v-model="maquina.requiere_programa" /> &nbsp;&nbsp;
+                                    <span style="font-size: 12px !important" class="bold">¿La máquina requiere programa?</span>
+                                </div>
+                            </div>
                         </div>  
                     </div>
                     <div class="modal-footer text-right">
@@ -177,7 +185,8 @@
             maquinas: [],
             maquina: {
                 nombre: '',
-                tipo_proceso: '',               
+                tipo_proceso: '',   
+                requiere_programa: true,            
             },
             procesos:  [
                     // {id: 1, prioridad: 1, nombre: 'Cortar'},
@@ -272,6 +281,7 @@
                  t.maquina = {
                     nombre: '',
                     tipo_proceso: '',
+                    requiere_programa: true,            
                 };
                  Vue.nextTick(function () {
                     $('#modalMaquina').modal();

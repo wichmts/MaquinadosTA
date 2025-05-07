@@ -116,8 +116,8 @@
                                     <thead class="thead-light">
                                         <tr>
                                             <th style="width: 10%"> Componente </th>
-                                            <th style="width: 7%"> Cantidad </th>
-                                            <th style="width: 17%">Medidas</th>
+                                            <th style="width: 7%">  Cantidad </th>
+                                            <th style="width: 17%"> Medidas</th>
                                             <th style="width: 10%"> Material </th>
                                             <th style="width: 10%"> Estatus </th>
                                             <th style="width: 30%"> Corte </th>
@@ -229,8 +229,13 @@
                                         <input type="text" class="form-control" v-model="movimiento.diametro">
                                     </div>
                                     <div class="col-lg-4 form-group">
-                                        <label class="bold" >Peso restante (hoja) <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" v-model="movimiento.peso">
+                                        <label class="bold">Peso restante (hoja) <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="number" step="any" class="form-control py-2" v-model="movimiento.peso">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text px-2 py-0" style="background-color: #ededed;">Kg</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row px-3" v-if="hay_retraso">

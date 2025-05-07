@@ -66,6 +66,7 @@ class Herramental extends Model
         $array['proyecto'] = $this->proyecto->nombre;
         $array['rutaHerramental'] = "?a={$anio->id}&c={$cliente->id}&p={$this->proyecto->id}&h={$this->id}";
         $array['fecha_creacion'] = $this->created_at->isoFormat('DD/MM/YYYY h:mm a');
+        $array['otras_fechas'] = json_decode($this->otras_fechas)??[];
         $array['fecha_finalizado'] = $this->fechaFinalizado();
         if($this->fecha_limite)
              $array['fecha_limite_show'] = Carbon::createFromFormat('Y-m-d', $this->fecha_limite)->isoFormat('DD/MM/YYYY');

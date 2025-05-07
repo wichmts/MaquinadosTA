@@ -71,8 +71,11 @@
     .custom-file-label:hover {
         background-color: #e7e7e7;
     }
-     
-
+    .grafica-wrapper {
+        width: 100%;
+        height: 400px; /* altura fija deseada */
+        position: relative; /* necesario para que Chart.js escale bien */
+}
 
     .table .form-check label .form-check-sign::before, .table .form-check label .form-check-sign::after {top: -10px !important}
 </style>
@@ -95,8 +98,8 @@
                 <div class="loader"></div>
             </div>
         </div>
-        <div class="row mt-3 px-5" v-cloak v-show="!cargando" >
-            <div class="col-lg-6 d-flex align-items-end">
+        <div class="row mt-3 px-5" v-cloak v-show="!cargando">
+            <div class="col-lg-6 ">
                 <h2 class="bold my-0 py-1 " style="letter-spacing: 2px">TIEMPOS DE PERSONAL</h2>
             </div>
             <div class="col-lg-3 form-group">
@@ -110,9 +113,36 @@
                     <option value="2">HORAS EXTRA (despues de las 5:30pm)</option>
                 </select>
             </div>
-             <div class="col-lg-3 mt-3 text-center" v-for="personal in tiempos" :key="personal.id">
-                <h4 class="bold">@{{ personal.nombre }} <br> <small>@{{personal.role}}</small></h4>
-                <canvas :id="'grafica_' + personal.id" width="200" height="200" class="grafica-canvas"></canvas>
+            <div class="col-lg-12">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">OPERADORES / PROGRAMADORES / ALAMACENISTA</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">MATRICERO</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                        <div class="row">
+                            <div class="col-lg-3 mt-3 text-center" v-for="personal in tiempos" :key="personal.id">
+                                <h4 class="bold my-0 mb-2">@{{ personal.nombre }} </h4>
+                                <span class="badge badge-pill badge-dark px-2 py-1 mx-1 mb-1" style="font-size: 9px" v-for="rol in personal.roles">@{{rol}}</span>
+                                <canvas :id="'grafica_' + personal.id" width="200" height="200" class="grafica-canvas mt-3"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                        <div class="row">
+                            <div class="col-lg-12 text-center">
+                                 <h4 class="bold">MATRICERO <br> 
+                                    <small>COMPONENTES ENSAMBLADOS EN EL PERIODO: <strong> @{{totalComponentes}}</strong></small>
+                                </h4>
+                                 <canvas id="grafica_mat" height="100px"></canvas>
+                             </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -135,7 +165,9 @@
                 turno: 1,
             },
             tiempos: [],
-            graficas: []
+            graficas: [],
+            datosGrafica: [],
+            totalComponentes: 0,
         },
         methods:{
             
@@ -151,6 +183,9 @@
                         }
                     });
                     this.tiempos = response.data.tiempos;
+                    this.datosGrafica = response.data.periodo;
+                    this.totalComponentes = response.data.totalComponentes;
+
                 } catch (error) {
                     console.error('Error fetching tiempos:', error);
                 } finally {
@@ -161,8 +196,66 @@
                         this.tiempos.forEach((personal) => {
                             this.generarGrafica(personal);
                         });
+                        this.renderGraficaMat();
                     });
                 }
+            },
+            renderGraficaMat() {
+                const labels = this.datosGrafica.map(item => item.fecha);
+                const values = this.datosGrafica.map(item => item.total);
+
+                const ctx = document.getElementById('grafica_mat').getContext('2d');
+
+                // Destruir gráfica anterior si existe
+                if (this.chart) {
+                    this.chart.destroy();
+                }
+
+                this.chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Componentes ensamblados',
+                        data: values,
+                        backgroundColor: '#4e73df',
+                        borderColor: '#4e73df',
+                        borderWidth: 1
+                    }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Componentes ensamblados'
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                align: 'center',
+                                text: 'PRODUCCIÓN DIARIA DE COMPONENTES ENSAMBLADOS'
+                            },
+                            legend: {
+                                 display: false
+                                },
+                                tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                    return `${context.parsed.y} componentes`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
             },
             generarGrafica(personal) {
                 let datosActiva = personal.minutos_activo;

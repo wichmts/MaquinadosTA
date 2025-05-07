@@ -284,6 +284,7 @@ class APIController extends Controller
         $maquina = new Maquina();
         $maquina->nombre = $datos['nombre'];
         $maquina->tipo_proceso = $datos['tipo_proceso'];
+        $maquina->requiere_programa = $datos['requiere_programa'];
         $maquina->save();
 
         return response()->json([
@@ -297,6 +298,7 @@ class APIController extends Controller
 
         $maquina->nombre = $datos['nombre'];
         $maquina->tipo_proceso = $datos['tipo_proceso'];
+        $maquina->requiere_programa = $datos['requiere_programa'];
         $maquina->save();
 
         return response()->json([
@@ -634,10 +636,11 @@ class APIController extends Controller
                 }
             break;
             case 'estatus-ensamblado':
-                 $componente = Componente::findOrFail($id);
+                $componente = Componente::findOrFail($id);
                 $componente->ensamblado = $datos['ensamblado'];
                 if($datos['ensamblado']){
                     $componente->fecha_ensamblado = date('Y-m-d H:i');
+                    $componente->matricero_id = auth()->user()->id;
                 }else{
                     $componente->fecha_ensamblado = null;
                 }
@@ -934,14 +937,14 @@ class APIController extends Controller
 
                     if ($fabricacion) {
                         Storage::disk('public')->delete("programas/" . $fabricacion->nombre);
-                        $name = time() . '_' . $file->getClientOriginalName();
+                        $name = uniqid() . '_' . $file->getClientOriginalName();
                         Storage::disk('public')->put("programas/" . $name, \File::get($file));
                         $fabricacion->archivo = $name;
                         $fabricacion->fabricado = false;
                         $fabricacion->save();
                     }
                 } else {
-                    $name = time() . '_' . $file->getClientOriginalName();
+                    $name = uniqid() . '_' . $file->getClientOriginalName();
                     Storage::disk('public')->put("programas/" . $name, \File::get($file));
 
                     $fabricacion = new Fabricacion();
@@ -1260,10 +1263,10 @@ class APIController extends Controller
 
             $nuevoComponente = Componente::findOrFail($componente['id']);
             $comprado = $nuevoComponente->comprado;
-
             $nuevoComponente->cantidad = $this->emptyToNull($componente['cantidad']);
             $nuevoComponente->material_id = $this->emptyToNull($componente['material_id']);
             $nuevoComponente->fecha_solicitud = $this->emptyToNull($componente['fecha_solicitud']);
+            $nuevoComponente->costo_unitario = $this->emptyToNull($componente['costo_unitario']);
             $nuevoComponente->fecha_pedido = $this->emptyToNull($componente['fecha_pedido']);
             $nuevoComponente->fecha_estimada = $this->emptyToNull($componente['fecha_estimada']);
             $nuevoComponente->fecha_real = $this->emptyToNull($componente['fecha_real']);
@@ -1522,6 +1525,7 @@ class APIController extends Controller
                 $nuevoComponente->fecha_pedido = $this->emptyToNull($componente['fecha_pedido']);
                 $nuevoComponente->fecha_estimada = $this->emptyToNull($componente['fecha_estimada']);
                 $nuevoComponente->fecha_real = $this->emptyToNull($componente['fecha_real']);
+                $nuevoComponente->costo_unitario = 0;
                 $nuevoComponente->refabricado = false;
                 $nuevoComponente->refaccion = false;
                 
@@ -1783,6 +1787,7 @@ class APIController extends Controller
                 $componente->area = $componente->es_compra ? 'compras' : 'corte';
                 $componente->cargado = true;
                 $componente->fecha_solicitud = $componente->es_compra ? date('Y-m-d') : null;
+                $componente->fecha_cargado = date('Y-m-d H:i');
                 $componente->save();
             }
 
@@ -2241,6 +2246,7 @@ class APIController extends Controller
 
 
         $hoja = Hoja::findOrFail($request->movimiento['hoja_id']);
+        $saldoPeso = $hoja->peso_saldo;
         $hoja->peso_saldo = $request->movimiento['peso'];
         $hoja->largo_saldo = $request->movimiento['largo'];
         $hoja->ancho_saldo = $request->movimiento['ancho'];
@@ -2251,6 +2257,7 @@ class APIController extends Controller
         $movimiento = new MovimientoHoja();
         $movimiento->largo = $request->movimiento['largo'];
         $movimiento->ancho = $request->movimiento['ancho'];
+        $movimiento->peso_inicial = $saldoPeso;
         $movimiento->peso = $request->movimiento['peso'];
         $movimiento->longitud = $request->movimiento['longitud'];
         $movimiento->diametro = $request->movimiento['diametro'];
@@ -3294,7 +3301,14 @@ class APIController extends Controller
     }
     public function fechaLimiteHerramental(Request $request, $id){
         $herramental = Herramental::findOrFail($id);
+        $anterior = $herramental->fecha_limite;
+        $otras = json_decode($herramental->otras_fechas, true) ?? [];
+        if ($anterior) {
+            $otras[] = $anterior;
+        }
+        $otras = array_unique($otras);
         $herramental->fecha_limite = $request->fechaLimite;
+        $herramental->otras_fechas = json_encode(array_values($otras)); // asegúrate de que sea un array limpio
         $herramental->save();
 
         return response()->json([
@@ -3472,11 +3486,143 @@ class APIController extends Controller
             'tiempos' => $resultados
         ]);
     }
+    public function retrasosProyecto(Request $request, $proyecto_id){
+        $proyecto = Proyecto::findOrFail($proyecto_id);
+        $herramentalIds = Herramental::where('proyecto_id', $proyecto_id)->pluck('id')->toArray();
+        $componentes = Componente::whereIn('herramental_id', $herramentalIds)->get(['id', 'nombre', 'version', 'herramental_id']);
+        $componentesMap = $componentes->keyBy('id');
+
+        $getRutaVisor = function ($herramental_id) {
+            $herramental = Herramental::findOrFail($herramental_id);
+            $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
+            $cliente = Cliente::findOrFail($proyecto->cliente_id);
+            $anio = Anio::findOrFail($cliente->anio_id);
+
+            return "?a={$anio->id}&c={$cliente->id}&p={$proyecto->id}&h={$herramental->id}";
+        };
+
+        $retrabajos = Solicitud::whereIn('componente_id', $componentes->pluck('id'))
+            ->where('tipo', 'retrabajo')
+            ->get()
+            ->map(function ($solicitud) use ($componentesMap, $getRutaVisor) {
+                $componente = $componentesMap[$solicitud->componente_id];
+                return [
+                    'componente' => $componente->nombre,
+                    'version' => $componente->version,
+                    'created_at' => $solicitud->created_at->format('Y-m-d H:i'),
+                    'area_solicitante' => $solicitud->area_solicitante,
+                    'rutaVisor' => $getRutaVisor($componente->herramental_id),
+                ];
+            });
+
+        $modificaciones = Solicitud::whereIn('componente_id', $componentes->pluck('id'))
+            ->where('tipo', 'modificacion')
+            ->get()
+            ->map(function ($solicitud) use ($componentesMap, $getRutaVisor) {
+                $componente = $componentesMap[$solicitud->componente_id];
+                return [
+                    'componente' => $componente->nombre,
+                    'version' => $componente->version,
+                    'created_at' => $solicitud->created_at->format('Y-m-d H:i'),
+                    'area_solicitante' => $solicitud->area_solicitante,
+                    'rutaVisor' => $getRutaVisor($componente->herramental_id),
+                ];
+            });
+
+        $paros = SeguimientoTiempo::whereIn('componente_id', $componentes->pluck('id'))
+            ->whereIn('accion', ['fabricacion_paro', 'corte_paro'])
+            ->where('tipo', 1)
+            ->get()
+            ->map(function ($paro) use ($componentesMap, $getRutaVisor) {
+                $componente = $componentesMap[$paro->componente_id];
+                return [
+                    'componente' => $componente->nombre,
+                    'version' => $componente->version,
+                    'tipo_paro' => $paro->tipo_paro,
+                    'fecha' => $paro->fecha,
+                    'hora' => $paro->hora,
+                    'rutaVisor' => $getRutaVisor($componente->herramental_id),
+                ];
+            });
+
+        return response()->json([
+            'retrasos' => [
+                'retrabajos' => $retrabajos,
+                'modificaciones' => $modificaciones,
+                'paros' => $paros,
+            ]
+        ]);
+    }
+     public function retrasosHerramental(Request $request, $herramental_id){
+        $componentes = Componente::where('herramental_id', $herramental_id)->get(['id', 'nombre', 'version', 'herramental_id']);
+        $componentesMap = $componentes->keyBy('id');
+
+        $getRutaVisor = function ($herramental_id) {
+            $herramental = Herramental::findOrFail($herramental_id);
+            $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
+            $cliente = Cliente::findOrFail($proyecto->cliente_id);
+            $anio = Anio::findOrFail($cliente->anio_id);
+
+            return "?a={$anio->id}&c={$cliente->id}&p={$proyecto->id}&h={$herramental->id}";
+        };
+
+        $retrabajos = Solicitud::whereIn('componente_id', $componentes->pluck('id'))
+            ->where('tipo', 'retrabajo')
+            ->get()
+            ->map(function ($solicitud) use ($componentesMap, $getRutaVisor) {
+                $componente = $componentesMap[$solicitud->componente_id];
+                return [
+                    'componente' => $componente->nombre,
+                    'version' => $componente->version,
+                    'created_at' => $solicitud->created_at->format('Y-m-d H:i'),
+                    'area_solicitante' => $solicitud->area_solicitante,
+                    'rutaVisor' => $getRutaVisor($componente->herramental_id),
+                ];
+            });
+
+        $modificaciones = Solicitud::whereIn('componente_id', $componentes->pluck('id'))
+            ->where('tipo', 'modificacion')
+            ->get()
+            ->map(function ($solicitud) use ($componentesMap, $getRutaVisor) {
+                $componente = $componentesMap[$solicitud->componente_id];
+                return [
+                    'componente' => $componente->nombre,
+                    'version' => $componente->version,
+                    'created_at' => $solicitud->created_at->format('Y-m-d H:i'),
+                    'area_solicitante' => $solicitud->area_solicitante,
+                    'rutaVisor' => $getRutaVisor($componente->herramental_id),
+                ];
+            });
+
+        $paros = SeguimientoTiempo::whereIn('componente_id', $componentes->pluck('id'))
+            ->whereIn('accion', ['fabricacion_paro', 'corte_paro'])
+            ->where('tipo', 1)
+            ->get()
+            ->map(function ($paro) use ($componentesMap, $getRutaVisor) {
+                $componente = $componentesMap[$paro->componente_id];
+                return [
+                    'componente' => $componente->nombre,
+                    'version' => $componente->version,
+                    'tipo_paro' => $paro->tipo_paro,
+                    'fecha' => $paro->fecha,
+                    'hora' => $paro->hora,
+                    'rutaVisor' => $getRutaVisor($componente->herramental_id),
+                ];
+            });
+
+        return response()->json([
+            'retrasos' => [
+                'retrabajos' => $retrabajos,
+                'modificaciones' => $modificaciones,
+                'paros' => $paros,
+            ]
+        ]);
+    }
     public function tiemposPersonal(Request $request){
-        $desde = $request->input('desde'); // formato: '2025-04-11'
-        $hasta = $request->input('hasta'); // formato: '2025-04-11'
-        $turno = intval($request->input('turno')); // 1 = matutino, 2 = vespertino
-        
+        $desde = $request->input('desde');
+        $hasta = $request->input('hasta');
+        $turno = intval($request->input('turno'));
+
         $turnoHorario = [
             1 => ['08:00', '17:30'],
             2 => ['17:31', '23:59']
@@ -3486,6 +3632,7 @@ class APIController extends Controller
         $horarioFin = $turnoHorario[$turno][1];
 
         $rolesPermitidos = ['OPERADOR', 'PROGRAMADOR', 'ALMACENISTA'];
+
         $accionesPorRol = [
             'OPERADOR' => ['activo' => 'fabricacion', 'paro' => 'fabricacion_paro'],
             'PROGRAMADOR' => ['activo' => 'programacion', 'paro' => null],
@@ -3494,44 +3641,33 @@ class APIController extends Controller
 
         $usuarios = User::with('roles')->get();
         $resultados = [];
-        foreach ($usuarios as $usuario) {
-            foreach ($usuario->roles as $rol) {
-                $nombreRol = strtoupper($rol->name);
 
+        foreach ($usuarios as $usuario) {
+            $tiempoActivo = 0;
+            $tiempoParo = 0;
+        $rolesUsuario = $usuario->roles->pluck('name')->map(function ($r) {
+            return strtoupper($r);
+        })->toArray();
+            foreach ($rolesUsuario as $nombreRol) {
                 if (!in_array($nombreRol, $rolesPermitidos)) continue;
 
                 $acciones = $accionesPorRol[$nombreRol];
 
                 $seguimientos = SeguimientoTiempo::where('usuario_id', $usuario->id)
-                ->where('accion', $acciones['activo'])
-                ->whereBetween('fecha', [$desde, $hasta])
-                ->orderBy('fabricacion_id')
-                ->orderBy('fecha')
-                ->orderBy('hora')
-                ->get();
-                
-                $parosAgrupados = array();
-                if ($acciones['paro']) {
-                    $paros = SeguimientoTiempo::where('usuario_id', $usuario->id)
-                    ->where('accion', $acciones['paro'])
+                    ->where('accion', $acciones['activo'])
                     ->whereBetween('fecha', [$desde, $hasta])
                     ->orderBy('fabricacion_id')
                     ->orderBy('fecha')
                     ->orderBy('hora')
                     ->get();
 
-                    $parosAgrupados = $paros->groupBy('fabricacion_id');
-                }
-                
-                $tiempoActivo = 0;
-                $tiempoParo = 0;
                 $agrupados = $seguimientos->groupBy('fabricacion_id');
 
                 foreach ($agrupados as $registros) {
                     $inicio = null;
                     foreach ($registros as $registro) {
                         $fechaHora = Carbon::createFromFormat('Y-m-d H:i', $registro->fecha . ' ' . $registro->hora);
-                        
+
                         if ($registro->tipo == 1) {
                             $inicio = $fechaHora;
                         } elseif ($registro->tipo == 0 && $inicio) {
@@ -3547,57 +3683,103 @@ class APIController extends Controller
                                 $minutos = $rangoInicio->diffInMinutes($rangoFin);
                                 $tiempoActivo += $minutos;
                             }
-                            $inicio = null; 
+                            $inicio = null;
                         }
                     }
                 }
 
-                foreach ($parosAgrupados as $registros) {
-                    $inicio = null;
-                    foreach ($registros as $registro) {
-                        $fechaHora = Carbon::createFromFormat('Y-m-d H:i', $registro->fecha . ' ' . $registro->hora);
-                        if ($registro->tipo == 1) {
-                            $inicio = $fechaHora;
-                        } elseif ($registro->tipo == 0 && $inicio) {
-                            $fin = $fechaHora;
+                if ($acciones['paro']) {
+                    $paros = SeguimientoTiempo::where('usuario_id', $usuario->id)
+                        ->where('accion', $acciones['paro'])
+                        ->whereBetween('fecha', [$desde, $hasta])
+                        ->orderBy('fabricacion_id')
+                        ->orderBy('fecha')
+                        ->orderBy('hora')
+                        ->get();
 
-                            $inicioTurno = Carbon::createFromFormat('Y-m-d H:i', $inicio->format('Y-m-d') . ' ' . $horarioInicio);
-                            $finTurno = Carbon::createFromFormat('Y-m-d H:i', $inicio->format('Y-m-d') . ' ' . $horarioFin);
+                    $parosAgrupados = $paros->groupBy('fabricacion_id');
 
-                            $rangoInicio = $inicio->copy()->greaterThan($inicioTurno) ? $inicio : $inicioTurno;
-                            $rangoFin = $fin->copy()->lessThan($finTurno) ? $fin : $finTurno;
+                    foreach ($parosAgrupados as $registros) {
+                        $inicio = null;
+                        foreach ($registros as $registro) {
+                            $fechaHora = Carbon::createFromFormat('Y-m-d H:i', $registro->fecha . ' ' . $registro->hora);
 
-                            if ($rangoInicio < $rangoFin) {
-                                $minutos = $inicio->diffInMinutes($fin);
-                                $tiempoParo += $minutos;
+                            if ($registro->tipo == 1) {
+                                $inicio = $fechaHora;
+                            } elseif ($registro->tipo == 0 && $inicio) {
+                                $fin = $fechaHora;
+
+                                $inicioTurno = Carbon::createFromFormat('Y-m-d H:i', $inicio->format('Y-m-d') . ' ' . $horarioInicio);
+                                $finTurno = Carbon::createFromFormat('Y-m-d H:i', $inicio->format('Y-m-d') . ' ' . $horarioFin);
+
+                                $rangoInicio = $inicio->copy()->greaterThan($inicioTurno) ? $inicio : $inicioTurno;
+                                $rangoFin = $fin->copy()->lessThan($finTurno) ? $fin : $finTurno;
+
+                                if ($rangoInicio < $rangoFin) {
+                                    $minutos = $rangoInicio->diffInMinutes($rangoFin);
+                                    $tiempoParo += $minutos;
+                                }
+                                $inicio = null;
                             }
-                            $inicio = null; 
                         }
                     }
                 }
+            }
 
+           $rolesUsuario = $usuario->roles->pluck('name')->map(function ($r) {
+                return strtoupper($r);
+            })->toArray();
+
+            $tieneRolPermitido = count(array_intersect($rolesUsuario, $rolesPermitidos)) > 0;
+
+            if ($tieneRolPermitido) {
                 $resultados[] = [
-                    'id' => $usuario->id . '_' . $nombreRol,
+                    'id' => $usuario->id,
                     'usuario_id' => $usuario->id,
+                    'roles' => $rolesUsuario,
                     'nombre' => $usuario->nombre_completo,
-                    'role' => $nombreRol,
                     'minutos_activo' => $tiempoActivo,
                     'minutos_paro' => $tiempoParo,
                     'minutos_totales' => $this->minutosEsperadosFechas($desde, $hasta, $turno),
                 ];
             }
         }
+
+        $desde = Carbon::parse($request->input('desde'))->startOfDay();
+        $hasta = Carbon::parse($request->input('hasta'))->endOfDay();
+
+        $resumen = DB::table('componentes')
+        ->selectRaw('DATE(fecha_ensamblado) as fecha, COUNT(*) as total')
+        ->whereRaw("STR_TO_DATE(fecha_ensamblado, '%Y-%m-%d %H:%i') BETWEEN ? AND ?", [$desde, $hasta])
+        ->groupBy(DB::raw('DATE(fecha_ensamblado)'))
+        ->orderBy('fecha')
+        ->get();
+
+        $periodo = [];
+        $totalComponentes = 0;
+        $fechaActual = $desde->copy();
+        while ($fechaActual <= $hasta) {
+            $fecha = $fechaActual->toDateString();
+            $registro = $resumen->firstWhere('fecha', $fecha);
+            $periodo[] = [
+                'fecha' => Carbon::parse($fecha)->format('d/m/Y'),
+                'total' => $registro ? $registro->total : 0,
+            ];
+            $fechaActual->addDay();
+            $totalComponentes += $registro ? $registro->total : 0;
+        }
     
         return response()->json([
             'success' => true,
+            'periodo' => $periodo,
+            'totalComponentes' => $totalComponentes,
             'tiempos' => $resultados
         ]);
     }
-    public function tiemposFinanzas(Request $request, $proyecto_id){
+    public function tiemposFinanzasPY(Request $request, $proyecto_id){
         $proyecto = Proyecto::findOrFail($proyecto_id);
         $herramentalIds = Herramental::where('proyecto_id', $proyecto->id)->pluck('id')->toArray();
         $componenteIds = Componente::whereIn('herramental_id', $herramentalIds)->pluck('id')->toArray();
-
 
         if (empty($componenteIds)) {
             return response()->json(['success' => false, 'message' => 'No se encontraron componentes para el proyecto especificado.'], 404);
@@ -3714,19 +3896,99 @@ class APIController extends Controller
         $minutosMod = $totalMinutos % 60;
 
         // OBTENER TIEMPO DE PRUEBAS
-        $segundosPruebasDiseño = $this->obtenerTiempoPruebasDiseño($herramentalIds);
+        $segundosPruebasDiseño = $this->obtenerTiempoPruebasDiseno($herramentalIds);
         $segundosPruebasProceso = $this->obtenerTiempoPruebasProceso($herramentalIds);
-
+        
         $horasDiseño = intdiv($segundosPruebasDiseño, 3600);
         $minutosDiseño = intdiv($segundosPruebasDiseño % 3600, 60);
         $horasProceso = intdiv($segundosPruebasProceso, 3600);
         $minutosProceso = intdiv($segundosPruebasProceso % 3600, 60);
+        
+        $pruebasDiseno = $this->obtenerDetallePruebasDiseno($herramentalIds);
+        $pruebasProceso = $this->obtenerDetallePruebasProceso($herramentalIds);
 
+        //OBTENER PRECIO MATERIA PRIMA
+        $movimientos = MovimientoHoja::where('proyecto_id', $proyecto_id)->get();
+        $hojasIds = $movimientos->pluck('hoja_id')->unique()->toArray();
+        $hojas = Hoja::whereIn('id', $hojasIds)->get()->keyBy('id');
+        $materialIds = $hojas->pluck('material_id')->unique()->toArray();
+        $materiales = Material::whereIn('id', $materialIds)->get()->keyBy('id');
+
+        $agrupados = $movimientos->groupBy(function ($mov) use ($hojas) {
+            $hoja = $hojas[$mov->hoja_id] ?? null;
+            $materialId = $hoja ? $hoja->material_id : 'desconocido';
+            return $materialId . '-' . $mov->hoja_id;
+        });
+
+        $reporte_materia_prima = [];
+        $granTotal = 0;
+
+        foreach ($agrupados as $key => $grupo) {
+            $hojaId = $grupo->first()->hoja_id;
+            $hoja = $hojas[$hojaId] ?? null;
+
+            if (!$hoja) continue;
+
+            $materialId = $hoja->material_id;
+            $materialNombre = $materiales[$materialId]->nombre ?? 'Desconocido';
+            $precioKilo = $hoja->precio_kilo;
+
+            $pesoTotal = $grupo->sum(function ($mov) {
+                return ($mov->peso_inicial ?? 0) - ($mov->peso ?? 0);
+            });
+
+            $costoTotal = $pesoTotal * $precioKilo;
+            $granTotal += $costoTotal;
+
+            $reporte_materia_prima[] = [
+                'material' => $materialNombre,
+                'hoja_descripcion' => 'Consec. ' . $hoja->consecutivo . ', Calidad ' . $hoja->calidad,
+                'peso_total' => round($pesoTotal, 2),
+                'precio_kilo' => round($precioKilo, 2),
+                'costo_total' => round($costoTotal, 2),
+            ];
+        }
+
+
+        $componentesYaRecibidos = Componente::whereIn('id', $componenteIds)
+            ->where('es_compra', true)
+            ->whereNotNull('fecha_real')
+            ->get();
+
+        $costos = $componentesYaRecibidos->reduce(function ($carry, $comp) {
+            $costo = is_numeric($comp->costo_unitario) ? $comp->costo_unitario : 0;
+            $subtotal = $costo * $comp->cantidad;
+
+            if ($comp->fecha_real) {
+                if ($comp->refabricado) {
+                    $carry['refabricacion'] += $subtotal;
+                } else {
+                    $carry['real'] += $subtotal;
+                }
+            }
+            return $carry;
+        }, [
+            'real' => 0,
+            'refabricacion' => 0,
+        ]);
+        $costos['total'] = $costos['real'] + $costos['refabricacion'];
 
 
         return response()->json([
             'success' => true,
             'tiempos' => [
+                'total_componentes_comprados' => $componentesYaRecibidos->count(),
+                'total_componentes_reutilizados' => $componentesYaRecibidos->filter(function ($comp) {
+                    return !$comp->costo_unitario || $comp->costo_unitario == 0;
+                })->count(),
+                'total_componentes_pagados' => $componentesYaRecibidos->filter(function ($comp) {
+                    return $comp->costo_unitario && $comp->costo_unitario > 0;
+                })->count(),
+                'total_costo_compras' => round($costos['total'], 2),
+                // 'total_costo_compras_refabricados' => round($costos['refabricacion'], 2),
+                // 'total_costo_compras_normales' => round($costos['real'], 2),
+                'reporte_materia_prima' => $reporte_materia_prima,
+                'total_materia_prima' => round($granTotal, 2),
                 'maquinado_horas' => $totalHorasMaquinado,
                 'maquinado_minutos' => $totalMinutosMaquinado,
                 'paro_horas' => $totalHorasParo,
@@ -3738,11 +4000,244 @@ class APIController extends Controller
                 'diseno_horas' => $horasDiseño,
                 'diseno_minutos' => $minutosDiseño,
                 'proceso_horas' => $horasProceso,
-                'proceso_minutos' => $minutosProceso
+                'proceso_minutos' => $minutosProceso,
+                'pruebasDiseno' => $pruebasDiseno,
+                'pruebasProceso' => $pruebasProceso,
             ]
         ]);
     }
+    public function tiemposFinanzasHR(Request $request, $herramental_id){
+        // $proyecto = Proyecto::findOrFail($proyecto_id);
+        // $herramentalIds = Herramental::where('proyecto_id', $proyecto->id)->pluck('id')->toArray();
 
+        $componenteIds = Componente::where('herramental_id', $herramental_id)->pluck('id')->toArray();
+
+        if (empty($componenteIds)) {
+            return response()->json(['success' => false, 'message' => 'No se encontraron componentes para el proyecto especificado.'], 404);
+        }
+
+        $seguimientos = SeguimientoTiempo::whereIn('componente_id', $componenteIds)
+            ->where('accion', 'fabricacion') // Solo queremos "fabricacion"
+            ->orderBy('componente_id')
+            ->orderBy('fabricacion_id')
+            ->orderBy('fecha')
+            ->orderBy('hora')
+            ->get();
+
+        $totalSegundos = 0;
+        $componentesAgrupados = $seguimientos->groupBy('fabricacion_id');
+
+        foreach ($componentesAgrupados as $seguimientosComponente) {
+            $inicio = null;
+            foreach ($seguimientosComponente as $seguimiento) {
+                if ($seguimiento->tipo == 1) { // Inicio
+                    $inicio = Carbon::createFromFormat('Y-m-d H:i', $seguimiento->fecha . ' ' . $seguimiento->hora);
+                } elseif ($seguimiento->tipo == 0 && $inicio) { // Fin
+                    $fin = Carbon::createFromFormat('Y-m-d H:i', $seguimiento->fecha . ' ' . $seguimiento->hora);
+                    $totalSegundos += $inicio->diffInSeconds($fin);
+                    $inicio = null;
+                }
+            }
+        }
+        $totalHorasMaquinado = floor($totalSegundos / 3600); // horas completas
+        $restoSegundos = $totalSegundos % 3600; // lo que sobra después de las horas
+        $totalMinutosMaquinado = floor($restoSegundos / 60); // minutos completos
+
+        // OBTENER TIEMPO RETRABAJOS
+        $componentes = Componente::whereIn('id', $componenteIds)->get();
+        $totalMinutosRetrabajo = 0;
+        foreach ($componentes as $componente) {
+            $totalMinutosRetrabajo += $this->calcularRetrabajoMinutos($componente);
+        }
+        $horasRet = intdiv($totalMinutosRetrabajo, 60);
+        $minutosRet = $totalMinutosRetrabajo % 60;
+
+
+        // OBTENER TIEMPO DE PAROS
+        $seguimientos = SeguimientoTiempo::whereIn('componente_id', $componenteIds)
+            ->whereIn('accion', ['fabricacion_paro', 'corte_paro'])
+            ->orderBy('fabricacion_id')
+            ->orderBy('accion')
+            ->orderBy('fecha')
+            ->orderBy('hora')
+            ->get();
+
+        $totalSegundos = 0;
+        $componentesAgrupados = $seguimientos->groupBy('fabricacion_id');
+
+        foreach ($componentesAgrupados as $seguimientosComponente) {
+            $inicio = null;
+            foreach ($seguimientosComponente as $seguimiento) {
+                if ($seguimiento->tipo == 1) { // Inicio
+                    $inicio = Carbon::createFromFormat('Y-m-d H:i', $seguimiento->fecha . ' ' . $seguimiento->hora);
+                } elseif ($seguimiento->tipo == 0 && $inicio) { // Fin
+                    $fin = Carbon::createFromFormat('Y-m-d H:i', $seguimiento->fecha . ' ' . $seguimiento->hora);
+                    $totalSegundos += $inicio->diffInSeconds($fin);
+                    $inicio = null;
+                }
+            }
+        }
+        $totalHorasParo = floor($totalSegundos / 3600); // horas completas
+        $restoSegundos = $totalSegundos % 3600; // lo que sobra después de las horas
+        $totalMinutosParo = floor($restoSegundos / 60); // minutos completos
+
+
+        // MODIFICACIONES
+
+       $notificaciones = Notificacion::whereIn('componente_id', $componenteIds)
+        ->where(function($query) {
+            $query->where('descripcion', 'like', 'UN COMPONENTE REQUIERE MODIFICACION%')
+                ->orWhere('descripcion', 'SE HA GENERADO UNA NUEVA VERSIÓN DEL COMPONENTE DEBIDO A UNA REFABRICACIÓN.')
+                ->orWhere('descripcion', 'EL DISEÑO DEL COMPONENTE HA SIDO MODIFICADO, SE REQUIERE UN RETRABAJO.');
+        })
+        ->orderBy('componente_id')
+        ->orderBy('created_at')
+        ->get();
+
+        $tiemposPorComponente = []; 
+
+        foreach ($notificaciones as $notificacion) {
+            $componenteId = $notificacion->componente_id;
+            $descripcion = $notificacion->descripcion;
+
+            if (str_starts_with($descripcion, 'UN COMPONENTE REQUIERE MODIFICACION')) {
+                $tiemposPorComponente[$componenteId]['inicio'] = $notificacion->created_at;
+            } elseif (
+                $descripcion === 'SE HA GENERADO UNA NUEVA VERSIÓN DEL COMPONENTE DEBIDO A UNA REFABRICACIÓN.' ||
+                $descripcion === 'EL DISEÑO DEL COMPONENTE HA SIDO MODIFICADO, SE REQUIERE UN RETRABAJO.'
+            ) {
+                if (isset($tiemposPorComponente[$componenteId]['inicio'])) {
+                    $inicio = $tiemposPorComponente[$componenteId]['inicio'];
+                    $fin = $notificacion->created_at;
+                    $diferenciaSegundos = strtotime($fin) - strtotime($inicio);
+                    $tiemposPorComponente[$componenteId]['tiempo'] = ($tiemposPorComponente[$componenteId]['tiempo'] ?? 0) + $diferenciaSegundos;
+                    unset($tiemposPorComponente[$componenteId]['inicio']);
+                }
+            }
+        }
+        $totalSegundos = 0;
+        foreach ($tiemposPorComponente as $datos) {
+            if (isset($datos['tiempo'])) {
+                $totalSegundos += $datos['tiempo'];
+            }
+        }
+
+        $totalMinutos = intdiv($totalSegundos, 60);
+        $horasMod = intdiv($totalMinutos, 60);
+        $minutosMod = $totalMinutos % 60;
+
+        // OBTENER TIEMPO DE PRUEBAS
+        $segundosPruebasDiseño = $this->obtenerTiempoPruebasDisenoHR($herramental_id);
+        $segundosPruebasProceso = $this->obtenerTiempoPruebasProcesoHR($herramental_id);
+        
+        $horasDiseño = intdiv($segundosPruebasDiseño, 3600);
+        $minutosDiseño = intdiv($segundosPruebasDiseño % 3600, 60);
+        $horasProceso = intdiv($segundosPruebasProceso, 3600);
+        $minutosProceso = intdiv($segundosPruebasProceso % 3600, 60);
+        
+        $pruebasDiseno = $this->obtenerDetallePruebasDisenoHR($herramental_id);
+        $pruebasProceso = $this->obtenerDetallePruebasProcesoHR($herramental_id);
+
+
+        //OBTENER PRECIO MATERIA PRIMA
+        $movimientos = MovimientoHoja::whereIn('componente_id', $componenteIds)->get();
+        $hojasIds = $movimientos->pluck('hoja_id')->unique()->toArray();
+        $hojas = Hoja::whereIn('id', $hojasIds)->get()->keyBy('id');
+        $materialIds = $hojas->pluck('material_id')->unique()->toArray();
+        $materiales = Material::whereIn('id', $materialIds)->get()->keyBy('id');
+
+        $agrupados = $movimientos->groupBy(function ($mov) use ($hojas) {
+            $hoja = $hojas[$mov->hoja_id] ?? null;
+            $materialId = $hoja ? $hoja->material_id : 'desconocido';
+            return $materialId . '-' . $mov->hoja_id;
+        });
+
+        $reporte_materia_prima = [];
+        $granTotal = 0;
+
+        foreach ($agrupados as $key => $grupo) {
+            $hojaId = $grupo->first()->hoja_id;
+            $hoja = $hojas[$hojaId] ?? null;
+
+            if (!$hoja) continue;
+
+            $materialId = $hoja->material_id;
+            $materialNombre = $materiales[$materialId]->nombre ?? 'Desconocido';
+            $precioKilo = $hoja->precio_kilo;
+
+            $pesoTotal = $grupo->sum(function ($mov) {
+                return ($mov->peso_inicial ?? 0) - ($mov->peso ?? 0);
+            });
+
+            $costoTotal = $pesoTotal * $precioKilo;
+            $granTotal += $costoTotal;
+
+            $reporte_materia_prima[] = [
+                'material' => $materialNombre,
+                'hoja_descripcion' => 'Consec. ' . $hoja->consecutivo . ', Calidad ' . $hoja->calidad,
+                'peso_total' => round($pesoTotal, 2),
+                'precio_kilo' => round($precioKilo, 2),
+                'costo_total' => round($costoTotal, 2),
+            ];
+        }
+
+
+        $componentesYaRecibidos = Componente::whereIn('id', $componenteIds)
+            ->where('es_compra', true)
+            ->whereNotNull('fecha_real')
+            ->get();
+
+        $costos = $componentesYaRecibidos->reduce(function ($carry, $comp) {
+            $costo = is_numeric($comp->costo_unitario) ? $comp->costo_unitario : 0;
+            $subtotal = $costo * $comp->cantidad;
+
+            if ($comp->fecha_real) {
+                if ($comp->refabricado) {
+                    $carry['refabricacion'] += $subtotal;
+                } else {
+                    $carry['real'] += $subtotal;
+                }
+            }
+            return $carry;
+        }, [
+            'real' => 0,
+            'refabricacion' => 0,
+        ]);
+        $costos['total'] = $costos['real'] + $costos['refabricacion'];
+
+
+        return response()->json([
+            'success' => true,
+            'tiempos' => [
+                'total_componentes_comprados' => $componentesYaRecibidos->count(),
+                'total_componentes_reutilizados' => $componentesYaRecibidos->filter(function ($comp) {
+                    return !$comp->costo_unitario || $comp->costo_unitario == 0;
+                })->count(),
+                'total_componentes_pagados' => $componentesYaRecibidos->filter(function ($comp) {
+                    return $comp->costo_unitario && $comp->costo_unitario > 0;
+                })->count(),
+                'total_costo_compras' => round($costos['total'], 2),
+                // 'total_costo_compras_refabricados' => round($costos['refabricacion'], 2),
+                // 'total_costo_compras_normales' => round($costos['real'], 2),
+                'reporte_materia_prima' => $reporte_materia_prima,
+                'total_materia_prima' => round($granTotal, 2),
+                'maquinado_horas' => $totalHorasMaquinado,
+                'maquinado_minutos' => $totalMinutosMaquinado,
+                'paro_horas' => $totalHorasParo,
+                'paro_minutos' => $totalMinutosParo,
+                'retrabajo_horas' => $horasRet,
+                'retrabajo_minutos' => $minutosRet,
+                'modificacion_horas' => $horasMod,
+                'modificacion_minutos' => $minutosMod,
+                'diseno_horas' => $horasDiseño,
+                'diseno_minutos' => $minutosDiseño,
+                'proceso_horas' => $horasProceso,
+                'proceso_minutos' => $minutosProceso,
+                'pruebasDiseno' => $pruebasDiseno,
+                'pruebasProceso' => $pruebasProceso,
+            ]
+        ]);
+    }
     public function calcularRetrabajoMinutos($componente){
         $ruta = json_decode($componente->ruta, true);
 
@@ -3767,9 +4262,7 @@ class APIController extends Controller
 
         return $totalMinutos;
     }
-
-    public function obtenerTiempoPruebasDiseño($herramentalIds)
-    {
+    public function obtenerTiempoPruebasDiseno($herramentalIds){
         $totalSegundos = 0;
 
         $pruebas = PruebaDiseno::whereIn('herramental_id', $herramentalIds)->get();
@@ -3786,9 +4279,7 @@ class APIController extends Controller
 
         return $totalSegundos;
     }
-
-    public function obtenerTiempoPruebasProceso($herramentalIds)
-    {
+    public function obtenerTiempoPruebasProceso($herramentalIds){
         $totalSegundos = 0;
 
         $pruebas = PruebaProceso::whereIn('herramental_id', $herramentalIds)->get();
@@ -3805,7 +4296,163 @@ class APIController extends Controller
 
         return $totalSegundos;
     }
+    public function obtenerDetallePruebasDiseno($herramentalIds){
+        $pruebas = PruebaDiseno::whereIn('herramental_id', $herramentalIds)->get();
+        $tiemposAgrupados = [];
 
+        foreach ($pruebas as $prueba) {
+            if ($prueba->fecha_inicio && $prueba->fecha_liberada) {
+                $inicio = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_inicio);
+                $fin = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_liberada);
 
+                $segundos = $inicio->diffInSeconds($fin);
+                $herramentalId = $prueba->herramental_id;
+
+                if (!isset($tiemposAgrupados[$herramentalId])) {
+                    $tiemposAgrupados[$herramentalId] = 0;
+                }
+
+                $tiemposAgrupados[$herramentalId] += $segundos;
+            }
+        }
+
+        $herramentales = Herramental::whereIn('id', array_keys($tiemposAgrupados))
+            ->pluck('nombre', 'id');
+
+        $detalles = [];
+        foreach ($tiemposAgrupados as $id => $totalSegundos) {
+            $horas = intdiv($totalSegundos, 3600);
+            $minutos = intdiv($totalSegundos % 3600, 60);
+
+            $detalles[] = [
+                'nombre' => $herramentales[$id] ?? 'Desconocido',
+                'horas' => $horas,
+                'minutos' => $minutos,
+            ];
+        }
+
+        return $detalles;
+    }
+    public function obtenerDetallePruebasProceso($herramentalIds){
+        $pruebas = PruebaProceso::whereIn('herramental_id', $herramentalIds)->get();
+
+        $tiemposAgrupados = [];
+
+        foreach ($pruebas as $prueba) {
+            if ($prueba->fecha_inicio && $prueba->fecha_liberada) {
+                $inicio = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_inicio);
+                $fin = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_liberada);
+
+                $segundos = $inicio->diffInSeconds($fin);
+                $herramentalId = $prueba->herramental_id;
+
+                if (!isset($tiemposAgrupados[$herramentalId])) {
+                    $tiemposAgrupados[$herramentalId] = 0;
+                }
+
+                $tiemposAgrupados[$herramentalId] += $segundos;
+            }
+        }
+
+        // Obtener solo los herramentales que tienen pruebas
+        $herramentales = Herramental::whereIn('id', array_keys($tiemposAgrupados))
+            ->pluck('nombre', 'id');
+
+        $detalles = [];
+        foreach ($tiemposAgrupados as $id => $totalSegundos) {
+            $horas = intdiv($totalSegundos, 3600);
+            $minutos = intdiv($totalSegundos % 3600, 60);
+
+            $detalles[] = [
+                'nombre' => $herramentales[$id] ?? 'Desconocido',
+                'horas' => $horas,
+                'minutos' => $minutos,
+            ];
+        }
+
+        return $detalles;
+    }
+    public function obtenerTiempoPruebasDisenoHR($herramentalIds){
+        $totalSegundos = 0;
+
+        $pruebas = PruebaDiseno::where('herramental_id', $herramentalIds)->get();
+
+        foreach ($pruebas as $prueba) {
+            if ($prueba->fecha_inicio && $prueba->fecha_liberada) {
+                $inicio = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_inicio);
+                $fin = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_liberada);
+
+                $diferencia = $inicio->diffInSeconds($fin);
+                $totalSegundos += $diferencia;
+            }
+        }
+
+        return $totalSegundos;
+    }
+    public function obtenerTiempoPruebasProcesoHR($herramentalIds){
+        $totalSegundos = 0;
+
+        $pruebas = PruebaProceso::where('herramental_id', $herramentalIds)->get();
+
+        foreach ($pruebas as $prueba) {
+            if ($prueba->fecha_inicio && $prueba->fecha_liberada) {
+                $inicio = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_inicio);
+                $fin = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_liberada);
+
+                $diferencia = $inicio->diffInSeconds($fin);
+                $totalSegundos += $diferencia;
+            }
+        }
+
+        return $totalSegundos;
+    }
+    public function obtenerDetallePruebasDisenoHR($herramentalIds){
+        $detalles = [];
+
+        $pruebas = PruebaDiseno::where('herramental_id', $herramentalIds)->get();
+
+        foreach ($pruebas as $prueba) {
+            if ($prueba->fecha_inicio && $prueba->fecha_liberada) {
+                $inicio = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_inicio);
+                $fin = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_liberada);
+
+                $segundos = $inicio->diffInSeconds($fin);
+                $horas = intdiv($segundos, 3600);
+                $minutos = intdiv($segundos % 3600, 60);
+
+                $detalles[] = [
+                    'nombre' => $prueba->nombre, // o cambia por otro campo representativo
+                    'horas' => $horas,
+                    'minutos' => $minutos,
+                ];
+            }
+        }
+
+        return $detalles;
+    }
+    public function obtenerDetallePruebasProcesoHR($herramentalIds){
+        $detalles = [];
+
+        $pruebas = PruebaProceso::where('herramental_id', $herramentalIds)->get();
+
+        foreach ($pruebas as $prueba) {
+            if ($prueba->fecha_inicio && $prueba->fecha_liberada) {
+                $inicio = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_inicio);
+                $fin = Carbon::createFromFormat('Y-m-d H:i', $prueba->fecha_liberada);
+
+                $segundos = $inicio->diffInSeconds($fin);
+                $horas = intdiv($segundos, 3600);
+                $minutos = intdiv($segundos % 3600, 60);
+
+                $detalles[] = [
+                    'nombre' => $prueba->nombre,
+                    'horas' => $horas,
+                    'minutos' => $minutos,
+                ];
+            }
+        }
+
+        return $detalles;
+    }
 }
 

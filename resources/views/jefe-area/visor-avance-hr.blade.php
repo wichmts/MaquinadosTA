@@ -38,6 +38,16 @@
         z-index: 10;
     }
 
+    .limite-tiempo2 {
+        position: absolute;
+        top: 30px;
+        bottom: 0;
+        left: 50%; /* O la posición que desees */
+        width: 0;  /* El width se debe poner a 0, ya que la línea será con borde */
+        border-left: 3px dotted rgb(0, 128, 255); /* Agregar borde punteado */
+        z-index: 10;
+    }
+
   
 
 
@@ -304,6 +314,7 @@
                                         </div>
                                     </div>
                                     <div v-if="herramental.fecha_limite" class="limite-tiempo1" :style="{ left: `${215 + (80 * (totalDias)) }px` }"></div>
+                                    <div v-for="(pos, index) in otrasFechasPosiciones" :key="'limite-otra-' + index" class="limite-tiempo2" :style="{ left: `${pos}px` }"/>
                                 </div>
                             </div>
                         </div>
@@ -897,6 +908,20 @@
             this.navigateFromUrlParams();
         },
         computed: {
+            otrasFechasPosiciones() {
+                if (!this.duracionTotal || !this.herramental?.otras_fechas) return [];
+
+                return this.herramental.otras_fechas.map(fecha => {
+                    const fechaDate = new Date(fecha);
+                    for (let i = 0; i < this.duracionTotal.length; i++) {
+                        const fechaActual = new Date(this.duracionTotal[i]);
+                        if (fechaActual.toDateString() === fechaDate.toDateString()) {
+                            return 215 + (80 * (i + 1)); // misma fórmula que usas arriba
+                        }
+                    }
+                    return null; // si no se encontró
+                }).filter(pos => pos !== null);
+            },
             duracionTotal() {
                 const fechasInicio = this.tasks.flatMap(task => 
                     task.time.map(t => t.dia_inicio.split(' ')[0]) // Solo la fecha en formato YYYY-MM-DD
@@ -1035,11 +1060,11 @@
                 const fechaLimite = new Date(this.herramental.fecha_limite);
 
                 for (let i = 0; i < this.duracionTotal.length; i++) {
-                const fechaActual = new Date(this.duracionTotal[i]);
+                    const fechaActual = new Date(this.duracionTotal[i]);
 
-                if (fechaActual.toDateString() === fechaLimite.toDateString()) {
-                    return i + 1; // +1 si quieres contar días en forma humana (no índice)
-                }
+                    if (fechaActual.toDateString() === fechaLimite.toDateString()) {
+                        return i + 1; // +1 si quieres contar días en forma humana (no índice)
+                    }
                 }
                 return 0; // Si no se encontró la fecha
             }

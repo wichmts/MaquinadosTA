@@ -1,0 +1,805 @@
+
+<!-- saved from url=(0030)http://localhost:8000/finanzas -->
+<html lang="en" class="perfect-scrollbar-off"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style data-tippy-stylesheet="">.tippy-box[data-animation=fade][data-state=hidden]{opacity:0}[data-tippy-root]{max-width:calc(100vw - 10px)}.tippy-box{position:relative;background-color:#333;color:#fff;border-radius:4px;font-size:14px;line-height:1.4;white-space:normal;outline:0;transition-property:transform,visibility,opacity}.tippy-box[data-placement^=top]>.tippy-arrow{bottom:0}.tippy-box[data-placement^=top]>.tippy-arrow:before{bottom:-7px;left:0;border-width:8px 8px 0;border-top-color:initial;transform-origin:center top}.tippy-box[data-placement^=bottom]>.tippy-arrow{top:0}.tippy-box[data-placement^=bottom]>.tippy-arrow:before{top:-7px;left:0;border-width:0 8px 8px;border-bottom-color:initial;transform-origin:center bottom}.tippy-box[data-placement^=left]>.tippy-arrow{right:0}.tippy-box[data-placement^=left]>.tippy-arrow:before{border-width:8px 0 8px 8px;border-left-color:initial;right:-7px;transform-origin:center left}.tippy-box[data-placement^=right]>.tippy-arrow{left:0}.tippy-box[data-placement^=right]>.tippy-arrow:before{left:-7px;border-width:8px 8px 8px 0;border-right-color:initial;transform-origin:center right}.tippy-box[data-inertia][data-state=visible]{transition-timing-function:cubic-bezier(.54,1.5,.38,1.11)}.tippy-arrow{width:16px;height:16px;color:#333}.tippy-arrow:before{content:"";position:absolute;border-color:transparent;border-style:solid}.tippy-content{position:relative;padding:5px 9px;z-index:1}</style><style type="text/css">.swal-icon--error{border-color:#f27474;-webkit-animation:animateErrorIcon .5s;animation:animateErrorIcon .5s}.swal-icon--error__x-mark{position:relative;display:block;-webkit-animation:animateXMark .5s;animation:animateXMark .5s}.swal-icon--error__line{position:absolute;height:5px;width:47px;background-color:#f27474;display:block;top:37px;border-radius:2px}.swal-icon--error__line--left{-webkit-transform:rotate(45deg);transform:rotate(45deg);left:17px}.swal-icon--error__line--right{-webkit-transform:rotate(-45deg);transform:rotate(-45deg);right:16px}@-webkit-keyframes animateErrorIcon{0%{-webkit-transform:rotateX(100deg);transform:rotateX(100deg);opacity:0}to{-webkit-transform:rotateX(0deg);transform:rotateX(0deg);opacity:1}}@keyframes animateErrorIcon{0%{-webkit-transform:rotateX(100deg);transform:rotateX(100deg);opacity:0}to{-webkit-transform:rotateX(0deg);transform:rotateX(0deg);opacity:1}}@-webkit-keyframes animateXMark{0%{-webkit-transform:scale(.4);transform:scale(.4);margin-top:26px;opacity:0}50%{-webkit-transform:scale(.4);transform:scale(.4);margin-top:26px;opacity:0}80%{-webkit-transform:scale(1.15);transform:scale(1.15);margin-top:-6px}to{-webkit-transform:scale(1);transform:scale(1);margin-top:0;opacity:1}}@keyframes animateXMark{0%{-webkit-transform:scale(.4);transform:scale(.4);margin-top:26px;opacity:0}50%{-webkit-transform:scale(.4);transform:scale(.4);margin-top:26px;opacity:0}80%{-webkit-transform:scale(1.15);transform:scale(1.15);margin-top:-6px}to{-webkit-transform:scale(1);transform:scale(1);margin-top:0;opacity:1}}.swal-icon--warning{border-color:#f8bb86;-webkit-animation:pulseWarning .75s infinite alternate;animation:pulseWarning .75s infinite alternate}.swal-icon--warning__body{width:5px;height:47px;top:10px;border-radius:2px;margin-left:-2px}.swal-icon--warning__body,.swal-icon--warning__dot{position:absolute;left:50%;background-color:#f8bb86}.swal-icon--warning__dot{width:7px;height:7px;border-radius:50%;margin-left:-4px;bottom:-11px}@-webkit-keyframes pulseWarning{0%{border-color:#f8d486}to{border-color:#f8bb86}}@keyframes pulseWarning{0%{border-color:#f8d486}to{border-color:#f8bb86}}.swal-icon--success{border-color:#a5dc86}.swal-icon--success:after,.swal-icon--success:before{content:"";border-radius:50%;position:absolute;width:60px;height:120px;background:#fff;-webkit-transform:rotate(45deg);transform:rotate(45deg)}.swal-icon--success:before{border-radius:120px 0 0 120px;top:-7px;left:-33px;-webkit-transform:rotate(-45deg);transform:rotate(-45deg);-webkit-transform-origin:60px 60px;transform-origin:60px 60px}.swal-icon--success:after{border-radius:0 120px 120px 0;top:-11px;left:30px;-webkit-transform:rotate(-45deg);transform:rotate(-45deg);-webkit-transform-origin:0 60px;transform-origin:0 60px;-webkit-animation:rotatePlaceholder 4.25s ease-in;animation:rotatePlaceholder 4.25s ease-in}.swal-icon--success__ring{width:80px;height:80px;border:4px solid hsla(98,55%,69%,.2);border-radius:50%;box-sizing:content-box;position:absolute;left:-4px;top:-4px;z-index:2}.swal-icon--success__hide-corners{width:5px;height:90px;background-color:#fff;padding:1px;position:absolute;left:28px;top:8px;z-index:1;-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}.swal-icon--success__line{height:5px;background-color:#a5dc86;display:block;border-radius:2px;position:absolute;z-index:2}.swal-icon--success__line--tip{width:25px;left:14px;top:46px;-webkit-transform:rotate(45deg);transform:rotate(45deg);-webkit-animation:animateSuccessTip .75s;animation:animateSuccessTip .75s}.swal-icon--success__line--long{width:47px;right:8px;top:38px;-webkit-transform:rotate(-45deg);transform:rotate(-45deg);-webkit-animation:animateSuccessLong .75s;animation:animateSuccessLong .75s}@-webkit-keyframes rotatePlaceholder{0%{-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}5%{-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}12%{-webkit-transform:rotate(-405deg);transform:rotate(-405deg)}to{-webkit-transform:rotate(-405deg);transform:rotate(-405deg)}}@keyframes rotatePlaceholder{0%{-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}5%{-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}12%{-webkit-transform:rotate(-405deg);transform:rotate(-405deg)}to{-webkit-transform:rotate(-405deg);transform:rotate(-405deg)}}@-webkit-keyframes animateSuccessTip{0%{width:0;left:1px;top:19px}54%{width:0;left:1px;top:19px}70%{width:50px;left:-8px;top:37px}84%{width:17px;left:21px;top:48px}to{width:25px;left:14px;top:45px}}@keyframes animateSuccessTip{0%{width:0;left:1px;top:19px}54%{width:0;left:1px;top:19px}70%{width:50px;left:-8px;top:37px}84%{width:17px;left:21px;top:48px}to{width:25px;left:14px;top:45px}}@-webkit-keyframes animateSuccessLong{0%{width:0;right:46px;top:54px}65%{width:0;right:46px;top:54px}84%{width:55px;right:0;top:35px}to{width:47px;right:8px;top:38px}}@keyframes animateSuccessLong{0%{width:0;right:46px;top:54px}65%{width:0;right:46px;top:54px}84%{width:55px;right:0;top:35px}to{width:47px;right:8px;top:38px}}.swal-icon--info{border-color:#c9dae1}.swal-icon--info:before{width:5px;height:29px;bottom:17px;border-radius:2px;margin-left:-2px}.swal-icon--info:after,.swal-icon--info:before{content:"";position:absolute;left:50%;background-color:#c9dae1}.swal-icon--info:after{width:7px;height:7px;border-radius:50%;margin-left:-3px;top:19px}.swal-icon{width:80px;height:80px;border-width:4px;border-style:solid;border-radius:50%;padding:0;position:relative;box-sizing:content-box;margin:20px auto}.swal-icon:first-child{margin-top:32px}.swal-icon--custom{width:auto;height:auto;max-width:100%;border:none;border-radius:0}.swal-icon img{max-width:100%;max-height:100%}.swal-title{color:rgba(0,0,0,.65);font-weight:600;text-transform:none;position:relative;display:block;padding:13px 16px;font-size:27px;line-height:normal;text-align:center;margin-bottom:0}.swal-title:first-child{margin-top:26px}.swal-title:not(:first-child){padding-bottom:0}.swal-title:not(:last-child){margin-bottom:13px}.swal-text{font-size:16px;position:relative;float:none;line-height:normal;vertical-align:top;text-align:left;display:inline-block;margin:0;padding:0 10px;font-weight:400;color:rgba(0,0,0,.64);max-width:calc(100% - 20px);overflow-wrap:break-word;box-sizing:border-box}.swal-text:first-child{margin-top:45px}.swal-text:last-child{margin-bottom:45px}.swal-footer{text-align:right;padding-top:13px;margin-top:13px;padding:13px 16px;border-radius:inherit;border-top-left-radius:0;border-top-right-radius:0}.swal-button-container{margin:5px;display:inline-block;position:relative}.swal-button{background-color:#7cd1f9;color:#fff;border:none;box-shadow:none;border-radius:5px;font-weight:600;font-size:14px;padding:10px 24px;margin:0;cursor:pointer}.swal-button:not([disabled]):hover{background-color:#78cbf2}.swal-button:active{background-color:#70bce0}.swal-button:focus{outline:none;box-shadow:0 0 0 1px #fff,0 0 0 3px rgba(43,114,165,.29)}.swal-button[disabled]{opacity:.5;cursor:default}.swal-button::-moz-focus-inner{border:0}.swal-button--cancel{color:#555;background-color:#efefef}.swal-button--cancel:not([disabled]):hover{background-color:#e8e8e8}.swal-button--cancel:active{background-color:#d7d7d7}.swal-button--cancel:focus{box-shadow:0 0 0 1px #fff,0 0 0 3px rgba(116,136,150,.29)}.swal-button--danger{background-color:#e64942}.swal-button--danger:not([disabled]):hover{background-color:#df4740}.swal-button--danger:active{background-color:#cf423b}.swal-button--danger:focus{box-shadow:0 0 0 1px #fff,0 0 0 3px rgba(165,43,43,.29)}.swal-content{padding:0 20px;margin-top:20px;font-size:medium}.swal-content:last-child{margin-bottom:20px}.swal-content__input,.swal-content__textarea{-webkit-appearance:none;background-color:#fff;border:none;font-size:14px;display:block;box-sizing:border-box;width:100%;border:1px solid rgba(0,0,0,.14);padding:10px 13px;border-radius:2px;transition:border-color .2s}.swal-content__input:focus,.swal-content__textarea:focus{outline:none;border-color:#6db8ff}.swal-content__textarea{resize:vertical}.swal-button--loading{color:transparent}.swal-button--loading~.swal-button__loader{opacity:1}.swal-button__loader{position:absolute;height:auto;width:43px;z-index:2;left:50%;top:50%;-webkit-transform:translateX(-50%) translateY(-50%);transform:translateX(-50%) translateY(-50%);text-align:center;pointer-events:none;opacity:0}.swal-button__loader div{display:inline-block;float:none;vertical-align:baseline;width:9px;height:9px;padding:0;border:none;margin:2px;opacity:.4;border-radius:7px;background-color:hsla(0,0%,100%,.9);transition:background .2s;-webkit-animation:swal-loading-anim 1s infinite;animation:swal-loading-anim 1s infinite}.swal-button__loader div:nth-child(3n+2){-webkit-animation-delay:.15s;animation-delay:.15s}.swal-button__loader div:nth-child(3n+3){-webkit-animation-delay:.3s;animation-delay:.3s}@-webkit-keyframes swal-loading-anim{0%{opacity:.4}20%{opacity:.4}50%{opacity:1}to{opacity:.4}}@keyframes swal-loading-anim{0%{opacity:.4}20%{opacity:.4}50%{opacity:1}to{opacity:.4}}.swal-overlay{position:fixed;top:0;bottom:0;left:0;right:0;text-align:center;font-size:0;overflow-y:auto;background-color:rgba(0,0,0,.4);z-index:10000;pointer-events:none;opacity:0;transition:opacity .3s}.swal-overlay:before{content:" ";display:inline-block;vertical-align:middle;height:100%}.swal-overlay--show-modal{opacity:1;pointer-events:auto}.swal-overlay--show-modal .swal-modal{opacity:1;pointer-events:auto;box-sizing:border-box;-webkit-animation:showSweetAlert .3s;animation:showSweetAlert .3s;will-change:transform}.swal-modal{width:478px;opacity:0;pointer-events:none;background-color:#fff;text-align:center;border-radius:5px;position:static;margin:20px auto;display:inline-block;vertical-align:middle;-webkit-transform:scale(1);transform:scale(1);-webkit-transform-origin:50% 50%;transform-origin:50% 50%;z-index:10001;transition:opacity .2s,-webkit-transform .3s;transition:transform .3s,opacity .2s;transition:transform .3s,opacity .2s,-webkit-transform .3s}@media (max-width:500px){.swal-modal{width:calc(100% - 20px)}}@-webkit-keyframes showSweetAlert{0%{-webkit-transform:scale(1);transform:scale(1)}1%{-webkit-transform:scale(.5);transform:scale(.5)}45%{-webkit-transform:scale(1.05);transform:scale(1.05)}80%{-webkit-transform:scale(.95);transform:scale(.95)}to{-webkit-transform:scale(1);transform:scale(1)}}@keyframes showSweetAlert{0%{-webkit-transform:scale(1);transform:scale(1)}1%{-webkit-transform:scale(.5);transform:scale(.5)}45%{-webkit-transform:scale(1.05);transform:scale(1.05)}80%{-webkit-transform:scale(.95);transform:scale(.95)}to{-webkit-transform:scale(1);transform:scale(1)}}</style><style>
+
+</style>
+
+
+<!--
+=========================================================
+ Paper Dashboard - v2.0.0
+=========================================================
+
+ Product Page: https://www.creative-tim.com/product/paper-dashboard
+ Copyright 2019 Creative Tim (https://www.creative-tim.com)
+ UPDIVISION (https://updivision.com)
+ Licensed under MIT (https://github.com/creativetimofficial/paper-dashboard/blob/master/LICENSE)
+
+ Coded by Creative Tim
+
+=========================================================
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. -->
+
+
+
+
+
+
+
+    
+
+    <link rel="apple-touch-icon" sizes="76x76" href="http://localhost:8000/paper/img/favicon.png">
+    <link rel="icon" type="image/png" href="http://localhost:8000/paper/img/favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>
+        Manufacturas
+    </title>
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no" name="viewport">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">    
+    <link href="./Manufacturas_files/css" rel="stylesheet">
+    <link href="./Manufacturas_files/css2" rel="stylesheet">
+    <link href="./Manufacturas_files/css2(1)" rel="stylesheet">
+    <link href="./Manufacturas_files/css2(2)" rel="stylesheet">
+    <link href="./Manufacturas_files/css2(3)" rel="stylesheet">
+    <link href="./Manufacturas_files/css2(4)" rel="stylesheet">
+    <link href="./Manufacturas_files/css2(5)" rel="stylesheet">
+    <link href="./Manufacturas_files/css2(6)" rel="stylesheet">
+    <link href="./Manufacturas_files/css2(7)" rel="stylesheet"> 
+
+
+    <link rel="stylesheet" href="./Manufacturas_files/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="./Manufacturas_files/main.css">
+
+
+    <link href="./Manufacturas_files/bootstrap.min.css" rel="stylesheet">
+    <link href="./Manufacturas_files/paper-dashboard.css" rel="stylesheet">
+    <link href="./Manufacturas_files/demo.css" rel="stylesheet">
+    <link href="./Manufacturas_files/select2.min.css" rel="stylesheet"> 
+    <link rel="stylesheet" type="text/css" href="./Manufacturas_files/jquery.dataTables.css">   
+    <link rel="stylesheet" href="./Manufacturas_files/style.css">
+    <script src="./Manufacturas_files/moment.min.js"></script>
+    <script src="./Manufacturas_files/vue-select.js"></script>
+    <link href="./Manufacturas_files/vue-select.css" rel="stylesheet">
+    <link href="./Manufacturas_files/dhtmlxgantt.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./Manufacturas_files/tippy.css">
+
+    <style>
+    
+    /* i{
+        font-size: 16px !important;
+        letter-spacing: 4px;
+    } */
+    button, a{
+        margin-right: 5px !important;
+    }
+    .table td{
+        /* font-size: 14px !important; */
+        font-size: calc(.5vw + .35rem) !important;
+    }
+    @font-face {
+        font-family: 'HKGrotesk';
+        src: url('/paper/fonts/HKGrotesk-Medium.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: 'HKGrotesk';
+        src: url('/paper/fonts/HKGrotesk-Bold.otf') format('opentype');
+        font-weight: bold;
+        font-style: normal;
+    }
+    * {
+       font-family: 'HKGrotesk', sans-serif;
+    }
+    </style>
+     <link rel="stylesheet" href="./Manufacturas_files/paper-dashboard-responsivo.css">
+<link href="./Manufacturas_files/toggle-switch.css" rel="stylesheet">
+
+ <!-- Aquí se insertan los estilos -->
+
+<style>.cke{visibility:hidden;}</style><script type="text/javascript" charset="UTF-8" src="./Manufacturas_files/common.js"></script><script type="text/javascript" charset="UTF-8" src="./Manufacturas_files/util.js"></script></head>
+
+<body class="">
+    
+            <div>
+    
+
+    <style>
+    .switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 20px;
+    margin-top: 5px
+    }
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #1831497a;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #1831497a;
+}
+
+input:checked + .slider:before {
+  transform: translateX(14px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 20px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+[v-cloak]{
+    display: none;
+}
+
+.menu-link{
+    padding-right: 20px !important;
+    border-right: 1px solid #e2e2e2;
+}
+
+.menu-link:hover{
+    color: black !important;
+    text-decoration: underline !important;
+    /* text-decoration-color: #c3d312 !important; */
+}
+
+.navbar11 {
+    position: relative; /* Cambiar a fixed si se debe mantener siempre en pantalla */
+    top: 0;
+    width: 100%;
+    z-index: 1050; /* Mayor que el sidebar */
+    height: 100px; /* Ajusta según el tamaño real del navbar */
+}
+
+</style>
+<div id="vue-app2"><nav class="navbar navbar-expand-xl navbar-light bg-light mb-0 navbar11" style="background-color: rgb(241, 241, 241) !important;"><div class="container-fluid"><a class="navbar-brand"><img src="./Manufacturas_files/logo-color.png" width="120px" height="auto" class="pl-2 pr-4 py-0"></a> <button type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"><span class="navbar-toggler-bar navbar-kebab"></span> <span class="navbar-toggler-bar navbar-kebab"></span> <span class="navbar-toggler-bar navbar-kebab"></span></button> <div id="navigation" class="collapse navbar-collapse ml-4 bg-white"><ul class="navbar-nav mr-auto text-center"><li class="nav-item"><a href="http://localhost:8000/finanzas" class="nav-link menu-link">FINANZAS</a></li> <li class="nav-item"><a href="http://localhost:8000/centro-notificaciones" class="nav-link menu-link">Centro de notificaciones</a></li></ul> <ul class="navbar-nav ml-auto text-center"><li class="nav-item dropdown btn-rotate"><a href="http://localhost:8000/finanzas#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="menu-link nav-link" style="text-transform: capitalize;"><i class="far fa-bell"></i> <small class="bold">Ultimas notificaciones&nbsp;</small></a> <div aria-labelledby="navbarDropdown" class="dropdown-menu dropdown-menu-right"><h6 class="dropdown-header">Ultimas notificaciones</h6> <h6 class="dropdown-header"><small>- Sin notificaciones para mostrar -</small></h6>  <!----></div></li> <li class="nav-item btn-rotate"><a onclick="document.getElementById(&#39;formLogOut&#39;).submit();" class="nav-link menu-link" style="text-transform: capitalize;"><i class="fa fa-sign-out"></i> <small class="bold">Cerrar sesión</small></a></li> <form action="http://localhost:8000/logout" id="formLogOut" method="POST" class="dropdown-item" style="display: none;"><input type="hidden" name="_token" value="GT7KEYTE59rSFbDloRCkzPnMVbYmZjACKZSDFXwO"></form></ul></div></div></nav></div>
+
+
+    <div id="vue-app" class="content"><div class="col-xl-12" style="display: none;"><div style="margin-top: 200px; max-width: 100% !important; margin-bottom: auto; text-align: center; letter-spacing: 2px;"><h5 class="mb-5">CARGANDO...</h5> <div class="loader"></div></div></div> <div class="wrapper"><div data-color="white" data-active-color="danger" class="sidebar"><div class="sidebar-wrapper"><ul class="nav"><li><div id="v-pills-tab" role="tablist" aria-orientation="vertical" class="nav flex-column nav-pills"><div class="d-flex justify-content-end"><a class="nav-link py-0 cursor-pointer text-right text-muted"><i class="nc-icon" style="top: -3px !important;"><img height="17px" src="./Manufacturas_files/regresar.png"></i></a></div> <!----> <!----> <div><a class="nav-link" style="color: rgb(147, 147, 147) !important;"> PROYECTOS </a> <a class="d-flex align-items-center nav-link cursor-pointer"><i class="nc-icon" style="top: -3px !important;"><img height="20px" src="./Manufacturas_files/carpetas.png"></i> &nbsp;
+                                    <span class="underline-hover">PY-1111</span></a><a class="d-flex align-items-center nav-link cursor-pointer"><i class="nc-icon" style="top: -3px !important;"><img height="20px" src="./Manufacturas_files/carpetas.png"></i> &nbsp;
+                                    <span class="underline-hover">PY-2222</span></a></div></div></li></ul></div></div> <div class="main-panel"><nav class="navbar navbar-expand-xl navbar-absolute fixed-top navbar-transparent"><div class="container-fluid"><div class="navbar-wrapper"><div class="navbar-toggle"><button type="button" class="navbar-toggler"><span class="navbar-toggler-bar bar1"></span> <span class="navbar-toggler-bar bar2"></span> <span class="navbar-toggler-bar bar3"></span></button></div> <p><span class="cursor-pointer pb-2"><i class="fa fa-home"></i> &nbsp;</span> <span class="cursor-pointer pb-2"><i class="fa fa-angle-right"></i> &nbsp; <span class="underline-hover">2025</span> &nbsp;</span> <span class="cursor-pointer pb-2"><i class="fa fa-angle-right"></i> &nbsp; <span class="underline-hover">PY-001</span> &nbsp;</span> <span class="cursor-pointer pb-2"><i class="fa fa-angle-right"></i> &nbsp; <span class="underline-hover">PY-1111</span> &nbsp;</span></p></div></div></nav> <div class="content" style="max-height: 80vh; overflow-y: scroll;"><div class="row mb-2"><div class="col-12"><h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px;">REPORTE DE FINANZAS </h2></div> <!----> <div class="col-12 text-center pt-5"><h5 class="mt-5 bold" style="letter-spacing: 1px;">CARGANDO INFORMACIÓN, ESPERE UN MOMENTO...</h5></div> <!----></div></div></div></div></div>
+    </div>    
+
+    <!--   Core JS Files   -->
+    
+    <script src="./Manufacturas_files/jquery.min.js"></script>
+    <script src="./Manufacturas_files/popper.min.js"></script>
+    <script src="./Manufacturas_files/bootstrap.min.js"></script>
+    <script src="./Manufacturas_files/perfect-scrollbar.jquery.min.js"></script>
+    <!-- Chart JS -->
+    <script src="./Manufacturas_files/chartjs2.min.js"></script>
+    
+    <!--  Notifications Plugin    -->
+    <script src="./Manufacturas_files/bootstrap-notify.js"></script>
+    <!-- Control Center for Now Ui Dashboard: parallax effects, scripts for the example pages etc -->
+    <script src="./Manufacturas_files/paper-dashboard.min.js" type="text/javascript"></script>
+    <!-- Paper Dashboard DEMO methods, don't include it in your project! -->
+    <script src="./Manufacturas_files/demo.js"></script>
+    
+    
+    <script src="./Manufacturas_files/vue.js"></script>
+    
+    <script src="./Manufacturas_files/sweetalert.min.js"></script>
+    
+    
+    <script src="./Manufacturas_files/axios.min.js"></script>
+    
+    <script src="./Manufacturas_files/vue-currency-filter.iife.js"></script>
+    
+    <script src="./Manufacturas_files/moment.min.js"></script>
+    
+    <script src="./Manufacturas_files/main.min.js"></script>
+    
+    <script src="./Manufacturas_files/progressbar.js"></script>
+    
+    <script src="./Manufacturas_files/select2.min.js"></script>
+    
+    
+    <script src="./Manufacturas_files/ckeditor.js"></script>
+    
+    
+    <script src="./Manufacturas_files/js"></script>
+   
+    
+    <script type="text/javascript" charset="utf8" src="./Manufacturas_files/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="./Manufacturas_files/dataTables.bootstrap4.min.js"></script>
+
+    <script src="./Manufacturas_files/voerro-vue-tagsinput.js"></script>
+
+    <script src="./Manufacturas_files/dropzone.min.js"></script>
+
+    
+    <script type="text/javascript" src="./Manufacturas_files/openpay.v1.min.js"></script>
+    <script type="text/javascript" src="./Manufacturas_files/openpay-data.v1.min.js"></script>
+
+    
+    <script src="./Manufacturas_files/dhtmlxgantt.js" type="text/javascript"></script>
+
+    <script src="./Manufacturas_files/popper(1).min.js"></script>
+    <script src="./Manufacturas_files/tippy-bundle.umd.js"></script>
+
+
+
+
+    
+
+    
+    
+    <script type="text/javascript">
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + '3J8PDZP3F1B7UyhHuW4teyMCMg7hDsrBltnfBQqDs0jV6TIocuK4jRWZX6vt';
+        if (VueCurrencyFilter) {
+                Vue.use(VueCurrencyFilter, {
+                    symbol: "$",
+                    thousandsSeparator: ",",
+                    fractionCount: 2,
+                    fractionSeparator: ".",
+                    symbolPosition: "front",
+                    symbolSpacing: false
+                })
+            }
+
+        Vue.directive('select2', {
+          inserted(el) {
+                $(el).on('select2:select', () => {
+                    const event = new Event('change', { bubbles: true, cancelable: true });
+                    el.dispatchEvent(event);
+                });
+                $(el).on('select2:unselect', () => {
+                    const event = new Event('change', {bubbles: true, cancelable: true})
+                    el.dispatchEvent(event)
+                })
+            },
+        });
+
+
+        
+    </script>
+
+    <script type="text/javascript">
+    Vue.component('v-select', VueSelect.VueSelect)
+
+    var app = new Vue({
+        el: '#vue-app',
+        data: {
+            user_id: 10,
+            loading: false,
+            cargando: false,
+            //MENU IZQUIERDO 
+            anios: [],
+            clientes: [],
+            proyectos: [],
+            cargandoMenu: true,
+            menuStep: 1,
+            selectedAnio: null,
+            selectedCliente: null,
+            selectedProyecto: null,
+            ruta: {
+                anio: null,
+                cliente: null,
+                proyecto: null,
+            },
+            tiempos: {
+                maquinado_horas: 0,
+                maquinados_minutos: 0,
+            },
+            chartInstance: null,
+            chartInstance2: null,
+        },
+        watch: {
+
+        },
+        computed: {
+           
+        },
+        methods: {
+            regresar(step) {
+                switch (step) {
+                    case 1:
+                        this.ruta = {
+                            anio: null,
+                            cliente: null,
+                            proyecto: null,
+                        }
+                        this.selectedAnio = null;
+                        this.selectedCliente = null;
+                        this.selectedProyecto = null;
+                        break;
+                    case 2:
+                        this.ruta.cliente = null;
+                        this.ruta.proyecto = null;
+                        this.selectedCliente = null;
+                        this.selectedProyecto = null;
+                        break;
+                    case 3:
+                        this.ruta.proyecto = null;
+                        this.selectedProyecto = null;
+                    break;
+                }
+                this.menuStep = step;
+            },
+            async fetchAnios() {
+                this.cargandoMenu = true
+                try {
+                    const response = await axios.get('/api/anios');
+                    this.anios = response.data.anios;
+                } catch (error) {
+                    console.error('Error fetching años:', error);
+                } finally {
+                    this.cargandoMenu = false;
+
+                }
+            },
+            async fetchClientes(anioId) {
+                this.cargandoMenu = true
+                this.selectedAnio = anioId;
+                this.ruta.anio = this.anios.find(obj => obj.id == anioId)?.nombre;
+
+                try {
+                    const response = await axios.get(`/api/anios/${anioId}/clientes`);
+                    this.clientes = response.data.clientes;
+                    this.menuStep = 2;
+                } catch (error) {
+                    console.error('Error fetching clientes:', error);
+                } finally {
+                    this.cargandoMenu = false;
+                }
+            },
+            async fetchProyectos(clienteId) {
+                this.cargandoMenu = true
+                this.selectedCliente = clienteId;
+                this.ruta.cliente = this.clientes.find(obj => obj.id == clienteId)?.nombre;
+
+                try {
+                    const response = await axios.get(`/api/clientes/${clienteId}/proyectos`);
+                    this.proyectos = response.data.proyectos;
+                    this.menuStep = 3;
+                } catch (error) {
+                    console.error('Error fetching proyectos:', error);
+                } finally {
+                    this.cargandoMenu = false;
+                }
+            },
+            async seleccionarProyecto(proyectoId) {
+                this.selectedProyecto = proyectoId;
+                this.ruta.proyecto = this.proyectos.find(obj => obj.id == proyectoId)?.nombre;
+                this.loading = true;
+                try {
+                    const response = await axios.get(`/api/proyectos/${proyectoId}/finanzas`);
+                    this.tiempos = response.data.tiempos;
+                    this.loading = false;
+                    Vue.nextTick(() => {
+                        this.renderGrafica();
+                        this.renderGrafica2();
+                    });
+                } catch (error) {
+                    console.error('Error fetching proyectos:', error);
+                    this.loading = false;
+                    swal({
+                        title: "Error",
+                        text: "Ha ocurrido un error al obtener los tiempos del proyecto, intentelo más tarde.",
+                        icon: "error",
+                        button: "Aceptar",
+                    });
+                } finally {
+                    this.loading = false;
+                }
+            },
+            renderGrafica2() {
+                if (this.chartInstance2) {
+                    this.chartInstance2.destroy(); // Evitar duplicados si se vuelve a cargar
+                }
+
+                const ctx = document.getElementById("graficaMP").getContext("2d");
+
+                const labels = this.tiempos.reporte_materia_prima.map(r => r.material + ' ' + r.hoja_descripcion);
+                const data = this.tiempos.reporte_materia_prima.map(r => r.costo_total);
+
+                const backgroundColors = [
+                    "#4e73df",
+                    "#f6c23e",
+                    "#e74a3b",
+                    "#36b9cc",
+                    "#1cc88a",
+                    "#858796",
+                    "#4e73df",
+                    "#f6c23e",
+                    "#e74a3b",
+                    "#36b9cc",
+                    "#1cc88a",
+                    "#858796",
+                    "#4e73df",
+                    "#f6c23e",
+                    "#e74a3b",
+                    "#36b9cc",
+                    "#1cc88a",
+                    "#858796",
+                    "#4e73df",
+                    "#f6c23e",
+                    "#e74a3b",
+                    "#36b9cc",
+                    "#1cc88a",
+                    "#858796",
+                    "#4e73df",
+                    "#f6c23e",
+                    "#e74a3b",
+                    "#36b9cc",
+                    "#1cc88a",
+                    "#858796",
+                    "#4e73df",
+                    "#f6c23e",
+                    "#e74a3b",
+                    "#36b9cc",
+                    "#1cc88a",
+                    "#858796",
+                ];
+
+                this.chartInstance2 = new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: "Costo por hoja ($)",
+                            data,
+                            backgroundColor: backgroundColors.slice(0, labels.length)
+                        }]
+                    },
+                    options: {
+                        indexAxis: "y", // barra horizontal
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: "COSTO TOTAL DE MATERIA PRIMA: $" + this.tiempos.total_materia_prima.toFixed(2),
+                            },
+                           tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.dataset.label || '';
+                                        const value = context.parsed.x; // x porque es gráfico horizontal
+                                        return `$${value.toFixed(2)}`;
+                                    }
+                                }
+                            },
+
+                            legend: {
+                                display: false // sin leyenda, ya que cada barra tiene su propio label
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: "Costo ($)"
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    autoSkip: false,
+                                    maxRotation: 0
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+
+            renderGrafica() {
+                if (this.chartInstance) {
+                    this.chartInstance.destroy(); // evitar duplicados si se vuelve a cargar
+                }
+
+                const labels = [
+                    "Horas de Maquinado",
+                    "Retrabajos",
+                    "Paros",
+                    "Modificaciones",
+                    "Pruebas de Diseño",
+                    "Pruebas de Proceso"
+                ];
+
+                const tiempos = this.tiempos;
+                const data = [
+                    (tiempos.maquinado_horas * 60) + tiempos.maquinado_minutos,
+                    (tiempos.retrabajo_horas * 60) + tiempos.retrabajo_minutos,
+                    (tiempos.paro_horas * 60) + tiempos.paro_minutos,
+                    (tiempos.modificacion_horas * 60) + tiempos.modificacion_minutos,
+                    (tiempos.diseno_horas * 60) + tiempos.diseno_minutos,
+                    (tiempos.proceso_horas * 60) + tiempos.proceso_minutos
+                ];
+
+                const ctx = document.getElementById("graficaTiempos").getContext("2d");
+
+                this.chartInstance = new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: "Tiempo (minutos)",
+                            data,
+                            backgroundColor: [
+                                "#4e73df",
+                                "#f6c23e",
+                                "#e74a3b",
+                                "#36b9cc",
+                                "#1cc88a",
+                                "#858796"
+                            ]
+                        }]
+                    },
+                    options: {
+                        indexAxis: "y",
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        const totalMin = context.raw;
+                                        const hrs = Math.floor(totalMin / 60);
+                                        const min = totalMin % 60;
+                                        return `${hrs}h ${min}m`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: "Tiempo total en minutos"
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+            async navigateFromUrlParams() {
+                const queryParams = new URLSearchParams(window.location.search);
+                const anioId = queryParams.get('a');
+                const clienteId = queryParams.get('c');
+                const proyectoId = queryParams.get('p');
+
+                try {
+                    if (anioId) {
+                        await this.fetchClientes(anioId);
+                    }
+                    if (clienteId) {
+                        await this.fetchProyectos(clienteId);
+                    }
+                    if (proyectoId) {
+                        await this.seleccionarProyecto(proyectoId);
+                    }
+                } catch (error) {
+                    console.error("Error navigating from URL parameters:", error);
+                }
+            },
+        },
+        mounted: async function() {
+            let t = this;
+            await t.fetchAnios();
+            this.navigateFromUrlParams();
+        }
+
+
+    })
+</script>
+
+
+
+
+
+    <script type="text/javascript">
+        Vue.component('v-select', VueSelect.VueSelect)
+        
+        var app = new Vue({
+        el: '#vue-app2',
+        data: {
+            notificaciones: [],
+            hay_notificaciones: 0 ? true :  false
+        },
+        methods:{
+            toggleDropdown(){
+                let t = this
+                axios.put('/api/ver-notificaciones').then( response => {
+                    t.hay_notificaciones = false;
+                })
+            },
+            getNotificaciones(){
+                axios.get(`/api/ultimas-notificaciones`).then(response => {
+                    this.notificaciones = response.data.notificaciones;
+                })
+            },
+            irNotificacion(notificacion){
+                let roles = JSON.parse(notificacion.roles);
+
+                if (roles.includes('OPERADOR')) {
+                    window.location.href = `${notificacion.url_base}?maq=${notificacion.maquina_id}&co=${notificacion.componente_id}&fab=${notificacion.fabricacion_id}`;
+                }else{
+                    window.location.href = `${notificacion.url_base}?a=${notificacion.anio_id}&c=${notificacion.cliente_id}&p=${notificacion.proyecto_id}&h=${notificacion.herramental_id}&co=${notificacion.componente_id}`
+                }                
+            }
+        },
+        mounted() {
+            this.getNotificaciones();
+        },
+
+    })
+ </script>
+
+
+        
+
+    
+    <script>
+        // const DOMstrings = {stepsBtnClass:"multisteps-form__progress-btn",stepsBtns:document.querySelectorAll(".multisteps-form__progress-btn"),stepsBar:document.querySelector(".multisteps-form__progress"),stepsForm:document.querySelector(".multisteps-form__form"),stepsFormTextareas:document.querySelectorAll(".multisteps-form__textarea"),stepFormPanelClass:"multisteps-form__panel",stepFormPanels:document.querySelectorAll(".multisteps-form__panel"),stepPrevBtnClass:"js-btn-prev",stepNextBtnClass:"js-btn-next"},removeClasses=(s,t)=>{s.forEach(s=>{s.classList.remove(t)})},findParent=(s,t)=>{let e=s;for(;!e.classList.contains(t);)e=e.parentNode;return e},getActiveStep=s=>Array.from(DOMstrings.stepsBtns).indexOf(s),setActiveStep=s=>{removeClasses(DOMstrings.stepsBtns,"js-active"),DOMstrings.stepsBtns.forEach((t,e)=>{e<=s&&t.classList.add("js-active")})},getActivePanel=()=>{let s;return DOMstrings.stepFormPanels.forEach(t=>{t.classList.contains("js-active")&&(s=t)}),s},setActivePanel=s=>{removeClasses(DOMstrings.stepFormPanels,"js-active"),DOMstrings.stepFormPanels.forEach((t,e)=>{e===s&&(t.classList.add("js-active"),setFormHeight(t))})},formHeight=s=>{const t=s.offsetHeight;DOMstrings.stepsForm.style.height=`${t}px`},setFormHeight=()=>{const s=getActivePanel();formHeight(s)};DOMstrings.stepsBar.addEventListener("click",s=>{const t=s.target;if(!t.classList.contains(`${DOMstrings.stepsBtnClass}`))return;const e=getActiveStep(t);setActiveStep(e),setActivePanel(e)}),DOMstrings.stepsForm.addEventListener("click",s=>{const t=s.target;if(!t.classList.contains(`${DOMstrings.stepPrevBtnClass}`)&&!t.classList.contains(`${DOMstrings.stepNextBtnClass}`))return;const e=findParent(t,`${DOMstrings.stepFormPanelClass}`);let r=Array.from(DOMstrings.stepFormPanels).indexOf(e);t.classList.contains(`${DOMstrings.stepPrevBtnClass}`)?r--:r++,setActiveStep(r),setActivePanel(r)}),window.addEventListener("load",setFormHeight,!1),window.addEventListener("resize",setFormHeight,!1);
+    </script>
+    <script>
+    $(document).ready(function () {
+        $sidebar = $('.sidebar');
+        $sidebar_img_container = $sidebar.find('.sidebar-background');
+        $full_page = $('.full-page');
+        $sidebar_responsive = $('body > .navbar-collapse');
+        sidebar_mini_active = true;
+        window_width = $(window).width();
+        fixed_plugin_open = $('.sidebar .sidebar-wrapper .nav li.active a p').html();
+        // if( window_width > 767 && fixed_plugin_open == 'Dashboard' ){
+        //     if($('.fixed-plugin .dropdown').hasClass('show-dropdown')){
+        //         $('.fixed-plugin .dropdown').addClass('show');
+        //     }
+        //
+        // }
+        $('.fixed-plugin a').click(function (event) {
+            // Alex if we click on switch, stop propagation of the event, so the dropdown will not be hide, otherwise we set the  section active
+            if ($(this).hasClass('switch-trigger')) {
+                if (event.stopPropagation) {
+                    event.stopPropagation();
+                } else if (window.event) {
+                    window.event.cancelBubble = true;
+                }
+            }
+        });
+        $('.fixed-plugin .active-color span').click(function () {
+            $full_page_background = $('.full-page-background');
+            $(this).siblings().removeClass('active');
+            $(this).addClass('active');
+            var new_color = $(this).data('color');
+            if ($sidebar.length != 0) {
+                $sidebar.attr('data-active-color', new_color);
+            }
+            if ($full_page.length != 0) {
+                $full_page.attr('data-active-color', new_color);
+            }
+            if ($sidebar_responsive.length != 0) {
+                $sidebar_responsive.attr('data-active-color', new_color);
+            }
+        });
+        $('.fixed-plugin .background-color span').click(function () {
+            $(this).siblings().removeClass('active');
+            $(this).addClass('active');
+            var new_color = $(this).data('color');
+            if ($sidebar.length != 0) {
+                $sidebar.attr('data-color', new_color);
+            }
+            if ($full_page.length != 0) {
+                $full_page.attr('filter-color', new_color);
+            }
+            if ($sidebar_responsive.length != 0) {
+                $sidebar_responsive.attr('data-color', new_color);
+            }
+        });
+        $('.fixed-plugin .img-holder').click(function () {
+            $full_page_background = $('.full-page-background');
+            $(this).parent('li').siblings().removeClass('active');
+            $(this).parent('li').addClass('active');
+            var new_image = $(this).find("img").attr('src');
+            if ($sidebar_img_container.length != 0 && $('.switch-sidebar-image input:checked').length != 0) {
+                $sidebar_img_container.fadeOut('fast', function () {
+                    $sidebar_img_container.css('background-image', 'url("' + new_image + '")');
+                    $sidebar_img_container.fadeIn('fast');
+                });
+            }
+            if ($full_page_background.length != 0 && $('.switch-sidebar-image input:checked').length != 0) {
+                var new_image_full_page = $('.fixed-plugin li.active .img-holder').find('img').data('src');
+                $full_page_background.fadeOut('fast', function () {
+                    $full_page_background.css('background-image', 'url("' + new_image_full_page + '")');
+                    $full_page_background.fadeIn('fast');
+                });
+            }
+            if ($('.switch-sidebar-image input:checked').length == 0) {
+                var new_image = $('.fixed-plugin li.active .img-holder').find("img").attr('src');
+                var new_image_full_page = $('.fixed-plugin li.active .img-holder').find('img').data('src');
+                $sidebar_img_container.css('background-image', 'url("' + new_image + '")');
+                $full_page_background.css('background-image', 'url("' + new_image_full_page + '")');
+            }
+            if ($sidebar_responsive.length != 0) {
+                $sidebar_responsive.css('background-image', 'url("' + new_image + '")');
+            }
+        });
+        $('.switch-sidebar-image input').on("switchChange.bootstrapSwitch", function () {
+            $full_page_background = $('.full-page-background');
+            $input = $(this);
+            if ($input.is(':checked')) {
+                if ($sidebar_img_container.length != 0) {
+                    $sidebar_img_container.fadeIn('fast');
+                    $sidebar.attr('data-image', '#');
+                }
+                if ($full_page_background.length != 0) {
+                    $full_page_background.fadeIn('fast');
+                    $full_page.attr('data-image', '#');
+                }
+                background_image = true;
+            } else {
+                if ($sidebar_img_container.length != 0) {
+                    $sidebar.removeAttr('data-image');
+                    $sidebar_img_container.fadeOut('fast');
+                }
+                if ($full_page_background.length != 0) {
+                    $full_page.removeAttr('data-image', '#');
+                    $full_page_background.fadeOut('fast');
+                }
+                background_image = false;
+            }
+        });
+        $('.switch-mini input').on("switchChange.bootstrapSwitch", function () {
+            $body = $('body');
+            $input = $(this);
+            if (paperDashboard.misc.sidebar_mini_active == true) {
+                $('body').removeClass('sidebar-mini');
+                paperDashboard.misc.sidebar_mini_active = false;
+                $('.sidebar .sidebar-wrapper, .main-panel').perfectScrollbar();
+            } else {
+                $('.sidebar .sidebar-wrapper, .main-panel').perfectScrollbar('destroy');
+                setTimeout(function () {
+                    $('body').addClass('sidebar-mini');
+                    paperDashboard.misc.sidebar_mini_active = true;
+                }, 300);
+            }
+            // we simulate the window Resize so the charts will get updated in realtime.
+            var simulateWindowResize = setInterval(function () {
+                window.dispatchEvent(new Event('resize'));
+            }, 180);
+            // we stop the simulation of Window Resize after the animations are completed
+            setTimeout(function () {
+                clearInterval(simulateWindowResize);
+            }, 1000);
+        });
+    });
+</script>
+
+
+
+</body></html>

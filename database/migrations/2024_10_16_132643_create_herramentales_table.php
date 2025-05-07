@@ -29,6 +29,7 @@ class CreateHerramentalesTable extends Migration
 
             $table->string('fecha_terminado')->nullable();
             $table->string('fecha_limite')->nullable();
+            $table->text('otras_fechas')->nullable();
 
             $table->text('checklist')->nullable();
             $table->timestamps();

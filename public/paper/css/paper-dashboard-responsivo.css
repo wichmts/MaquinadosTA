@@ -6579,6 +6579,18 @@ input[type="number"]::-webkit-outer-spin-button {
     /* Agregar borde punteado */
     z-index: 10;
 }
+.limite-tiempo2 {
+    position: absolute;
+    top: 50px;
+    bottom: 0;
+    left: 50%;
+    /* O la posición que desees */
+    width: 0;
+    /* El width se debe poner a 0, ya que la línea será con borde */
+    border-left: 4px dotted rgb(0, 128, 255);
+    /* Agregar borde punteado */
+    z-index: 10;
+}
 
 
 /* VISOR PROGRAMADOR */

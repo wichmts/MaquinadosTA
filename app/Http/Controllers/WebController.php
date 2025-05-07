@@ -15,8 +15,15 @@ class WebController extends Controller
     public function tiemposPersonal(){
         return view('admin-panel.tiempos-personal');
     }
-    public function finanzas(){
-        return view('finanzas.finanzas');
+    public function finanzasPY(){
+        if (auth()->user()->hasRole('FINANZAS'))
+            return view('finanzas.finanzas-py');
+        return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
+    public function finanzasHR(){
+        if (auth()->user()->hasRole('FINANZAS'))
+            return view('finanzas.finanzas-hr');
+        return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
     public function tiemposMaquinas(){
         return view('admin-panel.tiempos-maquinas');
@@ -69,7 +76,7 @@ class WebController extends Controller
     }
 
     public function visorAvanceHR(){
-        if(auth()->user()->hasAnyRole(['JEFE DE AREA', 'PROGRAMADOR', 'MATRICERO', 'AUXILIAR DE DISEÑO', 'DIRECCION', 'PROCESOS', 'PROYECTOS'])) 
+        if(auth()->user()->hasAnyRole(['JEFE DE AREA', 'PROGRAMADOR', 'MATRICERO', 'AUXILIAR DE DISEÑO', 'DIRECCION', 'PROCESOS', 'PROYECTOS', 'FINANZAS'])) 
             return view('jefe-area.visor-avance-hr');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }

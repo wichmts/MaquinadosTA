@@ -43,7 +43,7 @@ class Componente extends Model
         return $refabricaciones; // Devuelve el array con los componentes
     }
     public function maquinas(){
-        $maquinas = Maquina::select('maquinas.id as maquina_id', 'maquinas.nombre', 'fabricaciones.id as documento_id', 'fabricaciones.archivo as documento_nombre')
+        $maquinas = Maquina::select('maquinas.id as maquina_id','maquinas.requiere_programa', 'maquinas.nombre', 'fabricaciones.id as documento_id', 'fabricaciones.archivo as documento_nombre')
             ->leftJoin('fabricaciones', function($join) {
                 $join->on('fabricaciones.maquina_id', '=', 'maquinas.id');
             })
@@ -67,6 +67,7 @@ class Componente extends Model
             return [
                 'maquina_id' => $maquina[0]->maquina_id,
                 'nombre' => $maquina[0]->nombre,
+                'requiere_programa' => $maquina[0]->requiere_programa,
                 'archivos' => $archivos,
             ];
         });

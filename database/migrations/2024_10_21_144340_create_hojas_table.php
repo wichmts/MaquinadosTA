@@ -25,14 +25,15 @@ class CreateHojasTable extends Migration
             $table->string('ancho_entrada')->nullable();
             $table->string('longitud_entrada')->nullable();
             $table->string('diametro_entrada')->nullable();
-            $table->string('peso_entrada')->nullable();
+            $table->decimal('peso_entrada', 12, 2)->nullable();
+            
 
 
             $table->string('largo_saldo')->nullable();
             $table->string('ancho_saldo')->nullable();
             $table->string('longitud_saldo')->nullable();
             $table->string('diametro_saldo')->nullable();
-            $table->string('peso_saldo')->nullable();
+            $table->decimal('peso_saldo', 12, 2)->nullable();
             
             $table->float('precio_kilo')->nullable();
             $table->string('fecha_entrada')->nullable();

@@ -161,13 +161,13 @@
                             <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.ancho_entrada}}</td>
                             <td v-if="materialSelected == 3">@{{h.longitud_entrada}}</td>
                             <td v-if="materialSelected == 3">@{{h.diametro_entrada}}</td>
-                            <td>@{{h.peso_entrada}}</td>
+                            <td>@{{h.peso_entrada}} Kg</td>
                             {{-- salida --}}
                             <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.largo_saldo}}</td>
                             <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.ancho_saldo}}</td>
                             <td v-if="materialSelected == 3">@{{h.longitud_saldo}}</td>
                             <td v-if="materialSelected == 3">@{{h.diametro_saldo}}</td>
-                            <td>@{{h.peso_saldo}}</td>
+                            <td>@{{h.peso_saldo}} Kg</td>
 
                             <td>@{{h.precio_kilo | currency}}</td>
                             <td>@{{h.fecha_entrada}}</td>
@@ -237,11 +237,14 @@
                                 <label class="bold">Diametro <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" v-model="nuevo.diametro_entrada" placeholder="Diametro de la hoja...">
                             </div>
-
-                            
-                            <div class="col-lg-4 form-group">
+                             <div class="col-lg-4 form-group">
                                 <label class="bold">Peso <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" v-model="nuevo.peso_entrada" placeholder="Peso de la hoja...">
+                                <div class="input-group">
+                                    <input type="number" step="any" class="form-control py-2" v-model="nuevo.peso_entrada" placeholder="Peso de la hoja..." >
+                                    <div class="input-group-append">
+                                        <span class="input-group-text px-2 py-0" style="background-color: #ededed;">Kg</span>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-lg-4 form-group">
                                 <label class="bold">Precio / Kilo <span class="text-danger">*</span></label>
@@ -308,7 +311,7 @@
                                             <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{m.largo}}</td>
                                             <td v-if="materialSelected == 3">@{{m.diametro}}</td>
                                             <td v-if="materialSelected == 3">@{{m.longitud}}</td>
-                                            <td>@{{m.peso}}</td>
+                                            <td>@{{m.peso}} Kg</td>
                                             <td>@{{m.py}}</td>
                                             <td>@{{m.hr}}</td>
                                         </tr>
@@ -511,10 +514,10 @@
                     espesor: '',
                     largo_entrada: '',
                     ancho_entrada: '',
-                    peso_entrada: '',
+                    peso_entrada: 0,
                     largo_saldo: '',
                     ancho_saldo: '',
-                    peso_saldo: '',
+                    peso_saldo: 0,
                     precio_kilo: 0,
                     fecha_entrada: new Date().toISOString().split('T')[0] ,
                     factura: '',

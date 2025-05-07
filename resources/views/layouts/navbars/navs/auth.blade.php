@@ -117,7 +117,10 @@ input:checked + .slider:before {
                  {{-- FINANZAS --}}
                 @if (auth()->user()->hasRole('FINANZAS'))
                 <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/finanzas">FINANZAS</a>
+                    <a class="nav-link menu-link" href="/finanzas-py">FINANZAS PY</a>
+                </li>
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/finanzas-hr">FINANZAS HR</a>
                 </li>
                 @endif
                 
@@ -127,7 +130,7 @@ input:checked + .slider:before {
                     <a class="nav-link menu-link" href="/carga-componentes">Carga de componentes</a>
                 </li>
                 @endif
-                @if (auth()->user()->hasAnyRole(['AUXILIAR DE DISEÑO', 'DIRECCION']))
+                @if (auth()->user()->hasAnyRole(['AUXILIAR DE DISEÑO', 'DIRECCION', 'FINANZAS']))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="/visor-avance-hr">Visor de avance</a>
                 </li>
@@ -175,12 +178,7 @@ input:checked + .slider:before {
                     <a class="nav-link menu-link" href="/pruebas-proceso">Pruebas</a>
                 </li>
                 @endif
-                @if (auth()->user()->hasRole('JEFE DE AREA'))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/visor-avance-hr">Visor Avance</a>
-                </li>
-                @endif
-                @if (auth()->user()->hasRole('PROYECTOS'))
+                @if (auth()->user()->hasAnyRole(['JEFE DE AREA', 'PROYECTOS']))
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/visor-avance-hr">Visor Avance</a>
                 </li>

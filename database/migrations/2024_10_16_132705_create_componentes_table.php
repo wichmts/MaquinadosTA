@@ -63,6 +63,7 @@ class CreateComponentesTable extends Migration
             $table->integer('version')->nullable();
             
             $table->boolean('es_compra')->nullable();
+            $table->decimal('costo_unitario', 12, 2)->nullable();
             
             $table->string('area')->nullable();          
             
@@ -82,6 +83,7 @@ class CreateComponentesTable extends Migration
             
             $table->boolean('cancelado')->nullable();
             
+            $table->integer('matricero_id')->nullable();
             $table->integer('programador_id')->nullable();
             $table->integer('herramental_id')->nullable();
             $table->integer('material_id')->nullable();

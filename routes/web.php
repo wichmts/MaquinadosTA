@@ -60,7 +60,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/centro-notificaciones', 'WebController@centroNotificaciones');
 
     // FINANZAS
-    Route::get('finanzas', 'WebController@finanzas');
+    Route::get('finanzas-py', 'WebController@finanzasPY');
+    Route::get('finanzas-hr', 'WebController@finanzasHR');
 
 
     // ADMIN
