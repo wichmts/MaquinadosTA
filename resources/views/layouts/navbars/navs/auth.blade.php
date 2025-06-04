@@ -122,6 +122,9 @@ input:checked + .slider:before {
                 <li class="nav-item" >
                     <a class="nav-link menu-link" href="/finanzas-hr">FINANZAS HR</a>
                 </li>
+                <li class="nav-item" >
+                    <a class="nav-link menu-link" href="/puestos">PUESTOS DE TRABAJO</a>
+                </li>
                 @endif
                 
                 {{-- AUXILIAR DE DISENO --}}

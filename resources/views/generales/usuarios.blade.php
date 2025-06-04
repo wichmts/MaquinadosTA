@@ -150,7 +150,7 @@
 
         <!-- Modal nueva -->
         <div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="modalUsuarioLabel" aria-hidden="true">
-            <div class="modal-dialog" style="min-width: 60%;">
+            <div class="modal-dialog" style="min-width: 70%;">
                 <div class="modal-content" >
                     <div class="modal-header">
                         <h3 class="modal-title" id="modalUsuarioLabel">@{{usuario.id ? 'Editar usuario' : 'Crear nuevo usuario'}} </h3>
@@ -187,13 +187,19 @@
                                 <label class="bold text-danger" style="letter-spacing: 1px">CODIGO DE ACCESO *</label>
                                 <input class="form-control text-center" placeholder="-----" type="text" style="font-weight: bold; letter-spacing: 2px" v-model="usuario.codigo_acceso"/>
                             </div>
-                            <div class="col-xl-6 form-group mt-2">
+                            <div class="col-xl-4 form-group mt-2">
+                                <label class="bold">Seleccionar puesto del usuario <span style="color: red">*</span></label>
+                                <ul style="height: 300px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border mt-0">
+                                    <li v-for="r in puestos" class="dropdown-item" :class="{ roleSeleccionado: usuario.puesto_id == r.id}" @click="seleccionarPuesto(r.id)"><i class="fa fa-check-circle" v-if="usuario.puesto_id == r.id"></i> @{{r.nombre}}</li>
+                                </ul>
+                            </div>
+                            <div class="col-xl-4 form-group mt-2">
                                 <label class="bold">Seleccionar role(s) del usuario <span style="color: red">*</span></label>
                                 <ul style="height: 300px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border mt-0">
                                     <li v-for="r in roles" class="dropdown-item" :class="{ roleSeleccionado: existeRole(r)}" @click="incluirRole(r)"><i class="fa fa-check-circle" v-if="existeRole(r)"></i> @{{r}}</li>
                                 </ul>
                             </div>
-                            <div class="col-xl-6 form-group mt-2" v-if="existeRole('OPERADOR')">
+                            <div class="col-xl-4 form-group mt-2" v-if="existeRole('OPERADOR')">
                                 <label class="bold">Asignar MAQUINAS al operador <span style="color: red">*</span></label>
                                 <ul style="height: 300px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border mt-0">
                                     <li v-for="m in maquinas" class="dropdown-item" :class="{ roleSeleccionado: existeMaquina(m.id)}" @click="incluirMaquina(m.id)"><i class="fa fa-check-circle" v-if="existeMaquina(m.id)"></i> @{{m.nombre}}</li>
@@ -226,6 +232,7 @@
                 ap_paterno: '',
                 ap_materno: '',
                 active: 1,
+                puesto_id: null,
                 email: '',
                 codigo_acceso: '',
                 roles: [],
@@ -235,6 +242,7 @@
             tipo_usuario: '-1',
             permisos: [],
             maquinas: [],
+            puestos: [],
             roles: [
                 'ALMACENISTA',
                 'AUXILIAR DE DISEÑO',
@@ -257,6 +265,9 @@
 
         },
         methods:{ 
+            seleccionarPuesto(id){
+                this.usuario.puesto_id = id;
+            },
             incluirRole(role) {
                 let indiceRole = this.usuario.roles.findIndex((m) => m === role);
 
@@ -387,6 +398,7 @@
                     ap_paterno: '',
                     ap_materno: '',
                     active: 1,
+                    puesto_id: null,
                     email: '',
                     password: '',
                     password_confirmation: '',
@@ -412,6 +424,12 @@
 
                 axios.get('api/maquinas').then(response => {
                     t.maquinas = response.data.maquinas.filter(maq => maq.tipo_proceso != 10)
+                }).catch(e => {
+                    console.log(e);
+                });
+
+                 axios.get('api/puestos').then(response => {
+                    t.puestos = response.data.puestos;
                 }).catch(e => {
                     console.log(e);
                 });

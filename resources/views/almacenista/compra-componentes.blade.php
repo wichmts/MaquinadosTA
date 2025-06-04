@@ -132,10 +132,10 @@
                                                 </td>
                                                 <td><input disabled class="form-control text-center" type="number" step="1" v-model="c.cantidad"></td>
                                                 <td><input class="form-control text-center" type="number" step="any" v-model="c.costo_unitario"></td>
-                                                <td><input class="form-control text-center" type="date" :disabled="c.cancelado"  v-model="c.fecha_solicitud"></td>
-                                                <td><input class="form-control text-center" type="date" :disabled="c.cancelado"  v-model="c.fecha_pedido"></td>
-                                                <td><input class="form-control text-center" type="date" :disabled="c.cancelado"  v-model="c.fecha_estimada"></td>
-                                                <td><input class="form-control text-center" type="date" :disabled="c.cancelado"  v-model="c.fecha_real"></td>
+                                                <td><input class="form-control text-center" type="date" :disabled="c.cancelado || c.fecha_real"  v-model="c.fecha_solicitud"></td>
+                                                <td><input class="form-control text-center" type="date" :disabled="c.cancelado || c.fecha_real"  v-model="c.fecha_pedido"></td>
+                                                <td><input class="form-control text-center" type="date" :disabled="c.cancelado || c.fecha_real"  v-model="c.fecha_estimada"></td>
+                                                <td><input class="form-control text-center" type="date" :disabled="c.cancelado || c.fecha_real"  v-model="c.fecha_real_liberada"></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -261,41 +261,41 @@
                     return false;
                 }  
             },
-            async liberarHerramental() {
-                let t = this;
+            // async liberarHerramental() {
+            //     let t = this;
 
-                let errores = [];
-                t.componentes.forEach((componente, index) => {  
-                    if (!componente.fecha_solicitud || !componente.fecha_pedido || !componente.fecha_estimada || !componente.fecha_real ) {
-                        errores.push(`Todos los campos son obligatorios para liberar en ${componente.nombre}.`);
-                    }
-                });
+            //     let errores = [];
+            //     t.componentes.forEach((componente, index) => {  
+            //         if (!componente.fecha_solicitud || !componente.fecha_pedido || !componente.fecha_estimada || !componente.fecha_real ) {
+            //             errores.push(`Todos los campos son obligatorios para liberar en ${componente.nombre}.`);
+            //         }
+            //     });
 
-                if (errores.length > 0) {
-                    swal('Errores de validación', errores.join('\n'), 'error');
-                    return;
-                }
+            //     if (errores.length > 0) {
+            //         swal('Errores de validación', errores.join('\n'), 'error');
+            //         return;
+            //     }
 
                 
-                t.cargando = true;
-                let respuesta = await t.guardarComponentes(false);
-                if(respuesta){
-                    try {
-                        const response = await axios.put(`/api/liberar-herramental-compras/${t.selectedHerramental}`);
-                        t.cargando = false;
-                        swal('Éxito', 'Componentes liberados correctamente', 'success');
-                        t.fetchComponentes(t.selectedHerramental);
+            //     t.cargando = true;
+            //     let respuesta = await t.guardarComponentes(false);
+            //     if(respuesta){
+            //         try {
+            //             const response = await axios.put(`/api/liberar-herramental-compras/${t.selectedHerramental}`);
+            //             t.cargando = false;
+            //             swal('Éxito', 'Componentes liberados correctamente', 'success');
+            //             t.fetchComponentes(t.selectedHerramental);
 
-                    } catch (error) {
-                        t.cargando = false;
-                        console.error('Error al liberar el componente:', error);
-                        swal('Error', 'Ocurrió un error al liberar el herramental', 'error');
-                    }
-                }else{
-                    swal('Error', 'Ocurrió un error al guardar la informacion de los componentes', 'error');
-                    t.cargando = false;
-                }
-            },
+            //         } catch (error) {
+            //             t.cargando = false;
+            //             console.error('Error al liberar el componente:', error);
+            //             swal('Error', 'Ocurrió un error al liberar el herramental', 'error');
+            //         }
+            //     }else{
+            //         swal('Error', 'Ocurrió un error al guardar la informacion de los componentes', 'error');
+            //         t.cargando = false;
+            //     }
+            // },
            async navigateFromUrlParams() {
                 const queryParams = new URLSearchParams(window.location.search);
                 const proyectoId = queryParams.get('p');

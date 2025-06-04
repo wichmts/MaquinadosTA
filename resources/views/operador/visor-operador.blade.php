@@ -164,7 +164,7 @@
                                         <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="btn btn-block mt-0"  @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR </button>
                                     </div>
                                     <div class="col-lg-2 mb-3"  v-if="selectedComponente" >
-                                        <button class="btn btn-success btn-block mt-0" @click="liberar()" :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)">
+                                        <button class="btn btn-success btn-block mt-0" @click="liberar()" :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina) || fabricacion.estatus_fabricacion == 'inicial' || fabricacion.estatus_fabricacion == 'detenido'">
                                             <i class="fa fa-check-circle"></i> 
                                             <span v-if="fabricacion.fabricado != true">FINALIZAR</span>
                                             <span v-else>FINALIZADA</span>

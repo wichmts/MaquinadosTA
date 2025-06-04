@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
-use App\Especialidad;
 
 
 class RolesTableSeeder extends Seeder

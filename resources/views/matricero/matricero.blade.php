@@ -372,7 +372,6 @@
                                     <span class="underline-hover">@{{obj.nombre}}</span> 
                                 </a>
                             </div>
-                            
                         </div>            
                     </div>
                     <div class="col-xl-10 mt-3">
@@ -401,8 +400,6 @@
                             <h5 class="text-muted my-4"> SELECCIONE UN HERRAMENTAL PARA COMENZAR SU ENSAMBLE</h5>
                         </div>
                         <div class="row mt-3" v-else>
-                            
-                            {{-- vista de carga de archivo --}}
                             <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'inicial'">
                                 <div class="row">
                                     <h5 class="bold col-xl-12" style="letter-spacing: 1px">Para comenzar el ensamble del herramental @{{herramental.nombre}} es necesario cargar el formato solicitado:</h5>
@@ -427,7 +424,13 @@
                                     <div class="col-xl-3" style="border-right: 2px dashed #d6d6d6;">  
                                          <h5 class="bold" style="letter-spacing: 1px">Seleccionar componente a ensamblar: </h5>
                                          <ul  class="dropdown-menu show w-100 position-static border mt-0" style="height: 65vh; overflow-y: scroll">
-                                             <li v-for="c in componentes" class="dropdown-item" :class="{ componenteSeleccionado: selectedComponente == c.id}" @click="fetchComponente(c.id)"><i class="fa fa-check-circle" v-if="selectedComponente == c.id"></i> @{{c.nombre}} <small>(@{{ c.ensamblado ? 'Ensamblado' : 'Sin ensamblar'}})</small></li>
+                                            <li v-for="c in componentes" class="dropdown-item" 
+                                                :class="{ componenteSeleccionado: selectedComponente == c.id}" 
+                                                @click.stop="fetchComponente(c.id)">
+                                                <i class="fa fa-check-circle" v-if="selectedComponente == c.id"></i> 
+                                                <span>@{{c.nombre}}</span> 
+                                                <small>(@{{ c.ensamblado ? 'Ensamblado' : 'Sin ensamblar'}})</small>
+                                            </li>
                                          </ul>
                                     </div>
                                     <div class="col-xl-9" >
@@ -441,7 +444,6 @@
                                                     <label class="my-0 py-0 bold pt-2">VISTA EXPLOSIONADA</label>
                                                 </a>
                                             </div>
-                                            {{-- <div class="col-xl-12 mb-3" ></div> --}}
                                         </div>
                                         <div class="row">
                                             <div class="col-xl-7">
@@ -473,14 +475,22 @@
                                                 </div>
                                             </div>
                                             <div class="col-xl-5">
-                                                <div class="row" style="height: 60vh">
+                                                <div class="row" style="height: 40vh">
                                                     <div class="col-xl-12">
-                                                            <label class="bold"><a v-if="componente.archivo_2d_public" :href="'/storage/' + componente.archivo_2d_public" target="_blank" class="text-dark text-decoration-none">VISTA 2D</a></label>
-                                                        </div>
-                                                        <div class="col-xl-12 h-100" >
-                                                            <iframe v-if="componente.archivo_2d_public" :src="'/storage/' + componente.archivo_2d_public" style="width: 100%; height: 75%; border: none;"></iframe>
-                                                        </div>
+                                                        <label class="bold">
+                                                            <a v-if="componente.archivo_2d_public" :href="'/storage/' + componente.archivo_2d_public" target="_blank" class="text-dark text-decoration-none">VISTA 2D</a>
+                                                        </label>
                                                     </div>
+                                                    <div class="col-xl-12 h-100" >
+                                                        <object 
+                                                            v-if="componente.archivo_2d_public"
+                                                            :data="'/storage/' + componente.archivo_2d_public"
+                                                            type="application/pdf"
+                                                            style="width: 100%; height: 100%;">
+                                                            <p>Tu navegador no soporta visualización de PDF. <a :href="'/storage/' + componente.archivo_2d_public">Descargar</a> en su lugar.</p>
+                                                        </object>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -489,8 +499,10 @@
                         </div>
                     </div>
                 </div>
-        
-                 <div class="modal fade" id="modalSolicitud" tabindex="-1" aria-labelledby="modalSolicitudLabel" aria-hidden="true">
+
+
+                {{-- MODAL SOLICITUD --}}
+                <div class="modal fade" id="modalSolicitud" tabindex="-1" aria-labelledby="modalSolicitudLabel" aria-hidden="true">
                     <div class="modal-dialog" style="min-width: 40%;">
                         <div class="modal-content" >
                             <div class="modal-header">
@@ -505,8 +517,8 @@
                                 <div class="row">
                                     <div class="py-0 col-xl-12">
                                         <label class="bold">Comentarios <span class="text-danger">*</span></label>
-                                       <textarea v-model="solicitud.comentarios" class="form-control w-100 text-left px-2 py-1" placeholder="Agregar comentarios..."></textarea>
-                                   </div>                           
+                                    <textarea v-model="solicitud.comentarios" class="form-control w-100 text-left px-2 py-1" placeholder="Agregar comentarios..."></textarea>
+                                </div>                           
                                 </div>
                                 <div class="row">
                                     <div class="col-xl-12 text-right">
@@ -521,11 +533,7 @@
                 </div>
             </div>
         </div>
-
     </div>
-
-    
-
 @endsection
 
 @push('scripts')
@@ -569,9 +577,6 @@
                 comentarios: '',
                 area_solicitante: 'ENSAMBLE'
             },
-        },
-        watch: {
-           
         },
         methods:{
             async liberarHerramental(){
@@ -625,7 +630,6 @@
                     swal('Campos obligatorios', 'Es necesario ingresar comentarios para continuar.', 'info');
                     return;
                 }
-            
                 t.loading_button = true;
                 
                 try {
@@ -658,23 +662,6 @@
                 }
                 await this.guardarFoto()
             },
-            // async guardarChecklist(){
-            //     let t = this;
-            //     this.loading_button = true;
-            //     try {
-            //         const response = await axios.post(`/api/herramental/${this.selectedHerramental}/checklist`, t.herramental.checklist);
-            //         swal('Correcto', 'Checklist guardado correctamente', 'success');
-            //         await this.fetchHerramental(this.selectedHerramental);
-            //         if(this.herramental.estatus_ensamble == 'proceso'){
-            //             this.fetchComponentes(this.selectedHerramental);
-            //         }
-            //     } catch (error) {
-            //         console.error('Error guardando checklist:', error);
-            //         swal('Error', 'Error al guardar el checklist', 'error');
-            //     } finally {
-            //         this.loading_button = false;
-            //     }
-            // },
             async guardarFoto(){
                 let t = this;
                 this.loading_button = true;
@@ -1208,9 +1195,7 @@
             let t = this;
             await t.fetchAnios();
             this.navigateFromUrlParams();        
-        }
-
-                
+        }       
     })
 
     </script>

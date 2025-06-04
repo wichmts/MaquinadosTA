@@ -46,6 +46,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::put('maquina/{id}', 'APIController@editarMaquina');
     Route::delete('maquina/{id}', 'APIController@eliminarMaquina');
     
+    Route::get('puestos', 'APIController@obtenerPuestos');
     Route::get('herramentales', 'APIController@obtenerHerramentales');
     Route::get('materiales', 'APIController@obtenerMateriales');
     Route::get('programadores', 'APIController@obtenerProgramadores');
@@ -118,8 +119,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('solicitud-ensamble/{herramental_id}', 'APIController@obtenerSolicitudesEnsamble');
 
     Route::put('solicitud/{id}/atendida', 'APIController@solicitudAtendida');
-    
-
+    Route::put('actualizar-medidas-componente/{id}', 'APIController@actualizarMedidasComponente');
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {

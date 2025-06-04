@@ -33,6 +33,7 @@ class CreateComponentesTable extends Migration
             
             $table->string('fecha_cargado')->nullable();
             $table->string('fecha_terminado')->nullable();
+            $table->string('fecha_programado')->nullable();
             $table->string('fecha_ensamblado')->nullable();
             
             // compras

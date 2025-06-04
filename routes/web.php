@@ -62,6 +62,7 @@ Route::group(['middleware' => 'auth'], function () {
     // FINANZAS
     Route::get('finanzas-py', 'WebController@finanzasPY');
     Route::get('finanzas-hr', 'WebController@finanzasHR');
+    Route::get('puestos', 'WebController@puestos');
 
 
     // ADMIN

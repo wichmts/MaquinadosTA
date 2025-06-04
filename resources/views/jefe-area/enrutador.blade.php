@@ -75,14 +75,21 @@
                                     <span class="underline-hover" :style=" obj.cancelado == true ? 'text-decoration: line-through' : ''">
                                         @{{obj.nombre}} 
                                     </span>&nbsp;&nbsp;
-                                     <small 
-
+                                    <small 
                                         v-if="tienePendientes(obj)" 
                                         :key="'componente' + obj.id" 
                                         class="cursor-info text-danger fa fa-info-circle" 
                                         data-toggle="tooltip" 
                                         data-placement="bottom" 
                                         :title="getContenidoTooltipComponente(obj)" >
+                                    </small>
+                                    <small 
+                                        v-if="!tienePendientes(obj) && obj.enrutado == true" 
+                                        :key="'componente-listo-' + obj.id" 
+                                        class="cursor-info text-success fa fa-check-circle" 
+                                        data-toggle="tooltip" 
+                                        data-placement="bottom" 
+                                        title="Componente liberado" >
                                     </small>
                                 </a>
                             </div>

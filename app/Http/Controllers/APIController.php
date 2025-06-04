@@ -23,6 +23,7 @@ use App\Hoja;
 use App\MovimientoHoja;
 use App\SeguimientoTiempo;
 use App\Solicitud;
+use App\Puesto;
 use App\SolicitudExterna;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -41,6 +42,14 @@ class APIController extends Controller
     public function __construct(){
         Carbon::setLocale('es');
     }    
+    public function obtenerPuestos(){
+        $puestos = Puesto::orderBy('nombre', 'asc')->get();
+
+        return response()->json([
+            'puestos' => $puestos,
+            'success' => true
+        ]);
+    }
     public function consultarConfiguracion(){
         $configuracion = Configuracion::first();
 
@@ -187,6 +196,7 @@ class APIController extends Controller
         $user->codigo_acceso = $datos['codigo_acceso'];
         $user->maquinas = json_encode($datos['maquinas']);
         $user->active = $datos['active'];
+        $user->puesto_id = $datos['puesto_id'];
         $user->api_token = Str::random(60);
         $user->save();
         $user->syncRoles($datos['roles'] ?? []);
@@ -230,6 +240,7 @@ class APIController extends Controller
         $user->email = $datos['email'];
         $user->codigo_acceso = $datos['codigo_acceso'];
         $user->active = $datos['active'];
+        $user->puesto_id = $datos['puesto_id'];
         $user->maquinas = json_encode($datos['maquinas']);
         $user->save();
 
@@ -968,6 +979,7 @@ class APIController extends Controller
             $componente->retraso_programacion = $data['retraso_programacion'];
             $componente->estatus_programacion = 'detenido';
             $componente->programado = true;
+            $componente->fecha_programado = date('Y-m-d H:i');
             $componente->save();
 
             $procesos = [
@@ -1269,8 +1281,8 @@ class APIController extends Controller
             $nuevoComponente->costo_unitario = $this->emptyToNull($componente['costo_unitario']);
             $nuevoComponente->fecha_pedido = $this->emptyToNull($componente['fecha_pedido']);
             $nuevoComponente->fecha_estimada = $this->emptyToNull($componente['fecha_estimada']);
-            $nuevoComponente->fecha_real = $this->emptyToNull($componente['fecha_real']);
-            $nuevoComponente->comprado = $this->emptyToNull($componente['fecha_real']) != null;
+            $nuevoComponente->fecha_real = $this->emptyToNull($componente['fecha_real_liberada']);
+            $nuevoComponente->comprado = $this->emptyToNull($componente['fecha_real_liberada']) != null;
             $nuevoComponente->save();
             
             if(!$comprado && $nuevoComponente->comprado){
@@ -1294,6 +1306,19 @@ class APIController extends Controller
                 }
             }
         }
+
+        return response()->json([
+            'success' => true,
+        ], 200);
+    }
+    public function actualizarMedidasComponente(Request $request, $componente_id){
+        $componente = Componente::findOrFail($componente_id);
+        $componente->largo = $this->emptyToNull($request->largo);
+        $componente->ancho = $this->emptyToNull($request->ancho);
+        $componente->espesor = $this->emptyToNull($request->espesor);
+        $componente->longitud = $this->emptyToNull($request->longitud);
+        $componente->diametro = $this->emptyToNull($request->diametro);
+        $componente->save();
 
         return response()->json([
             'success' => true,
@@ -3492,13 +3517,13 @@ class APIController extends Controller
         $componentes = Componente::whereIn('herramental_id', $herramentalIds)->get(['id', 'nombre', 'version', 'herramental_id']);
         $componentesMap = $componentes->keyBy('id');
 
-        $getRutaVisor = function ($herramental_id) {
+        $getRutaVisor = function ($herramental_id, $componente_id) {
             $herramental = Herramental::findOrFail($herramental_id);
             $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
             $cliente = Cliente::findOrFail($proyecto->cliente_id);
             $anio = Anio::findOrFail($cliente->anio_id);
 
-            return "?a={$anio->id}&c={$cliente->id}&p={$proyecto->id}&h={$herramental->id}";
+            return "?a={$anio->id}&c={$cliente->id}&p={$proyecto->id}&h={$herramental->id}&co={$componente_id}";
         };
 
         $retrabajos = Solicitud::whereIn('componente_id', $componentes->pluck('id'))
@@ -3511,7 +3536,7 @@ class APIController extends Controller
                     'version' => $componente->version,
                     'created_at' => $solicitud->created_at->format('Y-m-d H:i'),
                     'area_solicitante' => $solicitud->area_solicitante,
-                    'rutaVisor' => $getRutaVisor($componente->herramental_id),
+                    'rutaVisor' => $getRutaVisor($componente->herramental_id, $componente->id),
                 ];
             });
 
@@ -3525,7 +3550,7 @@ class APIController extends Controller
                     'version' => $componente->version,
                     'created_at' => $solicitud->created_at->format('Y-m-d H:i'),
                     'area_solicitante' => $solicitud->area_solicitante,
-                    'rutaVisor' => $getRutaVisor($componente->herramental_id),
+                    'rutaVisor' => $getRutaVisor($componente->herramental_id, $componente->id),
                 ];
             });
 
@@ -3541,7 +3566,7 @@ class APIController extends Controller
                     'tipo_paro' => $paro->tipo_paro,
                     'fecha' => $paro->fecha,
                     'hora' => $paro->hora,
-                    'rutaVisor' => $getRutaVisor($componente->herramental_id),
+                    'rutaVisor' => $getRutaVisor($componente->herramental_id, $componente->id),
                 ];
             });
 
@@ -3557,13 +3582,13 @@ class APIController extends Controller
         $componentes = Componente::where('herramental_id', $herramental_id)->get(['id', 'nombre', 'version', 'herramental_id']);
         $componentesMap = $componentes->keyBy('id');
 
-        $getRutaVisor = function ($herramental_id) {
+        $getRutaVisor = function ($herramental_id, $componente_id) {
             $herramental = Herramental::findOrFail($herramental_id);
             $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
             $cliente = Cliente::findOrFail($proyecto->cliente_id);
             $anio = Anio::findOrFail($cliente->anio_id);
 
-            return "?a={$anio->id}&c={$cliente->id}&p={$proyecto->id}&h={$herramental->id}";
+            return "?a={$anio->id}&c={$cliente->id}&p={$proyecto->id}&h={$herramental->id}&co={$componente_id}";
         };
 
         $retrabajos = Solicitud::whereIn('componente_id', $componentes->pluck('id'))
@@ -3576,7 +3601,7 @@ class APIController extends Controller
                     'version' => $componente->version,
                     'created_at' => $solicitud->created_at->format('Y-m-d H:i'),
                     'area_solicitante' => $solicitud->area_solicitante,
-                    'rutaVisor' => $getRutaVisor($componente->herramental_id),
+                    'rutaVisor' => $getRutaVisor($componente->herramental_id, $componente->id),
                 ];
             });
 
@@ -3590,7 +3615,7 @@ class APIController extends Controller
                     'version' => $componente->version,
                     'created_at' => $solicitud->created_at->format('Y-m-d H:i'),
                     'area_solicitante' => $solicitud->area_solicitante,
-                    'rutaVisor' => $getRutaVisor($componente->herramental_id),
+                    'rutaVisor' => $getRutaVisor($componente->herramental_id, $componente->id),
                 ];
             });
 
@@ -3606,7 +3631,7 @@ class APIController extends Controller
                     'tipo_paro' => $paro->tipo_paro,
                     'fecha' => $paro->fecha,
                     'hora' => $paro->hora,
-                    'rutaVisor' => $getRutaVisor($componente->herramental_id),
+                    'rutaVisor' => $getRutaVisor($componente->herramental_id, $componente->id),
                 ];
             });
 

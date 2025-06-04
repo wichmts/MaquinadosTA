@@ -115,13 +115,13 @@
                                 <table class="table table-sm" id="tabla-principal">
                                     <thead class="thead-light">
                                         <tr>
-                                            <th style="width: 10%"> Componente </th>
-                                            <th style="width: 7%">  Cantidad </th>
+                                            <th style="width: 7%"> Comp. </th>
+                                            <th style="width: 7%">  Cant. </th>
                                             <th style="width: 17%"> Medidas</th>
                                             <th style="width: 10%"> Material </th>
                                             <th style="width: 10%"> Estatus </th>
                                             <th style="width: 30%"> Corte </th>
-                                            <th style="width: 15%"> Acciones </th>
+                                            <th style="width: 18%"> Acciones </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -135,23 +135,23 @@
                                                 <div class="row"> 
                                                     <div class="col-lg-4 text-left form-group pr-1" v-if="c.material_id == 1 || c.material_id == 2 || c.material_id == 4 || c.material_id == 5">
                                                         <small class="bold">Largo</small>
-                                                        <input readonly class="form-control text-center" type="text"  v-model="c.largo">
+                                                        <input class="form-control text-center" type="text"  v-model="c.largo">
                                                     </div>
                                                     <div class="col-lg-4 text-left form-group px-1" v-if="c.material_id == 1 || c.material_id == 2 || c.material_id == 4 || c.material_id == 5">
                                                         <small class="bold">Ancho</small>
-                                                        <input readonly class="form-control text-center" type="text"  v-model="c.ancho">
+                                                        <input class="form-control text-center" type="text"  v-model="c.ancho">
                                                     </div>
                                                     <div class="col-lg-4 text-left form-group px-1" v-if="c.material_id == 1 || c.material_id == 2 || c.material_id == 5">
                                                         <small class="bold">Espesor</small>
-                                                        <input readonly class="form-control text-center" type="text"  v-model="c.espesor">
+                                                        <input class="form-control text-center" type="text"  v-model="c.espesor">
                                                     </div>
                                                     <div class="col-lg-4 text-left form-group px-1" v-if="c.material_id == 3">
                                                         <small class="bold">Diametro</small>
-                                                        <input readonly class="form-control text-center" type="text"  v-model="c.diametro">
+                                                        <input class="form-control text-center" type="text"  v-model="c.diametro">
                                                     </div>
                                                     <div class="col-lg-4 text-left form-group pl-1" v-if="c.material_id == 3">
                                                         <small class="bold">Longitud</small>
-                                                        <input readonly class="form-control text-center" type="text"  v-model="c.longitud">
+                                                        <input class="form-control text-center" type="text"  v-model="c.longitud">
                                                     </div>
                                                 </div> 
                                             </td>
@@ -169,9 +169,10 @@
                                                 <button :disabled="c.cancelado || c.estatus_corte == 'paro' || c.estatus_corte == 'inicial' || c.estatus_corte == 'finalizado' " class=" mt-1 btn btn-default btn-sm" @click="finalizarCorte(c.id)"><i class="far fa-check-circle"></i> Finalizar</button>
                                             </td>
                                             <td>
-                                                <button @click="verModalRuta(c.id)" class="mt-1 btn btn-default btn-sm"><i class="fa fa-eye"></i> Ver ruta </button>
-                                                <button v-if="c.estatus_corte != 'paro'" @click="registrarParo(c.id)" :disabled="c.estatus_corte == 'finalizado'" class="mt-1 btn btn-danger btn-sm"><i class="fa fa-stop-circle"></i> Iniciar paro</button>
-                                                <button  v-else @click="eliminarParo(c.id)" :disabled="c.estatus_corte == 'finalizado'" class="mt-1 btn btn-danger btn-sm"><i class="fa fa-play-circle"></i> Reanudar operacion</button>
+                                                <button @click="verModalRuta(c.id)" class="mt-1 btn  btn-default btn-sm"><i class="fa fa-eye"></i> Ver ruta </button>
+                                                <button :disabled="loading_button || c.estatus_corte == 'finalizado'" @click="actualizarMedidasComponente(c.id)" class="mt-1 btn  btn-sm"><i class="fa fa-save"></i> Actualizar medidas </button>
+                                                <button v-if="c.estatus_corte != 'paro'" @click="registrarParo(c.id)" :disabled="c.estatus_corte == 'finalizado'" class="mt-1 btn  btn-danger btn-sm"><i class="fa fa-stop-circle"></i> Iniciar paro</button>
+                                                <button  v-else @click="eliminarParo(c.id)" :disabled="c.estatus_corte == 'finalizado'" class="mt-1 btn  btn-danger btn-sm"><i class="fa fa-play-circle"></i> Reanudar operacion</button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -543,6 +544,40 @@
             }
         },
         methods:{
+            actualizarMedidasComponente(id) {
+                let t = this;
+                let c = t.componentes.find(obj => obj.id == id);
+
+                if ([1, 2, 4, 5].includes(c.material_id)) {
+                    if (!c.largo || !c.ancho) {
+                        swal('Campos obligatorios', 'Debes ingresar largo y ancho.', 'info');
+                        return;
+                    }
+                }
+
+                if ([1, 2, 5].includes(c.material_id)) {
+                    if (!c.espesor) {
+                        swal('Campos obligatorios', 'Debes ingresar espesor.', 'info');
+                        return;
+                    }
+                }
+
+                if (c.material_id === 3) {
+                    if (!c.diametro || !c.longitud) {
+                        swal('Campos obligatorios', 'Debes ingresar diámetro y longitud.', 'info');
+                        return;
+                    }
+                }
+
+                t.loading_button = true;
+                axios.put(`/api/actualizar-medidas-componente/${id}`, c).then(response => {
+                    if (response.data.success) {
+                        t.fetchComponentes(t.selectedHerramental);
+                        swal('Medidas actualizadas', 'Las medidas del componente han sido actualizadas exitosamente.', 'success');
+                    }
+                    t.loading_button = false;
+                });
+            },
             eliminarParo(id){
                 let t = this;
                  axios.put(`/api/eliminar-paro/${id}/corte_paro`).then(response => {

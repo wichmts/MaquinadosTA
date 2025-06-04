@@ -72,7 +72,15 @@
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> COMPONENTES </a>
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in componentes" @click="fetchComponente(obj.id)">
                                     <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
-                                    <span class="underline-hover">@{{obj.nombre}}</span>
+                                    <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp;
+                                    <small 
+                                        v-if="obj.programado == true" 
+                                        :key="'componente-listo-' + obj.id" 
+                                        class="cursor-info text-success fa fa-check-circle" 
+                                        data-toggle="tooltip" 
+                                        data-placement="bottom" 
+                                        title="Componente liberado" >
+                                    </small>
                                 </a>
                             </div>
 
@@ -128,7 +136,7 @@
                             <div class="col-sm-6" style="border-left: 1px solid  #ededed">
                                 <div class="row">
                                     <div class="col-xl-6" v-if="selectedComponente">
-                                        <button class="btn btn-block" :disabled="componente.programado == true || componente.programador_id != user_id" @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR</button>
+                                        <button class="btn btn-block" :disabled="!puedeEditarse()" @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR</button>
                                     </div>
                                     <div class="col-xl-6" v-if="selectedComponente">
                                         <button class="btn btn-success btn-block" @click="liberar()" :disabled="componente.programado == true || componente.programador_id != user_id">
@@ -221,7 +229,7 @@
                                     </div>
                                     <div class="col-xl-10 text-center mr-0 pr-0" v-if="m.requiere_programa">
                                         <input
-                                            :disabled="componente.programado == true || componente.programador_id != user_id"
+                                            :disabled="!puedeEditarse()"
                                             class="input-file"
                                             :id="'archivo-' + m.maquina_id + '-' + index"
                                             type="file"
@@ -592,9 +600,31 @@
                 }
 
                 return totalMinutos;
-            }
+            },
         },
         methods: {
+            puedeEditarse(){
+                if(this.componente.programador_id != this.user_id) return false;
+                if(this.componente.programado == true && this.cincoMinutosPasaron()) return false;
+                return true;
+            },
+            cincoMinutosPasaron() {
+                let fecha_actual = "{{ now()->toDateTimeString() }}";
+                console.log(fecha_actual);
+                console.log(this.componente.fecha_programado)
+
+                if (!this.componente.fecha_programado || !fecha_actual) {
+                    return true;
+                }
+
+               // Parsear ambas fechas
+                const fechaProgramado = new Date(this.componente.fecha_programado.replace(' ', 'T'));
+                const fechaActual = new Date(fecha_actual.replace(' ', 'T'));
+
+                const diferenciaMs = fechaActual - fechaProgramado;
+
+                return diferenciaMs > (5 * 60 * 1000);
+            },
             incluirMaquina(maquina_id) {
                 let indiceMaquina = this.componente.maquinas.findIndex(
                     (m) => m.maquina_id === maquina_id
@@ -1247,6 +1277,9 @@
                     console.error('Error fetching componentes:', error);
                 } finally {
                     this.cargando = false;
+                    Vue.nextTick(function() {
+                        $('[data-toggle="tooltip"]').tooltip();
+                    })
                 }
             },
             async liberar() {

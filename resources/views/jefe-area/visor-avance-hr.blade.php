@@ -335,12 +335,11 @@
                                 <div class="col-lg-12 accordion" id="accordionComponentes" v-if="infoComponentes.time && infoComponentes.time.length > 0">
                                     <div class="card" v-for="(component, index) in infoComponentes.time.slice().reverse()" :key="component.version" style="border-radius: 20px !important">
                                         <!-- Cabecera del acordeón -->
-                                        <div class="card-header cursor-pointer" :id="'heading-' + component.version" :class="{'bg-success text-white': component.type == 'normal', 'bg-dark text-white': component.type == 'rework'}" data-toggle="collapse"  :data-target="'#collapse-' + component.version"  :aria-expanded="index === 0"  :aria-controls="'collapse-' + component.version">
+                                        <div class="card-header cursor-pointer" :id="'heading-' + component.version" :class="{'bg-success text-white': component.type == 'normal', 'bg-dark text-white': component.type == 'rework'}" data-toggle="collapse"  :data-target="'#collapse-' + component.version"  :aria-expanded="componenteIdSeleccionado ? component.info?.id == componenteIdSeleccionado : index === 0"  :aria-controls="'collapse-' + component.version">
                                             <h5 class="bold"> Version @{{ component.version }} &nbsp;&nbsp;  <small>(@{{component.dia_inicio}} Hrs. - @{{component.dia_termino}} Hrs.)</small></h5>
                                         </div>
-        
                                         <!-- Contenido colapsable -->
-                                        <div :id="'collapse-' + component.version" class="collapse" :class="{ show: index === 0 }" :aria-labelledby="'heading-' + component.version" data-parent="#accordionComponentes">
+                                        <div :id="'collapse-' + component.version" class="collapse" :class="{ show: componenteIdSeleccionado ? component.info?.id == componenteIdSeleccionado : index === 0 }" :aria-labelledby="'heading-' + component.version" data-parent="#accordionComponentes">
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-lg-9" style="border-right: 1px solid #ededed">
@@ -898,7 +897,8 @@
             pruebasProceso: [],
             pruebasDiseno: [],
             prueba: {},
-            solicitudesEnsamble: []
+            solicitudesEnsamble: [],
+            componenteIdSeleccionado: null,
         },
         mounted: async function () {
             let t = this;
@@ -1341,6 +1341,9 @@
                 }
                 if(t.infoComponentes.componente_id > 0){
                     $('#modalComponente').modal('show');
+                    $('#modalComponente').on('hidden.bs.modal', function () {
+                        t.componenteIdSeleccionado = null;
+                    });
                 }
             },  
             getTaskStyle(segment, day) {
@@ -1540,6 +1543,7 @@
                 const clienteId = queryParams.get('c');
                 const proyectoId = queryParams.get('p');
                 const herramentalId = queryParams.get('h');
+                const componenteId = queryParams.get('co');
 
                 try {
                     if (anioId) {
@@ -1553,7 +1557,18 @@
                     }
                     if (herramentalId) {
                         await this.fetchComponentes(herramentalId);
+
+                        if (componenteId) {
+                            let task = this.tasks.find(t => 
+                                t.time && Array.isArray(t.time) && t.time.some(time => time.info?.id == componenteId)
+                            );
+                           if (task) {
+                                this.componenteIdSeleccionado = componenteId;
+                                this.verInformacion(task);
+                            }
+                        }
                     }
+
                 } catch (error) {
                     console.error("Error navigating from URL parameters:", error);
                 }

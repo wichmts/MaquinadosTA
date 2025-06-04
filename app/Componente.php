@@ -216,6 +216,7 @@ class Componente extends Model
     }
     public function toArray(){
   		$data = parent::toArray();
+        $data['fecha_real_liberada'] = $this->fecha_real;
         $data['material_nombre'] = $this->material ? $this->material->nombre : '';
         $data['archivo_2d_public'] = $this->archivo_2d ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->archivo_2d : '';
         $data['archivo_3d_public'] = $this->archivo_3d ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->archivo_3d : '';

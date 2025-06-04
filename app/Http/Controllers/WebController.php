@@ -20,6 +20,11 @@ class WebController extends Controller
             return view('finanzas.finanzas-py');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
+     public function puestos(){
+        if (auth()->user()->hasRole('FINANZAS'))
+            return view('finanzas.puestos');
+        return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
     public function finanzasHR(){
         if (auth()->user()->hasRole('FINANZAS'))
             return view('finanzas.finanzas-hr');
