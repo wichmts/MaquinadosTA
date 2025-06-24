@@ -180,7 +180,7 @@
                                 </select>
                             </div>
                             <div class="form-group col-md-4">
-                                <label class="bold">Correo electronico <span style="color: red">*</span></label>
+                                <label class="bold">Correo electronico</label>
                                 <input placeholder="nombre@mail.com" class="form-control" type="email" v-model="usuario.email"/>
                             </div>
                             <div class="form-group col-xl-4">
@@ -188,7 +188,7 @@
                                 <input class="form-control text-center" placeholder="-----" type="text" style="font-weight: bold; letter-spacing: 2px" v-model="usuario.codigo_acceso"/>
                             </div>
                             <div class="col-xl-4 form-group mt-2">
-                                <label class="bold">Seleccionar puesto del usuario <span style="color: red">*</span></label>
+                                <label class="bold">Seleccionar puesto del usuario</label>
                                 <ul style="height: 300px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border mt-0">
                                     <li v-for="r in puestos" class="dropdown-item" :class="{ roleSeleccionado: usuario.puesto_id == r.id}" @click="seleccionarPuesto(r.id)"><i class="fa fa-check-circle" v-if="usuario.puesto_id == r.id"></i> @{{r.nombre}}</li>
                                 </ul>
@@ -322,14 +322,9 @@
                 });
             },
             guardar: function(){
-                let t = this;
+            let t = this;
                if (!t.usuario.nombre || t.usuario.nombre.trim() === '') {
                     swal('Campo obligatorio', 'El nombre es obligatorio.', 'info');
-                    return;
-                }
-
-                if (!t.usuario.email || !/\S+@\S+\.\S+/.test(t.usuario.email)) {
-                    swal('Campo obligatorio', 'El correo electrónico es obligatorio y debe tener un formato válido.', 'info');
                     return;
                 }
 
@@ -344,11 +339,13 @@
                     return;
                 }
 
-                if(!t.isEmail(t.usuario.email))
-                {
-                    swal('Verifique el correo electronico', 'Verifique que el correo electronico que proporciono sea valido.', 'info');
-                    return;
+                if (t.usuario.email && t.usuario.email.trim() !== '') {
+                    if (!t.isEmail(t.usuario.email)) {
+                        swal('Verifique el correo electrónico', 'Verifique que el correo electrónico que proporcionó sea válido.', 'info');
+                        return;
+                    }
                 }
+
                 t.loading_button = true;
                 t.usuario.permisos = [];
                 t.permisos.map(obj => {

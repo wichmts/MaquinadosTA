@@ -21,6 +21,8 @@
     </div>
     @endif
 
+
+
     <div class="col-xl-12" v-show="cargando">
         <div style="margin-top: 200px; max-width: 100% !important; margin-bottom: auto; text-align:center; letter-spacing: 2px">
             <h5 class="mb-5">CARGANDO...</h5>
@@ -139,7 +141,7 @@
                                         <button class="btn btn-block" :disabled="!puedeEditarse()" @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR</button>
                                     </div>
                                     <div class="col-xl-6" v-if="selectedComponente">
-                                        <button class="btn btn-success btn-block" @click="liberar()" :disabled="componente.programado == true || componente.programador_id != user_id">
+                                        <button class="btn btn-success btn-block" @click="liberar()" :disabled="componente.estatus_programacion == 'inicial' || componente.estatus_programacion == 'detenido' || componente.programado == true || componente.programador_id != user_id">
                                             <i class="fa fa-check-double"></i>
                                             <span v-if="componente.programado == true">LIBERADO</span>
                                             <span v-else>LIBERAR</span>
@@ -165,7 +167,7 @@
 
                         <div class="row">
                             <div class="col-lg-4 px-2 my-3 d-flex justify-content-center align-items-center">
-                                <span style="font-size: 22px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="d-flex justify-content-center w-100 badge badge-warning badge-pill bold"> <i class="fa fa-cogs" style="font-size: 16px !important"></i> @{{componente.nombre}}</span>
+                                <span style="font-size: 16px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="d-flex justify-content-center w-100 badge badge-warning badge-pill bold py-3"> <i class="fa fa-cogs" style="font-size: 15px !important"></i> @{{componente.nombre}}</span>
                             </div>
                             <div class="col-lg-4 d-flex justify-content-around">
                                 <div class="d-flex align-items-center">
@@ -189,17 +191,37 @@
                         <div class="row mb-5 mt-3">
                             <div class="col-lg-4 form-group mt-3">
                                 <label class="bold">DESCRIPCION DEL TRABAJO:</label>
-                                <textarea :disabled="componente.programado == true || componente.programador_id != user_id" v-model="componente.descripcion_trabajo" class="form-control text-left px-1 py-1" style="min-height: 200px !important" placeholder="Descripcion del trabajo..."></textarea>
+                                <textarea :disabled="!puedeEditarse()" v-model="componente.descripcion_trabajo" class="form-control text-left px-1 py-1" style="min-height: 200px !important" placeholder="Descripcion del trabajo..."></textarea>
                             </div>
                             <div class="col-lg-4 form-group mt-3">
                                 <label class="bold">HERRAMIENTAS DE CORTE:</label>
-                                <textarea :disabled="componente.programado == true || componente.programador_id != user_id" v-model="componente.herramientas_corte" class="form-control text-left px-1 py-1" style="min-height: 200px !important" placeholder="Agregar herramientas de corte..."></textarea>
+                                <textarea :disabled="!puedeEditarse()" v-model="componente.herramientas_corte" class="form-control text-left px-1 py-1" style="min-height: 200px !important" placeholder="Agregar herramientas de corte..."></textarea>
                             </div>
-                            <div class="col-lg-4 form-group mt-3" v-if="componente.programado != true && componente.programador_id == user_id">
+                            <div class="col-lg-4 form-group mt-3" >
                                 <label class="bold">SELECCIONAR MAQUINA(S):</label>
-                                <ul style="height: 200px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border">
-                                    <li v-for="m in maquinas" class="dropdown-item" :class="{ maquinaSeleccionada: existeMaquina(m.id)}" @click="incluirMaquina(m.id)"><i class="fa fa-check-circle" v-if="existeMaquina(m.id)"></i> @{{m.nombre}}</li>
+                                <ul
+                                    style="height: 200px !important; overflow-y: scroll"
+                                    :class="[
+                                        'dropdown-menu',
+                                        'show',
+                                        'w-100',
+                                        'position-static',
+                                        'border',
+                                        { 'disabled-ul': !puedeEditarse() }
+                                    ]">
+                                    <li
+                                        v-for="m in maquinas"
+                                        :class="[
+                                            'dropdown-item',
+                                            { 'disabled-item': !puedeEditarse() },
+                                            { 'maquinaSeleccionada': existeMaquina(m.id) }
+                                        ]"
+                                        @click="puedeEditarse() && incluirMaquina(m.id)">
+                                        <i class="fa fa-check-circle" v-if="existeMaquina(m.id)"></i>
+                                        @{{ m.nombre }}
+                                    </li>
                                 </ul>
+
                             </div>
                         </div>
 
@@ -251,7 +273,7 @@
                                         </small>
                                     </div>
                                     <div class="col-xl-2 text-center ml-0 pl-0" v-if="componente.programado != true && componente.programador_id == user_id  && m.requiere_programa">
-                                        <button class="btn btn-block btn-link my-0" @click="eliminarArchivo(m, index)">
+                                        <button class="btn btn-block btn-link my-0" @click="eliminarArchivo(m, index)" :disabled="!puedeEditarse()">
                                             <i class="fa fa-times-circle text-danger" style="font-size: 20px !important"></i>
                                         </button>
                                     </div>
@@ -478,6 +500,14 @@
                     horas: 0,
                     minutos: 0,
                     incluir: false
+                },
+                {
+                    id: 11,
+                    prioridad: 11,
+                    nombre: 'Marcar',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
                 }
             ],
             tasks: [],
@@ -605,27 +635,28 @@
         methods: {
             puedeEditarse(){
                 if(this.componente.programador_id != this.user_id) return false;
-                if(this.componente.programado == true && this.cincoMinutosPasaron()) return false;
+                if(this.componente.programado == true || this.componente.estatus_programacion == 'inicial' || this.componente.estatus_programacion == 'detenido') return false;
                 return true;
             },
-            cincoMinutosPasaron() {
-                let fecha_actual = "{{ now()->toDateTimeString() }}";
-                console.log(fecha_actual);
-                console.log(this.componente.fecha_programado)
+            // cincoMinutosPasaron() {
+            //     let fecha_actual = "{{ now()->toDateTimeString() }}";
+            //     console.log(fecha_actual);
+            //     console.log(this.componente.fecha_programado)
 
-                if (!this.componente.fecha_programado || !fecha_actual) {
-                    return true;
-                }
+            //     if (!this.componente.fecha_programado || !fecha_actual) {
+            //         return true;
+            //     }
 
-               // Parsear ambas fechas
-                const fechaProgramado = new Date(this.componente.fecha_programado.replace(' ', 'T'));
-                const fechaActual = new Date(fecha_actual.replace(' ', 'T'));
+            //    // Parsear ambas fechas
+            //     const fechaProgramado = new Date(this.componente.fecha_programado.replace(' ', 'T'));
+            //     const fechaActual = new Date(fecha_actual.replace(' ', 'T'));
 
-                const diferenciaMs = fechaActual - fechaProgramado;
+            //     const diferenciaMs = fechaActual - fechaProgramado;
 
-                return diferenciaMs > (5 * 60 * 1000);
-            },
+            //     return diferenciaMs > (5 * 60 * 1000);
+            // },
             incluirMaquina(maquina_id) {
+                let t = this;
                 let indiceMaquina = this.componente.maquinas.findIndex(
                     (m) => m.maquina_id === maquina_id
                 );
@@ -661,20 +692,22 @@
                     }
 
                     Vue.nextTick(function() {
-                        document.querySelector("html").classList.add('js');
-                        let fileInput = document.querySelector(".input-file");
-                        let button = document.querySelector(".input-file-trigger");
-
-                        button.addEventListener("keydown", function(event) {
-                            if (event.keyCode == 13 || event.keyCode == 32) {
+                        if(t.componente.maquinas.length > 0 && t.componente.maquinas.some(m => m.requiere_programa == 1)) {
+                            document.querySelector("html").classList.add('js');
+                            let fileInput = document.querySelector(".input-file");
+                            let button = document.querySelector(".input-file-trigger");
+    
+                            button.addEventListener("keydown", function(event) {
+                                if (event.keyCode == 13 || event.keyCode == 32) {
+                                    fileInput.focus();
+                                }
+                            });
+    
+                            button.addEventListener("click", function(event) {
                                 fileInput.focus();
-                            }
-                        });
-
-                        button.addEventListener("click", function(event) {
-                            fileInput.focus();
-                            return false;
-                        });
+                                return false;
+                            });
+                        }
                     });
                 }
             },
@@ -748,6 +781,14 @@
                         horas: 0,
                         minutos: 0,
                         incluir: false
+                    },
+                     {
+                        id: 11,
+                        prioridad: 11,
+                        nombre: 'Marcar',
+                        horas: 0,
+                        minutos: 0,
+                        incluir: false
                     }
                 ];
 
@@ -789,7 +830,7 @@
                     console.error('Error fetching componente:', error);
                 } finally {
                     this.cargando = false;
-                    if (this.componente.maquinas.length > 0) {
+                    if (this.componente.maquinas.length > 0 && this.componente.maquinas.some(m => m.requiere_programa == 1)) {
                         document.querySelector("html").classList.add('js');
                         let fileInput = document.querySelector(".input-file")
                         let button = document.querySelector(".input-file-trigger")

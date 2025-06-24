@@ -346,7 +346,7 @@
                             </div>    
                             <div v-if="!cargandoMenu && menuStep == 2">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
-                                <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)" v-if="obj.nombre != 'ORDENES EXTERNAS'">
+                                <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)" v-if="obj.nombre != 'ORDENES EXTERNAS' && obj.nombre != 'REFACCIONES'">
                                     <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
                                     <span class="underline-hover">@{{obj.nombre}}</span> 
                                 </a>
@@ -388,21 +388,29 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xl-9">
+                            <div class="col-lg-8">
                                 <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE MATRICERO</h2>
                             </div>
-                            <div class="col-xl-3">
-                                <button class="btn btn-success btn-block" @click="liberarHerramental()" v-if="selectedHerramental && herramental && herramental.estatus_ensamble == 'proceso'"><i class="fa fa-check-double"></i> LIBERAR HERRAMENTAL </button>
+                            <div class="col-lg-2" v-if="selectedComponente && herramental.estatus_ensamble != 'checklist' && herramental.estatus_ensamble != 'documento' && herramental.estatus_ensamble != 'finalizado'">
+                                <button :disabled="herramental.estatus_ensamble == 'proceso'" class=" mt-1 btn btn-default btn-block" @click="cambiarEstatusHerramental(herramental.id, 'proceso')"><i class="far fa-play-circle"></i> Iniciar ensamble</button>
                             </div>
+                            <div class="col-lg-2" v-if="selectedComponente && herramental.estatus_ensamble != 'checklist' && herramental.estatus_ensamble != 'documento' && herramental.estatus_ensamble != 'finalizado'">
+                                <button :disabled="herramental.estatus_ensamble == 'inicial'" class=" mt-1 btn btn-default btn-block" @click="cambiarEstatusHerramental(herramental.id, 'inicial')"><i class="far fa-pause-circle"></i> Pausar ensamble</button>
+                            </div>
+                            {{-- <div class="col-lg-4" v-if="selectedHerramental && herramental && herramental.estatus_ensamble == 'finalizado'">
+                                <button class="btn btn-success btn-block" @click="liberarHerramental()" ><i class="fa fa-check-double"></i> LIBERAR HERRAMENTAL </button>
+                            </div> --}}
                         </div>
                         <hr>
                         <div class="col-xl-12" v-if="!selectedHerramental">
                             <h5 class="text-muted my-4"> SELECCIONE UN HERRAMENTAL PARA COMENZAR SU ENSAMBLE</h5>
                         </div>
                         <div class="row mt-3" v-else>
-                            <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'inicial'">
+                            
+                            {{-- Documento --}}
+                            <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'documento'">
                                 <div class="row">
-                                    <h5 class="bold col-xl-12" style="letter-spacing: 1px">Para comenzar el ensamble del herramental @{{herramental.nombre}} es necesario cargar el formato solicitado:</h5>
+                                    <h5 class="bold col-xl-12" style="letter-spacing: 1px">Para liberar el herramental <strong>@{{herramental.nombre}}</strong>, es necesario completar y cargar el siguiente formato:</h5>
                                     <div class="col-xl-4">
                                         <input
                                             class="input-file"
@@ -412,14 +420,63 @@
                                             style="display: none;"
                                         />
                                         <label tabindex="0" for="archivo2" class="input-file-trigger col-12 text-center">
-                                            <i class="fa fa-upload"></i> CARGAR FORMATO F71-03 ANEXO 1
+                                            <i class="fa fa-upload"></i> CARGAR FORMATO F71-03 ANEXO 1.1
                                         </label>
                                     </div>
                                 </div>
                             </div>
-        
-                            {{-- vista de componente --}}
-                            <div class="col-xl-12" v-show="herramental.estatus_ensamble == 'proceso'">
+                            
+                            {{-- Checklist  --}}
+                            <div class="col-lg-12" v-show="herramental.estatus_ensamble == 'checklist'">
+                                <div class="row mb-3 pr-3">
+                                    <div class="col-lg-9">
+                                        <h3 class="bold pb-1 mb-0" style="letter-spacing: 1px">Lista de componentes para @{{herramental.nombre}}</h3>
+                                        <h5 class="py-1 my-0" style="letter-spacing: 1px; opacity: .6" >Verifique todos los componentes esten ensamblados y si hubo componentes que no se utilizaron:</h5>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <button class="btn btn-success btn-block" @click="guardarChecklist()"><i class="fa fa-save"></i> GUARDAR CAMBIOS</button>
+                                    </div>
+                                </div>
+                                <div class="row" >
+                                    <div class="col-lg-12 table-responsive" style="height: 55vh; overflow-y:scroll">
+                                        <table class="table table-bordered">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th style="text-transform: none !important">¿Ensamblado?</td>
+                                                    <th>Componente</td>
+                                                    <th>Procedencia </td>
+                                                    <th style="text-transform: none !important">Cantidad estimada</td>
+                                                    <th style="text-transform: none !important">Unidades sobrantes</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(componente, index) in herramental.checklist" :key="index">
+                                                    <td>@{{index + 1}}</td>
+                                                    <td>
+                                                        <div class="form-check" :key="index">
+                                                            <label class="form-check-label">
+                                                                <input class="form-check-input" type="checkbox" :id="'componente-' + index" v-model="componente.checked">
+                                                                <span class="form-check-sign"></span>
+                                                            </label>
+                                                        </div>    
+                                                    </td>
+                                                    <td class="bold">@{{componente.nombre}}</td>
+                                                    <td>@{{componente.es_compra ? 'COMPRAS' : 'FABRICACIÓN'}}</td>
+                                                    <td>@{{componente.cantidad}}</td>
+                                                    <td>
+                                                        <input v-if="componente.es_compra" class="form-control text-center" style="border: none !important"  type="number" step="1" min="0" :max="componente.cantidad" v-model="componente.cantidad_sobrantes">
+                                                        <span class="text-muted" v-else><small>No aplica en componentes de fabricación</small></span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Ensamble --}}
+                            <div class="col-xl-12" v-show="componentes.length > 0 && herramental.estatus_ensamble == 'inicial' || herramental.estatus_ensamble == 'proceso'">
                                 <div class="row">
                                     <div class="col-xl-3" style="border-right: 2px dashed #d6d6d6;">  
                                          <h5 class="bold" style="letter-spacing: 1px">Seleccionar componente a ensamblar: </h5>
@@ -451,7 +508,7 @@
                                                     <div class="col-xl-6 text-center form-group" >
                                                         <label class="bold ">¿COMPONENTE ENSAMBLADO?</label>
                                                         <div class="checkbox-wrapper-26 mt-4">
-                                                            <input type="checkbox" :id="'_checkbox-26' + componente.id" v-model="componente.ensamblado" @change="cambiarEstatusComponente()" :key="'checkbox-' + componente.id">
+                                                            <input :disabled="herramental.estatus_ensamble == 'inicial'" type="checkbox" :id="'_checkbox-26' + componente.id" v-model="componente.ensamblado" @change="cambiarEstatusComponente()" :key="'checkbox-' + componente.id">
                                                             <label :for="'_checkbox-26' + componente.id">
                                                                 <div class="tick_mark"></div>
                                                             </label>
@@ -463,14 +520,14 @@
                                                             <img :src="'/storage/fotos_matricero/' + componente.foto_matricero" style="border-radius: 10px; width: 100%; height: auto; object-fit: cover" alt="">
                                                         </a>
                                                         <img v-else src="{{ asset('paper/img/no-image.png') }}" style="border-radius: 10px; width: 100%; height: 180px; object-fit: cover" alt="">
-                                                        <button :disabled="componente.ensamblado == true" class="btn btn-block mb-0" @click="abrirCamara()"><i class="fa fa-camera"></i> <span v-if="componente.foto_matricero">RETOMAR FOTO</span><span v-else>TOMAR FOTO</span></button>
+                                                        <button :disabled="componente.ensamblado == true || herramental.estatus_ensamble == 'inicial'" class="btn btn-block mb-0" @click="abrirCamara()"><i class="fa fa-camera"></i> <span v-if="componente.foto_matricero">RETOMAR FOTO</span><span v-else>TOMAR FOTO</span></button>
                                                         <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;" @change="procesarFoto($event)">
                                                     </div>
                                                     <div class="col-xl-6">
-                                                        <button :disabled="componente.ensamblado == true || componente.es_compra == true" @click="abrirSolicitud('ajuste')"  class="btn btn-block btn-dark"><i class="fa fa-exclamation-circle"></i> SOLICITAR AJUSTE</button>
+                                                        <button :disabled="componente.ensamblado == true || componente.es_compra == true || herramental.estatus_ensamble == 'inicial'" @click="abrirSolicitud('ajuste')"  class="btn btn-block btn-dark"><i class="fa fa-exclamation-circle"></i> SOLICITAR AJUSTE</button>
                                                     </div>
                                                     <div class="col-xl-6">
-                                                        <button :disabled="componente.ensamblado == true" @click="abrirSolicitud('rechazo')"  class="btn btn-block btn-danger"><i class="fa fa-times-circle"></i> RECHAZAR COMPONENTE</button>
+                                                        <button :disabled="componente.ensamblado == true || herramental.estatus_ensamble == 'inicial'" @click="abrirSolicitud('rechazo')"  class="btn btn-block btn-danger"><i class="fa fa-times-circle"></i> RECHAZAR COMPONENTE</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -496,6 +553,10 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-xl-12 my-5 text-center" v-show="componentes.length == 0">
+                                <small class="text-muted" style="letter-spacing: 1px">ESTE HERRAMENTAL AUN NO TIENE COMPONENTES PARA ENSAMBLE.</small>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -579,6 +640,53 @@
             },
         },
         methods:{
+            cambiarEstatusHerramental(herramentalId, nuevoEstatus){
+                let t = this
+                axios.put(`api/ensamble/cambio-estatus/${herramentalId}/${t.componente.id}`, {estatus: nuevoEstatus} ).then(response => {
+                    if(response.data.success){
+                        t.herramental.estatus_ensamble = nuevoEstatus;
+                    }
+                })
+            },
+            async guardarChecklist(){
+                let t = this;
+                
+                let invalid = t.herramental.checklist.some(element => {
+                    if (!element.es_compra) return false;
+
+                    let sobrantes = parseInt(element.cantidad_sobrantes);
+                    let estimados = parseInt(element.cantidad);
+
+                    return (
+                        element.cantidad_sobrantes === '' ||
+                        isNaN(sobrantes) ||
+                        sobrantes < 0 ||
+                        sobrantes > estimados
+                    );
+                });
+                if (invalid) {
+                    swal(
+                        'Verifica la información',
+                        'Los campos de sobrantes no pueden estar vacíos, negativos o exceder los estimados.',
+                        'error'
+                    );
+                    return;
+                }
+                
+                this.loading_button = true;
+                try {
+                    const response = await axios.post(`/api/herramental/${this.selectedHerramental}/checklist`, t.herramental.checklist);
+                    swal('Correcto', 'Checklist guardado correctamente', 'success');
+                    await this.fetchHerramental(this.selectedHerramental);
+                    this.fetchComponentes(this.selectedHerramental);
+
+                } catch (error) {
+                    console.error('Error guardando checklist:', error);
+                    swal('Error', 'Error al guardar el checklist', 'error');
+                } finally {
+                    this.loading_button = false;
+                }
+            },
             async liberarHerramental(){
                 let t = this;
             
@@ -728,8 +836,9 @@
                             'Content-Type': 'multipart/form-data'
                         }
                     });
-                    await this.fetchComponentes(this.selectedHerramental);
-                    swal('Correcto', 'Formato cargado correctamente', 'success');
+                    swal('Herramental liberado', 'El herramental se liberó correctamente.', 'success').then(() => {
+                        window.location.href = '/matricero';
+                    });
                 } catch (error) {
                     console.error('Error uploading file:', error);
                     swal('Error', 'Error al cargar el archivo', 'error');
@@ -1107,11 +1216,15 @@
             async fetchComponentes(herramentalId) {
                 this.cargando = true
                 this.selectedHerramental = herramentalId;
+                this.selectedComponente = null;
+                this.ruta.componente = null;
+
+                
                 await this.fetchHerramental(herramentalId);
                 // this.herramental = this.herramentales.find(obj => obj.id == herramentalId);
                 this.ruta.herramental = this.herramental?.nombre;
 
-                if(this.herramental.estatus_ensamble == 'inicial'){
+                if(this.herramental.estatus_ensamble == 'documento'){
                     Vue.nextTick(function() {
                         document.querySelector("html").classList.add('js');
                         let fileInput = document.querySelector(".input-file");
@@ -1139,10 +1252,13 @@
                             cantidad: obj.cantidad,
                             nombre: obj.nombre,
                             es_compra: obj.es_compra,
-                            checked: false
+                            checked: false,
+                            cantidad_sobrantes: 0,
                         };
                     });
-                    if(this.herramental.estatus_ensamble == 'proceso' && this.componentes.length > 0 && !this.selectedComponente){
+
+                    // seleccionar el primer componente al cargar la vista de ensamble:
+                    if((this.herramental.estatus_ensamble == 'inicial' || this.herramental.estatus_ensamble == 'proceso') && this.componentes.length > 0){
                         this.fetchComponente(this.componentes[0].id);
                     }
 
@@ -1156,6 +1272,7 @@
                         });
                     }
                     this.herramental.checklist = checklist;
+
                 } catch (error) {
                     console.error('Error fetching componentes:', error);
                 } finally {

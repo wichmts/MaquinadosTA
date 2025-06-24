@@ -23,6 +23,7 @@ class CreateSeguimientoTiemposTable extends Migration
             $table->string('tipo_paro')->nullable();
             $table->text('comentarios_paro')->nullable();
             $table->integer('componente_id');
+            $table->integer('herramental_id')->nullable();
             $table->integer('usuario_id');
             $table->integer('fabricacion_id')->nullable();
             $table->timestamps();

@@ -155,6 +155,10 @@ class UsersTableSeeder extends Seeder
         $material->nombre = 'SOLERA';
         $material->save();
 
+        $material = new Material();
+        $material->nombre = 'OTRO';
+        $material->save();
+
 
 
     }

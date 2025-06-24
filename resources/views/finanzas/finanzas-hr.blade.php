@@ -55,7 +55,7 @@
                             </div>
                             <div v-if="!cargandoMenu && menuStep == 2">
                                 <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
-                                <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)" v-if="obj.nombre != 'ORDENES EXTERNAS'">
+                                <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)" v-if="obj.nombre != 'ORDENES EXTERNAS' && obj.nombre != 'REFACCIONES'">
                                     <i class="nc-icon" style="top: -3px !important"><img height="20px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
                                     <span class="underline-hover">@{{obj.nombre}}</span>
                                 </a>
@@ -344,6 +344,7 @@
     var app = new Vue({
         el: '#vue-app',
         data: {
+            selectedHerramental: null,
             user_id: {{auth()->user()->id}},
             loading: false,
             cargando: false,

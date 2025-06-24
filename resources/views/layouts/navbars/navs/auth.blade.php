@@ -57,8 +57,9 @@ input:checked + .slider:before {
 }
 
 .menu-link{
-    padding-right: 20px !important;
+    /* padding-right: 20px !important; */
     border-right: 1px solid #e2e2e2;
+    /* font-size: 14px !important; */
 }
 
 .menu-link:hover{
@@ -91,127 +92,93 @@ input:checked + .slider:before {
 
         <div class="collapse navbar-collapse ml-4 bg-white" id="navigation" >     
            
-            <ul class="navbar-nav mr-auto text-center">
 
-                @if (auth()->user()->hasAnyRole(['PROCESOS', 'DIRECCION', 'JEFE DE AREA', 'PROYECTOS']))
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="/herramentales"> Herramentales </a>
-                </li>
-                @endif   
-                {{-- DIRECCION --}}
-                @if (auth()->user()->hasRole('DIRECCION'))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/usuario">USUARIOS</a>
-                </li>
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/maquina">MAQUINAS</a>
-                </li>
-                <li class="nav-item" >
-                   <a class="nav-link menu-link" href="/tiempos-maquinas">TIEMPOS MAQUINA</a>
-               </li>
-                 <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/tiempos-personal">TIEMPOS PERSONAL</a>
-                </li>
-                @endif
+            <ul class="navbar-nav mr-auto text-center d-flex flex-row  align-items-center" style="width: 100%;">
+                @php
+                    $addedRoutes = [];
+                    function addMenuItem($route, $label, $roles, &$addedRoutes) {
+                        if (!in_array($route, $addedRoutes) && auth()->user()->hasAnyRole($roles)) {
+                            echo '<li class="nav-item"><a class="nav-link menu-link" href="/' . $route . '">' . $label . '</a></li>';
+                            $addedRoutes[] = $route;
+                        }
+                    }
+                @endphp
 
-                 {{-- FINANZAS --}}
-                @if (auth()->user()->hasRole('FINANZAS'))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/finanzas-py">FINANZAS PY</a>
-                </li>
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/finanzas-hr">FINANZAS HR</a>
-                </li>
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/puestos">PUESTOS DE TRABAJO</a>
-                </li>
-                @endif
-                
-                {{-- AUXILIAR DE DISENO --}}
-                @if (auth()->user()->hasRole('AUXILIAR DE DISEÑO'))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/carga-componentes">Carga de componentes</a>
-                </li>
-                @endif
-                @if (auth()->user()->hasAnyRole(['AUXILIAR DE DISEÑO', 'DIRECCION', 'FINANZAS']))
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="/visor-avance-hr">Visor de avance</a>
-                </li>
-                @endif
-                
+
+                    {{-- DIRECCION --}}
+                @php
+                    addMenuItem('usuario', 'USUARIOS', ['DIRECCION'], $addedRoutes);
+                    addMenuItem('maquina', 'MAQUINAS', ['DIRECCION'], $addedRoutes);
+                    addMenuItem('tiempos-maquinas', 'TIEMPOS MAQUINA', ['DIRECCION'], $addedRoutes);
+                    addMenuItem('tiempos-personal', 'TIEMPOS PERSONAL', ['DIRECCION'], $addedRoutes);
+                @endphp
+
+
+                {{-- FINANZAS --}}
+                @php
+                    addMenuItem('finanzas-py', 'FINANZAS PY', ['FINANZAS'], $addedRoutes);
+                    addMenuItem('finanzas-hr', 'FINANZAS HR', ['FINANZAS'], $addedRoutes);
+                    addMenuItem('costos-hora', 'COSTOS POR HORA', ['FINANZAS'], $addedRoutes);
+                @endphp
+
+                {{-- AUXILIAR DE DISEÑO --}}
+                @php
+                    addMenuItem('carga-componentes', 'Carga de componentes', ['AUXILIAR DE DISEÑO'], $addedRoutes);
+                    addMenuItem('visor-avance-hr', 'Visor de avance', ['AUXILIAR DE DISEÑO', 'DIRECCION', 'FINANZAS', 'JEFE DE AREA', 'PROYECTOS', 'MATRICERO', 'HERRAMENTALES'], $addedRoutes);
+                @endphp
+
                 {{-- JEFE DE AREA --}}
-                @if (auth()->user()->hasRole('JEFE DE AREA'))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/enrutador">Enrutador</a>
-                </li>
-                @endif
-                
-                {{-- PROGRAMADOR --}}
-                @if (auth()->user()->hasAnyRole(['PROGRAMADOR', 'JEFE DE AREA']))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/visor-programador">Programador</a>
-                </li>
-                @endif                
-                {{-- OPERADOR --}}
-                @if (auth()->user()->hasAnyRole(['OPERADOR', 'JEFE DE AREA']))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/visor-operador">Operador</a>
-                </li>
-                @endif
+                @php
+                    addMenuItem('enrutador', 'Enrutador', ['JEFE DE AREA'], $addedRoutes);
+                    addMenuItem('visor-programador', 'Programador', ['JEFE DE AREA', 'PROGRAMADOR'], $addedRoutes);
+                    addMenuItem('visor-operador', 'Operador', ['JEFE DE AREA', 'OPERADOR'], $addedRoutes);
+                    addMenuItem('visor-pruebas', 'Pruebas', ['JEFE DE AREA', 'DISEÑO'], $addedRoutes);
+                @endphp
 
-                @if (auth()->user()->hasRole('MATRICERO'))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/matricero">Matricero</a>
-                </li>
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/visor-avance-hr">Visor avance</a>
-                </li>
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/matricero/lista-componentes">Lista de componentes</a>
-                </li>
-                @endif
-                
-                @if (auth()->user()->hasAnyRole(['DISEÑO', 'JEFE DE AREA']))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/visor-pruebas">Pruebas</a>
-                </li>
-                @endif
-                 @if (auth()->user()->hasRole(['PROCESOS']))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/pruebas-proceso">Pruebas</a>
-                </li>
-                @endif
-                @if (auth()->user()->hasAnyRole(['JEFE DE AREA', 'PROYECTOS']))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/visor-avance-hr">Visor Avance</a>
-                </li>
-                @endif
+                {{-- PROCESOS --}}
+                @php
+                    addMenuItem('pruebas-proceso', 'Pruebas', ['PROCESOS'], $addedRoutes);
+                @endphp
+
+                {{-- PROGRAMADOR --}}
+                @php
+                    addMenuItem('visor-programador', 'Programador', ['PROGRAMADOR'], $addedRoutes);
+                @endphp
+
+                {{-- OPERADOR --}}
+                @php
+                    addMenuItem('visor-operador', 'Operador', ['OPERADOR'], $addedRoutes);
+                @endphp
+
+                {{-- MATRICERO --}}
+                @php
+                    addMenuItem('matricero', 'Matricero', ['MATRICERO'], $addedRoutes);
+                    addMenuItem('matricero/lista-componentes', 'Lista de componentes', ['MATRICERO'], $addedRoutes);
+                @endphp
+                {{-- HERRAMENTALES --}}
+                @php addMenuItem('herramentales', 'Herramentales', ['PROCESOS', 'HERRAMENTALES'], $addedRoutes); @endphp
+                @php addMenuItem('matricero/lista-componentes', 'Lista de componentes', ['PROCESOS', 'HERRAMENTALES'], $addedRoutes); @endphp
                 
                 {{-- ALMACENISTA --}}
-                @if (auth()->user()->hasRole('ALMACENISTA'))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/compra-componentes">Compra de componentes</a>
-                </li>
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/almacen-mp">AlmacÉn de MP</a>
-                </li>
+                @php
+                    addMenuItem('almacen-mp', 'AlmacÉn de MP', ['ALMACENISTA'], $addedRoutes);
+                    addMenuItem('compra-componentes', 'Compra de componentes', ['ALMACENISTA'], $addedRoutes);
+                    addMenuItem('componentes-reutilizables', 'Componentes reutilizables', ['ALMACENISTA'], $addedRoutes);
+                    addMenuItem('corte', 'Corte', ['ALMACENISTA'], $addedRoutes);
+                    addMenuItem('temple', 'Temple', ['ALMACENISTA'], $addedRoutes);
+                @endphp
+
+                {{-- SOLICITUD EXTERNA --}}
+                @php
+                    addMenuItem('orden-trabajo', 'Orden de trabajo', ['SOLICITUD EXTERNA'], $addedRoutes);
+                @endphp
+
+                {{-- CENTRO DE NOTIFICACIONES --}}
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="/corte">Corte</a>
-                </li>
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="/temple">Temple</a>
-                </li>
-                @endif
-                
-                @if(auth()->user()->hasRole('SOLICITUD EXTERNA'))
-                <li class="nav-item" >
-                    <a class="nav-link menu-link" href="orden-trabajo">Orden de trabajo</a>
-                </li>
-                @endif
-                <li class="nav-item" >
                     <a class="nav-link menu-link" href="/centro-notificaciones">Centro de notificaciones</a>
                 </li>
             </ul>
+
 
             <ul class="navbar-nav ml-auto text-center">
                 <li class="nav-item dropdown btn-rotate">

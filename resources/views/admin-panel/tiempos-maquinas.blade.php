@@ -113,8 +113,56 @@
              <div class="col-lg-3 mt-3 text-center" v-for="maquina in tiempos" :key="maquina.maquina_id">
                 <h4 class="bold">@{{ maquina.maquina }}</h4>
                 <canvas :id="'grafica_' + maquina.maquina_id" width="200" height="200" class="grafica-canvas"></canvas>
+                <button @click="verTiemposParo(maquina.detalle_paros)" class="btn-block btn btn-sm mb-0 mt-1 btn-danger"><i class="fa fa-list"></i> Detalle de paros</button>
             </div>
         </div>
+
+        <div class="modal fade" id="modalParos" tabindex="-1" aria-labelledby="modalParosLabel" aria-hidden="true">
+            <div class="modal-dialog" style="min-width: 50%;">
+                <div class="modal-content" >
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="modalParosLabel"><span>DETALLE DE PAROS </span></h3>
+                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <table class="table table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th style="text-transform: none !important"> Fecha y Hora</th>
+                                            <th style="text-transform: none !important"> Tipo de paro</th>
+                                            <th style="text-transform: none !important"> Comentarios del paro</th>
+                                            <th style="text-transform: none !important"> Usuario</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="paro in detalleParos" :key="paro.id">
+                                            <td>@{{ paro.fecha_show }} @{{ paro.hora_show }}</td>
+                                            <td>@{{ paro.tipo_paro }}</td>
+                                            <td>@{{ paro.comentarios_paro }}</td>
+                                            <td>@{{ paro.usuario }}</td>
+                                        </tr>
+                                        <tr v-if="!detalleParos || detalleParos.length == 0">
+                                            <td colspan="4">No hay paros registrados para esta maquina.</td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                            </div>           
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 text-right">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar </button>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        </div>
+
     </div>
 @endsection
 
@@ -135,10 +183,14 @@
                 turno: 1,
             },
             tiempos: [],
-            graficas: []
+            graficas: [],
+            detalleParos: [],
         },
         methods:{
-            
+            verTiemposParo(paros) {
+                this.detalleParos = paros;
+                $('#modalParos').modal('show');
+            },
             async fetchTiempos() {
                 this.cargando = true
 
@@ -164,10 +216,44 @@
                     });
                 }
             },
+            obtenerCosto(minutos, costoPorHora) {
+                // Validación y conversión
+                if (typeof minutos !== 'number' || minutos < 0) {
+                    console.warn('Minutos inválidos');
+                    return '$0.00';
+                }
+
+                // Limpiar el string de costo (por si viene con símbolos como "$" o espacios)
+                if (typeof costoPorHora === 'string') {
+                    costoPorHora = costoPorHora.replace(/[^0-9.,]/g, '').replace(',', '.'); // eliminar $ y convertir , a .
+                }
+
+                // Convertir a número flotante
+                costoPorHora = parseFloat(costoPorHora);
+
+                if (isNaN(costoPorHora) || costoPorHora < 0) {
+                    console.warn('Costo por hora inválido');
+                    return '$0.00';
+                }
+
+                // Cálculo
+                const horas = Math.floor(minutos / 60);
+                const minutosRestantes = minutos % 60;
+                const costoTotal = (horas * costoPorHora) + ((minutosRestantes / 60) * costoPorHora);
+
+                // Formato moneda
+                return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(costoTotal);
+            },
             generarGrafica(maquina) {
                 let datosActiva = maquina.minutos_activa_totales;
                 let datosParo = maquina.minutos_paro_totales;
                 let datosEsperados = Math.max(0, maquina.minutos_esperados - (datosActiva + datosParo));
+
+                let etiquetas = [
+                    `Activo (${this.obtenerCosto(datosActiva, maquina.costo_hora)})`,
+                    `Paro (${this.obtenerCosto(datosParo, maquina.costo_hora)})`,
+                    `Inactivo (${this.obtenerCosto(datosEsperados, maquina.costo_hora)})`
+                ];
 
                 
                 let ctx = document.getElementById('grafica_' + maquina.maquina_id).getContext('2d');
@@ -175,7 +261,7 @@
                 let grafica = new Chart(ctx, {
                     type: 'pie',
                     data: {
-                        labels: ['Activa', 'Paro', 'Inactiva'],
+                        labels: etiquetas,
                         datasets: [{
                             label: 'Tiempo por Máquina',
                             data: [datosActiva, datosParo, datosEsperados],

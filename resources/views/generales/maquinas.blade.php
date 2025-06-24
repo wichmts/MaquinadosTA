@@ -199,6 +199,7 @@
                     {id: 8, prioridad: 8, nombre: 'Rectificar'},
                     {id: 9, prioridad: 9, nombre: 'EDM'},
                     {id: 10, prioridad: 10, nombre: 'Cortar'},
+                    {id: 11, prioridad: 11, nombre: 'Marcar'},
                 ]
         },
         methods:{ 

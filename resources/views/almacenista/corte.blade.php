@@ -133,29 +133,32 @@
                                             <td><input readonly class="form-control text-center mt-1" type="number" step="1" v-model="c.cantidad"></td>
                                             <td>
                                                 <div class="row"> 
-                                                    <div class="col-lg-4 text-left form-group pr-1" v-if="c.material_id == 1 || c.material_id == 2 || c.material_id == 4 || c.material_id == 5">
+                                                    <div class="col-lg-4 text-left form-group pr-1" v-if="c.material_id == 1  || c.material_id == 6 || c.material_id == 2 || c.material_id == 4 || c.material_id == 5">
                                                         <small class="bold">Largo</small>
-                                                        <input class="form-control text-center" type="text"  v-model="c.largo">
+                                                        <input class="form-control text-center" type="text"  disabled v-model="c.largo">
                                                     </div>
-                                                    <div class="col-lg-4 text-left form-group px-1" v-if="c.material_id == 1 || c.material_id == 2 || c.material_id == 4 || c.material_id == 5">
+                                                    <div class="col-lg-4 text-left form-group px-1" v-if="c.material_id == 1  || c.material_id == 6 || c.material_id == 2 || c.material_id == 4 || c.material_id == 5">
                                                         <small class="bold">Ancho</small>
-                                                        <input class="form-control text-center" type="text"  v-model="c.ancho">
+                                                        <input class="form-control text-center" type="text"  disabled v-model="c.ancho">
                                                     </div>
-                                                    <div class="col-lg-4 text-left form-group px-1" v-if="c.material_id == 1 || c.material_id == 2 || c.material_id == 5">
+                                                    <div class="col-lg-4 text-left form-group px-1" v-if="c.material_id == 1  || c.material_id == 6 || c.material_id == 2 || c.material_id == 5">
                                                         <small class="bold">Espesor</small>
-                                                        <input class="form-control text-center" type="text"  v-model="c.espesor">
+                                                        <input class="form-control text-center" type="text"  disabled v-model="c.espesor">
                                                     </div>
                                                     <div class="col-lg-4 text-left form-group px-1" v-if="c.material_id == 3">
                                                         <small class="bold">Diametro</small>
-                                                        <input class="form-control text-center" type="text"  v-model="c.diametro">
+                                                        <input class="form-control text-center" type="text"  disabled v-model="c.diametro">
                                                     </div>
                                                     <div class="col-lg-4 text-left form-group pl-1" v-if="c.material_id == 3">
                                                         <small class="bold">Longitud</small>
-                                                        <input class="form-control text-center" type="text"  v-model="c.longitud">
+                                                        <input class="form-control text-center" type="text"  disabled v-model="c.longitud">
                                                     </div>
                                                 </div> 
                                             </td>
-                                            <td><input readonly class="form-control text-center mt-1" type="text"  v-model="c.material_nombre"></td>
+                                            <td>
+                                                <input readonly class="form-control text-center mt-1" type="text"  v-model="c.material_nombre">
+                                                <input v-if="c.material_id == 6" readonly class="form-control text-center mt-1" type="text"  v-model="c.otro_material">
+                                            </td>
                                             <td>
                                                 <span v-if="c.estatus_corte == 'paro'" class="py-2 w-100 badge badge-danger" style="font-size: 13px">EN PARO</span>
                                                 <span v-if="c.estatus_corte == 'inicial'" class="py-2 w-100 badge badge-warning" style="font-size: 13px">POR CORTAR</span>
@@ -170,7 +173,7 @@
                                             </td>
                                             <td>
                                                 <button @click="verModalRuta(c.id)" class="mt-1 btn  btn-default btn-sm"><i class="fa fa-eye"></i> Ver ruta </button>
-                                                <button :disabled="loading_button || c.estatus_corte == 'finalizado'" @click="actualizarMedidasComponente(c.id)" class="mt-1 btn  btn-sm"><i class="fa fa-save"></i> Actualizar medidas </button>
+                                                {{-- <button :disabled="loading_button || c.estatus_corte == 'finalizado'" @click="actualizarMedidasComponente(c.id)" class="mt-1 btn  btn-sm"><i class="fa fa-save"></i> Actualizar medidas </button> --}}
                                                 <button v-if="c.estatus_corte != 'paro'" @click="registrarParo(c.id)" :disabled="c.estatus_corte == 'finalizado'" class="mt-1 btn  btn-danger btn-sm"><i class="fa fa-stop-circle"></i> Iniciar paro</button>
                                                 <button  v-else @click="eliminarParo(c.id)" :disabled="c.estatus_corte == 'finalizado'" class="mt-1 btn  btn-danger btn-sm"><i class="fa fa-play-circle"></i> Reanudar operacion</button>
                                             </td>
@@ -182,7 +185,7 @@
                     </div>
                 </div>
                 <div class="modal fade" id="modalFinalizarCorte" tabindex="-1" aria-labelledby="modalFinalizarCorteLabel" aria-hidden="true">
-                    <div class="modal-dialog" style="min-width: 35%;">
+                    <div class="modal-dialog" style="min-width: 45%;">
                         <div class="modal-content" >
                             <div class="modal-header">
                                 <h3 class="modal-title" id="modalFinalizarCorteLabel">
@@ -202,22 +205,23 @@
                                     </div>
                                     <div class="col-lg-12 form-group">
                                         <label class="bold" >Seleccione hoja <span class="text-danger">*</span></label>
-                                        <select class="form-control" v-model="movimiento.hoja_id">
+                                        <select class="form-control" v-model="movimiento.hoja_id" @change="seleccionoHoja()">
                                             <option :value="null" disabled>Seleccione la hoja de donde realizo el corte...</option>
                                             <option v-for="h in hojas" :value="h.id">
-                                                Consecutivo @{{h.consecutivo}}.-
-                                                <span v-if="movimiento.material_id == 1 || movimiento.material_id == 2 || movimiento.material_id == 5"> Espesor: @{{h.espesor}}, </span>
-                                                <span v-if="movimiento.material_id == 1 || movimiento.material_id == 2 || movimiento.material_id == 4 || movimiento.material_id == 5"> Ancho: @{{h.ancho_saldo}}, Largo: @{{h.largo_saldo}},  </span>
+                                                Consecutivo @{{h.consecutivo}} 
+                                                @{{h.material_id == 6 ? 'Material' : 'Calidad'}}: @{{h.calidad}}.-
+                                                <span v-if="movimiento.material_id == 1 || movimiento.material_id == 6  || movimiento.material_id == 2 || movimiento.material_id == 5"> Espesor: @{{h.espesor}}, </span>
+                                                <span v-if="movimiento.material_id == 1 || movimiento.material_id == 6  || movimiento.material_id == 2 || movimiento.material_id == 4 || movimiento.material_id == 5"> Ancho: @{{h.ancho_saldo}}, Largo: @{{h.largo_saldo}},  </span>
                                                 <span v-if="movimiento.material_id == 3"> Longitud: @{{h.longitud_saldo}}, Diametro: @{{h.diametro_saldo}},  </span>
                                                 <span>Peso: @{{h.peso_saldo}}</span>
                                             </option>
                                         </select>
                                     </div>
-                                    <div class="col-lg-4 form-group" v-if="movimiento.material_id == 1 || movimiento.material_id == 2 || movimiento.material_id == 4 || movimiento.material_id == 5">
+                                    <div class="col-lg-4 form-group" v-if="movimiento.material_id == 1 || movimiento.material_id == 6  || movimiento.material_id == 2 || movimiento.material_id == 4 || movimiento.material_id == 5">
                                         <label class="bold" >Largo restante (hoja) <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" v-model="movimiento.largo">
                                     </div>
-                                    <div class="col-lg-4 form-group" v-if="movimiento.material_id == 1 || movimiento.material_id == 2 || movimiento.material_id == 4 || movimiento.material_id == 5">
+                                    <div class="col-lg-4 form-group" v-if="movimiento.material_id == 1 || movimiento.material_id == 6  || movimiento.material_id == 2 || movimiento.material_id == 4 || movimiento.material_id == 5">
                                         <label class="bold" >Ancho restante (hoja) <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" v-model="movimiento.ancho">
                                     </div>
@@ -544,6 +548,15 @@
             }
         },
         methods:{
+            seleccionoHoja(){
+                let t = this
+                let hoja = t.hojas.find(obj => obj.id == t.movimiento.hoja_id);
+                t.movimiento.largo = hoja.largo_saldo;
+                t.movimiento.ancho = hoja.ancho_saldo;
+                t.movimiento.longitud = hoja.longitud_saldo;
+                t.movimiento.diametro = hoja.diametro_saldo;
+                t.movimiento.peso = hoja.peso_saldo;
+            },
             actualizarMedidasComponente(id) {
                 let t = this;
                 let c = t.componentes.find(obj => obj.id == id);
@@ -871,7 +884,8 @@
                     {id: 6, prioridad: 6, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
                     {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
                     {id: 8, prioridad: 8, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
-                    {id: 9, prioridad: 9, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
+                    {id: 9, prioridad: 9, nombre: 'EDM', horas: 0, minutos: 0, incluir: false},
+                    {id: 11, prioridad: 11, nombre: 'Marcar', horas: 0, minutos: 0, incluir: false}
                 ];
     
                 t.tasks.forEach(task => {
@@ -911,41 +925,66 @@
                 })
             },
             finalizarCorteAPI(){
-                let t = this
-                
+                let t = this;
+
+                let hoja = t.hojas.find(obj => obj.id == t.movimiento.hoja_id);
+
                 if (!t.movimiento.hoja_id) {
                     swal('Campos obligatorios', 'El campo hoja no puede estar vacío.', 'info');
                     return false;
                 }
-                 if (this.hay_retraso && !t.movimiento.motivo_retraso.trim()) {
+
+                if (t.hay_retraso && !t.movimiento.motivo_retraso.trim()) {
                     swal('Campos obligatorios', 'Debe ingresar un motivo de retraso.', 'info');
                     return false;
                 }
+
                 if (!t.movimiento.peso) {
                     swal('Campos obligatorios', 'El campo peso restante es obligatorio.', 'info');
                     return false;
                 }
-                if(t.movimiento.material_id == 1 || t.movimiento.material_id == 2 || t.movimiento.material_id == 4 || t.movimiento.material_id == 5){
-                    if(!t.movimiento.largo || !t.movimiento.ancho){
+
+                if (parseFloat(t.movimiento.peso) > parseFloat(hoja.peso_saldo)) {
+                    swal('Valor inválido', 'El peso restante no puede ser mayor al saldo disponible en la hoja.', 'warning');
+                    return false;
+                }
+
+                if (t.movimiento.material_id == 1 || t.movimiento.material_id == 6 || t.movimiento.material_id == 2 || t.movimiento.material_id == 4 || t.movimiento.material_id == 5) {
+                    if (!t.movimiento.largo || !t.movimiento.ancho) {
                         swal('Campos obligatorios', 'Los campos largo y ancho restante son obligatorios.', 'info');
                         return false;
                     }
-                }
-                 if(t.movimiento.material_id == 3){
-                    if(!t.movimiento.longitud || !t.movimiento.diametro){
-                        swal('Campos obligatorios', 'Los campos longitud y diametro restante son obligatorios.', 'info');
+
+                    if (parseFloat(t.movimiento.largo) > parseFloat(hoja.largo_saldo) ||
+                        parseFloat(t.movimiento.ancho) > parseFloat(hoja.ancho_saldo)) {
+                        swal('Valor inválido', 'Los valores de largo o ancho no pueden ser mayores al saldo de la hoja.', 'warning');
                         return false;
                     }
                 }
-               
+
+                if (t.movimiento.material_id == 3) {
+                    if (!t.movimiento.longitud || !t.movimiento.diametro) {
+                        swal('Campos obligatorios', 'Los campos longitud y diámetro restante son obligatorios.', 'info');
+                        return false;
+                    }
+
+                    if (parseFloat(t.movimiento.longitud) > parseFloat(hoja.longitud_saldo) ||
+                        parseFloat(t.movimiento.diametro) > parseFloat(hoja.diametro_saldo)) {
+                        swal('Valor inválido', 'Los valores de longitud o diámetro no pueden ser mayores al saldo de la hoja.', 'warning');
+                        return false;
+                    }
+                }
+
+
                 t.cargando = true;
-                axios.put(`api/corte/finalizar/${t.componente.id}`, {movimiento: t.movimiento} ).then(response => {
-                    if(response.data.success){
-                        t.fetchComponentes(t.selectedHerramental)    
+                axios.put(`api/corte/finalizar/${t.componente.id}`, {movimiento: t.movimiento})
+                .then(response => {
+                    if (response.data.success) {
+                        t.fetchComponentes(t.selectedHerramental);
                         $('#modalFinalizarCorte').modal('toggle');
                         t.cargando = false;
                     }
-                })
+                });
             },
             async finalizarCorte(id){
                 let t = this
@@ -1069,8 +1108,8 @@
             async fetchHojas(material_id) {
                 this.cargando = true
                 try {
-                    const response = await axios.get(`/api/hojas/${material_id}`);
-                    this.hojas = response.data.hojas;
+                    let response = await axios.get(`/api/hojas/${material_id}`);
+                    this.hojas = (response.data.hojas || []).filter(hoja => hoja.estatus == 1);
                 } catch (error) {
                     console.error('Error fetching hojas:', error);
                 } finally {

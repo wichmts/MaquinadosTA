@@ -127,9 +127,9 @@
                                                 </td>
                                                 <td><input disabled class="form-control text-center" type="number" step="1" v-model="c.cantidad"></td>
                                                 <td><input disabled class="form-control text-center" type="date"  v-model="c.fecha_solicitud_temple"></td>
-                                                <td><input :disabled="c.cancelado" class="form-control text-center" type="date"  v-model="c.fecha_envio_temple"></td>
-                                                <td><input :disabled="c.cancelado" class="form-control text-center" type="date"  v-model="c.fecha_estimada_temple"></td>
-                                                <td><input :disabled="c.cancelado" class="form-control text-center" type="date"  v-model="c.fecha_recibido_temple"></td>
+                                                <td><input :disabled="c.cancelado || c.fecha_recibido_temple" class="form-control text-center" type="date"  v-model="c.fecha_envio_temple"></td>
+                                                <td><input :disabled="c.cancelado || c.fecha_recibido_temple" class="form-control text-center" type="date"  v-model="c.fecha_estimada_temple"></td>
+                                                <td><input :disabled="c.cancelado || c.fecha_recibido_temple" class="form-control text-center" type="date"  v-model="c.fecha_real_temple"></td>
                                             </tr>
                                         </tbody>
                                     </table>

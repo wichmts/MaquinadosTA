@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RolesTableSeeder::class);
         $this->call(UsersTableSeeder::class);
         $this->call(MaquinaSeeder::class);
-        $this->call(PuestosSeeder::class);
+        $this->call(PuestosTableSeeder::class);
 
         // Eloquent::unguard();
         // $path = 'app/dev_files/countries.sql';

@@ -53,6 +53,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/orden-trabajo', 'WebController@ordenTrabajo');
 
     // ALMACENISTA
+    Route::get('/componentes-reutilizables', 'WebController@componentesReutilizables');
     Route::get('/compra-componentes', 'WebController@compraComponentes');
     Route::get('/temple', 'WebController@temple');
     Route::get('/almacen-mp', 'WebController@almacenMP');
@@ -62,7 +63,7 @@ Route::group(['middleware' => 'auth'], function () {
     // FINANZAS
     Route::get('finanzas-py', 'WebController@finanzasPY');
     Route::get('finanzas-hr', 'WebController@finanzasHR');
-    Route::get('puestos', 'WebController@puestos');
+    Route::get('costos-hora', 'WebController@puestos');
 
 
     // ADMIN

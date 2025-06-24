@@ -124,8 +124,8 @@
                     <thead class="thead-light">
                         <tr>
                             <th  class="py-1" rowspan="2" style="width: 5% ; border: 1px solid #b6b6b6 !important">Consecutivo</th>
-                            <th  class="py-1" rowspan="2" style="width: 5% ; border: 1px solid #b6b6b6 !important">Calidad</th>
-                            <th v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 5"  class="py-1" rowspan="2" style="width: 5% ; border: 1px solid #b6b6b6 !important">Espesor</th>    
+                            <th  class="py-1" rowspan="2" style="width: 5% ; border: 1px solid #b6b6b6 !important">  @{{materialSelected == 6 ? 'Material' : 'Calidad'}} </th>
+                            <th v-if="materialSelected == 1 || materialSelected == 6 || materialSelected == 2 || materialSelected == 5"  class="py-1" rowspan="2" style="width: 5% ; border: 1px solid #b6b6b6 !important">Espesor</th>    
 
                             <th  class="py-1 bg-success text-white" colspan="3" style="width: 13% ; border: 1px solid #b6b6b6 !important" >Entrada</th>    
                             <th  class="py-1 bg-warning" colspan="3" style="width: 13% ; border: 1px solid #b6b6b6 !important; text-transform: none !important">Saldo actual</th>    
@@ -138,14 +138,14 @@
                         </tr>
                         <tr>
                             {{-- entrada --}}
-                            <th v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5" class="py-1" style="border: 1px solid #b6b6b6 !important">Largo</th>
-                            <th v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5"  class="py-1" style="border: 1px solid #b6b6b6 !important">Ancho</th>
+                            <th v-if="materialSelected == 1 || materialSelected == 6 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5" class="py-1" style="border: 1px solid #b6b6b6 !important">Largo</th>
+                            <th v-if="materialSelected == 1 || materialSelected == 6 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5"  class="py-1" style="border: 1px solid #b6b6b6 !important">Ancho</th>
                             <th v-if="materialSelected == 3" class="py-1" style="border: 1px solid #b6b6b6 !important">Longitud</th>
                             <th v-if="materialSelected == 3" class="py-1" style="border: 1px solid #b6b6b6 !important">Diametro</th>
                             <th class="py-1" style="border: 1px solid #b6b6b6 !important">Peso</th>
                             {{-- salida --}}
-                            <th v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5" class="py-1" style="border: 1px solid #b6b6b6 !important">Largo</th>
-                            <th v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5"  class="py-1" style="border: 1px solid #b6b6b6 !important">Ancho</th>
+                            <th v-if="materialSelected == 1 || materialSelected == 6 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5" class="py-1" style="border: 1px solid #b6b6b6 !important">Largo</th>
+                            <th v-if="materialSelected == 1 || materialSelected == 6 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5"  class="py-1" style="border: 1px solid #b6b6b6 !important">Ancho</th>
                             <th v-if="materialSelected == 3" class="py-1" style="border: 1px solid #b6b6b6 !important">Longitud</th>
                             <th v-if="materialSelected == 3" class="py-1" style="border: 1px solid #b6b6b6 !important">Diametro</th>
                             <th class="py-1" style="border: 1px solid #b6b6b6 !important">Peso</th>
@@ -155,16 +155,16 @@
                         <tr v-for="h in hojas">
                             <td>@{{h.consecutivo}}</td>
                             <td>@{{h.calidad}}</td>
-                            <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 5">@{{h.espesor}}</td>
+                            <td v-if="materialSelected == 1 || materialSelected == 6 || materialSelected == 2 || materialSelected == 5">@{{h.espesor}}</td>
                             {{-- entrada --}}
-                            <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.largo_entrada}}</td>
-                            <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.ancho_entrada}}</td>
+                            <td v-if="materialSelected == 1 || materialSelected == 6 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.largo_entrada}}</td>
+                            <td v-if="materialSelected == 1 || materialSelected == 6 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.ancho_entrada}}</td>
                             <td v-if="materialSelected == 3">@{{h.longitud_entrada}}</td>
                             <td v-if="materialSelected == 3">@{{h.diametro_entrada}}</td>
                             <td>@{{h.peso_entrada}} Kg</td>
                             {{-- salida --}}
-                            <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.largo_saldo}}</td>
-                            <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.ancho_saldo}}</td>
+                            <td v-if="materialSelected == 1 || materialSelected == 6 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.largo_saldo}}</td>
+                            <td v-if="materialSelected == 1 || materialSelected == 6 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{h.ancho_saldo}}</td>
                             <td v-if="materialSelected == 3">@{{h.longitud_saldo}}</td>
                             <td v-if="materialSelected == 3">@{{h.diametro_saldo}}</td>
                             <td>@{{h.peso_saldo}} Kg</td>
@@ -209,33 +209,33 @@
                                 </select>
                             </div>
                             <div class="col-lg-4 form-group">
-                                <label class="bold">Calidad <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" v-model="nuevo.calidad" placeholder="Calidad de la hoja...">
+                                <label class="bold">@{{nuevo.material_id == 6 ? 'Material' : 'Calidad'}} <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" v-model="nuevo.calidad" :placeholder="nuevo.material_id == 6 ? 'Nombre del material...' : 'Calidad de la hoja...'">
                             </div>
                             <div class="col-lg-4 form-group">
                                 <label class="bold">Fecha de entrada<span class="text-danger">*</span></label>
                                 <input type="date" step="any" class="form-control" v-model="nuevo.fecha_entrada" >
                             </div>
-                            <div class="col-lg-4 form-group" v-if="nuevo.material_id == 1 || nuevo.material_id == 2 || nuevo.material_id == 5">
+                            <div class="col-lg-4 form-group" v-if="nuevo.material_id == 1 || nuevo.material_id == 6 || nuevo.material_id == 2 || nuevo.material_id == 5">
                                 <label class="bold">Espesor <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" v-model="nuevo.espesor" placeholder="Espesor de la hoja...">
                             </div>
 
-                            <div class="col-lg-4 form-group" v-if="nuevo.material_id == 1 || nuevo.material_id == 2 || nuevo.material_id == 4 || nuevo.material_id == 5">
+                            <div class="col-lg-4 form-group" v-if="nuevo.material_id == 1 || nuevo.material_id == 6 || nuevo.material_id == 2 || nuevo.material_id == 4 || nuevo.material_id == 5">
                                 <label class="bold">Largo <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" v-model="nuevo.largo_entrada" placeholder="Largo de la hoja...">
+                                <input type="number" step="any" class="form-control" v-model="nuevo.largo_entrada" placeholder="Largo de la hoja...">
                             </div>
-                            <div class="col-lg-4 form-group" v-if="nuevo.material_id == 1 || nuevo.material_id == 2 || nuevo.material_id == 4 || nuevo.material_id == 5">
+                            <div class="col-lg-4 form-group" v-if="nuevo.material_id == 1 || nuevo.material_id == 6 || nuevo.material_id == 2 || nuevo.material_id == 4 || nuevo.material_id == 5">
                                 <label class="bold">Ancho <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" v-model="nuevo.ancho_entrada" placeholder="Ancho de la hoja...">
+                                <input type="number" step="any" class="form-control" v-model="nuevo.ancho_entrada" placeholder="Ancho de la hoja...">
                             </div>
                             <div class="col-lg-4 form-group" v-if="nuevo.material_id == 3">
                                 <label class="bold">Longitud <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" v-model="nuevo.longitud_entrada" placeholder="Longitud de la hoja...">
+                                <input type="number" step="any" class="form-control" v-model="nuevo.longitud_entrada" placeholder="Longitud de la hoja...">
                             </div>
                             <div class="col-lg-4 form-group" v-if="nuevo.material_id == 3">
                                 <label class="bold">Diametro <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" v-model="nuevo.diametro_entrada" placeholder="Diametro de la hoja...">
+                                <input type="number" step="any" class="form-control" v-model="nuevo.diametro_entrada" placeholder="Diametro de la hoja...">
                             </div>
                              <div class="col-lg-4 form-group">
                                 <label class="bold">Peso <span class="text-danger">*</span></label>
@@ -430,13 +430,13 @@
                     swal('Campo obligatorio', 'Por favor seleccione una materia prima', 'info');
                     return;
                 }
-                if(t.nuevo.material_id == 1 || t.nuevo.material_id == 2 || t.nuevo.material_id == 5){
+                if(t.nuevo.material_id == 1 || t.nuevo.material_id == 6 || t.nuevo.material_id == 2 || t.nuevo.material_id == 5){
                     if(!t.nuevo.espesor){
                         swal('Campo obligatorio', 'Por favor ingrese el espesor de la hoja', 'info');
                         return;
                     }
                 }
-                if(t.nuevo.material_id == 1 || t.nuevo.material_id == 2 || t.nuevo.material_id == 4 || t.nuevo.material_id == 5){
+                if(t.nuevo.material_id == 1 || t.nuevo.material_id == 6 || t.nuevo.material_id == 2 || t.nuevo.material_id == 4 || t.nuevo.material_id == 5){
                     if(!t.nuevo.largo_entrada || !t.nuevo.ancho_entrada){
                         swal('Campo obligatorio', 'Por favor ingrese el largo y ancho de la hoja', 'info');
                         return;

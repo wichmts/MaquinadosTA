@@ -22,7 +22,7 @@
         border-radius: 0px;
     }
 
-     .delay-task {
+    .delay-task {
         position: absolute;
         height: 100%;
         background-color: #ff9430;
@@ -149,11 +149,25 @@
         height: 10px;
     }
 
-    .dotted-line {
-        border-bottom: 4px dotted orange;
-        width: 20px;
+    .dotted-line-anterior {
+        border-right: 4px dotted orange;
+        height: 15px;
         display: inline-block;
-        margin-left: 10px !important;
+    }
+    .dotted-line-favor {
+        border-right: 4px dotted rgb(0, 136, 255);
+        height: 15px;
+        display: inline-block;
+    }
+    .dotted-line-limite {
+        border-right: 4px dotted rgb(230, 214, 43);
+        height: 15px;
+        display: inline-block;
+    }
+    .dotted-line-atrazo {
+        border-right: 4px dotted rgb(255, 58, 58);
+        height: 15px;
+        display: inline-block;
     }
     
     .table .form-check label .form-check-sign::before, .table .form-check label .form-check-sign::after {top: -10px !important}
@@ -196,7 +210,7 @@
                                         <span class="underline-hover">@{{obj.nombre}}</span> 
                                     </a>
                                     @else
-                                    <a class="nav-link cursor-pointer"  @click="fetchHerramentales(obj.id)" v-if="esMiCarpeta(obj.nombre) || ruta.cliente != 'ORDENES EXTERNAS'">
+                                    <a class="nav-link cursor-pointer"  @click="fetchHerramentales(obj.id)"  v-if="(ruta.cliente !== 'REFACCIONES' && ruta.cliente !== 'ORDENES EXTERNAS') || esMiCarpeta(obj.nombre)">
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
                                         <span class="underline-hover">@{{obj.nombre}}</span> 
                                     </a>
@@ -251,15 +265,21 @@
                 <div class="row mb-2" v-cloak v-show="!cargando">
                     <div class="col-lg-12">
                         <div class="row">
-                            <div class="col-lg-8">
+                            <div class="col-lg-6">
                                 <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR DE AVANCE @{{ruta.herramental}}</h2> 
                                 <div v-if="selectedHerramental" class="d-flex gap-1 align-items-center">
                                     <div class="square bg-danger"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Retrabajos &nbsp;&nbsp;&nbsp; </span>
                                     <div class="square bg-warning"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Retrasos &nbsp;&nbsp;&nbsp; </span>
                                     <div class="square bg-dark"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Refabricaciones &nbsp;&nbsp;&nbsp;  </span>
-                                    <div class="square bg-success"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Refacción </span>
-                                    <div class="dotted-line"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Fecha Límite </span>
+                                    <div class="square bg-info"></div> <span class="bold" style="letter-spacing: 1px"> &nbsp; Refacción </span>
+                                    
                                 </div>
+                            </div>
+                            <div class="col-lg-2 px-2 py-1" v-if="selectedHerramental">
+                                <span class="bold" style="letter-spacing: 1px; font-size: 13px"> &nbsp; <div class="dotted-line-favor"></div> Tiempo a favor </span> <br>
+                                <span class="bold" style="letter-spacing: 1px; font-size: 13px"> &nbsp; <div class="dotted-line-atrazo"></div> Atrazo </span> <br>
+                                <span class="bold" style="letter-spacing: 1px; font-size: 13px"> &nbsp; <div class="dotted-line-limite"></div> Tiempo limite </span> <br>
+                                <span class="bold" style="letter-spacing: 1px; font-size: 13px"> &nbsp; <div class="dotted-line-anterior"></div> Limite anterior </span> 
                             </div>
                             <div class="col-lg-2 text-right">
                                 <span v-if="selectedHerramental" class="bold">Fecha de creación:</span>  <br>
@@ -284,38 +304,38 @@
                             </div>
                             <div class="col-lg-12" v-else style="overflow-x:scroll">
                             <div class="gantt-chart3" >
-                                    <div class="gantt-header3 general-header">
-                                        <div class="time-header pb-2" >TIEMPO (DIAS)</div>
-                                    </div>
-                                    <div class="gantt-header3">
-                                        <div class="gantt-cell3 task-name3 pt-2">ACCIONES</div>
-                                        <div class="gantt-cell3 pt-2" v-for="day in duracionTotal" :key="day">
-                                            <span class="bold">@{{ day }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="gantt-row3 cursor-pointer" v-for="task in tasks" :key="task.id" @click="verInformacion(task)">
-                                        <div class="gantt-cell3 task-name3 pt-2">
-                                            @{{ task.componente }} 
-                                            <div class="d-flex gap-1 align-items-center">
-                                                <div v-if="task.componente_id > 0 && task.tieneRetrabajos" class="square2 bg-danger"></div>
-                                                <div v-if="task.componente_id > 0 && task.tieneRetrasos" class="square2 bg-warning"></div>
-                                                <div v-if="task.componente_id > 0 && task.tieneRefabricaciones" class="square2 bg-dark"></div>
-                                                <div v-if="task.componente_id > 0 && task.esRefaccion" class="square2 bg-success"></div>
-                                            </div>
-                                        </div>
-                                        <div class="gantt-cell3 gantt-bar3" v-for="day in duracionTotal" :key="day" >
-                                            <div
-                                                v-for="segment in task.time"
-                                                class=""
-                                                :key="segment.dia_inicio"
-                                                :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
-                                                :style="getTaskStyle(segment, day)">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div v-if="herramental.fecha_limite" class="limite-tiempo1" :style="{ left: `${215 + (80 * (totalDias)) }px` }"></div>
-                                    <div v-for="(pos, index) in otrasFechasPosiciones" :key="'limite-otra-' + index" class="limite-tiempo2" :style="{ left: `${pos}px` }"/>
+                                <div class="gantt-header3 general-header">
+                                    <div class="time-header pb-2" >TIEMPO (DIAS)</div>
                                 </div>
+                                <div class="gantt-header3">
+                                    <div class="gantt-cell3 task-name3 pt-2">ACCIONES</div>
+                                    <div class="gantt-cell3 pt-2" v-for="day in duracionTotal" :key="day">
+                                        <span class="bold">@{{ day }}</span>
+                                    </div>
+                                </div>
+                                <div class="gantt-row3 cursor-pointer" v-for="task in tasks" :key="task.id" @click="verInformacion(task)">
+                                    <div class="gantt-cell3 task-name3 pt-2">
+                                        @{{ task.componente }} 
+                                        <div class="d-flex gap-1 align-items-center">
+                                            <div v-if="task.componente_id > 0 && task.tieneRetrabajos" class="square2 bg-danger"></div>
+                                            <div v-if="task.componente_id > 0 && task.tieneRetrasos" class="square2 bg-warning"></div>
+                                            <div v-if="task.componente_id > 0 && task.tieneRefabricaciones" class="square2 bg-dark"></div>
+                                            <div v-if="task.componente_id > 0 && task.esRefaccion" class="square2 bg-info"></div>
+                                        </div>
+                                    </div>
+                                    <div class="gantt-cell3 gantt-bar3" v-for="day in duracionTotal" :key="day" >
+                                        <div
+                                            v-for="segment in task.time"
+                                            class=""
+                                            :key="segment.dia_inicio"
+                                            :class="segment.type === 'normal' ? 'normal-task' : segment.type === 'rework' ? 'rework-task' : 'delay-task'"
+                                            :style="getTaskStyle(segment, day)">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-for="(pos, index) in otrasFechasPosiciones" :key="'limite-otra-' + index" class="limite-tiempo-anterior" :style="{ left: `${pos}px` }"></div>
+                                <div v-if="herramental.fecha_limite" class="limite-tiempo-limite" :style="{ left: `${215 + (80 * (totalDias)) }px` }"></div>
+                                <div :class="{'limite-tiempo-favor': proyectoAFavor,  'limite-tiempo-atrazo': !proyectoAFavor}"  :style="{ left: `${posicionFinRealProyecto}px` }"></div>
                             </div>
                         </div>
                     </div>
@@ -346,13 +366,13 @@
                                                         <div class="mb-2">
                                                             <span><strong>Tipo de componente: </strong> @{{component.info.es_compra ? 'COMPRA' : 'FABRICACIÓN'}}</span><br>
                                                             <span><strong>Cantidad: </strong> @{{component.info.cantidad}}&nbsp;&nbsp;</span>
-                                                            <span v-if="!component.info.es_compra"><strong>Material: </strong> @{{component.info.material_nombre}}&nbsp;&nbsp;</span>
+                                                            <span v-if="!component.info.es_compra"><strong>Material: </strong> @{{component.info.material_nombre}} @{{component.info.material_id == 6 ? '(' + component.info.otro_material + ')' : ''}}</span>
                                                             <span v-if="component.info.es_compra"><strong>Proveedor / Material: </strong> @{{component.info.proveedor}}&nbsp;&nbsp; <br>            </span>
                                                             <span v-if="component.info.es_compra"><strong>Descripción: </strong> @{{component.info.descripcion}}&nbsp;&nbsp;</span>
 
                                                             <span v-if="component.info.material_id == 2 || component.info.material_id == 2 || component.info.material_id == 5 || component.info.material_id == 4"><strong>Largo: </strong> @{{component.info.largo}}&nbsp;&nbsp;</span>
-                                                            <span v-if="component.info.material_id == 1 || component.info.material_id == 2 || component.info.material_id == 5 || component.info.material_id == 4"><strong>Ancho: </strong> @{{component.info.ancho}}&nbsp;&nbsp;</span>
-                                                            <span v-if="component.info.material_id == 1 || component.info.material_id == 2 || component.info.material_id == 5 "><strong>Espesor: </strong> @{{component.info.espesor}}&nbsp;&nbsp;</span>
+                                                            <span v-if="component.info.material_id == 1 || component.info.material_id == 6 || component.info.material_id == 2 || component.info.material_id == 5 || component.info.material_id == 4"><strong>Ancho: </strong> @{{component.info.ancho}}&nbsp;&nbsp;</span>
+                                                            <span v-if="component.info.material_id == 1 || component.info.material_id == 6 || component.info.material_id == 2 || component.info.material_id == 5 "><strong>Espesor: </strong> @{{component.info.espesor}}&nbsp;&nbsp;</span>
                                                             <span v-if="component.info.material_id == 3"><strong>Longitud: </strong> @{{component.info.longitud}}&nbsp;&nbsp;</span>
                                                             <span v-if="component.info.material_id == 3"><strong>Diametro: </strong> @{{component.info.diametro}}&nbsp;&nbsp;</span>
                                                         </div>
@@ -400,10 +420,14 @@
                                                     </div>
                                                     <div class="col-lg-3">
                                                         <div class="text-center">
-                                                            <button @click="fetchSolicitudes(component.info.id)" v-if="!component.info.es_compra" class="btn btn-block btn-dark mx-2"><i class="fa fa-list"></i> Ver solicitudes</button>
-                                                            <button @click="mostrarLineaDeTiempo(component.info.id)" v-if="!component.info.es_compra" class="btn btn-block btn-dark mx-2"><i class="fa fa-calendar"></i> Ver linea de tiempo</button>
-                                                            <button @click="verFotografias(component.info)" v-if="!component.info.es_compra" class="btn btn-block btn-dark mx-2"><i class="fa fa-camera"></i> Ver fotos</button>
-                                                            <button @click="verModalRuta(component.info.id)" v-if="!component.info.es_compra" class="btn btn-block btn-dark mx-2"><i class="fa fa-eye"></i> Visor componente</button>
+                                                            <button @click="verModalRuta(component.info.id)" v-if="!component.info.es_compra" class="btn btn-block btn-sm btn-dark mx-2"><i class="fa fa-eye"></i> Visor componente</button>
+                                                            <button @click="verCotas(component.info)" v-if="!component.info.es_compra" class="btn btn-block btn-sm btn-dark mx-2"><i class="fa fa-ruler-combined"></i> Cotas críticas</button>
+                                                            <button @click="verFotografias(component.info)" v-if="!component.info.es_compra" class="btn btn-block btn-sm btn-dark mx-2"><i class="fa fa-images"></i> Galeria fabricacíon</button>
+                                                            <button @click="mostrarLineaDeTiempo(component.info.id)" v-if="!component.info.es_compra" class="btn btn-block btn-sm btn-dark mx-2"><i class="fa fa-calendar-alt"></i> Linea de tiempo</button>
+                                                            <button @click="fetchSolicitudes(component.info.id)" v-if="!component.info.es_compra" class="btn btn-block btn-sm btn-dark mx-2"><i class="fa fa-list"></i> Solicitudes</button>
+                                                            @if(auth()->user()->hasRole('SOLICITUD EXTERNA'))
+                                                                <button @click="solicitarRefaccion(component.info.id)" v-if="!component.info.es_compra && !component.info.esComponenteExterno" class="btn btn-block btn-sm btn-info mx-2"><i class="fa fa-puzzle-piece"></i> Solicitar Refacción</button>
+                                                            @endif                                                        
                                                         </div>
                                                     </div>
                                                 </div>
@@ -679,7 +703,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h3 class="modal-title font-weight-bold" id="modalFotografiasLabel">
-                                    Galería de Imágenes @{{ componente.nombre }}
+                                    Galería de fabricación para @{{ componente.nombre }}
                                 </h3>
                                 <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
@@ -717,12 +741,47 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade" id="modalCotas" tabindex="-1" aria-labelledby="modalCotasLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" style="max-width: 40%">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title font-weight-bold" id="modalCotasLabel">
+                                    Cotas críticas para el componente @{{ componente.nombre }}
+                                </h3>
+                                <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+        
+                            <div class="modal-body">
+                                <div class="container">
+                                    <div v-if="componente.cuotas_criticas && componente.cuotas_criticas.length > 0">
+                                        <div class="row">
+                                            <div class="col-lg-12 form-group" v-for="(cota, index) in componente.cuotas_criticas">
+                                                <label class="bold">Cota @{{index + 1}} - @{{cota.valor}}</label>
+                                                <input type="text" disabled class="form-control" :value="cota.valor_real" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div v-else class="text-center text-muted">
+                                        <p>No hay medidas registradas aún para este componente.</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12 text-right">
+                                        <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="modal fade" id="modalFotografiasEnsamble" tabindex="-1" aria-labelledby="modalFotografiasEnsambleLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg" style="min-width: 70%;">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h3 class="modal-title font-weight-bold" id="modalFotografiasEnsambleLabel">
-                                    Fotografias de ensamblado para @{{ herramental.nombre }}
+                                    Galeria de ensamble para @{{ herramental.nombre }}
                                 </h3>
                                 <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
@@ -833,6 +892,48 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade" id="modalSolicitarRefaccion" tabindex="-1" aria-labelledby="modalSolicitarRefaccionLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="min-width: 30%;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="bold modal-title" id="modalSolicitarRefaccionLabel">
+                                    NUEVA SOLICITUD DE REFACCIÓN
+                                </h3>
+                                <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-lg-12 form-group">
+                                        <label class="bold">Solicitada por<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" value="{{auth()->user()->nombre_completo}}" disabled>
+                                    </div>
+                                    <div class="col-lg-6 form-group">
+                                        <label class="bold">Fecha deseada de entrega <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" v-model="nuevaRefaccion.fecha_deseada_entrega" required>
+                                    </div>
+                                    <div class="col-lg-6 form-group">
+                                        <label class="bold">Cantidad <span class="text-danger">*</span></label>
+                                        <input type="number" step="1" class="form-control" v-model="nuevaRefaccion.cantidad" required>
+                                    </div>
+                                    <div class="col-lg-12 form-group">
+                                        <label class="bold">Comentarios </label>
+                                        <textarea class="form-control my-1 px-1 text-left" placeholder="Comentarios para el enrutador..." v-model="nuevaRefaccion.comentarios" rows="3"></textarea>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <small>Todas las solicitudes de refacciones se pueden visualizar y dar seguimiento desde el menu <strong>ORDEN DE TRABAJO.</strong></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer my-0 py-1">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                                <button v-if="!loading_button" class="btn" @click="generarSolicitudRefaccion()"><i class="fa fa-paper-plane"></i> Enviar solicitud</button>
+                                <button v-if="loading_button" class="btn" disabled><i class="fa fa-spinner"></i> Enviando...</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -899,6 +1000,16 @@
             prueba: {},
             solicitudesEnsamble: [],
             componenteIdSeleccionado: null,
+            cuotas_criticas: [],
+            nuevaRefaccion: {
+                componente_id: null,
+                fecha_deseada_entrega: new Date().toISOString().split('T')[0],
+                solicitante_id: {{ auth()->user()->id }},
+                area_solicitud: 'Herramentales',
+                comentarios: '',
+                desde: 'refacciones',
+                cantidad: 1, 
+            },
         },
         mounted: async function () {
             let t = this;
@@ -908,6 +1019,63 @@
             this.navigateFromUrlParams();
         },
         computed: {
+            proyectoAFavor() {
+                if (!this.herramental?.fecha_limite) return true; // No hay límite, se considera a favor
+
+                let [year, month, day] = this.herramental.fecha_limite.split('-').map(Number);
+                let fechaLimite = new Date(year, month - 1, day, 23, 59, 59);
+                // let fechaLimite = new Date(this.herramental.fecha_limite);
+                console.log('limite:', fechaLimite)
+                
+                let fechaFinReal = null;
+                this.tasks.forEach(task => {
+                    task.time.forEach(segment => {
+                        let fechaFin = new Date(segment.dia_termino);
+                        console.log('fin:', fechaFin)
+                        if (!fechaFinReal || fechaFin > fechaFinReal) {
+                            fechaFinReal = fechaFin;
+                        }
+                    });
+                });
+
+                if (!fechaFinReal) return true;
+
+                // Si la fecha real del proyecto es menor o igual al límite, está a favor
+                return fechaFinReal <= fechaLimite;
+            },
+            posicionFinRealProyecto() {
+                if (!this.tasks?.length || !this.duracionTotal?.length) return 0;
+
+                // Buscar la fecha y hora más tardía
+                let fechaHoraFinMax = null;
+
+                this.tasks.forEach(task => {
+                    task.time.forEach(segment => {
+                        const fechaFin = new Date(segment.dia_termino);
+                        if (!fechaHoraFinMax || fechaFin > fechaHoraFinMax) {
+                            fechaHoraFinMax = fechaFin;
+                        }
+                    });
+                });
+
+                if (!fechaHoraFinMax) return 0;
+
+                const fechaStr = fechaHoraFinMax.toISOString().split('T')[0];
+
+                const indexDia = this.duracionTotal.findIndex(d => d === fechaStr);
+                if (indexDia === -1) return 0;
+
+                // Calcular la posición relativa dentro del día (en pixeles)
+                const hora = fechaHoraFinMax.getHours();
+                const minutos = fechaHoraFinMax.getMinutes();
+                const porcentajeDia = (hora + minutos / 60) / 24; // 0 a 1
+                const pixelPorDia = 80;
+
+                const leftPx = 215 + (pixelPorDia * indexDia) + (pixelPorDia * porcentajeDia);
+
+                return leftPx;
+            },
+
             otrasFechasPosiciones() {
                 if (!this.duracionTotal || !this.herramental?.otras_fechas) return [];
 
@@ -1070,6 +1238,60 @@
             }
         },
         methods:{
+            async generarSolicitudRefaccion(){
+                let t = this;
+                
+                let errores = [];
+                if (!t.nuevaRefaccion.fecha_deseada_entrega) {
+                    errores.push("Debe ingresar una fecha deseada de entrega.");
+                }
+                
+                if (
+                    t.nuevaRefaccion.cantidad === null ||
+                    t.nuevaRefaccion.cantidad === undefined ||
+                    isNaN(t.nuevaRefaccion.cantidad) ||
+                    Number(t.nuevaRefaccion.cantidad) <= 0
+                ) {
+                    errores.push("La cantidad debe ser un número mayor a cero.");
+                }
+                
+                if (errores.length > 0) {
+                    swal("¡Lo sentimos!", errores.join("\n"), "info");
+                    return;
+                }
+
+                t.loading_button = true;
+                try {
+                    const response = await axios.post('/api/solicitud-refaccion/' + t.nuevaRefaccion.componente_id, t.nuevaRefaccion);
+                    if (response.data.success) {
+                        await swal("Correcto", "Solicitud de refacción enviada correctamente, puede darle seguimiento desde el menu ORDEN DE TRABAJO", "success");
+                        $('#modalSolicitarRefaccion').modal('hide');
+                    } else {
+                        await swal("Error", "No se pudo enviar la solicitud. Inténtelo de nuevo más tarde.", "error");
+                    }
+                } catch (error) {
+                    console.error('Error al enviar solicitud de refacción:', error);
+                    await swal("Error", "Ocurrió un error al enviar la solicitud. Inténtelo de nuevo más tarde.", "error");
+                } finally {
+                    t.loading_button = false;
+                }
+            },
+            solicitarRefaccion(id){
+                this.nuevaRefaccion = {
+                    componente_id: id,
+                    fecha_deseada_entrega: new Date().toISOString().split('T')[0],
+                    solicitante_id: {{ auth()->user()->id }},
+                    area_solicitud: 'Herramentales',
+                    comentarios: '',
+                    desde: 'refacciones',
+                    cantidad: 1, 
+                };
+                $('#modalSolicitarRefaccion').modal();
+            },
+            verCotas(componente){
+                this.componente = {...componente};
+                $('#modalCotas').modal();
+            },
             async agregarFechaLimite() {
                 let t = this;
 
@@ -1121,8 +1343,9 @@
                 }
             },
             esMiCarpeta(nombreCarpeta) {
-                let userId = {{auth()->user()->id}};
-                return nombreCarpeta.startsWith(userId + '.');
+                let userId = {{ auth()->user()->id }};
+                let roles = @json(auth()->user()->roles->pluck('name'));
+                return nombreCarpeta.startsWith(userId + '.') || roles.some(role => ['DIRECCION', 'FINANZAS', 'HERRAMENTALES', 'JEFE DE AREA'].includes(role));
             },
             verFotografias(componente){
                 this.componente = {...componente};
@@ -1234,6 +1457,11 @@
                             "<strong>INICIA PROGRAMACION </strong>" :
                             "<strong>FINALIZA PROGRAMACION </strong>";
                         break;
+                    case "ensamble":
+                        descripcion = tipo === 1 ?
+                            "<strong>INICIA EL PROCESO DE ENSAMBLE </strong>" :
+                            "<strong>FINALIZA EL PROCESO DE ENSAMBLE </strong>";
+                    break;
                     default:
                         descripcion = "ACCION DESCONOCIDA"; // Por si hay otras acciones no previstas
                 }
@@ -1260,6 +1488,9 @@
                         case "fabricacion_paro":
                         case "fabricacion":
                             area = 'OPERADOR'
+                            break;
+                        case "ensamble":
+                            area = 'ENSAMBLE'
                             break;
                         default:
                             area = "AREA DESCONOCIDA"; // Por si hay otras acciones no previstas
@@ -1340,6 +1571,7 @@
                     return;
                 }
                 if(t.infoComponentes.componente_id > 0){
+                    t.componente = t.componentes.find(c => c.id == t.infoComponentes.componente_id);
                     $('#modalComponente').modal('show');
                     $('#modalComponente').on('hidden.bs.modal', function () {
                         t.componenteIdSeleccionado = null;
@@ -1831,7 +2063,8 @@
                     {id: 6, prioridad: 6, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
                     {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
                     {id: 8, prioridad: 8, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
-                    {id: 9, prioridad: 9, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
+                    {id: 9, prioridad: 9, nombre: 'EDM', horas: 0, minutos: 0, incluir: false},
+                    {id: 11, prioridad: 11, nombre: 'Marcar', horas: 0, minutos: 0, incluir: false}
                 ];
     
                 t.tasks2.forEach(task => {

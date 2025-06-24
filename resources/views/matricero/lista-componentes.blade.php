@@ -230,7 +230,7 @@
                     </div>    
                     <div v-if="!cargandoMenu && menuStep == 2">
                         <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
-                        <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)" v-if="obj.nombre != 'ORDENES EXTERNAS'">
+                        <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)" v-if="obj.nombre != 'ORDENES EXTERNAS' && obj.nombre != 'REFACCIONES'">
                             <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
                             <span class="underline-hover">@{{obj.nombre}}</span> 
                         </a>
@@ -279,8 +279,8 @@
                                 <h5 class="bold my-0 py-1 mb-3" style="letter-spacing: 1px">COMPONENTES DEL HERRAMENTAL @{{ruta.herramental}}</h5>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-xl-4 mb-3">
+                        <div class="row" >
+                            <div class="col-xl-4 mb-3"  v-if="herramental.estatus_ensamble == 'finalizado'">
                                 <input
                                     class="input-file"
                                     id="archivo2"
@@ -289,10 +289,10 @@
                                     style="display: none;"
                                 />
                                 <label tabindex="0" for="archivo2" class="input-file-trigger col-12 text-center">
-                                    <i class="fa fa-upload"></i> CARGAR FORMATO F71-03 ANEXO 1
+                                    <i class="fa fa-upload"></i> ACTUALIZAR FORMATO F71-03 ANEXO 1.1
                                 </label>
                             </div>
-                            <div class="col-xl-8 pt-2">
+                            <div class="col-xl-8 pt-2" v-if="herramental.estatus_ensamble == 'finalizado'">
                                 Formato cargado: <strong>@{{herramental.archivo2_show != '' ? herramental.archivo2_show : 'Sin formato cargado'}}</strong>
                             </div>
                             <div class="col-xl-12">
@@ -311,8 +311,8 @@
                                         <tbody>
                                             <tr v-for="obj in componentes">
                                                 <td class="text-center">
-                                                   <span class="badge badge-pill py-2 text-dark w-50" style="font-size: 15px; background-color: #c0d340 !important"> 
-                                                        <img src="/paper/img/icons/componentes.png" width="20px" height="20px" alt="">
+                                                   <span class="badge badge-pill w-100 text-dark py-2" style="font-size: 14px; background-color: #c0d340 !important"> 
+                                                        <img src="/paper/img/icons/componentes.png" width="20px" height="17px" alt="">
                                                         @{{obj.nombre}}
                                                     </span>
                                                 </td>
@@ -389,13 +389,13 @@
 
                 const formData = new FormData();
                 formData.append('archivo', file);
-                
                 try {
-                    const response = await axios.post(`/api/herramental/${this.selectedHerramental}/formato`, formData, {
+                    const response = await axios.post(`/api/herramental/${this.selectedHerramental}/formato-finalizado`, formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }
                     });
+                    await this.fetchHerramentales(this.selectedProyecto);
                     await this.fetchComponentes(this.selectedHerramental);
                     swal('Correcto', 'Formato cargado correctamente', 'success');
                 } catch (error) {
@@ -571,23 +571,24 @@
                 this.herramental = this.herramentales.find(obj => obj.id == herramentalId);
                 this.ruta.herramental = this.herramental?.nombre;
 
-                Vue.nextTick(function() {
-                    document.querySelector("html").classList.add('js');
-                    let fileInput = document.querySelector(".input-file");
-                    let button = document.querySelector(".input-file-trigger");
-
-                    button.addEventListener("keydown", function(event) {
-                        if (event.keyCode == 13 || event.keyCode == 32) {
+                if(this.herramental.estatus_ensamble == 'finalizado'){
+                    Vue.nextTick(function() {
+                        document.querySelector("html").classList.add('js');
+                        let fileInput = document.querySelector(".input-file");
+                        let button = document.querySelector(".input-file-trigger");
+    
+                        button.addEventListener("keydown", function(event) {
+                            if (event.keyCode == 13 || event.keyCode == 32) {
+                                fileInput.focus();
+                            }
+                        });
+    
+                        button.addEventListener("click", function(event) {
                             fileInput.focus();
-                        }
+                            return false;
+                        });
                     });
-
-                    button.addEventListener("click", function(event) {
-                        fileInput.focus();
-                        return false;
-                    });
-                });
-
+                }
                 try {
                     const response = await axios.get(`/api/herramentales/${herramentalId}/componentes?area=ensamble`);
                     this.componentes = response.data.componentes;

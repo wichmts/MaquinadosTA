@@ -128,10 +128,10 @@
                         <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px"> ENRUTADOR</h2>
                     </div>
                     <div class="col-xl-3 col-lg-4 text-right" v-if="selectedComponente && componente.cancelado != true">
-                        <button class="btn btn-block" :disabled="componente.enrutado == true" @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR</button>
+                        <button class="btn btn-block" :disabled="componente.fecha_terminado || componente.cancelado == true" @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR</button>
                     </div>
                     <div class="col-xl-3 col-lg-4 text-right" v-if="selectedComponente && componente.cancelado != true">
-                        <button class="btn btn-success btn-block" :disabled="componente.enrutado == true" @click="guardar(true)"><i class="fa fa-check-double"></i>
+                        <button class="btn btn-success btn-block" :disabled="componente.enrutado ==  true || componente.cancelado == true" @click="guardar(true)"><i class="fa fa-check-double"></i>
                              @{{componente.enrutado == true ? 'LIBERADO' : 'LIBERAR'}}
                         </button>
                     </div>
@@ -154,8 +154,8 @@
                     <div class="row">
                         <div class="col-xl-7">
                             <div class="row">
-                                <div class="col-lg-2 px-2 my-3 d-flex justify-content-center align-items-center">
-                                    <span style="font-size: 18px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="d-flex justify-content-center w-100 badge badge-warning badge-pill bold"> <i class="fa fa-cogs" style="font-size: 16px !important"></i> @{{componente.nombre}}</span>
+                                <div class="col-lg-3 px-2 my-3 d-flex justify-content-center align-items-center">
+                                    <span style="font-size: 14px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="d-flex justify-content-center w-100 badge badge-warning badge-pill bold py-2"> <i class="fa fa-cogs" style="font-size: 14px !important"></i> @{{componente.nombre}}</span>
                                 </div>
                                 <div class="col-lg-3 d-flex justify-content-around">
                                     <div class="p-1">
@@ -177,14 +177,14 @@
                                         </a>
                                     </div>
                                 </div>
-                                <div class="col-lg-7 d-flex justify-content-around">
+                                <div class="col-lg-6 d-flex justify-content-around">
                                     <div class="form-group px-1">
                                         <label class="bold">Cantidad</label>
                                         <input type="number" step="any" class="form-control text-center" readonly :value="componente.cantidad">
                                     </div>
                                     <div class="form-group px-1">
                                         <label class="bold">Prioridad</label>
-                                        <select class="form-control" v-model="componente.prioridad" :disabled="componente.enrutado == true || componente.cancelado == true">
+                                        <select class="form-control" v-model="componente.prioridad" :disabled="componente.fecha_terminado || componente.cancelado == true">
                                             <option :value="null" disabled>Asignar...</option>
                                             <option value="A">A</option>
                                             <option value="B">B</option>
@@ -270,7 +270,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="p in procesos" :key="p.id" v-if="p.id > 0 && p.id < 6">
+                                            <tr v-for="p in procesos" :key="p.id" v-if="p.id > 0 && p.id <= 6">
                                                 <td class="py-1">
                                                     <div class="form-group">
                                                         <div class="form-check">
@@ -328,7 +328,7 @@
                                                 <td> - </td>
                                                 <td> - </td>
                                             </tr>
-                                            <tr v-for="p in procesos" :key="p.id" v-if="p.id > 6 && p.id < 10">
+                                            <tr v-for="p in procesos" :key="p.id" v-if="p.id > 6 && p.id < 12 && p.id != 10">
                                                 <td class="py-1">
                                                     <div class="form-group">
                                                         <div class="form-check">
@@ -456,7 +456,6 @@
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="modalSolicitudes" tabindex="-1" aria-labelledby="modalSolicitudesLabel" aria-hidden="true">
         <div class="modal-dialog" style="min-width: 80%;">
             <div class="modal-content">
@@ -511,7 +510,6 @@
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="modalRetrabajo" tabindex="-1" aria-labelledby="modalRetrabajoLabel" aria-hidden="true">
         <div class="modal-dialog" style="min-width: 40%;">
             <div class="modal-content">
@@ -590,7 +588,6 @@
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="modalModificacion" tabindex="-1" aria-labelledby="modalModificacionLabel" aria-hidden="true">
         <div class="modal-dialog" style="min-width: 40%;">
             <div class="modal-content">
@@ -620,7 +617,6 @@
             </div>
         </div>
     </div>
-
      <div class="modal fade" id="modalSolicitudExterna" tabindex="-1" aria-labelledby="modalSolicitudExternaLabel" aria-hidden="true">
         <div class="modal-dialog" style="min-width: 40%;">
             <div class="modal-content">
@@ -761,6 +757,14 @@
                     id: 9,
                     prioridad: 9,
                     nombre: 'EDM',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 11,
+                    prioridad: 11,
+                    nombre: 'Marcar',
                     horas: 0,
                     minutos: 0,
                     incluir: false
@@ -1159,6 +1163,14 @@
                                 nombre: 'EDM',
                                 horas: 0,
                                 minutos: 0,
+                            },
+                            {
+                                id: 11,
+                                prioridad: 11,
+                                nombre: 'Marcar',
+                                horas: 0,
+                                minutos: 0,
+                                incluir: false
                             }
                             ],
                         };
@@ -1299,6 +1311,11 @@
                             "<strong>INICIA PROGRAMACION </strong>" :
                             "<strong>FINALIZA PROGRAMACION </strong>";
                         break;
+                    case "ensamble":
+                        descripcion = tipo === 1 ?
+                             "<strong>INICIA EL PROCESO DE ENSAMBLE </strong>" :
+                            "<strong>FINALIZA EL PROCESO DE ENSAMBLE </strong>";
+                        break;
                     default:
                         descripcion = "ACCION DESCONOCIDA"; // Por si hay otras acciones no previstas
                 }
@@ -1318,14 +1335,17 @@
                         case "corte_paro":
                         case "corte":
                             area = 'ALMACENISTA'
-                            break;
+                        break;
                         case "programacion":
                             area = 'PROGRAMADOR'
-                            break;
+                        break;
                         case "fabricacion_paro":
                         case "fabricacion":
                             area = 'OPERADOR'
-                            break;
+                        break;
+                        case "ensamble":
+                            area = 'ENSAMBLE'
+                        break;
                         default:
                             area = "AREA DESCONOCIDA"; // Por si hay otras acciones no previstas
                     }
@@ -1991,6 +2011,14 @@
                     id: 9,
                     prioridad: 9,
                     nombre: 'EDM',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 11,
+                    prioridad: 11,
+                    nombre: 'Marcar',
                     horas: 0,
                     minutos: 0,
                     incluir: false

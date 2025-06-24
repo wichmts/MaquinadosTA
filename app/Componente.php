@@ -77,12 +77,14 @@ class Componente extends Model
         return [
             ['id' => 1, 'prioridad' => 1, 'nombre' => 'Cortar'],
             ['id' => 2, 'prioridad' => 2, 'nombre' => 'Programar'],
-            ['id' => 3, 'prioridad' => 3, 'nombre' => 'Maquinar'],
-            ['id' => 4, 'prioridad' => 4, 'nombre' => 'Tornear'],
-            ['id' => 5, 'prioridad' => 5, 'nombre' => 'Roscar/Rebabear'],
-            ['id' => 6, 'prioridad' => 6, 'nombre' => 'Templar'],
-            ['id' => 7, 'prioridad' => 7, 'nombre' => 'Rectificar'],
-            ['id' => 8, 'prioridad' => 8, 'nombre' => 'EDM'],
+            ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear'],
+            ['id' => 4, 'prioridad' => 4, 'nombre' => 'Maquinar'],
+            ['id' => 5, 'prioridad' => 5, 'nombre' => 'Tornear'],
+            ['id' => 6, 'prioridad' => 6, 'nombre' => 'Roscar/Rebabear'],
+            ['id' => 7, 'prioridad' => 7, 'nombre' => 'Templar'],
+            ['id' => 8, 'prioridad' => 8, 'nombre' => 'Rectificar'],
+            ['id' => 9, 'prioridad' => 9, 'nombre' => 'EDM'],
+            ['id' => 11, 'prioridad' => 11, 'nombre' => 'Marcar'],
         ];
     }
     public function rutaAvance(){
@@ -216,7 +218,9 @@ class Componente extends Model
     }
     public function toArray(){
   		$data = parent::toArray();
+        $data['cuotas_criticas'] = $this->cuotas_criticas ? json_decode($this->cuotas_criticas, true) : [];
         $data['fecha_real_liberada'] = $this->fecha_real;
+        $data['fecha_real_temple'] = $this->fecha_recibido_temple;
         $data['material_nombre'] = $this->material ? $this->material->nombre : '';
         $data['archivo_2d_public'] = $this->archivo_2d ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->archivo_2d : '';
         $data['archivo_3d_public'] = $this->archivo_3d ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->archivo_3d : '';

@@ -42,7 +42,7 @@ class WebController extends Controller
       return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
     public function herramentales(){
-        if(auth()->user()->hasAnyRole(['DIRECCION', 'JEFE DE AREA', 'PROCESOS', 'PROYECTOS']))
+    if(auth()->user()->hasAnyRole(['HERRAMENTALES', 'PROCESOS']))
           return view('generales.herramentales');
       return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
@@ -53,9 +53,7 @@ class WebController extends Controller
       return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
     public function listaComponentesMatricero(){
-        if (auth()->user()->hasRole('MATRICERO'))
-          return view('matricero.lista-componentes');
-      return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+        return view('matricero.lista-componentes');
     }
     public function maquinas(){
         if (auth()->user()->hasRole('DIRECCION'))
@@ -81,7 +79,7 @@ class WebController extends Controller
     }
 
     public function visorAvanceHR(){
-        if(auth()->user()->hasAnyRole(['JEFE DE AREA', 'PROGRAMADOR', 'MATRICERO', 'AUXILIAR DE DISEÑO', 'DIRECCION', 'PROCESOS', 'PROYECTOS', 'FINANZAS'])) 
+        if(auth()->user()->hasAnyRole(['JEFE DE AREA', 'PROGRAMADOR', 'MATRICERO', 'AUXILIAR DE DISEÑO', 'DIRECCION', 'PROCESOS', 'PROYECTOS', 'FINANZAS', 'HERRAMENTALES'])) 
             return view('jefe-area.visor-avance-hr');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
@@ -117,6 +115,11 @@ class WebController extends Controller
      public function temple(){
         if(auth()->user()->hasRole('ALMACENISTA')) 
             return view('almacenista.temple');
+        return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
+    public function componentesReutilizables(){
+        if(auth()->user()->hasRole('ALMACENISTA')) 
+            return view('almacenista.componentes-reutilizables');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
     public function almacenMP(){

@@ -31,6 +31,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::put('ver-notificaciones', 'APIController@verNotificaciones');
     Route::get('ultimas-notificaciones', 'APIController@ultimasNotificaciones');
 
+    Route::post('solicitud-refaccion/{componente_id}', 'APIController@generarOrdenRefaccion');
     Route::post('solicitud/{componente_id}', 'APIController@registrarSolicitud');
     Route::post('solicitud-herramental/{herramental_id}', 'APIController@registrarSolicitudHerramental');
     Route::get('solicitud/{componente_id}', 'APIController@obtenerSolicitudes');
@@ -44,9 +45,16 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('maquinas/{maquina_id}/componentes', 'APIController@obtenerComponentesMaquina');
     Route::post('maquina', 'APIController@guardarMaquina');
     Route::put('maquina/{id}', 'APIController@editarMaquina');
+    Route::put('maquina/costos/{id}', 'APIController@editarCostoMaquina');
     Route::delete('maquina/{id}', 'APIController@eliminarMaquina');
     
     Route::get('puestos', 'APIController@obtenerPuestos');
+    Route::post('puesto', 'APIController@guardarPuesto');
+    Route::put('puesto/{id}', 'APIController@editarPuesto');
+    Route::delete('puesto/{id}', 'APIController@eliminarPuesto');
+    
+
+
     Route::get('herramentales', 'APIController@obtenerHerramentales');
     Route::get('materiales', 'APIController@obtenerMateriales');
     Route::get('programadores', 'APIController@obtenerProgramadores');
@@ -64,6 +72,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('herramental/{herramental}/pruebas-diseno', 'APIController@obtenerPruebasDiseno');
     Route::get('herramental/{herramental}/pruebas-proceso', 'APIController@obtenerPruebasProceso');
     Route::get('componente/{componente}', 'APIController@obtenerComponente');
+    Route::get('componentes-reutilizables', 'APIController@obtenerComponentesReutilizables');
+    Route::post('componentes-reutilizables', 'APIController@guardarComponentesReutilizables');
     Route::get('notificaciones', 'APIController@notificaciones');
     Route::get('hojas/{material_id}', 'APIController@obtenerHojas');
     Route::get('movimientos-hoja/{hoja_id}', 'APIController@obtenerMovimientosHoja');
@@ -103,6 +113,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::put('programacion/cambio-estatus/{id}', 'APIController@cambiarEstatusProgramacion');
     Route::put('corte/cambio-estatus/{id}', 'APIController@cambiarEstatusCorte');
     Route::put('corte/finalizar/{id}', 'APIController@finalizarCorte');
+    Route::put('ensamble/cambio-estatus/{herramental_id}/{componente_id}', 'APIController@cambiarEstatusEnsamble');
+
 
     Route::post('registrar-paro/{componente_id}', 'APIController@registrarParo');
     Route::put('eliminar-paro/{componente_id}/{tipo}', 'APIController@eliminarParo');

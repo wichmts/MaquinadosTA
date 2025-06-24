@@ -108,7 +108,7 @@
                             </div>
                             <div class="row mt-0 pt-0 pb-3" v-else>
                                 <div class="col-lg-6 form-group mb-0">
-                                    <span style="font-size: 22px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold my-4 py-2"> <i class="fa fa-cogs" style="font-size: 16px !important" ></i> @{{componente.nombre}}</span>
+                                    <span style="font-size: 18px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold my-4 py-2"> <i class="fa fa-cogs" style="font-size: 17px !important" ></i> @{{componente.nombre}}</span>
                                 </div>
                                 <div class="col-lg-2 form-group mb-0">
                                     <label class="bold">CANTIDAD</label>
@@ -154,17 +154,17 @@
                                     </div>
     
                                     <div class="col-lg-2 mb-3"  v-if="selectedComponente">
-                                        <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.estatus_fabricacion == 'proceso' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="btn btn-block btn-default mt-0" @click="cambiarEstatusFabricacion('proceso')"><i class="fa fa-play-circle"></i>    INICIAR FABRIC.</button>
+                                        <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.estatus_fabricacion == 'proceso' || this.fabricacion.fabricado == true || !this.esMiMaquina(this.selectedMaquina)" class="btn btn-block btn-default mt-0" @click="cambiarEstatusFabricacion('proceso')"><i class="fa fa-play-circle"></i>    INICIAR FABRIC.</button>
                                     </div>
                                     <div class="col-lg-2 mb-3"  v-if="selectedComponente" style="border-right: 1px solid #efefef">
-                                        <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.estatus_fabricacion == 'detenido' || fabricacion.estatus_fabricacion == 'inicial' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="btn btn-block btn-default mt-0" @click="cambiarEstatusFabricacion('detenido')"><i class="fa fa-stop-circle"></i>    DETENER FABRIC.</button>
+                                        <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.estatus_fabricacion == 'detenido' || fabricacion.estatus_fabricacion == 'inicial' || !puedeEditarse()" class="btn btn-block btn-default mt-0" @click="cambiarEstatusFabricacion('detenido')"><i class="fa fa-stop-circle"></i>    DETENER FABRIC.</button>
                                     </div>
     
                                     <div class="col-lg-2 mb-3"  v-if="selectedComponente">
-                                        <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="btn btn-block mt-0"  @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR </button>
+                                        <button :disabled="!puedeEditarse()" class="btn btn-block mt-0"  @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR </button>
                                     </div>
                                     <div class="col-lg-2 mb-3"  v-if="selectedComponente" >
-                                        <button class="btn btn-success btn-block mt-0" @click="liberar()" :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina) || fabricacion.estatus_fabricacion == 'inicial' || fabricacion.estatus_fabricacion == 'detenido'">
+                                        <button class="btn btn-success btn-block mt-0" @click="liberar()" :disabled="!puedeEditarse()">
                                             <i class="fa fa-check-circle"></i> 
                                             <span v-if="fabricacion.fabricado != true">FINALIZAR</span>
                                             <span v-else>FINALIZADA</span>
@@ -172,13 +172,19 @@
                                     </div>
                                     <div class="col-lg-9">
                                         <div class="row">
-                                            <div class="col-lg-5 form-group" style="height: 150px !important">
-                                                <label class="bold">COMENTARIOS DE COMPONENTE TERMINADO</label>
-                                                <textarea :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-0 form-control text-left px-1 py-1" style="min-height: 150px !important" placeholder="Comentarios..." v-model="fabricacion.comentarios_terminado"></textarea>
-                                            </div>
                                             <div class="col-lg-4 form-group" style="height: 150px !important">
+                                                <label class="bold">COMENTARIOS DE COMPONENTE TERMINADO</label>
+                                                <textarea :disabled="!puedeEditarse()" class="mt-0 form-control text-left px-1 py-1" style="min-height: 150px !important" placeholder="Comentarios..." v-model="fabricacion.comentarios_terminado"></textarea>
+                                            </div>
+                                            <div class="col-lg-5 form-group" >
                                                 <label class="bold">REGISTRO DE MEDIDAS</label>
-                                                <textarea :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-0 form-control text-left px-1 py-1" style="min-height: 150px !important" placeholder="Registro de medidas..." v-model="fabricacion.registro_medidas"></textarea>
+                                                <div style="height: 150px !important; overflow-y: scroll !important">
+                                                    <div v-for="(cota, index) in componente.cuotas_criticas">
+                                                        <label class="bold mb-0">Cota @{{index + 1}} - @{{cota.valor}}</label>
+                                                        <input type="text" class="form-control" :disabled="!puedeEditarse()" placeholder="Valor real..." v-model="cota.valor_real">
+                                                    </div>
+                                                </div>
+                                                {{-- <textarea :disabled="!puedeEditarse()" class="mt-0 form-control text-left px-1 py-1" style="min-height: 150px !important" placeholder="Registro de medidas..." v-model="fabricacion.registro_medidas"></textarea> --}}
                                             </div>
                                             <div class="col-lg-3 form-group">
                                                 <label class="bold">FOTO COMPONENTE TERMINADO</label>
@@ -188,7 +194,7 @@
                                                 <img v-else src="{{ asset('paper/img/no-image.png') }}" style="border-radius: 10px; width: 100%; height: 100px; object-fit: cover" alt="">
                                                 <div class="row mt-2">
                                                     <div class="col-lg-12">
-                                                        <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="btn btn-dark btn-block mt-0" @click="abrirCamara()"><i class="fa fa-camera"></i> <span v-if="fabricacion.foto">RETOMAR FOTO</span><span v-else>TOMAR FOTO</span></button>
+                                                        <button :disabled="!puedeEditarse()" class="btn btn-dark btn-block mt-0" @click="abrirCamara()"><i class="fa fa-camera"></i> <span v-if="fabricacion.foto">RETOMAR FOTO</span><span v-else>TOMAR FOTO</span></button>
                                                         <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;" @change="procesarFoto($event)">
                                                     </div>
                                                 </div>
@@ -199,7 +205,7 @@
                                                 <label class="bold" style="letter-spacing: 1px">SELECCIONE UN SUBCOMPONENTE PARA MARCARLO COMO FABRICADO UNA VEZ QUE HAYA FINALIZADO SU FABRICACIÓN:</label>
                                             </div>
                                             <div class="checkbox-wrapper-10 col-lg-2" v-for="(x, index) in fabricacion.checklist_fabricadas">
-                                                <input class="tgl tgl-flip" :id="'cb5' + index" type="checkbox" v-model="x.terminado" />
+                                                <input :disabled="!puedeEditarse()" class="tgl tgl-flip" :id="'cb5' + index" type="checkbox" v-model="x.terminado" />
                                                 <label class="tgl-btn" :data-tg-off="'✘ ' +x.nombre" :data-tg-on="'✔ ' + x.nombre" :for="'cb5' + index"></label>
                                             </div>                               
                                         </div>
@@ -208,17 +214,17 @@
                                         <div class="row">
                                             
                                             <div class="col-lg-12">
-                                                <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" @click="abrirSolicitud('modificacion')" class="btn btn-dark btn-block mt-0"><i class="fa fa-edit"></i> SOLICITAR MODIFICACIÓN</button>
+                                                <button :disabled="!puedeEditarse()" @click="abrirSolicitud('modificacion')" class="btn btn-dark btn-block mt-0"><i class="fa fa-edit"></i> SOLICITAR MODIFICACIÓN</button>
                                             </div>
                                             <div class="col-lg-12">
-                                                <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" @click="abrirSolicitud('retrabajo')" class="btn btn-dark btn-block mt-0"><i class="fa fa-retweet"></i> SOLICITAR RETRABAJO</button>
+                                                <button :disabled="!puedeEditarse()" @click="abrirSolicitud('retrabajo')" class="btn btn-dark btn-block mt-0"><i class="fa fa-retweet"></i> SOLICITAR RETRABAJO</button>
                                             </div>
                                             <div class="col-lg-12">
-                                                <button :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" @click="abrirSolicitud('refabricacion')" class="btn btn-dark btn-block mt-0"><i class="fa fa-recycle"></i> SOLICITAR REFABRICACIÓN</button>
+                                                <button :disabled="!puedeEditarse()" @click="abrirSolicitud('refabricacion')" class="btn btn-dark btn-block mt-0"><i class="fa fa-recycle"></i> SOLICITAR REFABRICACIÓN</button>
                                             </div>
                                             <div class="col-lg-12">
-                                                <button v-if="fabricacion.estatus_fabricacion != 'paro'" @click="registrarParo()" :disabled="fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-1 btn btn-danger btn-block"><i class="fa fa-stop-circle"></i> Iniciar paro</button>
-                                                <button  v-else @click="eliminarParo()" :disabled="!fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina)" class="mt-1 btn btn-danger btn-block"><i class="fa fa-play-circle"></i> Reanudar operacion</button>
+                                                <button v-if="fabricacion.estatus_fabricacion != 'paro'" @click="registrarParo()" :disabled="!puedeEditarse()" class="mt-1 btn btn-danger btn-block"><i class="fa fa-stop-circle"></i> Iniciar paro</button>
+                                                <button  v-else @click="eliminarParo()" :disabled="!fabricacion.estatus_fabricacion == 'paro' || fabricacion.fabricado == true || !esMiMaquina(selectedMaquina) " class="mt-1 btn btn-danger btn-block"><i class="fa fa-play-circle"></i> Reanudar operacion</button>
                                             </div>
                                         </div>
                                     </div>
@@ -455,7 +461,8 @@
                 {id: 6, prioridad: 6, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
                 // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
                 {id: 8, prioridad: 8, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
-                {id: 9, prioridad: 9, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
+                {id: 9, prioridad: 9, nombre: 'EDM', horas: 0, minutos: 0, incluir: false},
+                {id: 11, prioridad: 11, nombre: 'Marcar', horas: 0, minutos: 0, incluir: false},
             ],
             tasks: [],
             rutaAvance: [],
@@ -600,6 +607,12 @@
             }
         },
         methods:{
+            puedeEditarse(){
+                if(this.fabricacion.fabricado == true || !this.esMiMaquina(this.selectedMaquina) || this.fabricacion.estatus_fabricacion == 'inicial' || this.fabricacion.estatus_fabricacion == 'detenido' || this.fabricacion.estatus_fabricacion == 'paro'){
+                    return false;
+                }
+                return true;
+            },
             abrirSolicitud(tipo){
                 this.solicitud = {
                     tipo: tipo,
@@ -734,7 +747,8 @@
                     {id: 6, prioridad: 6, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
                     // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
                     {id: 8, prioridad: 8, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
-                    {id: 9, prioridad: 9, nombre: 'EDM', horas: 0, minutos: 0, incluir: false}
+                    {id: 9, prioridad: 9, nombre: 'EDM', horas: 0, minutos: 0, incluir: false},
+                    {id: 11, prioridad: 11, nombre: 'Marcar', horas: 0, minutos: 0, incluir: false}
                 ];
     
                 t.tasks.forEach(task => {
@@ -1103,7 +1117,7 @@
             },
             async liberar(){
                 
-                if (!this.fabricacion.comentarios_terminado?.trim() || !this.fabricacion.registro_medidas?.trim() || !this.fabricacion.foto?.trim()) {
+                if (!this.fabricacion.comentarios_terminado?.trim() || !this.fabricacion.foto?.trim()) {
                     swal('Errores de validación', `Todos los campos incluyendo la foto son obligatorios para finalizar esta fabricacion.`, 'error');
                     return;
                 }
@@ -1143,7 +1157,9 @@
                 t.loading_button = true;
                 try {
                     const formData = new FormData();
+                    t.fabricacion.cuotas_criticas = t.componente.cuotas_criticas;
                     formData.append('data', JSON.stringify(t.fabricacion));
+
                      if (t.fotografia) {
                         formData.append('fotografia', t.fotografia);
                     }

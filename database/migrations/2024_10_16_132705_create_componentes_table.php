@@ -21,6 +21,7 @@ class CreateComponentesTable extends Migration
             $table->string('archivo_3d')->nullable();
             // $table->string('archivo_explosionado')->nullable();
             $table->integer('cantidad')->nullable();
+            $table->string('otro_material')->nullable();
             $table->string('proveedor')->nullable();
             $table->text('descripcion')->nullable();
             $table->string('largo')->nullable();
@@ -30,6 +31,8 @@ class CreateComponentesTable extends Migration
             $table->string('diametro')->nullable();
             $table->string('peso')->nullable();
             $table->string('precio_kilo')->nullable();
+            $table->text('cuotas_criticas')->nullable(); //json
+            $table->text('cuotas_criticas_reales')->nullable(); //json
             
             $table->string('fecha_cargado')->nullable();
             $table->string('fecha_terminado')->nullable();
@@ -41,6 +44,8 @@ class CreateComponentesTable extends Migration
             $table->string('fecha_pedido')->nullable();
             $table->string('fecha_estimada')->nullable();
             $table->string('fecha_real')->nullable();
+            $table->integer('cantidad_reutilizable')->nullable();
+            $table->integer('reusados')->nullable();
 
             // temple
             $table->boolean('requiere_temple')->nullable();

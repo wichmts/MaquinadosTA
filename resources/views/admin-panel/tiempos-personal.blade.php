@@ -75,7 +75,10 @@
         width: 100%;
         height: 400px; /* altura fija deseada */
         position: relative; /* necesario para que Chart.js escale bien */
-}
+    }
+    .btn-error:hover{
+        background-color: white !important;
+    }
 
     .table .form-check label .form-check-sign::before, .table .form-check label .form-check-sign::after {top: -10px !important}
 </style>
@@ -100,7 +103,10 @@
         </div>
         <div class="row mt-3 px-5" v-cloak v-show="!cargando">
             <div class="col-lg-6 ">
-                <h2 class="bold my-0 py-1 " style="letter-spacing: 2px">TIEMPOS DE PERSONAL</h2>
+                <h2 class="bold my-0 py-1 " style="letter-spacing: 2px">TIEMPOS DE PERSONAL
+                    <br>
+                    <small style="font-size: 11px">PROGRAMADORES - OPERADORES - ALMACENISTAS - MATRICEROS</small>
+                </h2>
             </div>
             <div class="col-lg-3 form-group">
                 <label class="bold">Desde ->  Hasta</label>
@@ -116,19 +122,21 @@
             <div class="col-lg-12">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">OPERADORES / PROGRAMADORES / ALAMACENISTA</button>
+                        <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">TIEMPOS DE PRODUCCIÓN</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">MATRICERO</button>
+                        <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">COMPONENTES ENSAMBLADOS</button>
                     </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                        <div class="row">
+                        <div class="row mb-5">
                             <div class="col-lg-3 mt-3 text-center" v-for="personal in tiempos" :key="personal.id">
                                 <h4 class="bold my-0 mb-2">@{{ personal.nombre }} </h4>
-                                <span class="badge badge-pill badge-dark px-2 py-1 mx-1 mb-1" style="font-size: 9px" v-for="rol in personal.roles">@{{rol}}</span>
+                                <span class="badge badge-pill badge-dark px-2 py-1 mx-1 mb-1" style="font-size: 9px" v-for="rol in personal.roles">@{{rol.nombre}}</span>
                                 <canvas :id="'grafica_' + personal.id" width="200" height="200" class="grafica-canvas mt-3"></canvas>
+                                <button @click="verTiemposRole(personal.roles)" class="btn-block btn btn-sm mb-0 mt-1 btn-default"><i class="fa fa-user-clock"></i> Tiempos de producción por role</button>
+                                <button @click="verTiemposParo(personal.detalle_paros)" class="btn-block btn btn-sm mb-0 mt-1 btn-danger"><i class="fa fa-list"></i> Detalle de paros</button>
                             </div>
                         </div>
                     </div>
@@ -142,6 +150,92 @@
                              </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+         <div class="modal fade" id="modalTiemposRole" tabindex="-1" aria-labelledby="modalTiemposRoleLabel" aria-hidden="true">
+            <div class="modal-dialog" style="min-width: 40%;">
+                <div class="modal-content" >
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="modalTiemposRoleLabel"><span>TIEMPOS DE PRODUCCIÓN POR ROLE </span></h3>
+                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <table class="table table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th style="text-transform: none !important" >Role</th>
+                                            <th class="bg-success text-white" style="text-transform: none !important" >Tiempo activo</th>
+                                            <th class="bg-danger text-white" style="text-transform: none !important" >Tiempo en paro</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="role in tiemposRoles" :key="role.id">
+                                            <td class="bold">@{{ role.nombre }}</td>
+                                            <td>@{{ formatearMinutos(role.minutos_activo) }}</td>
+                                            <td>@{{ formatearMinutos(role.minutos_paro) }}</td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                            </div>           
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 text-right">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar </button>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        </div>
+         <div class="modal fade" id="modalParos" tabindex="-1" aria-labelledby="modalParosLabel" aria-hidden="true">
+            <div class="modal-dialog" style="min-width: 50%;">
+                <div class="modal-content" >
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="modalParosLabel"><span>DETALLE DE PAROS </span></h3>
+                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <table class="table table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th style="text-transform: none !important"> Fecha y Hora</th>
+                                            <th style="text-transform: none !important"> Tipo de paro</th>
+                                            <th style="text-transform: none !important"> Comentarios del paro</th>
+                                            <th style="text-transform: none !important"> Maquina</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="paro in detalleParos" :key="paro.id">
+                                            <td>@{{ paro.fecha_show }} @{{ paro.hora_show }}</td>
+                                            <td>@{{ paro.tipo_paro }}</td>
+                                            <td>@{{ paro.comentarios_paro }}</td>
+                                            <td>@{{ paro.maquina??'NA' }}</td>
+                                        </tr>
+                                        <tr v-if="!detalleParos || detalleParos.length == 0">
+                                            <td colspan="4">No hay paros registrados por este usuario.</td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                            </div>           
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 text-right">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar </button>
+                            </div>
+                        </div>
+                    </div> 
                 </div>
             </div>
         </div>
@@ -168,9 +262,23 @@
             graficas: [],
             datosGrafica: [],
             totalComponentes: 0,
+            tiemposRoles: [],
+            detalleParos: [],
         },
         methods:{
-            
+             formatearMinutos(minutos) {
+                const horas = Math.floor(minutos / 60);
+                const mins = minutos % 60;
+                return `${horas > 0 ? horas + ' hr ' : ''}${mins} min`;
+            },
+            verTiemposRole(tiempos) {
+                this.tiemposRoles = tiempos;
+                $('#modalTiemposRole').modal('show');
+            },
+            verTiemposParo(paros) {
+                this.detalleParos = paros;
+                $('#modalParos').modal('show');
+            },
             async fetchTiempos() {
                 this.cargando = true
 
@@ -257,10 +365,45 @@
                     }
                 });
             },
+            obtenerCosto(minutos, costoPorHora) {
+                // Validación y conversión
+                if (typeof minutos !== 'number' || minutos < 0) {
+                    console.warn('Minutos inválidos');
+                    return '$0.00';
+                }
+
+                // Limpiar el string de costo (por si viene con símbolos como "$" o espacios)
+                if (typeof costoPorHora === 'string') {
+                    costoPorHora = costoPorHora.replace(/[^0-9.,]/g, '').replace(',', '.'); // eliminar $ y convertir , a .
+                }
+
+                // Convertir a número flotante
+                costoPorHora = parseFloat(costoPorHora);
+
+                if (isNaN(costoPorHora) || costoPorHora < 0) {
+                    console.warn('Costo por hora inválido');
+                    return '$0.00';
+                }
+
+                // Cálculo
+                const horas = Math.floor(minutos / 60);
+                const minutosRestantes = minutos % 60;
+                const costoTotal = (horas * costoPorHora) + ((minutosRestantes / 60) * costoPorHora);
+
+                // Formato moneda
+                return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(costoTotal);
+            },
             generarGrafica(personal) {
                 let datosActiva = personal.minutos_activo;
                 let datosParo = personal.minutos_paro;
                 let datosEsperados = Math.max(0, personal.minutos_totales - (datosActiva + datosParo));
+
+                // Crear los labels con los costos
+                let etiquetas = [
+                    `Activo (${this.obtenerCosto(datosActiva, personal.costo_hora)})`,
+                    `Paro (${this.obtenerCosto(datosParo, personal.costo_hora)})`,
+                    `Inactivo (${this.obtenerCosto(datosEsperados, personal.costo_hora)})`
+                ];
 
                 
                 let ctx = document.getElementById('grafica_' + personal.id).getContext('2d');
@@ -268,7 +411,7 @@
                 let grafica = new Chart(ctx, {
                     type: 'pie',
                     data: {
-                        labels: ['Activo', 'Paro', 'Inactivo'],
+                        labels: etiquetas,
                         datasets: [{
                             label: 'Tiempo personal',
                             data: [datosActiva, datosParo, datosEsperados],

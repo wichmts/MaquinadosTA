@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Jobs\EnviarCorreoNotificacion;
 use Carbon\Carbon;
 
 class Notificacion extends Model
@@ -27,6 +28,14 @@ class Notificacion extends Model
 
     public function anio(){
         return $this->belongsTo(Anio::class);
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($notificacion) {
+            (new EnviarCorreoNotificacion($notificacion))->handle();
+            // \App\Jobs\EnviarCorreoNotificacion::dispatch($notificacion);
+        });
     }
 
 

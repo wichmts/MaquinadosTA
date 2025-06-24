@@ -10,7 +10,15 @@
     .form-group input[type="text"] {
         height: 30px !important
     }
-    .table .form-check label .form-check-sign::before, .table .form-check label .form-check-sign::after {top: -10px !important}
+    .table th{
+        font-size: 10px !important;
+    }
+    .table td{
+        font-size: 10px !important;
+    }
+    .table .form-check label .form-check-sign::before, .table .form-check label .form-check-sign::after {
+        top: -10px !important
+    }
 </style>
 
 @section('content')
@@ -112,7 +120,8 @@
                                                 <th>Componente</th>
                                                 <th>Proveedor / Material</th>
                                                 <th>Descripción</th>
-                                                <th>Cant.</th>
+                                                <th>Cantidad</th>
+                                                <th>Reuso &nbsp;<i class="fa fa-question-circle text-muted cursor-pointer" style="font-size: 11px !important" data-toggle="tooltip"  title="Cantidad de componentes reutilizados que no se compraron."></i></th>
                                                 <th>Costo unit.</th>
                                                 <th>Fecha de solicitud</th>
                                                 <th>Fecha pedido</th>
@@ -122,20 +131,21 @@
                                         </thead>
                                         <tbody>
                                             <tr v-for="c in componentes">
-                                                <td class="bold">
-                                                    @{{c.nombre}} <br>
+                                                <td>
+                                                    <small><strong>@{{c.nombre}}</strong></small><br>
                                                     <span v-if="c.cancelado" class="badge badge-danger">CANCELADO</span>
                                                 </td>
                                                 <td><input disabled class="form-control text-center" type="text" v-model="c.proveedor"></td>
                                                 <td>
                                                     <small>@{{c.descripcion}}</small>
                                                 </td>
-                                                <td><input disabled class="form-control text-center" type="number" step="1" v-model="c.cantidad"></td>
-                                                <td><input class="form-control text-center" type="number" step="any" v-model="c.costo_unitario"></td>
-                                                <td><input class="form-control text-center" type="date" :disabled="c.cancelado || c.fecha_real"  v-model="c.fecha_solicitud"></td>
-                                                <td><input class="form-control text-center" type="date" :disabled="c.cancelado || c.fecha_real"  v-model="c.fecha_pedido"></td>
-                                                <td><input class="form-control text-center" type="date" :disabled="c.cancelado || c.fecha_real"  v-model="c.fecha_estimada"></td>
-                                                <td><input class="form-control text-center" type="date" :disabled="c.cancelado || c.fecha_real"  v-model="c.fecha_real_liberada"></td>
+                                                <td><input disabled class="form-control text-center px-0" type="number" step="1" v-model="c.cantidad"></td>
+                                                <td><input class="form-control text-center px-0" type="number" step="1" v-model="c.reusados"></td>
+                                                <td><input class="form-control text-center px-0" type="number" step="any" v-model="c.costo_unitario"></td>
+                                                <td><input class="form-control text-center px-0" type="date" disabled  v-model="c.fecha_solicitud"></td>
+                                                <td><input class="form-control text-center px-0" type="date" :disabled="c.cancelado || c.fecha_real"  v-model="c.fecha_pedido"></td>
+                                                <td><input class="form-control text-center px-0" type="date" :disabled="c.cancelado || c.fecha_real"  v-model="c.fecha_estimada"></td>
+                                                <td><input class="form-control text-center px-0" type="date" :disabled="c.cancelado || c.fecha_real"  v-model="c.fecha_real_liberada"></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -233,6 +243,9 @@
                 try {
                     const response = await axios.get(`/api/herramentales/${herramentalId}/componentes?area=compras&estatusCompra=${this.estatusCompra}`);
                     this.componentes = response.data.componentes;
+                     Vue.nextTick(function() {
+                        $('[data-toggle="tooltip"]').tooltip();
+                    })
                 } catch (error) {
                     console.error('Error fetching componentes:', error);
                 } finally {
@@ -241,6 +254,21 @@
             },
             async guardarComponentes(mostrarAlerta = true){
                 let t = this
+                
+                let errorEncontrado = false;
+                t.componentes.forEach((componente, index) => {
+                    const cantidad = parseInt(componente.cantidad) || 0;
+                    const reuso = parseInt(componente.reusados) || 0;
+                    if (reuso > cantidad || reuso < 0) {
+                        errorEncontrado = true;
+                    }
+                });
+
+                if (errorEncontrado) {
+                    swal('¡Lo sentimos!', 'La cantidad de componentes reutilizados no puede ser mayor a la cantidad total necesaria para el componente.', 'info');
+                    return false;
+                }
+
                 t.cargando = true;
                 let formData = new FormData();
                 formData.append('data', JSON.stringify(t.componentes));
@@ -261,41 +289,6 @@
                     return false;
                 }  
             },
-            // async liberarHerramental() {
-            //     let t = this;
-
-            //     let errores = [];
-            //     t.componentes.forEach((componente, index) => {  
-            //         if (!componente.fecha_solicitud || !componente.fecha_pedido || !componente.fecha_estimada || !componente.fecha_real ) {
-            //             errores.push(`Todos los campos son obligatorios para liberar en ${componente.nombre}.`);
-            //         }
-            //     });
-
-            //     if (errores.length > 0) {
-            //         swal('Errores de validación', errores.join('\n'), 'error');
-            //         return;
-            //     }
-
-                
-            //     t.cargando = true;
-            //     let respuesta = await t.guardarComponentes(false);
-            //     if(respuesta){
-            //         try {
-            //             const response = await axios.put(`/api/liberar-herramental-compras/${t.selectedHerramental}`);
-            //             t.cargando = false;
-            //             swal('Éxito', 'Componentes liberados correctamente', 'success');
-            //             t.fetchComponentes(t.selectedHerramental);
-
-            //         } catch (error) {
-            //             t.cargando = false;
-            //             console.error('Error al liberar el componente:', error);
-            //             swal('Error', 'Ocurrió un error al liberar el herramental', 'error');
-            //         }
-            //     }else{
-            //         swal('Error', 'Ocurrió un error al guardar la informacion de los componentes', 'error');
-            //         t.cargando = false;
-            //     }
-            // },
            async navigateFromUrlParams() {
                 const queryParams = new URLSearchParams(window.location.search);
                 const proyectoId = queryParams.get('p');

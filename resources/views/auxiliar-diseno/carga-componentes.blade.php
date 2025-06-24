@@ -121,7 +121,7 @@
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
                                         <span class="underline-hover">Nueva carpeta...</span>
                                     </a>
-                                    <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)" v-if="obj.nombre != 'ORDENES EXTERNAS'">
+                                    <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)" v-if="obj.nombre != 'ORDENES EXTERNAS' && obj.nombre != 'REFACCIONES'">
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
                                         <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
                                     </a>
@@ -186,7 +186,7 @@
                                 <div class="col-lg-8" v-if="selectedHerramental">
                                     <div class="row">
                                         <div class="col text-center">
-                                            <input class="input-file" :id="'explosionada'" type="file" name="file" @change="handleFileChangeHerramental($event)" style="display: none;">
+                                            <input class="input-file" :id="'explosionada'" type="file" name="file" @change="handleFileChangeHerramental($event)" style="display: none;" :disabled="archivo_explosionado != '' && archivo_explosionado != null && !herramentalYaTerminado()" >
                                             <label tabindex="0" :for="'explosionada'" class="input-file-trigger col-12 text-center"><i class="fa fa-upload"></i> Vista Explosiva</label>
                                             <small>@{{ getElipsis(archivo_explosionado) }}</small>
                                         </div>
@@ -227,12 +227,12 @@
                                                         <strong> @{{ c.nombre }} <br> <small v-if="c.retrabajo" >En modificacion...</small></strong>
                                                     </td>
                                                     <td style="width: 10%">
-                                                        <input class="input-file" :id="'2d-' + index" type="file" name="file" @change="handleFileChange($event, index, 'vista2D')" style="display: none;">
+                                                        <input class="input-file" :id="'2d-' + index" type="file" name="file" @change="handleFileChange($event, index, 'vista2D')" style="display: none;" :disabled="c.cargado == 1 && !c.retrabajo && !herramentalYaTerminado()">
                                                         <label tabindex="0" :for="'2d-' + index" class="input-file-trigger col-12 text-center"><i class="fa fa-upload"></i> Cargar</label>
                                                         <small>@{{ getElipsis(c.archivo_2d_show) }}</small>
                                                     </td>
                                                     <td style="width: 10%">
-                                                        <input class="input-file" :id="'3d-' + index" type="file" name="file" @change="handleFileChange($event, index, 'vista3D')" style="display: none;">
+                                                        <input class="input-file" :id="'3d-' + index" type="file" name="file" @change="handleFileChange($event, index, 'vista3D')" style="display: none;" :disabled="c.cargado == 1 && !c.retrabajo && !herramentalYaTerminado()">
                                                         <label tabindex="0" :for="'3d-' + index" class="input-file-trigger col-12 text-center"><i class="fa fa-upload"></i> Cargar</label>
                                                         <small>@{{ getElipsis(c.archivo_3d_show) }}</small>
                                                     </td>
@@ -258,6 +258,10 @@
                                                             <option :value="null">N/A</option>
                                                             <option v-for="m in materiales" :value="m.id">@{{ m.nombre }}</option>
                                                         </select>
+                                                        <div class="form-group text-left mt-1" v-show="c.es_compra == 0 && c.material_id == 6">
+                                                            <input type="text" class="form-control" v-model="c.otro_material" :disabled="c.cargado == 1" placeholder="Material...">
+                                                        </div>
+
                                                         <div class="form-group text-left" v-show="c.es_compra == 1">
                                                             <small >Proveedor / Material</small>
                                                             <input type="text" class="form-control" v-model="c.proveedor" :disabled="c.cargado == 1" >
@@ -265,15 +269,15 @@
                                                     </td>
                                                     <td style="width: 25%">
                                                         <div class="row" v-show="c.es_compra == 0">
-                                                            <div class="col-lg-4 form-group pr-1 text-left bold" v-if="c.material_id == 1 || c.material_id == 2 || c.material_id == 4 || c.material_id == 5">
+                                                            <div class="col-lg-4 form-group pr-1 text-left bold" v-if="c.material_id == 1 || c.material_id == 6 || c.material_id == 2 || c.material_id == 4 || c.material_id == 5">
                                                                 <small class="bold">Largo</small>
                                                                 <input type="text" class="form-control" v-model="c.largo"  :disabled="c.cargado == 1">
                                                             </div>
-                                                            <div class="col-lg-4 form-group px-1 text-left bold" v-if="c.material_id == 1 || c.material_id == 2 || c.material_id == 4 || c.material_id == 5">
+                                                            <div class="col-lg-4 form-group px-1 text-left bold" v-if="c.material_id == 1 || c.material_id == 6 || c.material_id == 2 || c.material_id == 4 || c.material_id == 5">
                                                                 <small class="bold">Ancho</small>
                                                                 <input type="text" class="form-control" v-model="c.ancho"  :disabled="c.cargado == 1">
                                                             </div>
-                                                            <div class="col-lg-4 form-group px-1 text-left bold" v-if="c.material_id == 1 || c.material_id == 2 || c.material_id == 5">
+                                                            <div class="col-lg-4 form-group px-1 text-left bold" v-if="c.material_id == 1 || c.material_id == 6 || c.material_id == 2 || c.material_id == 5">
                                                                 <small class="bold">Espesor</small>
                                                                 <input type="text" class="form-control" v-model="c.espesor"  :disabled="c.cargado == 1">
                                                             </div>
@@ -298,7 +302,8 @@
                                                             <div class="col my-1">
                                                                 <button v-if="!c.retrabajo && !c.cargado" @click="liberarComponente(c)" class=" my-1 btn-block btn btn-sm btn-success"><i class="fa fa-check"></i> Liberar</button>
                                                                 <button v-if="!c.retrabajo && c.cargado && !c.cancelado" disabled class=" my-1 btn-block btn btn-sm btn-success"><i class="fa fa-check-double"></i> Liberado</button>
-                                                                <button @click="modificacion(c.id)" v-if="!c.retrabajo && c.cargado && !c.cancelado && c.es_compra == 0" class="btn btn-block my-2 btn-dark btn-sm"><i class="fa fa-plus-circle"></i> Modificación</button>    
+                                                                <button @click="verCuotas(c)" v-if="!c.retrabajo && c.es_compra == 0" class="btn btn-sm btn-block my-1"><i class="fa fa-ruler-combined"></i> Cotas críticas </button>
+                                                                <button @click="modificacion(c.id)" v-if="!c.retrabajo && c.cargado && !c.cancelado && c.es_compra == 0" class="btn btn-block my-1 btn-dark btn-sm"><i class="fa fa-plus-circle"></i> Modificación</button>    
                                                                 <button v-if="!c.retrabajo && c.cargado && !c.cancelado" @click="preCancelarComponente(c)" class=" my-1 btn-block btn btn-sm btn-danger"><i class="fa fa-exclamation-triangle"></i> Cancelar</button>
                                                                 <button v-if="!c.retrabajo && c.cargado && c.cancelado" class=" my-1 btn-block btn btn-sm btn-danger" disabled><i class="fa fa-ban"></i> Cancelado</button>
                                                                 <button v-if="!c.cargado" @click="eliminarComponente(index)" class=" btn btn-sm btn-danger btn-block"><i class="fa fa-times-circle"></i> Eliminar</button>
@@ -357,6 +362,12 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="row">
+                                        <div class="input-group col-lg-12">
+                                            <div class="input-group-prepend" style="background-color: #efefef">
+                                                <span class="bold input-group-text py-0">HR &nbsp;&nbsp;</span>
+                                            </div>
+                                            <input type="text" class="form-control" v-model="nombre_herramental" placeholder="Número de herramental...">
+                                        </div>
                                         <div class="col-lg-12 form-group">
                                             <input class="input-file" id="archivo" type="file" name="file" @change="seleccionaArchivo($event)" v-show="false">
                                             <label tabindex="0" for="archivo" class="input-file-trigger col-12 text-center"><i class="fa fa-upload"></i> Subir formato  </label>
@@ -368,6 +379,41 @@
                                             <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
                                             <button class="btn btn-secondary" v-if="!loading_button" type="button" @click="guardarHerramental()"><i class="fa fa-save"></i> Guardar</button>
                                             <button class="btn btn-secondary" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> Guardando...</button>
+                                        </div>
+                                    </div>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="modalCuotas" tabindex="-1" aria-labelledby="modalCuotasLabel" aria-hidden="true">
+                        <div class="modal-dialog" style="max-width: 40%;">
+                            <div class="modal-content" >
+                                <div class="modal-header">
+                                    <h3 class="modal-title" id="modalCuotasLabel">
+                                        <span>REGISTRO DE COTAS CRÍTICAS PARA @{{componente.nombre}}</span>
+                                    </h3>
+                                    <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row"  v-for="(cuota, index) in componente.cuotas_criticas">
+                                        <div class="col-lg-9 form-group mb-0">
+                                            <label class="bold">Cota @{{index + 1}}</label>
+                                            <input :disabled="componente.cargado == 1" type="text" class="form-control" v-model="cuota.valor" placeholder="Cuota critica..." >
+                                        </div>
+                                        <div class="col-lg-3 form-group mb-0" >
+                                            <button :disabled="componente.cargado == 1"  @click="eliminarCuota(index)" class="mt-4 btn btn-sm btn-danger btn-block" style="height: 32px !important"><i class="fa fa-times-circle"></i> Eliminar</button>
+                                        </div>
+                                    </div>
+                                    <div class="row" v-if="!componente.cargado">
+                                        <div class="col-lg-12">
+                                            <button class="btn btn-sm btn-success mt-0" @click="agregarCuota()" style="height: 32px !important"><i class="fa fa-plus-circle"></i> agregar cota</button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12 text-right">
+                                            <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
                                         </div>
                                     </div>
                                 </div> 
@@ -388,6 +434,7 @@
         var app = new Vue({
         el: '#vue-app',
         data: {
+            componente: {cuotas_criticas: []},
             errores: [],
             loading_button: false,
             cargando: false,
@@ -417,6 +464,7 @@
             componentes:[],
             files: [],
             archivo_explosionado: '',
+            nombre_herramental: '',
         },
         watch: {
             componentes: {
@@ -424,6 +472,7 @@
                     newComponentes.forEach((componente) => {
                         if (componente.es_compra === 1) {
                             componente.material_id = null;
+                            componente.otro_material = '';
                             componente.largo = ''; 
                             componente.ancho = ''; 
                             componente.espesor = ''; 
@@ -439,6 +488,23 @@
             }
         },
         methods:{
+            herramentalYaTerminado(){
+                let herramental = this.herramentales.find(h => h.id == this.selectedHerramental)
+                return (herramental.fecha_terminado && herramental.fecha_terminado != null)
+            },
+            agregarCuota(){
+                this.componente.cuotas_criticas.push({valor: '', valor_real: ''});
+            },
+            eliminarCuota(index){
+                this.componente.cuotas_criticas.splice(index, 1);
+            },
+            verCuotas(componente){
+                let t = this
+                t.componente = componente;  
+                Vue.nextTick(() => {
+                    $('#modalCuotas').modal('show');
+                });
+            },
             async handleFileChangeHerramental(event) {
                 let t = this;
                 let file = event.target.files[0];
@@ -669,6 +735,8 @@
                     archivo_3d_show: '',
                     // archivo_explosionado_show: '',
                     cargado: false,
+                    cuotas_criticas: [{valor: '', valor_real: ''}],
+                    otro_material: '',
                 });
                 Vue.nextTick(() => {
                     const tbody = document.querySelector("#tabla-principal tbody");
@@ -693,7 +761,6 @@
                 });
 
             },
-
             seleccionaArchivo: function(e){
                 let t = this;
                 var files = e.target.files || e.dataTransfer.files;
@@ -707,6 +774,7 @@
             nuevoHerramental(){
                 $('#modalHerramental').modal();
                 this.archivo = '';
+                this.nombre_herramental = '';
 
                 Vue.nextTick(function(){    
                     $('#archivo').val(null);
@@ -735,8 +803,14 @@
                     swal('Formato obligatorio', 'Por favor seleccione un archivo antes de guardar.', 'info');
                     return;
                 }
+                if(t.nombre_herramental == '' || t.nombre_herramental == null){
+                    swal('Nombre obligatorio', 'Por favor ingrese un nombre para el herramental.', 'info');
+                    return;
+                }
 
                 formData.append("archivo", file1.files[0]);
+                formData.append("nombre", 'HR' + t.nombre_herramental);
+
                 axios.post(`/api/herramental/${t.selectedProyecto}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -746,9 +820,8 @@
                         t.fetchHerramentales(t.selectedProyecto);
                         $('#modalHerramental').modal('toggle');
                     }else{
-                        swal('Lo sentimos!', response.data.message, 'info');
+                        swal('¡Lo sentimos!', response.data.message, 'info');
                         t.cargando = false;
-                        console.log(e);
                     }
                 }).catch(e => {
                     swal('Lo sentimos!', 'Intentelo de nuevo mas tarde', 'info');
@@ -909,7 +982,8 @@
                     this.componentes = response.data.componentes;
                     this.componentes.forEach(obj => {
                         obj.retrabajo = false; 
-                        obj.refabricado ?? false
+                        obj.refabricado ?? false;
+                        obj.cuotas_criticas = obj.cuotas_criticas || [{nombre: ''}];
                     })
                     this.componentes.sort((a, b) => a.nombre.localeCompare(b.nombre));
                     document.querySelector("html").classList.add('js');
@@ -958,20 +1032,26 @@
                 if(componente.cancelado)
                     return true;
 
+
                 if (!componente.cantidad || parseInt(componente.cantidad) <= 0 ) {
                     errores.push(`La cantidad en ${componente.nombre} es obligatoria y tiene que ser mayor a 0.`);
                 }
 
+                
                 if(componente.es_compra == 0){
                     if(!componente.material_id || componente.material_id == null){
                         errores.push(`El material en ${componente.nombre} es obligatorio.`);
                     }
-                    if(componente.material_id && (componente.material_id == 1 || componente.material_id == 2 || componente.material_id == 4 || componente.material_id == 5)){
+                    if(componente.material_id == 6 && (componente.otro_material === '' || componente.otro_material == null)){
+                        errores.push(`Las nombre del material es obligatorio para ${componente.nombre}.`);
+                    }
+
+                    if(componente.material_id && (componente.material_id == 1 || componente.material_id == 6 || componente.material_id == 2 || componente.material_id == 4 || componente.material_id == 5)){
                         if(!componente.largo || !componente.ancho){
                             errores.push(`El largo y ancho en ${componente.nombre} son obligatorios.`);
                         }
                     }
-                    if(componente.material_id && (componente.material_id == 1 || componente.material_id == 2 || componente.material_id == 5)){
+                    if(componente.material_id && (componente.material_id == 1 || componente.material_id == 6 || componente.material_id == 2 || componente.material_id == 5)){
                         if(!componente.espesor){
                             errores.push(`El espesor en ${componente.nombre} es obligatorio.`);
                         }
@@ -980,6 +1060,14 @@
                         if(!componente.longitud || !componente.diametro){
                             errores.push(`La longitud y diametro en ${componente.nombre} son obligatorios.`);
                         }
+                    }
+                    if (
+                        !componente.cuotas_criticas || 
+                        !Array.isArray(componente.cuotas_criticas) || 
+                        componente.cuotas_criticas.length === 0 || 
+                        componente.cuotas_criticas.some(c => !c.valor || c.valor === '')
+                    ) {
+                        errores.push(`Las cuotas críticas del componente ${componente.nombre} son obligatorias.`);
                     }
                 }
 
