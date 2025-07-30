@@ -916,13 +916,27 @@
                     })
                 })
             },
-            cambiarEstatusCorte(id, nuevoEstatus){
-                let t = this
-                axios.put(`api/corte/cambio-estatus/${id}`, {estatus: nuevoEstatus} ).then(response => {
-                    if(response.data.success){
-                        t.fetchComponentes(t.selectedHerramental)    
+            async cambiarEstatusCorte(id, nuevoEstatus){
+                let t = this    
+                let componente = t.componentes.find(obj => obj.id == id);
+                
+                if(componente){
+                    await t.fetchHojas(componente.material_id);
+                    let hojas = t.hojas.filter(obj => obj.material_id == componente.material_id);    
+
+                    if(!hojas.length && nuevoEstatus == 'proceso'){
+                        swal('No hay hojas disponibles', 'No se puede iniciar el corte porque no hay hojas disponibles para el material seleccionado.', 'info');
+                        return;
                     }
-                })
+
+                    let response = await axios.put(`api/corte/cambio-estatus/${id}`, {
+                        estatus: nuevoEstatus
+                    });
+
+                    if(response.data.success){
+                        t.fetchComponentes(t.selectedHerramental);    
+                    }
+                }
             },
             finalizarCorteAPI(){
                 let t = this;
@@ -944,8 +958,8 @@
                     return false;
                 }
 
-                if (parseFloat(t.movimiento.peso) > parseFloat(hoja.peso_saldo)) {
-                    swal('Valor inválido', 'El peso restante no puede ser mayor al saldo disponible en la hoja.', 'warning');
+                if (parseFloat(t.movimiento.peso) >= parseFloat(hoja.peso_saldo)) {
+                    swal('Valor inválido', 'El peso restante no puede ser mayor o igual al saldo disponible en la hoja.', 'warning');
                     return false;
                 }
 
@@ -1109,7 +1123,8 @@
                 this.cargando = true
                 try {
                     let response = await axios.get(`/api/hojas/${material_id}`);
-                    this.hojas = (response.data.hojas || []).filter(hoja => hoja.estatus == 1);
+                    this.hojas = (response.data.hojas || []).filter(hoja => hoja.estatus);
+                    cons
                 } catch (error) {
                     console.error('Error fetching hojas:', error);
                 } finally {

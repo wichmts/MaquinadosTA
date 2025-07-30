@@ -787,13 +787,29 @@
             },
             async cambiarEstatusComponente(){
                 let t = this;
-                if (!this.componente.foto_matricero) {
-                        swal('Error', 'Debe cargar una foto del componente antes de cambiar el estado de componente.', 'error');
-                        this.$nextTick(() => {
-                            this.$set(this.componente, 'ensamblado', false);
-                        });
-                        return;
+                
+                if(this.componente.es_compra && !this.componente.fecha_real){
+                    swal('Acción no disponible', 'No se puede ensamblar un componente que aún se encuentra en proceso de compra.', 'warning');
+                    this.$nextTick(() => {
+                        this.$set(this.componente, 'ensamblado', false);
+                    });
+                    return;
                 }
+                if(!this.componente.es_compra && !this.componente.fecha_terminado){
+                    swal('Acción no disponible', 'No se puede ensamblar un componente que aún esta en fabricación.', 'warning');
+                    this.$nextTick(() => {
+                        this.$set(this.componente, 'ensamblado', false);
+                    });
+                    return;
+                }
+                if (!this.componente.foto_matricero) {
+                    swal('Acción no disponible', 'Debe cargar una foto del componente antes de cambiar el estado de componente.', 'warning');
+                    this.$nextTick(() => {
+                        this.$set(this.componente, 'ensamblado', false);
+                    });
+                    return;
+                }
+
                 swal({
                     title: "¿Está seguro?",
                     text: "¿Desea cambiar el estado del componente?",

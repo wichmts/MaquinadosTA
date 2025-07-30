@@ -87,12 +87,12 @@ body {
               @csrf
               <img src="{{ \App\Helpers\SystemHelper::getLogo() }}" class="mb-3" width="35%"><br>
               <div class="form-group">
-                  <h5 class="mb-1 mt-2 bold" style="letter-spacing: 2px"><small>CODIGO DE ACCESO</small></h5>
+                  <h5 class="mb-1 mt-2 bold" style="letter-spacing: 2px"><small>TRACKER</small></h5>
                   <input style="font-size: 20px !important; letter-spacing: 2px" 
                         class="text-center" 
                         type="password" 
                         name="codigo_acceso" 
-                        placeholder="Ingrese su código de acceso" 
+                        placeholder="Ingresar tracker..." 
                         required/>
               </div>
 

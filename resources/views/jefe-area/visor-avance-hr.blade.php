@@ -462,7 +462,7 @@
                                     </div>
                                     <div class="mb-2 row">
                                         <div class="col-lg-4">
-                                            <a class="btn btn-block btn-default" :href="'/download/' + herramental.archivo2">
+                                            <a class="btn btn-block btn-default" :href="'/api/download/' + herramental.archivo2">
                                                 <i class="fa fa-download"></i> FORMATO F71-03 ANEXO 1.1
                                             </a>
                                         </div>
@@ -538,7 +538,7 @@
                                             </div>
                                             <div class="mb-2 row">
                                                 <div class="col-lg-12 text-center">
-                                                    <a class="btn btn-sm btn-default" :href="'/download/pruebas-diseno/' + prueba.archivo_dimensional">
+                                                    <a class="btn btn-sm btn-default" :href="'/api/download/pruebas-diseno/' + prueba.archivo_dimensional">
                                                         <i class="fa fa-download"></i> ARCHIVO DIMENSIONAL
                                                     </a>
                                                 </div>
@@ -582,7 +582,7 @@
                                             </div>
                                             <div class="mb-2 row">
                                                 <div class="col-lg-12 text-center">
-                                                    <a class="btn btn-sm btn-default" :href="'/download/pruebas-proceso/' + prueba.archivo">
+                                                    <a class="btn btn-sm btn-default" :href="'/api/download/pruebas-proceso/' + prueba.archivo">
                                                         <i class="fa fa-download"></i> FORMATO F71-03 ANEXO 2
                                                     </a>
                                                 </div>
@@ -1060,7 +1060,7 @@
 
                 if (!fechaHoraFinMax) return 0;
 
-                const fechaStr = fechaHoraFinMax.toISOString().split('T')[0];
+                const fechaStr = fechaHoraFinMax.toLocaleDateString('sv-SE'); // 'YYYY-MM-DD'
 
                 const indexDia = this.duracionTotal.findIndex(d => d === fechaStr);
                 if (indexDia === -1) return 0;
@@ -1075,7 +1075,6 @@
 
                 return leftPx;
             },
-
             otrasFechasPosiciones() {
                 if (!this.duracionTotal || !this.herramental?.otras_fechas) return [];
 

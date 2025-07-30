@@ -222,9 +222,11 @@ class Componente extends Model
         $data['fecha_real_liberada'] = $this->fecha_real;
         $data['fecha_real_temple'] = $this->fecha_recibido_temple;
         $data['material_nombre'] = $this->material ? $this->material->nombre : '';
+        
         $data['archivo_2d_public'] = $this->archivo_2d ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->archivo_2d : '';
         $data['archivo_3d_public'] = $this->archivo_3d ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->archivo_3d : '';
         $data['archivo_explosionado_public'] = $this->herramental->archivo_explosionado ? $this->herramental->proyecto_id .'/' . $this->herramental->id . '/componentes/'. $this->herramental->archivo_explosionado : '';
+
         $data['ruta'] = $this->ruta ? json_decode($this->ruta, true) : [];
         $data['fabricaciones'] = $this->fabricaciones ? $this->fabricaciones : [];
         $data['rutaAvance'] = $this->rutaAvance();

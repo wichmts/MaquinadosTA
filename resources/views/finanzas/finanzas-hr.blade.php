@@ -138,6 +138,9 @@
                                                     </div>
                                                     <div class="card-footer text-center py-2" >
                                                         <h4 style="letter-spacing: 1px" class="bold my-0 py-0"><small>Horas máquina <br> </small> @{{tiempos.maquinado_horas}} Horas y @{{tiempos.maquinado_minutos}} Minutos</h4>
+                                                        <h4 style="letter-spacing: 1px" class="bold my-0 py-0"><small>Costo producción <br> </small> @{{tiempos.costoTotalMaquinado | currency}} </h4>
+                                                        <button class="btn btn-sm btn-default mt-2 py-1" @click="verDetalleCostos"><i class="fa fa-info-circle"></i> Ver detalle</button>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -333,6 +336,48 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="modalCostos" tabindex="-1" role="dialog" aria-labelledby="modalCostosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title bold" id="modalCostosLabel">DETALLE DE COSTOS DE FABRICACIÓN POR MAQUINA </h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <table class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Maquina</th>
+                                        <th>Horas maquina</th>
+                                        <th>Costo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(maquina, index) in tiempos.costosMaquinas" :key="'costos-maq-det-' + index">
+                                        <td>@{{maquina.nombre}}</td>
+                                        <td>@{{maquina.tiempo_horas}} Horas y @{{maquina.tiempo_minutos}} Minutos</td>
+                                        <td>@{{maquina.costo | currency}}</td>
+                                    </tr>
+                                    <tr class="border-top: 1px solid #333">
+                                        <td class="bold" style="letter-spacing: 2px">TOTALES</td>
+                                        <td class="bold">@{{tiempos.maquinado_horas}} Horas y @{{tiempos.maquinado_minutos}} Minutos</td>
+                                        <td class="bold">@{{tiempos.costoTotalMaquinado | currency}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
 @endsection
@@ -364,6 +409,8 @@
             tiempos: {
                 maquinado_horas: 0,
                 maquinados_minutos: 0,
+                costosMaquinas: [],
+                costoTotalMaquinado: 0,
             },
             chartInstance: null,
             chartInstance2: null,
@@ -381,6 +428,9 @@
            
         },
         methods: {
+            verDetalleCostos() {
+                $('#modalCostos').modal('show');
+            },
             goToHerramental(ruta){
                 window.location.href = '/visor-avance-hr/' + ruta;
             },

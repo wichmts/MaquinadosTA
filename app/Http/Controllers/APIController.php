@@ -1825,6 +1825,14 @@ class APIController extends Controller
         $notificacion->descripcion = 'EL DISEÑO DEL COMPONENTE HA SIDO MODIFICADO, SE REQUIERE UN RETRABAJO.';
         $notificacion->save();
 
+        $solicitud = new Solicitud();
+        $solicitud->tipo = 'retrabajo';
+        $solicitud->componente_id = $componente->id;
+        $solicitud->comentarios = 'El diseño del compoente ha sido modificado, se requiere un retrabajo / refabricación';
+        $solicitud->area_solicitante = 'DISEÑO';
+        $solicitud->usuario_id = auth()->user()->id;
+        $solicitud->save();
+
         $users = User::role('JEFE DE AREA')->get();
         foreach ($users as $user) {
             $user->hay_notificaciones = true;
@@ -3678,6 +3686,15 @@ class APIController extends Controller
         $notificacion->descripcion = 'EL DISEÑO DE UN COMPONENTE EXTERNO HA SIDO MODIFICADO, SE REQUIERE UN RETRABAJO / REFABRICACIÓN';
         $notificacion->save();
 
+        $solicitud = new Solicitud();
+        $solicitud->tipo = 'retrabajo';
+        $solicitud->componente_id = $componente->id;
+        $solicitud->comentarios = 'El diseño de un componente externo ha sido modificado, se requiere un retrabajo / refabricación';
+        $solicitud->area_solicitante = 'DISEÑO';
+        $solicitud->usuario_id = auth()->user()->id;
+        $solicitud->save();
+
+
         $users = User::role('JEFE DE AREA')->get();
         foreach ($users as $user) {
             $user->hay_notificaciones = true;
@@ -4296,6 +4313,62 @@ class APIController extends Controller
         $restoSegundos = $totalSegundos % 3600; // lo que sobra después de las horas
         $totalMinutosMaquinado = floor($restoSegundos / 60); // minutos completos
 
+          // COSTOS POR MAQUINA
+        $costoTotalMaquinado = 0;
+        $costosAgrupados = []; // clave = maquina_id
+
+        foreach ($componentesAgrupados as $fabricacion_id => $seguimientosComponente) {
+            $inicio = null;
+            $segundosFabricacion = 0;
+
+            foreach ($seguimientosComponente as $seguimiento) {
+                if ($seguimiento->tipo == 1) {
+                    $inicio = Carbon::createFromFormat('Y-m-d H:i', $seguimiento->fecha . ' ' . $seguimiento->hora);
+                } elseif ($seguimiento->tipo == 0 && $inicio) {
+                    $fin = Carbon::createFromFormat('Y-m-d H:i', $seguimiento->fecha . ' ' . $seguimiento->hora);
+                    $segundosFabricacion += $inicio->diffInSeconds($fin);
+                    $inicio = null;
+                }
+            }
+
+            $fabricacion = Fabricacion::find($fabricacion_id);
+            if (!$fabricacion || !$fabricacion->maquina_id) continue;
+
+            $maquina = Maquina::find($fabricacion->maquina_id);
+            if (!$maquina || !$maquina->pago_hora) continue;
+
+            $minutos = $segundosFabricacion / 60;
+            $costoPorMinuto = $maquina->pago_hora / 60;
+            $costo = $minutos * $costoPorMinuto;
+            $costoTotalMaquinado += $costo;
+
+            if (!isset($costosAgrupados[$maquina->id])) {
+                $costosAgrupados[$maquina->id] = [
+                    'maquina_id' => $maquina->id,
+                    'nombre' => $maquina->nombre,
+                    'costo' => 0,
+                    'tiempo_segundos' => 0,
+                ];
+            }
+
+            $costosAgrupados[$maquina->id]['costo'] += $costo;
+            $costosAgrupados[$maquina->id]['tiempo_segundos'] += $segundosFabricacion;
+        }
+
+        // Redondeo y conversión de tiempo
+        $costosMaquinas = array_map(function ($item) {
+            $horas = floor($item['tiempo_segundos'] / 3600);
+            $minutos = floor(($item['tiempo_segundos'] % 3600) / 60);
+            return [
+                'maquina_id' => $item['maquina_id'],
+                'nombre' => $item['nombre'],
+                'costo' => round($item['costo'], 2),
+                'tiempo_horas' => $horas,
+                'tiempo_minutos' => $minutos,
+            ];
+        }, array_values($costosAgrupados));
+
+
         // OBTENER TIEMPO RETRABAJOS
         $componentes = Componente::whereIn('id', $componenteIds)->get();
         $totalMinutosRetrabajo = 0;
@@ -4488,6 +4561,8 @@ class APIController extends Controller
                 'proceso_minutos' => $minutosProceso,
                 'pruebasDiseno' => $pruebasDiseno,
                 'pruebasProceso' => $pruebasProceso,
+                 'costoTotalMaquinado' => round($costoTotalMaquinado, 2),
+                'costosMaquinas' => $costosMaquinas,
             ]
         ]);
     }
@@ -4527,6 +4602,63 @@ class APIController extends Controller
         $totalHorasMaquinado = floor($totalSegundos / 3600); // horas completas
         $restoSegundos = $totalSegundos % 3600; // lo que sobra después de las horas
         $totalMinutosMaquinado = floor($restoSegundos / 60); // minutos completos
+
+
+        // COSTOS POR MAQUINA
+        $costoTotalMaquinado = 0;
+        $costosAgrupados = []; // clave = maquina_id
+
+        foreach ($componentesAgrupados as $fabricacion_id => $seguimientosComponente) {
+            $inicio = null;
+            $segundosFabricacion = 0;
+
+            foreach ($seguimientosComponente as $seguimiento) {
+                if ($seguimiento->tipo == 1) {
+                    $inicio = Carbon::createFromFormat('Y-m-d H:i', $seguimiento->fecha . ' ' . $seguimiento->hora);
+                } elseif ($seguimiento->tipo == 0 && $inicio) {
+                    $fin = Carbon::createFromFormat('Y-m-d H:i', $seguimiento->fecha . ' ' . $seguimiento->hora);
+                    $segundosFabricacion += $inicio->diffInSeconds($fin);
+                    $inicio = null;
+                }
+            }
+
+            $fabricacion = Fabricacion::find($fabricacion_id);
+            if (!$fabricacion || !$fabricacion->maquina_id) continue;
+
+            $maquina = Maquina::find($fabricacion->maquina_id);
+            if (!$maquina || !$maquina->pago_hora) continue;
+
+            $minutos = $segundosFabricacion / 60;
+            $costoPorMinuto = $maquina->pago_hora / 60;
+            $costo = $minutos * $costoPorMinuto;
+            $costoTotalMaquinado += $costo;
+
+            if (!isset($costosAgrupados[$maquina->id])) {
+                $costosAgrupados[$maquina->id] = [
+                    'maquina_id' => $maquina->id,
+                    'nombre' => $maquina->nombre,
+                    'costo' => 0,
+                    'tiempo_segundos' => 0,
+                ];
+            }
+
+            $costosAgrupados[$maquina->id]['costo'] += $costo;
+            $costosAgrupados[$maquina->id]['tiempo_segundos'] += $segundosFabricacion;
+        }
+
+        // Redondeo y conversión de tiempo
+        $costosMaquinas = array_map(function ($item) {
+            $horas = floor($item['tiempo_segundos'] / 3600);
+            $minutos = floor(($item['tiempo_segundos'] % 3600) / 60);
+            return [
+                'maquina_id' => $item['maquina_id'],
+                'nombre' => $item['nombre'],
+                'costo' => round($item['costo'], 2),
+                'tiempo_horas' => $horas,
+                'tiempo_minutos' => $minutos,
+            ];
+        }, array_values($costosAgrupados));
+
 
         // OBTENER TIEMPO RETRABAJOS
         $componentes = Componente::whereIn('id', $componenteIds)->get();
@@ -4719,6 +4851,8 @@ class APIController extends Controller
                 'proceso_minutos' => $minutosProceso,
                 'pruebasDiseno' => $pruebasDiseno,
                 'pruebasProceso' => $pruebasProceso,
+                'costoTotalMaquinado' => round($costoTotalMaquinado, 2),
+                'costosMaquinas' => $costosMaquinas,
             ]
         ]);
     }

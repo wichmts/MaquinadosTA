@@ -2064,7 +2064,17 @@
                         swal('Errores de validación', `El componente debe incluir al menos una accion para poder ser liberado a programacion.`, 'error');
                         return;
                     }
+                    for (const proceso of t.tasks) {
+                        for (const segmento of proceso.time) {
+                            const totalMinutos = (segmento.horas || 0) * 60 + (segmento.minutos || 0);
+                            if (totalMinutos === 0) {
+                                swal('Errores de validación', `El proceso "${proceso.name}" debe tener tiempo asignado.`, 'error');
+                                return;
+                            }
+                        }
+                    }
                 }
+
                 t.cargando = true;
                 t.componente.ruta = JSON.parse(JSON.stringify(t.tasks));
 

@@ -462,7 +462,7 @@
                 },
                 {
                     id: 4,
-                    prioridad: 5,
+                    prioridad: 4,
                     nombre: 'Maquinar',
                     horas: 0,
                     minutos: 0,
@@ -484,7 +484,7 @@
                     minutos: 0,
                     incluir: false
                 },
-                // {id: 6, prioridad: 6, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
                 {
                     id: 8,
                     prioridad: 8,
@@ -510,6 +510,7 @@
                     incluir: false
                 }
             ],
+            procesosValidos: [3, 4, 5, 6, 8, 9, 11],
             tasks: [],
             rutaAvance: [],
             archivos: [],
@@ -1324,18 +1325,46 @@
                 }
             },
             async liberar() {
-
+                let t = this
                 if (!this.componente.descripcion_trabajo?.trim() || !this.componente.herramientas_corte?.trim()) {
                     swal('Errores de validación', `Todos los campos son obligatorios para liberar el componente.`, 'error');
                     return;
                 }
+                
+                //verificar procesos
+                let maquinasCargadas = t.componente.maquinas.map(m => m.maquina_id);
+                let procesosRequierenMaquina = t.tasks
+                    .map(task => task.id)
+                    .filter(id => t.procesosValidos.includes(id));
 
-                let tieneArchivo = this.componente.maquinas.some(maquina =>
-                    maquina.archivos.some(a => a.archivo || a.id)
+                let procesosCubiertos = t.maquinas
+                    .filter(m => maquinasCargadas.includes(m.id))
+                    .map(m => parseInt(m.tipo_proceso));
+
+                for (let procesoId of procesosRequierenMaquina) {
+                    if (!procesosCubiertos.includes(procesoId)) {
+                        let proceso = t.tasks.find(t => t.id === procesoId);
+                        swal(
+                            'Errores de validación',
+                            `Debe asignar una máquina que cubra el proceso "${proceso?.name ?? 'ID ' + procesoId}".`,
+                            'error'
+                        );
+                        return;
+                    }
+                }
+
+                let todasTienenArchivo = this.componente.maquinas.every(maquina =>
+                    Array.isArray(maquina.archivos) &&
+                    maquina.archivos.some(archivo =>
+                        archivo.archivo instanceof File ||                             // archivo nuevo (File)
+                        (typeof archivo.archivo === 'string' && archivo.archivo.trim() !== '') || // string no vacía
+                        archivo.id ||                                                  // archivo ya guardado
+                        (archivo.nombre && archivo.nombre.trim() !== '')              // nombre de archivo existente
+                    )
                 );
 
-                if (!tieneArchivo) {
-                    swal('Errores de validación', 'Debe cargar al menos un archivo por máquina.', 'error');
+                if (!todasTienenArchivo) {
+                    swal('Errores de validación', 'Cada máquina debe tener al menos un archivo cargado.', 'error');
                     return;
                 }
 

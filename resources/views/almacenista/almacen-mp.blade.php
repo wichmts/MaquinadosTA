@@ -297,8 +297,8 @@
                                             <th class="py-1" style="border: 1px solid #b6b6b6 !important" rowspan="2">PY</th>
                                         </tr>
                                         <tr>
-                                            <th v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5" class="py-1" style="border: 1px solid #b6b6b6 !important">Ancho</th>
-                                            <th v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5" class="py-1" style="border: 1px solid #b6b6b6 !important">Largo</th>
+                                            <th v-if="materialSelected == 1 || materialSelected == 6 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5" class="py-1" style="border: 1px solid #b6b6b6 !important">Ancho</th>
+                                            <th v-if="materialSelected == 1 || materialSelected == 6 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5" class="py-1" style="border: 1px solid #b6b6b6 !important">Largo</th>
                                             <th v-if="materialSelected == 3" class="py-1" style="border: 1px solid #b6b6b6 !important">Longitud</th>
                                             <th v-if="materialSelected == 3" class="py-1" style="border: 1px solid #b6b6b6 !important">Diametro</th>
                                             <th class="py-1" style="border: 1px solid #b6b6b6 !important">Peso</th>
@@ -307,8 +307,8 @@
                                     <tbody>
                                         <tr v-for="m in movimientos">
                                             <td>@{{m.fecha}} @{{m.hora}}</td>
-                                            <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{m.ancho}}</td>
-                                            <td v-if="materialSelected == 1 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{m.largo}}</td>
+                                            <td v-if="materialSelected == 1 || materialSelected == 6 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{m.ancho}}</td>
+                                            <td v-if="materialSelected == 1 || materialSelected == 6 || materialSelected == 2 || materialSelected == 4 || materialSelected == 5">@{{m.largo}}</td>
                                             <td v-if="materialSelected == 3">@{{m.diametro}}</td>
                                             <td v-if="materialSelected == 3">@{{m.longitud}}</td>
                                             <td>@{{m.peso}} Kg</td>
