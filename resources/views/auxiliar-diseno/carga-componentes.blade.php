@@ -100,7 +100,7 @@
                 <div class="sidebar-wrapper">
                     <ul class="nav">
                         <li>
-                            <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                            <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical" style="max-height: 85vh; overflow-y: scroll !important">
                                 <a class="nav-link cursor-pointer text-right text-muted" >
                                     <i class="nc-icon" v-if="menuStep > 1" @click="regresar(menuStep - 1)" ><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                                 </a>
@@ -112,7 +112,7 @@
                                     </a>
                                     <a class="nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
-                                        <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
+                                        <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; 
                                     </a>
                                 </div>    
                                 <div v-if="!cargandoMenu && menuStep == 2">
@@ -123,7 +123,7 @@
                                     </a>
                                     <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)" v-if="obj.nombre != 'ORDENES EXTERNAS' && obj.nombre != 'REFACCIONES'">
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                        <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
+                                        <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; 
                                     </a>
                                 </div>
                                 <div v-if="!cargandoMenu && menuStep == 3">
@@ -134,7 +134,7 @@
                                     </a>
                                     <a class="nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
-                                        <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
+                                        <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; 
                                     </a>
                                 </div>
                                 <div v-if="!cargandoMenu && menuStep == 4">
@@ -145,7 +145,7 @@
                                     </a>
                                     <a class="nav-link cursor-pointer" v-for="obj in herramentales" @click="fetchComponentes(obj.id)" >
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/componente.png') }}"></i> &nbsp;
-                                        <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; {{--<i class="fa fa-caret-right"></i>    --}}
+                                        <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; 
                                     </a>
                                 </div>
                                 
@@ -224,7 +224,7 @@
                                             <tbody>
                                                 <tr v-for="(c, index) in componentes" :key="index" v-show="!c.refabricado" :class="{'bg-person': c.retrabajo}">
                                                     <td style="width: 10%">
-                                                        <strong> @{{ c.nombre }} <br> <small v-if="c.retrabajo" >En modificacion...</small></strong>
+                                                        <strong> @{{ c.nombre }}  <small v-if="!c.retrabajo && !c.cargado" @click="editarNombre(index)" class="text-muted cursor-pointer"><i class="fa fa-edit"></i></small>  <br> <small v-if="c.retrabajo" >En modificacion...</small></strong>
                                                     </td>
                                                     <td style="width: 10%">
                                                         <input class="input-file" :id="'2d-' + index" type="file" name="file" @change="handleFileChange($event, index, 'vista2D')" style="display: none;" :disabled="c.cargado == 1 && !c.retrabajo && !herramentalYaTerminado()">
@@ -488,6 +488,59 @@
             }
         },
         methods:{
+            editarNombre(index) {
+                const t = this;
+                const base = t.ruta.herramental; // La base fija, por ejemplo "ABC"
+                const usados = new Set();
+
+                // Obtiene todos los números ya usados, menos el actual (lo está editando)
+                const regex = new RegExp(`^${base}-(\\d+)$`);
+                t.componentes.forEach((componente, i) => {
+                    if (i !== index) {
+                        const match = componente.nombre.match(regex);
+                        if (match && !componente.cancelado) {
+                            usados.add(parseInt(match[1], 10));
+                        }
+                    }
+                });
+
+                const nombreActual = t.componentes[index].nombre;
+                const matchActual = nombreActual.match(regex);
+                const numeroActual = matchActual ? matchActual[1] : '';
+
+                swal({
+                    title: "Editar número del componente",
+                    text: `Solo puedes cambiar el número final de ${base}-XX`,
+                    content: {
+                        element: "input",
+                        attributes: {
+                            placeholder: "Nuevo número...",
+                            type: "number",
+                            min: 1,
+                            value: parseInt(numeroActual, 10)
+                        },
+                    },
+                    buttons: true,
+                }).then((value) => {
+                    if (value) {
+                        const nuevoNumero = parseInt(value, 10);
+                        if (isNaN(nuevoNumero) || nuevoNumero < 1) {
+                            swal("Número inválido", "Debes ingresar un número válido mayor que 0", "error");
+                            return;
+                        }
+
+                        if (usados.has(nuevoNumero)) {
+                            swal("Duplicado", `Ya existe un componente con el número ${nuevoNumero.toString().padStart(2, '0')}`, "error");
+                            return;
+                        }
+
+                        const numeroFormateado = nuevoNumero.toString().padStart(2, '0');
+                        t.componentes[index].nombre = `${base}-${numeroFormateado}`;
+                        t.componentes.sort((a, b) => a.nombre.localeCompare(b.nombre));
+                        t.$forceUpdate();
+                    }
+                });
+            },
             herramentalYaTerminado(){
                 let herramental = this.herramentales.find(h => h.id == this.selectedHerramental)
                 return (herramental.fecha_terminado && herramental.fecha_terminado != null)
@@ -519,6 +572,11 @@
                                 'Content-Type': 'multipart/form-data'
                             }
                         });
+                        if(!response.data.success){
+                            swal('¡Lo sentimos!', response.data.message, 'info');
+                            t.archivo_explosionado = '';
+                            return;
+                        }
                         await this.fetchHerramentales(this.selectedProyecto);
                         await this.fetchComponentes(this.selectedHerramental);
                     } catch (error) {
@@ -548,7 +606,7 @@
                         swal('Error', 'Ocurrió un error al enviar el componente a retrabajo', 'error');
                     }
                 }else{
-                    swal('Error', 'Ocurrió un error al guardar la informacion de los componentes', 'error');
+                    swal('Error', 'Ocurrió un error al guardar la informacion de los componentes, verifique el tipo y tamaño de sus archivos.', 'error');
                     t.cargando = false;
                 }
             },
@@ -641,13 +699,9 @@
                     if (fileObj.vista3D) {
                         formData.append(`files[${index}][vista3D]`, fileObj.vista3D);
                     }
-                    // if (fileObj.vistaExplosionada) {
-                    //     formData.append(`files[${index}][vistaExplosionada]`, fileObj.vistaExplosionada);
-                    // }
                 });
 
                 formData.append('data', JSON.stringify(t.componentes));
-
                 try {
                     const response = await axios.post(`/api/componente/${t.selectedHerramental}`, formData, {
                         headers: {
@@ -655,10 +709,18 @@
                         }
                     });
                     if(mostrarAlerta){
-                        swal('Correcto', 'Informacion guardada correctamente', 'success');
+                        if(response.data.validos === true){
+                            swal('Información guardada', 'Informacion guardada correctamente', 'success');
+                        }else{
+                            swal('Información guardada', 'Algunos archivos no se han podido guardar correctamente debido a que inclumplen en tamaño o tipo de archivo permitido.', 'warning');
+                        }
                         t.fetchComponentes(t.selectedHerramental);
                     }else{
-                        return true;
+                         if(response.data.validos === true){
+                             return true;
+                        }else{
+                            return false;
+                        }
                     }
                 } catch (error) {
                     console.error('Error al subir archivos:', error);
@@ -696,28 +758,53 @@
                 }
             },
             agregarComponente() {
+                
+                let t = this
+
                 if(!this.archivo_explosionado || this.archivo_explosionado == ''){
                     swal('Falta vista explosiva', 'Por favor cargue un archivo antes de agregar un componente.', 'info');
                     return;
                 }
 
-                const regex = new RegExp(`^${this.ruta.herramental}-(\\d+)$`);
-                let maxNumero = 0;
+                // const regex = new RegExp(`^${this.ruta.herramental}-(\\d+)$`);
+                // let maxNumero = 0;
 
+                // this.componentes.forEach(componente => {
+                //     const match = componente.nombre.match(regex);
+                //     if (match) {
+                //         const numero = parseInt(match[1], 10);
+                //         if (numero > maxNumero) {
+                //             maxNumero = numero;
+                //         }
+                //     }
+                // });
+
+                // const nuevoNumero = (maxNumero + 1).toString().padStart(2, '0'); // Usa 3 dígitos como base, ajusta si lo prefieres
+
+                const base = this.ruta.herramental;
+                const usados = new Set();
+
+                // Extrae todos los números ya usados en los nombres de componentes
+                const regex = new RegExp(`^${base}-(\\d+)$`);
                 this.componentes.forEach(componente => {
                     const match = componente.nombre.match(regex);
                     if (match) {
-                        const numero = parseInt(match[1], 10);
-                        if (numero > maxNumero) {
-                            maxNumero = numero;
-                        }
+                        usados.add(parseInt(match[1], 10));
                     }
                 });
 
-                const nuevoNumero = (maxNumero + 1).toString().padStart(2, '0'); // Usa 3 dígitos como base, ajusta si lo prefieres
+                // Encuentra el siguiente número no usado
+                let nuevoNumero = 1;
+                while (usados.has(nuevoNumero)) {
+                    nuevoNumero++;
+                }
+
+                const numeroFormateado = nuevoNumero.toString().padStart(2, '0'); // usa 2 dígitos, ajusta a 3 si lo prefieres
+                const nombreFinal = `${base}-${numeroFormateado}`;
 
                 this.componentes.push({
-                    nombre: `${this.ruta.herramental}-${nuevoNumero}`,
+                    // nombre: `${this.ruta.herramental}-${nuevoNumero}`,
+                    nombre: nombreFinal,
                     es_compra: 1,
                     cantidad: 1,
                     largo: '',
@@ -738,6 +825,7 @@
                     cuotas_criticas: [{valor: '', valor_real: ''}],
                     otro_material: '',
                 });
+                
                 Vue.nextTick(() => {
                     const tbody = document.querySelector("#tabla-principal tbody");
                     if (tbody) {
@@ -758,6 +846,10 @@
                         fileInput.focus();
                         return false;
                     });
+                });
+                Vue.nextTick(() => {
+                    this.componentes.sort((a, b) => a.nombre.localeCompare(b.nombre));
+                    t.$forceUpdate();
                 });
 
             },
@@ -1125,7 +1217,7 @@
                 
                 await t.fetchComponentes(t.selectedHerramental);
 
-                let id_componente = t.componentes.find(obj => obj.nombre == componente.nombre && obj.refabricado == false);
+                let id_componente = t.componentes.find(obj => obj.nombre == componente.nombre && obj.refabricado == false && !obj.cancelado);
                 id_componente = id_componente.id; 
                 
                 if(respuesta){
@@ -1142,7 +1234,7 @@
                         swal('Error', 'Ocurrió un error al liberar el herramental', 'error');
                     }
                 }else{
-                    swal('Error', 'Ocurrió un error al guardar la informacion de los componentes', 'error');
+                    swal('Error', 'Ocurrió un error al guardar la informacion de los componentes, verifique el tipo y tamaño de sus archivos.', 'error');
                     t.cargando = false;
                 }
 
@@ -1178,7 +1270,7 @@
                         swal('Error', 'Ocurrió un error al liberar el herramental', 'error');
                     }
                 }else{
-                    swal('Error', 'Ocurrió un error al guardar la informacion de los componentes', 'error');
+                    swal('Error', 'Ocurrió un error al guardar la informacion de los componentes, verifique el tamaño y tipo de sus archivos.', 'error');
                     t.cargando = false;
                 }
             },

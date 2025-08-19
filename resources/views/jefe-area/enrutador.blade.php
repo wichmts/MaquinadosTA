@@ -34,7 +34,7 @@
             <div class="sidebar-wrapper">
                 <ul class="nav">
                     <li>
-                        <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical" style="max-height: 85vh; overflow-y: scroll !important">
                             <div class="d-flex justify-content-end">
                                 <a class="nav-link py-0 cursor-pointer text-right text-muted">
                                     <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
@@ -93,7 +93,6 @@
                                     </small>
                                 </a>
                             </div>
-
                         </div>
                     </li>
                 </ul>
@@ -127,16 +126,19 @@
                     <div class="col-xl-6 col-lg-4">
                         <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px"> ENRUTADOR</h2>
                     </div>
-                    <div class="col-xl-3 col-lg-4 text-right" v-if="selectedComponente && componente.cancelado != true">
+                    <div class="col-xl-3 col-lg-4 text-right" v-if="selectedComponente && componente.cancelado != true && !componente.refabricado">
                         <button class="btn btn-block" :disabled="componente.fecha_terminado || componente.cancelado == true" @click="guardar(false)"><i class="fa fa-save"></i> GUARDAR</button>
                     </div>
-                    <div class="col-xl-3 col-lg-4 text-right" v-if="selectedComponente && componente.cancelado != true">
+                    <div class="col-xl-3 col-lg-4 text-right" v-if="selectedComponente && componente.cancelado != true && !componente.refabricado">
                         <button class="btn btn-success btn-block" :disabled="componente.enrutado ==  true || componente.cancelado == true" @click="guardar(true)"><i class="fa fa-check-double"></i>
                              @{{componente.enrutado == true ? 'LIBERADO' : 'LIBERAR'}}
                         </button>
                     </div>
                     <div class="col-xl-6" v-if="selectedComponente && componente.cancelado == true">
                         <button class="btn btn-block btn-danger" disabled><i class="fa fa-exclamation-circle"></i> ESTE COMPONENTE HA SIDO CANCELADO</button>
+                    </div>
+                    <div class="col-xl-6" v-if="selectedComponente && componente.refabricado == true">
+                        <button class="btn btn-block btn-dark" disabled><i class="fa fa-exclamation-circle"></i> ESTE COMPONENTE TIENE UNA VERSIÓN MAS RECIENTE</button>
                     </div>
                 </div>
 
@@ -663,6 +665,8 @@
     var app = new Vue({
         el: '#vue-app',
         data: {
+            nuevosRetrabajos: [], //ids de los procesos a los que se les agrego retrabajo.
+            procesosIniciales: [], //copia de los procesos con retrabajo al cargar el componente
             solicitud: {
                 tipo: '',
                 reasignar: 'corte'
@@ -780,7 +784,8 @@
                 archivo_2d: null,
                 archivo_3d: null,
                 dibujo: null
-            }
+            },
+
         },
         watch: {
             procesos: {
@@ -916,6 +921,7 @@
             }
         },
         methods: {
+
             async solicitudAtendida(solicitud){
                 try {
                     const response = await axios.put(`/api/solicitud/${solicitud.id}/atendida`, { atendida: solicitud.atendida });
@@ -1188,6 +1194,8 @@
                                 }
                             }
                         });
+                        this.procesosIniciales = JSON.parse(JSON.stringify(this.solicitud.procesos));
+
                         $('#modalRetrabajo').modal({
                             backdrop: 'static',
                             keyboard: false // Opcional: evita cerrar el modal con la tecla Esc
@@ -1542,10 +1550,13 @@
             },
             actualizarRetrabajos() {
                 let t = this;
+
                 t.solicitud.procesos.forEach(proceso => {
                     let task = this.tasks.find(task => task.id === proceso.id);
                     if (task) {
+                        
                         let retrabajo = task.time.find(time => time.type === "rework");
+
                         if (retrabajo) {
                             retrabajo.horas = parseInt(proceso.horas);
                             retrabajo.minutos = parseInt(proceso.minutos);
@@ -1567,6 +1578,23 @@
                     }
                 });
 
+                // t.nuevosRetrabajos = t.solicitud.procesos
+                // .filter(actual => {
+                //     const inicial = t.procesosIniciales.find(p => p.id === actual.id);
+                //     const horasActual = parseInt(actual.horas);
+                //     const minutosActual = parseInt(actual.minutos);
+
+                //     const horasInicial = inicial ? parseInt(inicial.horas) : 0;
+                //     const minutosInicial = inicial ? parseInt(inicial.minutos) : 0;
+
+                //     const teniaRetrabajoAntes = horasInicial > 0 || minutosInicial > 0;
+                //     const tieneRetrabajoAhora = horasActual > 0 || minutosActual > 0;
+
+                //     return !teniaRetrabajoAntes && tieneRetrabajoAhora;
+                // })
+                // .map(proceso => proceso.id);
+
+                
                 this.calcularInicio();
             },
             calcularInicio() {

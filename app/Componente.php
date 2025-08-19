@@ -28,6 +28,7 @@ class Componente extends Model
         $refabricaciones = Componente::where('herramental_id', $this->herramental_id)
             ->where('nombre', $this->nombre)
             ->where('cargado', true)
+            ->whereNull('cancelado')
             ->where('es_compra', false)
             ->orderBy('version', 'desc')
             ->get(['id', 'version']) // Obtener solo los campos necesarios

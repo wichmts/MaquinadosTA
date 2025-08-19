@@ -42,6 +42,83 @@ class APIController extends Controller
     public function __construct(){
         Carbon::setLocale('es');
     }    
+    protected function reglasTiposDeArchivo(){
+        return [
+            'solidworks' => [
+                'ext' => ['sldprt', 'sldasm'],
+                 'mime' => [
+                    'application/x-sldworks',   
+                    'application/octet-stream', 
+                    'application/solidworks'    
+                ],
+                'max' => 700
+            ],
+            'pdf' => [
+                'ext' => ['pdf'],
+                'mime' => ['application/pdf'],
+                'max' => 200
+            ],
+            'imagen' => [
+                'ext' => ['jpg', 'jpeg', 'png'],
+                'mime' => ['image/jpeg', 'image/jpg', 'image/png'],
+                'max' => 50
+            ],
+            'texto' => [
+                'ext' => ['txt', 'nc', 'ncc', 'mpf'],
+                'mime' => ['text/plain'],
+                'max' => 20
+            ],
+            'autocad' => [
+                'ext' => ['dxf', 'dwg'],
+                'mime' => [
+                    'image/vnd.dxf',
+                    'image/vnd.dwg',
+                    'application/acad',
+                    'application/x-acad',
+                    'application/autocad_dwg',
+                    'application/x-dwg',
+                    'application/octet-stream' 
+                ],
+                'max' => 700
+            ],
+        ];
+    }
+    protected function validarArchivo($file){
+        if (!$file || !$file->isValid()) {
+            return [
+                'success' => false,
+                'message' => 'Archivo inválido o no se pudo cargar.',
+            ];
+        }
+
+        $extension = strtolower($file->getClientOriginalExtension());
+        $mime = $file->getMimeType();
+        $sizeMB = $file->getSize() / 1024 / 1024;
+
+        $rules = $this->reglasTiposDeArchivo(); 
+
+        foreach ($rules as $tipo => $config) {
+            if (in_array($mime, $config['mime'])) {
+                if ($sizeMB <= $config['max']) {
+                    return [
+                        'success' => true,
+                        'validado' => true,
+                        'tipo_detectado' => $tipo,
+                    ];
+                } else {
+                    return [
+                        'success' => false,
+                        'message' => "El archivo supera el tamaño máximo de {$config['max']} MB.",
+                    ];
+                }
+            }
+        }
+
+        return [
+            'success' => false,
+            'message' => 'Tipo de archivo o MIME no permitido.',
+        ];
+    }
     public function obtenerPuestos(){
         $puestos = Puesto::orderBy('nombre', 'asc')->get();
 
@@ -98,69 +175,50 @@ class APIController extends Controller
             'puesto' => $puesto
         ]);
     }
-    public function consultarConfiguracion(){
-        $configuracion = Configuracion::first();
+    // public function consultarConfiguracion(){
+    //     $configuracion = Configuracion::first();
 
-        return response()->json([
-            'configuracion' => $configuracion,
-            'success' => true
-        ]);
-    }
-    public function guardarConfiguracion(Request $request){
-        $datos = $request->json()->all();
-        $configuracion = Configuracion::first();
-        if(!$configuracion){
-            $configuracion = new Configuracion();
-        }
-        $configuracion->razon_social = $datos['razon_social'];
-        $configuracion->rfc = $datos['rfc'];
-        $configuracion->estado = $datos['estado'];
-        $configuracion->ciudad = $datos['ciudad'];
-        $configuracion->colonia = $datos['colonia'];
-        $configuracion->calle = $datos['calle'];
-        $configuracion->codigo_postal = $datos['codigo_postal'];
-        $configuracion->save();
+    //     return response()->json([
+    //         'configuracion' => $configuracion,
+    //         'success' => true
+    //     ]);
+    // }
+    // public function guardarConfiguracion(Request $request){
+    //     $datos = $request->json()->all();
+    //     $configuracion = Configuracion::first();
+    //     if(!$configuracion){
+    //         $configuracion = new Configuracion();
+    //     }
+    //     $configuracion->razon_social = $datos['razon_social'];
+    //     $configuracion->rfc = $datos['rfc'];
+    //     $configuracion->estado = $datos['estado'];
+    //     $configuracion->ciudad = $datos['ciudad'];
+    //     $configuracion->colonia = $datos['colonia'];
+    //     $configuracion->calle = $datos['calle'];
+    //     $configuracion->codigo_postal = $datos['codigo_postal'];
+    //     $configuracion->save();
         
-         return response()->json([
-            'success' => true
-        ]);
-    }
-    public function guardarConfiguracionLogo(Request $request){
+    //      return response()->json([
+    //         'success' => true
+    //     ]);
+    // }
+    // public function guardarConfiguracionLogo(Request $request){
 
-        $configuracion = Configuracion::first();
-        if(!$configuracion){
-            $configuracion = new Configuracion();
-        }
-        if ($request->hasFile('logo')) {
-            $file = $request->file('logo');
-            $name = uniqid().'_'.$file->getClientOriginalName();
-            Storage::disk('public')->put('logo/'.$name, \File::get($file));
-            $configuracion->logo = $name;
-            $configuracion->save();
-        }
-
-        return response()->json([
-            'success' => true,
-        ], 200);
-    }
-    // private function getToken($email, $codigo_acceso){
-    //     $token = null;
-    //     try {
-    //         if (!$token = \JWTAuth::attempt(['email' => $email, 'password' => $codigo_acceso])) {
-    //             return response()->json([
-    //               'response' => 'error',
-    //               'message' => 'Password or email is invalid',
-    //               'token' => $token,
-    //             ]);
-    //         }
-    //     } catch (\JWTAuthException $e) {
-    //         return response()->json([
-    //             'response' => 'error',
-    //             'message' => 'Token creation failed',
-    //         ]);
+    //     $configuracion = Configuracion::first();
+    //     if(!$configuracion){
+    //         $configuracion = new Configuracion();
+    //     }
+    //     if ($request->hasFile('logo')) {
+    //         $file = $request->file('logo');
+    //         $name = uniqid().'_'.$file->getClientOriginalName();
+    //         Storage::disk('public')->put('logo/'.$name, \File::get($file));
+    //         $configuracion->logo = $name;
+    //         $configuracion->save();
     //     }
 
-    //     return $token;
+    //     return response()->json([
+    //         'success' => true,
+    //     ], 200);
     // }
     public function download(Request $request, $folder, $filename){
         $file_path = storage_path('app/public/'.$folder.'/'.$filename);
@@ -172,31 +230,31 @@ class APIController extends Controller
             exit('Requested file does not exist on our server!');
         }
     }
-    public function subirDocumentos(Request $request, $modelo, $id_modelo){
-        if ($request->hasFile('documentos')) {
-            foreach ($request->file('documentos') as $file) {
-                $name = time().'_'.$file->getClientOriginalName();
-                Storage::disk('public')->put("{$modelo}/{$name}", \File::get($file));
-                $d = new Documento();
-                $d->modelo = $modelo;
-                $d->id_modelo = $id_modelo;
-                $d->nombre = $name;
-                $d->usuario_id = auth()->user()->id;
+    // public function subirDocumentos(Request $request, $modelo, $id_modelo){
+    //     if ($request->hasFile('documentos')) {
+    //         foreach ($request->file('documentos') as $file) {
+    //             $name = time().'_'.$file->getClientOriginalName();
+    //             Storage::disk('public')->put("{$modelo}/{$name}", \File::get($file));
+    //             $d = new Documento();
+    //             $d->modelo = $modelo;
+    //             $d->id_modelo = $id_modelo;
+    //             $d->nombre = $name;
+    //             $d->usuario_id = auth()->user()->id;
 
-                $sizeInBytes = $file->getSize();
-                $sizeInMB = $sizeInBytes / (1024 * 1024);
-                $formattedSizeInMB = number_format($sizeInMB, 2); // Formatear a 2 decimales
-                $d->tamano = $formattedSizeInMB . ' MB'; // Guardar como string con 'MB'
-                $d->save();
-            }
-        }
-        $documentos = Documento::where('modelo', $modelo)->where('id_modelo', $id_modelo)->get();
+    //             $sizeInBytes = $file->getSize();
+    //             $sizeInMB = $sizeInBytes / (1024 * 1024);
+    //             $formattedSizeInMB = number_format($sizeInMB, 2); // Formatear a 2 decimales
+    //             $d->tamano = $formattedSizeInMB . ' MB'; // Guardar como string con 'MB'
+    //             $d->save();
+    //         }
+    //     }
+    //     $documentos = Documento::where('modelo', $modelo)->where('id_modelo', $id_modelo)->get();
         
-        return response()->json([
-            'documentos' => $documentos,
-            'success' => true,
-        ]);
-    }
+    //     return response()->json([
+    //         'documentos' => $documentos,
+    //         'success' => true,
+    //     ]);
+    // }
     public function eliminarDocumento($id){
         $documento = Documento::findOrFail($id);
         $modelo = $documento->modelo;
@@ -258,17 +316,6 @@ class APIController extends Controller
     public function editarUsuario(Request $request, $id) {
         $datos = $request->json()->all();
         $user = User::findOrFail($id);
-        // $user_exist = User::where('email', $datos['email'])
-        //                 ->where('id', '!=', $id)
-        //                 ->first();
-
-        // if ($user_exist) {
-        //     return response()->json([
-        //         'title' => 'Error al actualizar',
-        //         'message' => 'El correo electrónico ya está registrado para otro usuario.',
-        //         'success' => false,
-        //     ], 200);
-        // }
 
         $codigo_exist = User::where('codigo_acceso', $datos['codigo_acceso'])
                             ->where('id', '!=', $id)
@@ -611,11 +658,6 @@ class APIController extends Controller
         ]);
     }
     public function guardarHerramental(Request $request, $proyecto_id){
-        
-        // $ultimo = Herramental::where('proyecto_id', $proyecto_id)->latest('id')->first();
-        // $siguiente = $ultimo ? intval(substr($ultimo->nombre, 2)) + 1 : 1;
-        // $siguiente = 'HR' . str_pad($siguiente, 2, "0", STR_PAD_LEFT);
-
         $existe = Herramental::where('proyecto_id', $proyecto_id)
             ->where('nombre', $request->input('nombre'))
             ->exists();
@@ -626,28 +668,49 @@ class APIController extends Controller
                 'message' => 'Ya existe un herramental con ese nombre en este proyecto.',
             ]);
         }
-
-
-        $herramental = new Herramental();
-        $herramental->nombre = $request->input('nombre');
-        $herramental->proyecto_id = $proyecto_id;
-        $herramental->estatus_ensamble = 'inicial';
-        $herramental->estatus_pruebas_diseno = 'inicial';
-        $herramental->estatus_pruebas_proceso = 'inicial';
-        $herramental->save();
-
-         if ($request->hasFile('archivo')) {
-            $file = $request->file('archivo');
-            $name = uniqid().'_'.$file->getClientOriginalName();
-            Storage::disk('public')->put($proyecto_id . '/' . $herramental->id . '/formato/' . $name, \File::get($file));
-            $herramental->archivo = $name;
+        
+        try {
+            DB::beginTransaction();
+            $herramental = new Herramental();
+            $herramental->nombre = $request->input('nombre');
+            $herramental->proyecto_id = $proyecto_id;
+            $herramental->estatus_ensamble = 'inicial';
+            $herramental->estatus_pruebas_diseno = 'inicial';
+            $herramental->estatus_pruebas_proceso = 'inicial';
             $herramental->save();
-        }
 
-        return response()->json([
-            'id' => $herramental->id,
-            'success' => true,
-        ], 200);
+            if ($request->hasFile('archivo')) {
+                $file = $request->file('archivo');
+
+                // Validación del archivo
+                $resultado = $this->validarArchivo($file);
+                if (!$resultado['success']) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $resultado['message'],
+                    ], 200);
+                }
+
+                $name = uniqid().'_'.$file->getClientOriginalName();
+                Storage::disk('public')->put($proyecto_id . '/' . $herramental->id . '/formato/' . $name, \File::get($file));
+                $herramental->archivo = $name;
+                $herramental->save();
+            }
+
+            DB::commit();
+            return response()->json([
+                'id' => $herramental->id,
+                'success' => true,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error inesperado.',
+                'error' => $e->getMessage(), 
+            ], 500);
+        }
     }
     public function obtenerHerramental($id){
         $herramental = Herramental::findOrFail($id);
@@ -665,6 +728,16 @@ class APIController extends Controller
                 $herramental = Herramental::findOrFail($id);
                 if ($request->hasFile('archivo')) {
                     $file = $request->file('archivo');
+
+                    $resultado = $this->validarArchivo($file); 
+                    if (!$resultado['success']) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => $resultado['message'],
+                        ], 200);
+                    }
+
+
                     $name = uniqid().'_'.$file->getClientOriginalName();
                     Storage::disk('public')->put($herramental->proyecto_id . '/' . $herramental->id . '/formato2/' . $name, \File::get($file));
                     $herramental->archivo2 = $name;
@@ -708,6 +781,15 @@ class APIController extends Controller
                 $herramental = Herramental::findOrFail($id);
                 if ($request->hasFile('archivo')) {
                     $file = $request->file('archivo');
+
+                    $resultado = $this->validarArchivo($file); 
+                    if (!$resultado['success']) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => $resultado['message'],
+                        ], 200);
+                    }
+
                     $name = uniqid().'_'.$file->getClientOriginalName();
                     Storage::disk('public')->put($herramental->proyecto_id . '/' . $herramental->id . '/formato2/' . $name, \File::get($file));
                     $herramental->archivo2 = $name;
@@ -746,10 +828,18 @@ class APIController extends Controller
             case 'foto':
                 $componente = Componente::findOrFail($id);
                 if ($request->hasFile('foto')) {
+                    $file = $request->file("foto");
+
+                    $resultado = $this->validarArchivo($file); 
+                    if (!$resultado['success']) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => $resultado['message'],
+                        ], 200);
+                    }
                     if ($componente->foto_matricero) {
                         Storage::disk('public')->delete('fotos_matricero/' . $componente->foto_matricero);
                     }
-                    $file = $request->file('foto');
                     $name = uniqid().'_'.$file->getClientOriginalName();
                     Storage::disk('public')->put('fotos_matricero/' . $name, \File::get($file));
                     $componente->foto_matricero = $name;
@@ -824,7 +914,6 @@ class APIController extends Controller
         $fabricacion = Fabricacion::findOrFail($fabricacion_id);
         $componente = Componente::findOrFail($fabricacion->componente_id);
         $fabricacion->comentarios_terminado = $data['comentarios_terminado'];
-        // $fabricacion->registro_medidas = $data['registro_medidas'];
         $fabricacion->checklist_fabricadas = json_encode($data['checklist_fabricadas']);
         $fabricacion->save();
         
@@ -833,6 +922,13 @@ class APIController extends Controller
         
         $archivo = $request->file('fotografia');
         if ($archivo) {
+            $resultado = $this->validarArchivo($archivo); 
+            if (!$resultado['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $resultado['message'],
+                ], 200);
+            }
             $name = time() . '_' . $archivo->getClientOriginalName();
             Storage::disk('public')->put("fabricaciones/" . $name, \File::get($archivo));
             $fabricacion->foto = $name;
@@ -860,19 +956,25 @@ class APIController extends Controller
             $fabricacion->usuario_id = auth()->user()->id;
             $fabricacion->save();
 
-            $componente->estatus_fabricacion += 1;
+            $componente->estatus_fabricacion += 1; //puede haber error
             $componente->save();
 
             $fabricacionesPendientes = Fabricacion::where('componente_id', $componente->id)
                 ->where('fabricado', false)
                 ->get();
+            
+            if (!$fabricacionesPendientes->isEmpty()) {
+                $nextFabrication = $fabricacionesPendientes->sortBy('orden')->firstWhere('fabricado', false);
+                if ($nextFabrication) {
+                    $componente->estatus_fabricacion = $nextFabrication->orden;
+                    $componente->save();
+                }
+            }
 
             $herramental = Herramental::findOrFail($componente->herramental_id);
             $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
             $cliente = Cliente::findOrFail($proyecto->cliente_id);
             $anio = Anio::findOrFail($cliente->anio_id);
-
-
 
             // Si ya no hay fabricaciones pendientes
             if ($fabricacionesPendientes->isEmpty()) {
@@ -1093,6 +1195,16 @@ class APIController extends Controller
         
         foreach ($request->file('archivo') as $maquinaId => $archivos) {
             foreach ($archivos as $index => $file) {
+
+                $resultado = $this->validarArchivo($file);
+
+                if (!$resultado['success']) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Error al subir algunos archivos al sistema:" . $resultado['message'],
+                    ], 200);
+                }
+
                 $archivoId = $archivoIds[$maquinaId][$index] ?? null;
 
                 if ($archivoId) {
@@ -1210,20 +1322,23 @@ class APIController extends Controller
                         $notificacion->save();
                     }
                 } else {
-                    $notificacionHerramental = new Notificacion();
-                    $notificacionHerramental->roles = json_encode(['MATRICERO']);
-                    $notificacionHerramental->url_base = '/matricero';
-                    $notificacionHerramental->anio_id = $anio->id;
-                    $notificacionHerramental->cliente_id = $cliente->id;
-                    $notificacionHerramental->proyecto_id = $proyecto->id;
-                    $notificacionHerramental->herramental_id = $herramental->id;
-                    $notificacionHerramental->descripcion = 'HERRAMENTAL COMPLETO Y LISTO PARA ENSAMBLE';
-                    $notificacionHerramental->save();
+                    // Caso cuando no hay fabricaciones pendientes
+                    $this->verificarTempleOSiguientePaso($componente);
+                    
+                    // $notificacionHerramental = new Notificacion();
+                    // $notificacionHerramental->roles = json_encode(['MATRICERO']);
+                    // $notificacionHerramental->url_base = '/matricero';
+                    // $notificacionHerramental->anio_id = $anio->id;
+                    // $notificacionHerramental->cliente_id = $cliente->id;
+                    // $notificacionHerramental->proyecto_id = $proyecto->id;
+                    // $notificacionHerramental->herramental_id = $herramental->id;
+                    // $notificacionHerramental->descripcion = 'HERRAMENTAL COMPLETO Y LISTO PARA ENSAMBLE';
+                    // $notificacionHerramental->save();
     
-                    foreach ($users as $user) {
-                        $user->hay_notificaciones = true;
-                        $user->save();
-                    }
+                    // foreach ($users as $user) {
+                    //     $user->hay_notificaciones = true;
+                    //     $user->save();
+                    // }
                 }
             }
             
@@ -1244,11 +1359,72 @@ class APIController extends Controller
                 $seguimiento->save();
             }
         }
-       
-
+        
         return response()->json([
             'success' => true,
         ], 200);
+    }
+    protected function verificarTempleOSiguientePaso($componente) {
+        $herramental = Herramental::findOrFail($componente->herramental_id);
+        $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
+        $cliente = Cliente::findOrFail($proyecto->cliente_id);
+        $anio = Anio::findOrFail($cliente->anio_id);
+
+         $procesos = [
+            ['id' => 1, 'prioridad' => 1, 'nombre' => 'Cortar'],
+            ['id' => 2, 'prioridad' => 2, 'nombre' => 'Programar'],
+            ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear'],
+            ['id' => 4, 'prioridad' => 4, 'nombre' => 'Maquinar'],
+            ['id' => 5, 'prioridad' => 5, 'nombre' => 'Tornear'],
+            ['id' => 6, 'prioridad' => 6, 'nombre' => 'Roscar/Rebabear'],
+            ['id' => 7, 'prioridad' => 7, 'nombre' => 'Templar'],
+            ['id' => 8, 'prioridad' => 8, 'nombre' => 'Rectificar'],
+            ['id' => 9, 'prioridad' => 9, 'nombre' => 'EDM'],
+            ['id' => 11, 'prioridad' => 11, 'nombre' => 'Marcar'],
+        ];
+
+        // Si requiere temple y no se ha realizado
+        if ($componente->requiere_temple && !$componente->fecha_recibido_temple) {
+            $componente->fecha_solicitud_temple = date('Y-m-d');
+            $componente->save();
+
+            $notificacionAlmacen = new Notificacion();
+            $notificacionAlmacen->roles = json_encode(['ALMACENISTA']);
+            $notificacionAlmacen->url_base = '/temple';
+            $notificacionAlmacen->anio_id = $anio->id;
+            $notificacionAlmacen->cliente_id = $cliente->id;
+            $notificacionAlmacen->proyecto_id = $proyecto->id;
+            $notificacionAlmacen->herramental_id = $herramental->id;
+            $notificacionAlmacen->componente_id = $componente->id;
+            $notificacionAlmacen->descripcion = 'UN COMPONENTE REQUIERE TEMPLE';
+            $notificacionAlmacen->save();
+
+            $usuariosAlmacen = User::role('ALMACENISTA')->get();
+            foreach ($usuariosAlmacen as $usuario) {
+                $usuario->hay_notificaciones = true;
+                $usuario->save();
+            }
+        } else {
+            $notificacion = new Notificacion();
+            $notificacion->roles = json_encode(['MATRICERO']);
+            $notificacion->url_base = '/matricero/lista-componentes';
+            $notificacion->anio_id = $anio->id;
+            $notificacion->cliente_id = $cliente->id;
+            $notificacion->proyecto_id = $proyecto->id;
+            $notificacion->herramental_id = $herramental->id;
+            $notificacion->componente_id = $componente->id;
+            $notificacion->descripcion = 'COMPONENTE LISTO PARA ENSAMBLE';
+            $notificacion->save();
+
+            $componente->fecha_terminado = date('Y-m-d H:i');
+            $componente->save();
+
+            $users = User::role('MATRICERO')->get();
+            foreach ($users as $user) {
+                $user->hay_notificaciones = true;
+                $user->save();
+            }
+        }
     }
     public function obtenerLineaTiempoComponente($componente_id){
         $seguimiento = SeguimientoTiempo::where('componente_id', $componente_id)->orderBy('id', 'ASC')->get();
@@ -1282,6 +1458,8 @@ class APIController extends Controller
         if(!empty($datos['hay_retrabajo']) && $datos['hay_retrabajo'] == true){
             $componente->ruta = json_encode($datos['ruta']);
             $componente->save();
+
+            // los componentes que seleccione como retrabajo en la nueva ruta
 
             $herramental = Herramental::findOrFail($componente->herramental_id);
             $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
@@ -1384,23 +1562,35 @@ class APIController extends Controller
                 $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
                 $cliente = Cliente::findOrFail($proyecto->cliente_id);
                 $anio = Anio::findOrFail($cliente->anio_id);
-    
-                $notificacion = new Notificacion();
-                $notificacion->roles = json_encode(['ALMACENISTA']);
-                $notificacion->url_base = '/corte';
-                $notificacion->anio_id = $anio->id;
-                $notificacion->cliente_id = $cliente->id;
-                $notificacion->proyecto_id = $proyecto->id;
-                $notificacion->herramental_id = $herramental->id;
-                $notificacion->componente_id = $componente->id;
-                $notificacion->cantidad = $componente->cantidad;
-                $notificacion->descripcion = ' COMPONENTE LIBERADO PARA CORTE';
-                $notificacion->save();
-    
-                $users = User::role('ALMACENISTA')->get();
-                foreach ($users as $user) {
-                    $user->hay_notificaciones = true;
-                    $user->save();
+
+                $ruta = json_decode($componente->ruta, true); 
+                $contieneCorte = collect($ruta)->contains(function ($proceso) {
+                    return strtolower($proceso['name']) === 'cortar';
+                });
+
+                // si el componente no tiene el proceso de corte pasarlo a cortado automaticamente.
+                if(!$contieneCorte){
+                    $componente->estatus_corte = 'finalizado';
+                    $componente->cortado = true;
+                    $componente->save();
+                }else{
+                    $notificacion = new Notificacion();
+                    $notificacion->roles = json_encode(['ALMACENISTA']);
+                    $notificacion->url_base = '/corte';
+                    $notificacion->anio_id = $anio->id;
+                    $notificacion->cliente_id = $cliente->id;
+                    $notificacion->proyecto_id = $proyecto->id;
+                    $notificacion->herramental_id = $herramental->id;
+                    $notificacion->componente_id = $componente->id;
+                    $notificacion->cantidad = $componente->cantidad;
+                    $notificacion->descripcion = ' COMPONENTE LIBERADO PARA CORTE';
+                    $notificacion->save();
+        
+                    $users = User::role('ALMACENISTA')->get();
+                    foreach ($users as $user) {
+                        $user->hay_notificaciones = true;
+                        $user->save();
+                    }
                 }
     
                 $notificacion = new Notificacion();
@@ -1641,6 +1831,16 @@ class APIController extends Controller
     public function cargarVistaExplosionada(Request $request, $id){
         $herramental = Herramental::findOrFail($id);
         if ($request->hasFile("archivo")) {
+            
+            $file = $request->file("archivo");
+            $resultado = $this->validarArchivo($file); 
+            if (!$resultado['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $resultado['message'],
+                ], 200);
+            }
+
             if ($herramental->archivo_explosionado){
                 Storage::disk('public')->delete("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$herramental->archivo_explosionado}");
             }
@@ -1659,7 +1859,7 @@ class APIController extends Controller
         $componentes = json_decode($request->data, true);
 
         $componentesExistentes = Componente::where('herramental_id', $herramental_id)->pluck('id')->toArray();
-
+        $validos = true;
         $idsEnviados = [];
         foreach ($componentes as $index => $componente) {
             if (isset($componente['id'])) {
@@ -1733,38 +1933,40 @@ class APIController extends Controller
                 $nuevoComponente->ensamblado = false;
                 $nuevoComponente->save();
                 $this->actualizarVersiones($herramental->id);
-                
             }
             if ($request->hasFile("files.{$index}.vista2D")) {
-                if ($nuevoComponente->archivo_2d)
-                    Storage::disk('public')->delete("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$nuevoComponente->archivo_2d}");
-                $file2D = $request->file("files.{$index}.vista2D");
-                $name2D = uniqid() . '_' . $file2D->getClientOriginalName();
-                Storage::disk('public')->put("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$name2D}", \File::get($file2D));
-                $nuevoComponente->archivo_2d = $name2D;
+                $file = $request->file("files.{$index}.vista2D");
+                $resultado = $this->validarArchivo($file); 
+
+                if (!$resultado['success']) {
+                    $validos = false;
+                }else{
+                    if ($nuevoComponente->archivo_2d)
+                        Storage::disk('public')->delete("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$nuevoComponente->archivo_2d}");
+                    $file2D = $request->file("files.{$index}.vista2D");
+                    $name2D = uniqid() . '_' . $file2D->getClientOriginalName();
+                    Storage::disk('public')->put("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$name2D}", \File::get($file2D));
+                    $nuevoComponente->archivo_2d = $name2D;
+                }
             }
 
             if ($request->hasFile("files.{$index}.vista3D")) {
-                if ($nuevoComponente->archivo_3d)
-                    Storage::disk('public')->delete("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$nuevoComponente->archivo_3d}");
-                $file3D = $request->file("files.{$index}.vista3D");
-                $name3D = uniqid() . '_' . $file3D->getClientOriginalName();
-                Storage::disk('public')->put("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$name3D}", \File::get($file3D));
-                $nuevoComponente->archivo_3d = $name3D;
+                $file = $request->file("files.{$index}.vista3D");
+                $resultado = $this->validarArchivo($file); 
+
+                if (!$resultado['success']) {
+                    $validos = false;
+                }else{
+                    if ($nuevoComponente->archivo_3d)
+                        Storage::disk('public')->delete("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$nuevoComponente->archivo_3d}");
+                    $file3D = $request->file("files.{$index}.vista3D");
+                    $name3D = uniqid() . '_' . $file3D->getClientOriginalName();
+                    Storage::disk('public')->put("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$name3D}", \File::get($file3D));
+                    $nuevoComponente->archivo_3d = $name3D;
+                }
             }
-
-            // if ($request->hasFile("files.{$index}.vistaExplosionada")) {
-            //     if ($nuevoComponente->archivo_explosionado)
-            //         Storage::disk('public')->delete("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$nuevoComponente->archivo_explosionado}");
-            //     $fileExplosionada = $request->file("files.{$index}.vistaExplosionada");
-            //     $nameExplosionada = uniqid() . '_' . $fileExplosionada->getClientOriginalName();
-            //     Storage::disk('public')->put("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$nameExplosionada}", \File::get($fileExplosionada));
-            //     $nuevoComponente->archivo_explosionado = $nameExplosionada;
-            // }
             $nuevoComponente->save();
-
         }
-
         $componentesEliminados = array_diff($componentesExistentes, $idsEnviados);
 
         foreach ($componentesEliminados as $componenteId) {
@@ -1782,10 +1984,12 @@ class APIController extends Controller
 
         return response()->json([
             'success' => true,
+            'validos' => $validos,
         ], 200);
     }
     public function actualizarVersiones($herramental_id){
         $componentes = Componente::where('herramental_id', $herramental_id)
+            ->whereNull('cancelado')
             ->orderBy('nombre') // Agrupar por nombre
             ->orderBy('created_at') // Ordenar por fecha de creación
             ->get();
@@ -1828,7 +2032,7 @@ class APIController extends Controller
         $solicitud = new Solicitud();
         $solicitud->tipo = 'retrabajo';
         $solicitud->componente_id = $componente->id;
-        $solicitud->comentarios = 'El diseño del compoente ha sido modificado, se requiere un retrabajo / refabricación';
+        $solicitud->comentarios = 'El diseño del componente ha sido modificado, se requiere un retrabajo / refabricación';
         $solicitud->area_solicitante = 'DISEÑO';
         $solicitud->usuario_id = auth()->user()->id;
         $solicitud->save();
@@ -2332,37 +2536,57 @@ class APIController extends Controller
         $ultimo = Hoja::where('material_id', $data['material_id'])->latest('id')->first();
         $siguiente = $ultimo ? intval($ultimo->consecutivo) + 1 : 1;
 
-        $hoja = new Hoja();
-        $hoja->consecutivo = $siguiente;
-        $hoja->calidad = $data['calidad'];
-        $hoja->espesor = $data['espesor'];
-        $hoja->largo_entrada = $data['largo_entrada'];
-        $hoja->ancho_entrada = $data['ancho_entrada'];
-        $hoja->longitud_entrada = $data['longitud_entrada'];
-        $hoja->diametro_entrada = $data['diametro_entrada'];
-        $hoja->peso_entrada = $data['peso_entrada'];
-        $hoja->largo_saldo = $data['largo_entrada'];
-        $hoja->ancho_saldo = $data['ancho_entrada'];
-        $hoja->longitud_saldo = $data['longitud_entrada'];
-        $hoja->diametro_saldo = $data['diametro_entrada'];
-        $hoja->peso_saldo = $data['peso_entrada'];
-        $hoja->precio_kilo = $data['precio_kilo'];
-        $hoja->fecha_entrada = $data['fecha_entrada'];
-        $hoja->fecha_salida = $data['fecha_salida']??null;
-        $hoja->material_id = $data['material_id'];
-        $hoja->estatus = true;
+        try {
+            DB::beginTransaction();
+             $hoja = new Hoja();
+            $hoja->consecutivo = $siguiente;
+            $hoja->calidad = $data['calidad'];
+            $hoja->espesor = $data['espesor'];
+            $hoja->largo_entrada = $data['largo_entrada'];
+            $hoja->ancho_entrada = $data['ancho_entrada'];
+            $hoja->longitud_entrada = $data['longitud_entrada'];
+            $hoja->diametro_entrada = $data['diametro_entrada'];
+            $hoja->peso_entrada = $data['peso_entrada'];
+            $hoja->largo_saldo = $data['largo_entrada'];
+            $hoja->ancho_saldo = $data['ancho_entrada'];
+            $hoja->longitud_saldo = $data['longitud_entrada'];
+            $hoja->diametro_saldo = $data['diametro_entrada'];
+            $hoja->peso_saldo = $data['peso_entrada'];
+            $hoja->precio_kilo = $data['precio_kilo'];
+            $hoja->fecha_entrada = $data['fecha_entrada'];
+            $hoja->fecha_salida = $data['fecha_salida']??null;
+            $hoja->material_id = $data['material_id'];
+            $hoja->estatus = true;
 
-        if ($request->hasFile('factura')) {
-            $file = $request->file('factura');
-            $name = uniqid().'_'.$file->getClientOriginalName();
-            Storage::disk('public')->put('facturas/' . $name, \File::get($file));
-            $hoja->factura = $name;
+            if ($request->hasFile('factura')) {
+                $file = $request->file('factura');
+
+                $resultado = $this->validarArchivo($file);
+                if (!$resultado['success']) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $resultado['message'],
+                    ], 200);
+                }
+                $name = uniqid().'_'.$file->getClientOriginalName();
+                Storage::disk('public')->put('facturas/' . $name, \File::get($file));
+                $hoja->factura = $name;
+            }
+            $hoja->save();
+            
+            DB::commit();
+            return response()->json([
+                'success' => true,
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error inesperado.',
+                'error' => $e->getMessage(), 
+            ], 500);
         }
-        $hoja->save();
-
-        return response()->json([
-            'success' => true,
-        ], 200);
 
     }
     public function cambiarEstatusCorte(Request $request, $id){
@@ -2542,6 +2766,9 @@ class APIController extends Controller
                     $notificacion->descripcion = 'COMPONENTE LIBERADO PARA FABRICACION, MAQUINA: ' . $fabricacionOrden1->maquina->nombre . ' PROGRAMA: ' . $fabricacionOrden1->getArchivoShow();
                     $notificacion->save();
                 }
+            }
+            else{
+                $this->verificarTempleOSiguientePaso($componente);
             }
         }
 
@@ -2776,8 +3003,6 @@ class APIController extends Controller
         $herramental->estatus_pruebas_diseno = 'inicial';
         $herramental->estatus_pruebas_proceso = 'inicial';
         $herramental->save();
-
-
 
         $pruebas = PruebaDiseno::where('herramental_id', $herramental->id)->get();
         foreach ($pruebas as $prueba) {
@@ -3123,6 +3348,15 @@ class APIController extends Controller
 
         $archivo = $request->file('archivo_dimensional');
         if ($archivo) {
+            $resultado = $this->validarArchivo($archivo); 
+            
+            if (!$resultado['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $resultado['message'],
+                ], 200);
+            }
+
             $name = time() . '_' . $archivo->getClientOriginalName();
             Storage::disk('public')->put("pruebas-diseno/" . $name, \File::get($archivo));
             $prueba->archivo_dimensional = $name;
@@ -3245,6 +3479,15 @@ class APIController extends Controller
 
         $archivo = $request->file('archivo');
         if ($archivo) {
+            $resultado = $this->validarArchivo($archivo); 
+            
+            if (!$resultado['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $resultado['message'],
+                ], 200);
+            }
+
             $name = time() . '_' . $archivo->getClientOriginalName();
             Storage::disk('public')->put("pruebas-proceso/" . $name, \File::get($archivo));
             $prueba->archivo = $name;
@@ -3253,6 +3496,15 @@ class APIController extends Controller
 
         $foto = $request->file('foto');
         if ($foto) {
+
+            $resultado = $this->validarArchivo($foto); 
+            if (!$resultado['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $resultado['message'],
+                ], 200);
+            }
+
             $name = time() . '_' . $foto->getClientOriginalName();
             Storage::disk('public')->put("pruebas-proceso/" . $name, \File::get($foto));
             $prueba->foto = $name;
@@ -3468,154 +3720,193 @@ class APIController extends Controller
     public function generarOrdenTrabajo(Request $request) {
         $data = json_decode($request->data, true);
 
-        $ordenTrabajo = new SolicitudExterna();
-        $ordenTrabajo->fecha_solicitud = $data['fecha_solicitud'];
-        $ordenTrabajo->fecha_deseada_entrega = $data['fecha_deseada_entrega'];
-        $ordenTrabajo->fecha_real_entrega = null;
-        $ordenTrabajo->solicitante_id = $data['solicitante_id'];
-        $ordenTrabajo->area_solicitud = $data['area_solicitud'];
-        $ordenTrabajo->numero_hr = $data['numero_hr'];
-        $ordenTrabajo->numero_componente = $data['numero_componente'];
-        $ordenTrabajo->cantidad = $data['cantidad'];
-        $ordenTrabajo->tratamiento_termico = $data['tratamiento_termico'];
-        $ordenTrabajo->comentarios = $data['comentarios'];
-        $ordenTrabajo->desde = $data['desde'];
-        $ordenTrabajo->material_id = $data['material_id'];
-        $ordenTrabajo->save();
+        try {
+                DB::beginTransaction();
+                $ordenTrabajo = new SolicitudExterna();
+                $ordenTrabajo->fecha_solicitud = $data['fecha_solicitud'];
+                $ordenTrabajo->fecha_deseada_entrega = $data['fecha_deseada_entrega'];
+                $ordenTrabajo->fecha_real_entrega = null;
+                $ordenTrabajo->solicitante_id = $data['solicitante_id'];
+                $ordenTrabajo->area_solicitud = $data['area_solicitud'];
+                $ordenTrabajo->numero_hr = $data['numero_hr'];
+                $ordenTrabajo->numero_componente = $data['numero_componente'];
+                $ordenTrabajo->cantidad = $data['cantidad'];
+                $ordenTrabajo->tratamiento_termico = $data['tratamiento_termico'];
+                $ordenTrabajo->comentarios = $data['comentarios'];
+                $ordenTrabajo->desde = $data['desde'];
+                $ordenTrabajo->material_id = $data['material_id'];
+                $ordenTrabajo->save();
 
-        if ($request->hasFile('archivo_2d')) {
-            $file2D = $request->file('archivo_2d');
-            $name2D = uniqid() . '_' . $file2D->getClientOriginalName();
-            Storage::disk('public')->put('ordenes_trabajo/' . $name2D, \File::get($file2D));
-            $ordenTrabajo->archivo_2d = $name2D;
+                if ($request->hasFile('archivo_2d')) {
+                    $file2D = $request->file('archivo_2d');
+                    $resultado = $this->validarArchivo($file2D); 
+                    if (!$resultado['success']) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => $resultado['message'],
+                        ], 200);
+                    }
+                    
+                    $name2D = uniqid() . '_' . $file2D->getClientOriginalName();
+                    Storage::disk('public')->put('ordenes_trabajo/' . $name2D, \File::get($file2D));
+                    $ordenTrabajo->archivo_2d = $name2D;
+                }
+
+                if ($request->hasFile('archivo_3d')) {
+                    $file3D = $request->file('archivo_3d');
+                    $resultado = $this->validarArchivo($file3D); 
+                    if (!$resultado['success']) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => $resultado['message'],
+                        ], 200);
+                    }
+
+                    $name3D = uniqid() . '_' . $file3D->getClientOriginalName();
+                    Storage::disk('public')->put('ordenes_trabajo/' . $name3D, \File::get($file3D));
+                    $ordenTrabajo->archivo_3d = $name3D;
+                }
+
+                if ($request->hasFile('dibujo')) {
+                    $fileDibujo = $request->file('dibujo');
+                    $resultado = $this->validarArchivo($fileDibujo); 
+                    if (!$resultado['success']) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => $resultado['message'],
+                        ], 200);
+                    }
+
+                    $nameDibujo = uniqid() . '_' . $fileDibujo->getClientOriginalName();
+                    Storage::disk('public')->put('ordenes_trabajo/' . $nameDibujo, \File::get($fileDibujo));
+                    $ordenTrabajo->dibujo = $nameDibujo;
+                }
+                $ordenTrabajo->save();
+
+                $anio = Anio::firstOrCreate(['nombre' => date('Y')]);
+                $cliente = Cliente::firstOrCreate(['nombre' => 'ORDENES EXTERNAS'], ['anio_id' => $anio->id]);
+                $nombreProyecto = auth()->user()->id . '.'.  auth()->user()->nombre_completo;
+                
+                $proyecto = Proyecto::firstOrCreate(
+                    ['nombre' => $nombreProyecto, 'cliente_id' => $cliente->id]
+                );
+
+                $nombreHerramental = "HR" . $data['numero_hr'];
+                $herramental = Herramental::where('nombre', $nombreHerramental)
+                    ->where('proyecto_id', $proyecto->id)
+                    ->first();
+
+                if (!$herramental) {
+                    $herramental = new Herramental();
+                    $herramental->nombre = $nombreHerramental;
+                    $herramental->proyecto_id = $proyecto->id;
+                    $herramental->estatus_ensamble = 'inicial';
+                    $herramental->estatus_pruebas_diseno = 'inicial';
+                    $herramental->estatus_pruebas_proceso = 'inicial';
+                    $herramental->save();
+                }
+                
+                $nombreComponente = $nombreHerramental . '-' . $data['numero_componente'];
+                $componenteExistente = Componente::where('nombre', $nombreComponente)->where('herramental_id', $herramental->id)->exists();
+
+                if ($componenteExistente) {
+                    $ordenTrabajo->delete();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'El componente ya existe, verifique el numero de componente e intentelo nuevamente',
+                    ]);
+                }
+
+                $nuevoComponente = new Componente();
+                $nuevoComponente->nombre = $herramental->nombre. '-' .$data['numero_componente'];
+                $nuevoComponente->version = 1;
+                $nuevoComponente->cantidad = $data['cantidad'];
+                $nuevoComponente->fecha_cargado = date('Y-m-d H:i');
+                $nuevoComponente->prioridad = 'A';
+                $nuevoComponente->refabricado = false;
+                $nuevoComponente->refaccion = false;
+                $nuevoComponente->es_compra = false;
+                $nuevoComponente->cargado = true;
+                $nuevoComponente->comprado = false;
+                $nuevoComponente->programado = false;
+                $nuevoComponente->cortado = false;
+                $nuevoComponente->enrutado = false;
+                $nuevoComponente->ensamblado = false;
+                $nuevoComponente->estatus_corte = 'inicial';
+                $nuevoComponente->estatus_programacion ='inicial';
+                $nuevoComponente->estatus_fabricacion = 1;
+                $nuevoComponente->herramental_id = $herramental->id;
+                $nuevoComponente->material_id = $data['material_id'];
+
+                $rutaBase = "{$herramental->proyecto_id}/{$herramental->id}/componentes/";
+                Storage::disk('public')->makeDirectory($rutaBase);
+                
+                if ($ordenTrabajo->archivo_2d) {
+                    $nuevoNombre2D = $this->generarNuevoNombre($ordenTrabajo->archivo_2d);
+                    Storage::disk('public')->copy(
+                        "ordenes_trabajo/{$ordenTrabajo->archivo_2d}", // Ruta correcta de origen
+                        "{$rutaBase}{$nuevoNombre2D}" // Ruta de destino
+                    );
+                    $nuevoComponente->archivo_2d = $nuevoNombre2D;
+                }
+
+                if ($ordenTrabajo->archivo_3d) {
+                    $nuevoNombre3D = $this->generarNuevoNombre($ordenTrabajo->archivo_3d);
+                    Storage::disk('public')->copy(
+                        "ordenes_trabajo/{$ordenTrabajo->archivo_3d}", 
+                        "{$rutaBase}{$nuevoNombre3D}"
+                    );
+                    $nuevoComponente->archivo_3d = $nuevoNombre3D;
+                }
+
+                if ($ordenTrabajo->dibujo) {
+                    $nuevoNombreExplosionado = $this->generarNuevoNombre($ordenTrabajo->dibujo);
+                    Storage::disk('public')->copy(
+                        "ordenes_trabajo/{$ordenTrabajo->dibujo}", 
+                        "{$rutaBase}{$nuevoNombreExplosionado}"
+                    );
+                    $herramental->archivo_explosionado = $nuevoNombreExplosionado;
+                    $herramental->save();
+                }
+                $nuevoComponente->save();
+                $ordenTrabajo->componente_id = $nuevoComponente->id;
+                $ordenTrabajo->save();
+
+                $notificacion = new Notificacion();
+                $notificacion->roles = json_encode(['JEFE DE AREA']);
+                $notificacion->url_base = '/enrutador';
+                $notificacion->anio_id = $anio->id;
+                $notificacion->cliente_id = $cliente->id;
+                $notificacion->proyecto_id = $proyecto->id;
+                $notificacion->herramental_id = $herramental->id;
+                $notificacion->componente_id = $nuevoComponente->id;
+                $notificacion->cantidad = $nuevoComponente->cantidad;
+                $notificacion->descripcion = 'SE HA LIBERADO UN NUEVO COMPONENTE PARA ENRUTAMIENTO DESDE ORDENES DE TRABAJO EXTERNAS.';
+                $notificacion->save();
+
+                $users = User::role('JEFE DE AREA')->get();
+                foreach ($users as $user) {
+                    $user->hay_notificaciones = true;
+                    $user->save();
+                }
+                DB::commit();
+                return response()->json([
+                    'success' => true,
+                ], 200);
+            } catch (\Exception $e) {
+                DB::rollBack();
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ocurrió un error inesperado.',
+                    'error' => $e->getMessage(), 
+                ], 500);
         }
 
-        if ($request->hasFile('archivo_3d')) {
-            $file3D = $request->file('archivo_3d');
-            $name3D = uniqid() . '_' . $file3D->getClientOriginalName();
-            Storage::disk('public')->put('ordenes_trabajo/' . $name3D, \File::get($file3D));
-            $ordenTrabajo->archivo_3d = $name3D;
-        }
-
-        if ($request->hasFile('dibujo')) {
-            $fileDibujo = $request->file('dibujo');
-            $nameDibujo = uniqid() . '_' . $fileDibujo->getClientOriginalName();
-            Storage::disk('public')->put('ordenes_trabajo/' . $nameDibujo, \File::get($fileDibujo));
-            $ordenTrabajo->dibujo = $nameDibujo;
-        }
-        $ordenTrabajo->save();
-
-        $anio = Anio::firstOrCreate(['nombre' => date('Y')]);
-        $cliente = Cliente::firstOrCreate(['nombre' => 'ORDENES EXTERNAS'], ['anio_id' => $anio->id]);
-        $nombreProyecto = auth()->user()->id . '.'.  auth()->user()->nombre_completo;
         
-        $proyecto = Proyecto::firstOrCreate(
-            ['nombre' => $nombreProyecto, 'cliente_id' => $cliente->id]
-        );
-
-        $nombreHerramental = "HR" . $data['numero_hr'];
-        $herramental = Herramental::where('nombre', $nombreHerramental)
-            ->where('proyecto_id', $proyecto->id)
-            ->first();
-
-        if (!$herramental) {
-            $herramental = new Herramental();
-            $herramental->nombre = $nombreHerramental;
-            $herramental->proyecto_id = $proyecto->id;
-            $herramental->estatus_ensamble = 'inicial';
-            $herramental->estatus_pruebas_diseno = 'inicial';
-            $herramental->estatus_pruebas_proceso = 'inicial';
-            $herramental->save();
-        }
-        
-        $nombreComponente = $nombreHerramental . '-' . $data['numero_componente'];
-        $componenteExistente = Componente::where('nombre', $nombreComponente)->where('herramental_id', $herramental->id)->exists();
-
-        if ($componenteExistente) {
-            $ordenTrabajo->delete();
-            return response()->json([
-                'success' => false,
-                'message' => 'El componente ya existe, verifique el numero de componente e intentelo nuevamente',
-            ]);
-        }
-
-        $nuevoComponente = new Componente();
-        $nuevoComponente->nombre = $herramental->nombre. '-' .$data['numero_componente'];
-        $nuevoComponente->version = 1;
-        $nuevoComponente->cantidad = $data['cantidad'];
-        $nuevoComponente->fecha_cargado = date('Y-m-d H:i');
-        $nuevoComponente->prioridad = 'A';
-        $nuevoComponente->refabricado = false;
-        $nuevoComponente->refaccion = false;
-        $nuevoComponente->es_compra = false;
-        $nuevoComponente->cargado = true;
-        $nuevoComponente->comprado = false;
-        $nuevoComponente->programado = false;
-        $nuevoComponente->cortado = false;
-        $nuevoComponente->enrutado = false;
-        $nuevoComponente->ensamblado = false;
-        $nuevoComponente->estatus_corte = 'inicial';
-        $nuevoComponente->estatus_programacion ='inicial';
-        $nuevoComponente->estatus_fabricacion = 1;
-        $nuevoComponente->herramental_id = $herramental->id;
-        $nuevoComponente->material_id = $data['material_id'];
-
-        $rutaBase = "{$herramental->proyecto_id}/{$herramental->id}/componentes/";
-        Storage::disk('public')->makeDirectory($rutaBase);
-        
-        if ($ordenTrabajo->archivo_2d) {
-            $nuevoNombre2D = $this->generarNuevoNombre($ordenTrabajo->archivo_2d);
-            Storage::disk('public')->copy(
-                "ordenes_trabajo/{$ordenTrabajo->archivo_2d}", // Ruta correcta de origen
-                "{$rutaBase}{$nuevoNombre2D}" // Ruta de destino
-            );
-            $nuevoComponente->archivo_2d = $nuevoNombre2D;
-        }
-
-        if ($ordenTrabajo->archivo_3d) {
-            $nuevoNombre3D = $this->generarNuevoNombre($ordenTrabajo->archivo_3d);
-            Storage::disk('public')->copy(
-                "ordenes_trabajo/{$ordenTrabajo->archivo_3d}", 
-                "{$rutaBase}{$nuevoNombre3D}"
-            );
-            $nuevoComponente->archivo_3d = $nuevoNombre3D;
-        }
-
-        if ($ordenTrabajo->dibujo) {
-            $nuevoNombreExplosionado = $this->generarNuevoNombre($ordenTrabajo->dibujo);
-            Storage::disk('public')->copy(
-                "ordenes_trabajo/{$ordenTrabajo->dibujo}", 
-                "{$rutaBase}{$nuevoNombreExplosionado}"
-            );
-            $herramental->archivo_explosionado = $nuevoNombreExplosionado;
-            $herramental->save();
-        }
-        $nuevoComponente->save();
-        $ordenTrabajo->componente_id = $nuevoComponente->id;
-        $ordenTrabajo->save();
-
-        
-        $notificacion = new Notificacion();
-        $notificacion->roles = json_encode(['JEFE DE AREA']);
-        $notificacion->url_base = '/enrutador';
-        $notificacion->anio_id = $anio->id;
-        $notificacion->cliente_id = $cliente->id;
-        $notificacion->proyecto_id = $proyecto->id;
-        $notificacion->herramental_id = $herramental->id;
-        $notificacion->componente_id = $nuevoComponente->id;
-        $notificacion->cantidad = $nuevoComponente->cantidad;
-        $notificacion->descripcion = 'SE HA LIBERADO UN NUEVO COMPONENTE PARA ENRUTAMIENTO DESDE ORDENES DE TRABAJO EXTERNAS.';
-        $notificacion->save();
-
-        $users = User::role('JEFE DE AREA')->get();
-        foreach ($users as $user) {
-            $user->hay_notificaciones = true;
-            $user->save();
-        }
-
-        return response()->json([
-            'success' => true,
-        ], 200);
     }
     public function editarOrdenTrabajo(Request $request, $id){
         $data = json_decode($request->data, true);
@@ -4567,9 +4858,6 @@ class APIController extends Controller
         ]);
     }
     public function tiemposFinanzasHR(Request $request, $herramental_id){
-        // $proyecto = Proyecto::findOrFail($proyecto_id);
-        // $herramentalIds = Herramental::where('proyecto_id', $proyecto->id)->pluck('id')->toArray();
-
         $componenteIds = Componente::where('herramental_id', $herramental_id)->pluck('id')->toArray();
 
         if (empty($componenteIds)) {

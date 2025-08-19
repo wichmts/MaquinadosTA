@@ -333,7 +333,7 @@
             <div class="main-panel col-xl-12">
                 <div class="row">
                     <div class="col-xl-2 pt-3" style="background-color: #f1f1f1; height: calc(100vh - 107.3px); overflow-y: scroll">
-                        <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical" >
                             <a class="nav-link cursor-pointer text-right text-muted" >
                                 <i v-if="menuStep > 1"  @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                             </a>
@@ -777,6 +777,9 @@
                     const formData = new FormData();
                     formData.append('foto', this.fotografia);
                     const response = await axios.post(`/api/herramental/${this.selectedComponente}/foto`, formData);
+                    if(response.data.success === false){
+                        swal('No se pudo guardar la foto', response.data.message, 'error');
+                    }
                     await this.fetchComponente(this.selectedComponente);
                 } catch (error) {
                     console.error('Error guardando foto:', error);
@@ -852,9 +855,13 @@
                             'Content-Type': 'multipart/form-data'
                         }
                     });
-                    swal('Herramental liberado', 'El herramental se liberó correctamente.', 'success').then(() => {
-                        window.location.href = '/matricero';
-                    });
+                    if(response.data.success === false){
+                        swal('Error al cargar el formato', response.data.message, 'error');
+                    }else{
+                        swal('Herramental liberado', 'El herramental se liberó correctamente.', 'success').then(() => {
+                            window.location.href = '/matricero';
+                        });
+                    }
                 } catch (error) {
                     console.error('Error uploading file:', error);
                     swal('Error', 'Error al cargar el archivo', 'error');

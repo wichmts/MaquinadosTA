@@ -36,7 +36,7 @@
             <div class="sidebar-wrapper">
                 <ul class="nav">
                     <li>
-                        <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical" style="max-height: 85vh; overflow-y: scroll !important">
                             <div class="d-flex justify-content-end">
                                 <a class="nav-link py-0 cursor-pointer text-right text-muted">
                                     <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
@@ -746,6 +746,9 @@
                             'Content-Type': 'multipart/form-data'
                         }
                     });
+                    if(response.data.success === false){
+                        swal('Error', response.data.message, 'error');
+                    }
                     await t.fetchPruebasHerramental(t.selectedHerramental, t.selectedPrueba);
                     t.loading_button = false;
                 } catch (error) {

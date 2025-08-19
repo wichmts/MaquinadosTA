@@ -46,7 +46,7 @@
                 <div class="sidebar-wrapper">
                     <ul class="nav">
                         <li>
-                            <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                            <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical" style="max-height: 85vh; overflow-y: scroll !important">
                                 <a class="nav-link cursor-pointer text-right text-muted" >
                                     <i v-if="menuStep > 3"  @click="regresar(menuStep - 1)" class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                                 </a>

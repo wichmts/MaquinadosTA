@@ -223,19 +223,19 @@
 
                             <div class="col-lg-4 form-group" v-if="nuevo.material_id == 1 || nuevo.material_id == 6 || nuevo.material_id == 2 || nuevo.material_id == 4 || nuevo.material_id == 5">
                                 <label class="bold">Largo <span class="text-danger">*</span></label>
-                                <input type="number" step="any" class="form-control" v-model="nuevo.largo_entrada" placeholder="Largo de la hoja...">
+                                <input type="text" step="any" class="form-control" v-model="nuevo.largo_entrada" placeholder="Largo de la hoja...">
                             </div>
                             <div class="col-lg-4 form-group" v-if="nuevo.material_id == 1 || nuevo.material_id == 6 || nuevo.material_id == 2 || nuevo.material_id == 4 || nuevo.material_id == 5">
                                 <label class="bold">Ancho <span class="text-danger">*</span></label>
-                                <input type="number" step="any" class="form-control" v-model="nuevo.ancho_entrada" placeholder="Ancho de la hoja...">
+                                <input type="text" step="any" class="form-control" v-model="nuevo.ancho_entrada" placeholder="Ancho de la hoja...">
                             </div>
                             <div class="col-lg-4 form-group" v-if="nuevo.material_id == 3">
                                 <label class="bold">Longitud <span class="text-danger">*</span></label>
-                                <input type="number" step="any" class="form-control" v-model="nuevo.longitud_entrada" placeholder="Longitud de la hoja...">
+                                <input type="text" step="any" class="form-control" v-model="nuevo.longitud_entrada" placeholder="Longitud de la hoja...">
                             </div>
                             <div class="col-lg-4 form-group" v-if="nuevo.material_id == 3">
                                 <label class="bold">Diametro <span class="text-danger">*</span></label>
-                                <input type="number" step="any" class="form-control" v-model="nuevo.diametro_entrada" placeholder="Diametro de la hoja...">
+                                <input type="text" step="any" class="form-control" v-model="nuevo.diametro_entrada" placeholder="Diametro de la hoja...">
                             </div>
                              <div class="col-lg-4 form-group">
                                 <label class="bold">Peso <span class="text-danger">*</span></label>
@@ -400,9 +400,6 @@
                         }
                     });
                 }
-
-
-
             },
             verMovimientosHoja(id){
                 let t = this;
@@ -490,7 +487,6 @@
                     }else{
                         swal('Lo sentimos!', response.data.message, 'info');
                         t.cargando = false;
-                        console.log(e);
                     }
                 }).catch(e => {
                     swal('Lo sentimos!', 'Intentelo de nuevo mas tarde', 'info');

@@ -35,7 +35,7 @@
                 <div class="sidebar-wrapper">
                     <ul class="nav">
                         <li>
-                            <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                            <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical" style="max-height: 85vh; overflow-y: scroll !important">
                                 <a class="nav-link py-0 cursor-pointer text-right text-muted" >
                                     <i v-if="menuStep > 1"  @click="regresar(menuStep - 1)" class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
                                 </a>
@@ -1146,12 +1146,10 @@
             async guardar(liberarComponente){                
                 let t = this
 
-
                 if(this.hay_retraso && liberarComponente && !this.fabricacion.motivo_retraso?.trim()){
                     swal('Campos obligatorios', 'Debe ingresar un motivo de retraso.', 'info');
                     return false;
-                }
-                
+                }                
 
                 t.cargando = true;
                 t.loading_button = true;
@@ -1168,25 +1166,31 @@
                             'Content-Type': 'multipart/form-data'
                         }
                     });
-
-                    swal('Correcto', liberarComponente ? 'Fabricacion finalizada correctamente' : 'Información guardada correctamente', 'success');
-                    await t.fetchComponentes(t.selectedMaquina);
-
-                    if(liberarComponente){
-                        if(t.componentes.some(obj => obj.id == t.selectedComponente)){
-                            await t.fetchComponente(t.selectedComponente);
-                            t.seleccionarPrograma();
+                    if(response.data.success){
+                        swal('Correcto', liberarComponente ? 'Fabricacion finalizada correctamente' : 'Información guardada correctamente', 'success');
+                        await t.fetchComponentes(t.selectedMaquina);
+    
+                        if(liberarComponente){
+                            if(t.componentes.some(obj => obj.id == t.selectedComponente)){
+                                await t.fetchComponente(t.selectedComponente);
+                                t.seleccionarPrograma();
+                            }else{
+                                t.menuStep = 1;
+                                t.selectedComponente = null;
+                                t.ruta.componente = null;
+                            }
                         }else{
-                            t.menuStep = 1;
-                            t.selectedComponente = null;
-                            t.ruta.componente = null;
+                            await t.fetchComponente(t.selectedComponente, t.programaSeleccionado);
+                            t.seleccionarPrograma();
                         }
+                        t.loading_button = false;
+                        $('#modalRetraso').modal('hide');
                     }else{
-                        await t.fetchComponente(t.selectedComponente, t.programaSeleccionado);
-                        t.seleccionarPrograma();
+                        swal('Error', response.data.message, 'error');
+                        t.loading_button = false;
+                        $('#modalRetraso').modal('hide');
+                        t.cargando = false;
                     }
-                    t.loading_button = false;
-                    $('#modalRetraso').modal('hide');
                 
                 } catch (error) {
                     console.log(error);

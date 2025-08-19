@@ -14,6 +14,21 @@ Route::get('/', function () {
         return redirect()->route('login');
     }
 });
+Route::get('/debug/upload-settings', function() {
+    $phpSettings = [
+        'post_max_size' => ini_get('post_max_size'),
+        'upload_max_filesize' => ini_get('upload_max_filesize'),
+        'max_file_uploads' => ini_get('max_file_uploads'),
+        'memory_limit' => ini_get('memory_limit'),
+        'max_execution_time' => ini_get('max_execution_time'),
+    ];
+
+    return response()->json([
+        'php_settings' => $phpSettings,
+        'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'N/A',
+        'server_max_upload' => $_SERVER['CONTENT_LENGTH'] ?? 'N/A (No hay upload en curso)',
+    ]);
+});
 Route::get('/terminos-y-condiciones', 'UserController@terminos')->name('terminos');
 Route::get('/verificar-cuenta/{token}', 'UserController@verificarCuenta')->name('verificacion');
 Route::get('/home', 'HomeController@index')->name('home');

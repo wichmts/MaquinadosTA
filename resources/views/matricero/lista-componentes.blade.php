@@ -395,9 +395,13 @@
                             'Content-Type': 'multipart/form-data'
                         }
                     });
-                    await this.fetchHerramentales(this.selectedProyecto);
-                    await this.fetchComponentes(this.selectedHerramental);
-                    swal('Correcto', 'Formato cargado correctamente', 'success');
+                    if(response.data.success === false){
+                        swal('Error', response.data.message, 'error');
+                    }else{
+                        await this.fetchHerramentales(this.selectedProyecto);
+                        await this.fetchComponentes(this.selectedHerramental);
+                        swal('Correcto', 'Formato cargado correctamente', 'success');
+                    }
                 } catch (error) {
                     console.error('Error uploading file:', error);
                     swal('Error', 'Error al cargar el archivo', 'error');

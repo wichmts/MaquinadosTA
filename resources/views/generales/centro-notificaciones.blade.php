@@ -114,7 +114,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="(n, index) in notificaciones" :key="index" class="cursor-pointer" @click="irNotificacion(n)">
-                            <td>@{{n.fecha}} @{{n.hora}} </td>
+                            <td :data-order="n.id">@{{n.fecha}} @{{n.hora}} </td>
                             <td>@{{n.anio}}</td>
                             <td>@{{n.cliente}}</td>
                             <td>@{{n.proyecto}}</td>

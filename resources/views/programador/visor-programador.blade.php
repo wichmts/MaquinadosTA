@@ -36,7 +36,7 @@
             <div class="sidebar-wrapper">
                 <ul class="nav">
                     <li>
-                        <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical" style="max-height: 85vh; overflow-y: scroll !important">
                             <div class="d-flex justify-content-end">
                                 <a class="nav-link py-0 cursor-pointer text-right text-muted">
                                     <i v-if="menuStep > 1" @click="regresar(menuStep - 1)" class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/regresar.png') }}"></i>
@@ -258,7 +258,7 @@
                                             :name="'file['+ m.maquina_id +'][' + index + ']'"
                                             @change="handleFileChange($event, ind, index)"
                                             style="display: none;"
-                                            accept=".txt" />
+                                            />
                                         <label
                                             tabindex="0"
                                             :for="'archivo-' + m.maquina_id + '-' + index"
@@ -675,7 +675,7 @@
                                 nombre: 'No requiere',
                                 archivo: new File(
                                     ['Esta maquina no requiere programación'], // contenido del archivo
-                                    'no requiere programa',                         // nombre del archivo
+                                    'no requiere programa.txt',                         // nombre del archivo
                                     { type: 'text/plain' }                     // tipo MIME
                                     )
                             }]
@@ -1411,12 +1411,18 @@
                             'Content-Type': 'multipart/form-data'
                         }
                     });
-
-                    swal('Correcto', liberarComponente ? 'Componente liberado correctamente' : 'Información guardada correctamente', 'success');
+                    if(response.data.success === false) {
+                        swal('Lo sentimos!', response.data.message, 'error');
+                        t.cargando = false;
+                        t.loading_button = false;
+                    }else{
+                        swal('Correcto', liberarComponente ? 'Componente liberado correctamente' : 'Información guardada correctamente', 'success');
+                        t.loading_button = false;
+                    }
                     await t.fetchComponentes(t.selectedHerramental);
                     await t.fetchComponente(t.selectedComponente);
-                    t.loading_button = false;
                     $('#modalRetraso').modal('hide');
+
                 } catch (error) {
                     console.log(error);
                     const mensaje = error.response?.data?.error || 'Error al guardar el componente.';
