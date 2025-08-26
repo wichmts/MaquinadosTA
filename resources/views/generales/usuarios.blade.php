@@ -244,6 +244,7 @@
             maquinas: [],
             puestos: [],
             roles: [
+                'ADMINISTRADOR DE CARPETAS',
                 'ALMACENISTA',
                 'AUXILIAR DE DISEÑO',
                 'DISEÑO',

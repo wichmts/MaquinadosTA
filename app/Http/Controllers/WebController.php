@@ -133,6 +133,12 @@ class WebController extends Controller
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');   
     }
 
+    public function exploradorCarpetas(){
+        if(auth()->user()->hasRole('ADMINISTRADOR DE CARPETAS')) //Cambiar a administrador de carpetas cuando acabes
+            return view('admin-de-carpetas.explorador-de-carpetas');
+        return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');   
+    }
+
     public function centroNotificaciones(){
         $user = auth()->user();
         $user->hay_notificaciones = false;

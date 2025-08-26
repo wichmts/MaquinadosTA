@@ -173,6 +173,11 @@ input:checked + .slider:before {
                     addMenuItem('orden-trabajo', 'Orden de trabajo', ['SOLICITUD EXTERNA'], $addedRoutes);
                 @endphp
 
+                {{-- ADMINISTRADOR DE CARPETAS --}}
+                @php
+                    addMenuItem('exploradorCarpetas', 'Explorador de Carpetas', ['ADMINISTRADOR DE CARPETAS'], $addedRoutes);
+                @endphp
+
                 {{-- CENTRO DE NOTIFICACIONES --}}
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="/centro-notificaciones">Centro de notificaciones</a>
