@@ -7,13 +7,26 @@
 
 @section('content')
 <div id="vue-app" v-show="!cargandoMenu" v-cloak>
-    <div class="card shadow col-md-12" style="padding: 30px !important">
+    <div class="col-md-12" style="padding: 30px !important">
         <div class="row">
             <div class="col-md-5 mb-0">
                 <h2 class="bold my-0 py-1" style="letter-spacing: 1px;">Explorador de carpetas</h2>
             </div>
             <div class="col-md-7 text-right">
-                <button class="btn btn-secondary">Agregar</button>
+                <button class="btn btn-secondary cursor-pointer" v-if="menuStep == 1" @click="abrirModalNuevo('año', 'Año')">
+                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
+                    <span class="underline-hover">Nuevo año...</span>
+                </button>
+
+                <button class="btn btn-secondary cursor-pointer" v-if="menuStep == 2" @click="abrirModalNuevo('carpeta', 'Nombre de la carpeta')">
+                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
+                    <span class="underline-hover">Nueva carpeta...</span>
+                </button>
+
+                <button class="btn btn-secondary cursor-pointer" v-if="menuStep == 3" @click="abrirModalNuevo('proyecto', 'Nombre del Proyecto')">
+                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
+                    <span class="underline-hover">Nuevo proyecto...</span>
+                </button>
             </div>
         </div>
         <!-- Navbar -->
@@ -38,7 +51,7 @@
             </div>
         </nav>
 
-        <div class="col-md-12 table-responsive" v-show="!cargandoMenu">
+        <div class="col-md-12 table-responsive card shadow" v-show="!cargandoMenu" v-cloak>
             <table class="table align-items-center">
                 <thead class="thead-light">
                     <tr>
@@ -55,37 +68,37 @@
                         <td>
                             <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
                                 <button class="btn btn-sm btn-link actions" style=""
-                                    @click="fetchClientes(anio)">
+                                    @click="fetchClientes(anio.id)">
                                     <i class="fa fa-folder-open"></i> Abrir
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
-                                    @click="editar(anio)" data-toggle="tooltip" data-placement="bottom" title="Editar">
+                                    @click="editar(anio.id)" data-toggle="tooltip" data-placement="bottom" title="Editar">
                                     <i class="fa fa-edit"></i>
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
-                                    @click="eliminar(anio)" data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+                                    @click="eliminar(anio.id)" data-toggle="tooltip" data-placement="bottom" title="Eliminar">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </div>
                         </td>
                     </tr>
 
-                    <!-- Clientes -->
+                    <!-- Clientes / carpetas -->
                     <tr v-if="!cargandoMenu && menuStep == 2" v-for="cliente in clientes" :key="cliente.id">
                         <td>@{{ cliente.nombre }}</td>
                         <td>@{{ formatFecha(cliente.created_at) }}</td>
                         <td>
                             <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
                                 <button class="btn btn-sm btn-link actions"
-                                    @click="fetchProyectos(cliente)">
+                                    @click="fetchProyectos(cliente.id)">
                                     <i class="fa fa-folder-open"></i> Abrir
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
-                                    @click="editar(cliente)" data-toggle="tooltip" data-placement="bottom" title="Editar">
+                                    @click="editar(cliente.id)" data-toggle="tooltip" data-placement="bottom" title="Editar">
                                     <i class="fa fa-edit"></i>
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
-                                    @click="eliminar(cliente)" data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+                                    @click="eliminar(cliente.id)" data-toggle="tooltip" data-placement="bottom" title="Eliminar">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </div>
@@ -99,11 +112,11 @@
                         <td>
                             <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
                                 <button class="btn btn-sm btn-link actions"
-                                    @click="editar(proyecto)" data-toggle="tooltip" data-placement="bottom" title="Editar">
+                                    @click="editar(proyecto.id)" data-toggle="tooltip" data-placement="bottom" title="Editar">
                                     <i class="fa fa-edit"></i>
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
-                                    @click="eliminar(proyecto)" data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+                                    @click="eliminar(proyecto.id)" data-toggle="tooltip" data-placement="bottom" title="Eliminar">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </div>
@@ -122,6 +135,37 @@
         </div>
     </div>
 
+    <!-- Modal de agregar  -->
+    <div class="modal fade" id="modalNuevo" tabindex="-1" aria-labelledby="modalNuevoLabel" aria-hidden="true">
+        <div class="modal-dialog" style="min-width: 25%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalNuevoLabel">
+                        <span>AGREGAR @{{nuevo.tipo.toUpperCase()}}</span>
+                    </h3>
+                    <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 form-group">
+                            <label class="bold" for="">@{{nuevo.text}}: <span class="text-danger">*</span></label>
+                            <input v-model="nuevo.nombre" type="text" class="form-control" :placeholder="nuevo.text + '...'">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 text-right">
+                            <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+                            <button class="btn btn-secondary" v-if="!loading_button" type="button" @click="guardarNuevo('carpeta')"><i class="fa fa-save"></i> Guardar</button>
+                            <button class="btn btn-secondary" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> Guardando...</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 </div>
 @endsection
@@ -136,6 +180,15 @@
             proyectos: [],
             cargandoMenu: true,
             menuStep: 1,
+            loading_button: false,
+            selectedAnio: null,
+            selectedCliente: null,
+            selectedProyecto: null,
+            nuevo: {
+                tipo: '',
+                text: '',
+                nombre: ''
+            },
             ruta: {
                 anio: null,
                 cliente: null,
@@ -160,11 +213,12 @@
                 }
             },
             // Obtener clientes de un año
-            async fetchClientes(anio) {
+            async fetchClientes(anioId) {
                 this.cargandoMenu = true;
-                this.ruta.anio = this.anios.find(obj => obj.id == anio.id)?.nombre;
+                this.selectedAnio = anioId;
+                this.ruta.anio = this.anios.find(obj => obj.id == anioId)?.nombre;
                 try {
-                    const response = await axios.get(`/api/anios/${anio.id}/clientes`);
+                    const response = await axios.get(`/api/anios/${anioId}/clientes`);
                     this.clientes = response.data.clientes;
                     this.menuStep = 2;
                 } catch (error) {
@@ -173,12 +227,12 @@
                     this.cargandoMenu = false;
                 }
             },
-            // Obtener proyectos de un cliente
-            async fetchProyectos(cliente) {
+            async fetchProyectos(clienteId) {
                 this.cargandoMenu = true;
-                this.ruta.cliente = this.clientes.find(obj => obj.id == cliente.id)?.nombre;
+                this.selectedCliente = clienteId;
+                this.ruta.cliente = this.clientes.find(obj => obj.id == clienteId)?.nombre;
                 try {
-                    const response = await axios.get(`/api/clientes/${cliente.id}/proyectos`);
+                    const response = await axios.get(`/api/clientes/${clienteId}/proyectos`);
                     this.proyectos = response.data.proyectos;
                     this.menuStep = 3;
                 } catch (error) {
@@ -221,14 +275,74 @@
                     hour: '2-digit',
                     minute: '2-digit'
                 });
-            },
-            // Acciones
+            }, //no se si sea asi
             editar(obj) {
 
             },
             eliminar(obj) {
 
-            }
+            },
+            async guardarNuevo() {
+                let t = this;
+                try {
+                    t.loading_button = true;
+
+                    switch (t.nuevo.tipo) {
+                        case 'año':
+                            const responseAnios = await axios.post('/api/anios', t.nuevo);
+                            if (responseAnios.data.success) {
+
+                                await t.fetchAnios();
+                                console.log(t.anios.nombre);
+                                await t.fetchClientes(responseAnios.data.id);
+                                Vue.nextTick(() => {
+                                    t.selectedAnio = responseAnios.data.id;
+                                    t.menuStep = 2;
+                                    t.ruta.anio = t.anios.find(obj => obj.id == t.selectedAnio)?.nombre;
+                                    console.log("La ruta es: ", t.ruta.anio);
+                                    $('#modalNuevo').modal('toggle');
+                                });
+                            }
+                            break;
+
+                        case 'carpeta':
+                            console.log(t.selectedAnio);
+                            const responseCarpeta = await axios.post(`/api/clientes/${t.selectedAnio}`, t.nuevo);
+                            if (responseCarpeta.data.success) {
+                                await t.fetchClientes(t.selectedAnio);
+                                t.selectedCliente = responseCarpeta.data.id;
+                                t.ruta.cliente = t.clientes.find(obj => obj.id == t.selectedCliente)?.nombre;
+                                t.menuStep = 3;
+                                await t.fetchProyectos(responseCarpeta.data.id);
+                                $('#modalNuevo').modal('toggle');
+                            }
+                            break;
+
+                        case 'proyecto':
+                            const responseProyecto = await axios.post(`/api/proyectos/${t.selectedCliente}`, t.nuevo);
+                            if (responseProyecto.data.success) {
+                                await t.fetchProyectos(t.selectedCliente);
+                                t.selectedProyecto = responseProyecto.data.id;
+                                t.ruta.proyecto = t.proyectos.find(obj => obj.id == t.selectedProyecto)?.nombre;
+                                await t.fetchHerramentales(responseProyecto.data.id);
+                                $('#modalNuevo').modal('toggle');
+                            }
+                            break;
+                    }
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    t.loading_button = false;
+                }
+            },
+            abrirModalNuevo(tipo, text) {
+                this.nuevo = {
+                    tipo: tipo,
+                    text: text,
+                    nombre: '',
+                }
+                $('#modalNuevo').modal();
+            },
         },
     });
 </script>
