@@ -76,7 +76,7 @@
                                     <i class="fa fa-edit"></i>
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
-                                    @click="eliminar(anio.id)" data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+                                    @click="guardarEliminado(anio.id, 'año')" data-toggle="tooltip" data-placement="bottom" title="Eliminar">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </div>
@@ -98,7 +98,7 @@
                                     <i class="fa fa-edit"></i>
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
-                                    @click="eliminar(cliente.id)" data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+                                    @click="guardarEliminado(cliente.id, 'carpeta')" data-toggle="tooltip" data-placement="bottom" title="Eliminar">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </div>
@@ -116,7 +116,7 @@
                                     <i class="fa fa-edit"></i>
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
-                                    @click="eliminar(proyecto.id)" data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+                                    @click="guardarEliminado(proyecto.id, 'proyecto')" data-toggle="tooltip" data-placement="bottom" title="Eliminar">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </div>
@@ -172,7 +172,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="modal-title" id="modalEditarLabel">
-                        <span>EDITAR</span>
+                        <span>EDITAR  @{{objEditar.tipo.toUpperCase()}}</span>
                     </h3>
                     <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -198,7 +198,6 @@
     </div>
 
 
-    <!-- Modal de eimianar -->
 
 
 </div>
@@ -389,7 +388,7 @@
                             await t.fetchAnios();
                             break;
 
-                        case 'carpeta': 
+                        case 'carpeta':
                             const responseClientes = await axios.put(`/api/clientes/` + t.objEditar.id, t.objEditar);
                             if (responseClientes.data.success) {
                                 console.log("se editó correctamente :D");
@@ -406,15 +405,59 @@
                                 $('#modalEditar').modal('toggle');
                             }
                             let idClliente = t.clientes.find(obj => obj.nombre == t.ruta.cliente)?.id;
-                            await t.fetchProyectos(idClliente);                         
+                            await t.fetchProyectos(idClliente);
                             break;
                     }
                 } catch {
                     console.error(error);
-                }finally {
+                } finally {
                     t.loading_button = false;
                 }
 
+            },
+            async guardarEliminado(id, tipo) {
+                let t = this;
+                swal({
+                        title: `¿Eliminar ${tipo}?`,
+                        text: "Una vez eliminado, no podra recuperarlo.",
+                        icon: "warning",
+                        buttons: ['Cancelar', 'Eliminar'],
+                        dangerMode: true,
+                    })
+                    .then(async (willDelete) => {
+                        if (willDelete) {
+                            switch (tipo) {
+                                case 'año':
+                                    const responseAnios = await axios.delete('/api/anios/' + id)
+                                    if (responseAnios.data.success) {
+                                        console.log("Se eliminó correctamente :D");
+                                        swal('Correcto!', 'Año eliminado exitosamente', 'success');
+                                    }
+                                    await t.fetchAnios();
+                                    break;
+
+                                case 'carpeta':
+                                    const responseClientes = await axios.delete(`/api/clientes/` + id);
+                                    if (responseClientes.data.success) {
+                                        console.log("Se eliminó correctamente :D");
+                                        swal('Correcto!', 'Carpeta eliminada exitosamente', 'success');
+                                    }
+                                    let idAnio = t.anios.find(obj => obj.nombre == t.ruta.anio)?.id;
+                                    await t.fetchClientes(idAnio);
+                                    break;
+
+                                case 'proyecto':
+                                    const responseProyectos = await axios.delete(`/api/proyectos/` + id);
+                                    if (responseProyectos.data.success) {
+                                        console.log("Se eliminó correctamente :D");
+                                        swal('Correcto!', 'Proyecto eliminado exitosamente', 'success');
+                                    }
+                                    let idClliente = t.clientes.find(obj => obj.nombre == t.ruta.cliente)?.id;
+                                    await t.fetchProyectos(idClliente);
+                                    break;
+                            }
+                        }
+                    });
             },
             abrirModalNuevo(tipo, text) {
                 this.nuevo = {

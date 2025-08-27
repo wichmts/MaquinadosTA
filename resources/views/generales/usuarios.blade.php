@@ -302,7 +302,7 @@
                 let t = this;
                 swal({
                     title: "¿Eliminar usuario?",
-                    text: "Una ves eliminado, no podra recuperar su información.",
+                    text: "Una vez eliminado, no podra recuperar su información.",
                     icon: "warning",
                     buttons: ['Cancelar', 'Eliminar'],
                     dangerMode: true,

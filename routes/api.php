@@ -138,6 +138,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::put('anios/{id}', 'APIController@actualizarAnio');
     Route::put('clientes/{id}', 'APIController@actualizarCliente');
     Route::put('proyectos/{id}', 'APIController@actualizarProyecto');
+    
     Route::delete('anios/{id}', 'APIController@eliminarAnio');
     Route::delete('clientes/{id}', 'APIController@eliminarCliente');
     Route::delete('proyectos/{id}', 'APIController@eliminarProyecto');

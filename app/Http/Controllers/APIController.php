@@ -5420,5 +5420,32 @@ class APIController extends Controller
             'success' => true,
         ]);
     }
+
+    public function eliminarAnio($id){
+        $anio = Anio::findOrFail($id);
+        $anio->delete();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function eliminarCliente($id){
+        $cliente = Cliente::findOrFail($id);
+        $cliente->delete();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function eliminarProyecto($id){
+        $proyecto = Proyecto::findOrFail($id);
+        $proyecto->delete();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
 }
 
