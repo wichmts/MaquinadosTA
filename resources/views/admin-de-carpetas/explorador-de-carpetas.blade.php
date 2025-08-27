@@ -72,7 +72,7 @@
                                     <i class="fa fa-folder-open"></i> Abrir
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
-                                    @click="editar(anio.id)" data-toggle="tooltip" data-placement="bottom" title="Editar">
+                                    @click="abrirModalEditar('año', 'Nuevo año', anio.id)" data-toggle="tooltip" data-placement="bottom" title="Editar">
                                     <i class="fa fa-edit"></i>
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
@@ -94,7 +94,7 @@
                                     <i class="fa fa-folder-open"></i> Abrir
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
-                                    @click="editar(cliente.id)" data-toggle="tooltip" data-placement="bottom" title="Editar">
+                                    @click="abrirModalEditar('carpeta', 'Nuevo nobre de la carpeta', cliente.id)" data-toggle="tooltip" data-placement="bottom" title="Editar">
                                     <i class="fa fa-edit"></i>
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
@@ -105,14 +105,14 @@
                         </td>
                     </tr>
 
-                    <!-- Proyecots -->
+                    <!-- Proyectos -->
                     <tr v-if="!cargandoMenu && menuStep == 3" v-for="proyecto in proyectos" :key="proyecto.id">
                         <td>@{{ proyecto.nombre }}</td>
                         <td>@{{ formatFecha(proyecto.created_at) }}</td>
                         <td>
                             <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
                                 <button class="btn btn-sm btn-link actions"
-                                    @click="editar(proyecto.id)" data-toggle="tooltip" data-placement="bottom" title="Editar">
+                                    @click="abrirModalEditar('proyecto', 'Nuevo nombre del proyecto', proyecto.id)" data-toggle="tooltip" data-placement="bottom" title="Editar">
                                     <i class="fa fa-edit"></i>
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
@@ -166,6 +166,40 @@
         </div>
     </div>
 
+    <!-- Modal de editar -->
+    <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+        <div class="modal-dialog" style="min-width: 25%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalEditarLabel">
+                        <span>EDITAR</span>
+                    </h3>
+                    <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 form-group">
+                            <label class="bold" for="">@{{objEditar.text}}: <span class="text-danger">*</span></label>
+                            <input v-model="objEditar.nombre" type="text" class="form-control" :placeholder="objEditar.text + '...'">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 text-right">
+                            <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+                            <button class="btn btn-secondary" v-if="!loading_button" type="button" @click="guardarEditado('carpeta')"><i class="fa fa-save"></i> Guardar</button>
+                            <button class="btn btn-secondary" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> Guardando...</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal de eimianar -->
+
 
 </div>
 @endsection
@@ -188,6 +222,12 @@
                 tipo: '',
                 text: '',
                 nombre: ''
+            },
+            objEditar: {
+                tipo: '',
+                text: '',
+                nombre: '',
+                id: '',
             },
             ruta: {
                 anio: null,
@@ -276,11 +316,11 @@
                     minute: '2-digit'
                 });
             }, //no se si sea asi
-            editar(obj) {
-
+            async editar(obj) {
+                await axios.put(`/api/anios/${obj}/edit`);
             },
-            eliminar(obj) {
-
+            async eliminar(obj) {
+                await axios.delete(`/api/anios/${obj}`);
             },
             async guardarNuevo() {
                 let t = this;
@@ -324,7 +364,6 @@
                                 await t.fetchProyectos(t.selectedCliente);
                                 t.selectedProyecto = responseProyecto.data.id;
                                 t.ruta.proyecto = t.proyectos.find(obj => obj.id == t.selectedProyecto)?.nombre;
-                                await t.fetchHerramentales(responseProyecto.data.id);
                                 $('#modalNuevo').modal('toggle');
                             }
                             break;
@@ -335,6 +374,48 @@
                     t.loading_button = false;
                 }
             },
+            async guardarEditado() {
+                let t = this;
+                try {
+                    t.loading_button = true;
+
+                    switch (t.objEditar.tipo) {
+                        case 'año':
+                            const responseAnios = await axios.put(`/api/anios/` + t.objEditar.id, t.objEditar);
+                            if (responseAnios.data.success) {
+                                console.log("se editó correctamente :D");
+                                $('#modalEditar').modal('toggle');
+                            }
+                            await t.fetchAnios();
+                            break;
+
+                        case 'carpeta': 
+                            const responseClientes = await axios.put(`/api/clientes/` + t.objEditar.id, t.objEditar);
+                            if (responseClientes.data.success) {
+                                console.log("se editó correctamente :D");
+                                $('#modalEditar').modal('toggle');
+                            }
+                            let idAnio = t.anios.find(obj => obj.nombre == t.ruta.anio)?.id;
+                            await t.fetchClientes(idAnio);
+                            break;
+
+                        case 'proyecto':
+                            const responseProyectos = await axios.put(`/api/proyectos/` + t.objEditar.id, t.objEditar);
+                            if (responseProyectos.data.success) {
+                                console.log("se editó correctamente :D");
+                                $('#modalEditar').modal('toggle');
+                            }
+                            let idClliente = t.clientes.find(obj => obj.nombre == t.ruta.cliente)?.id;
+                            await t.fetchProyectos(idClliente);                         
+                            break;
+                    }
+                } catch {
+                    console.error(error);
+                }finally {
+                    t.loading_button = false;
+                }
+
+            },
             abrirModalNuevo(tipo, text) {
                 this.nuevo = {
                     tipo: tipo,
@@ -342,6 +423,15 @@
                     nombre: '',
                 }
                 $('#modalNuevo').modal();
+            },
+            abrirModalEditar(tipo, text, id) {
+                this.objEditar = {
+                    tipo: tipo,
+                    text: text,
+                    nombre: '',
+                    id: id,
+                }
+                $('#modalEditar').modal();
             },
         },
     });

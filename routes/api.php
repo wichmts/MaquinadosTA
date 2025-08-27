@@ -25,6 +25,7 @@ Route::group(['middleware' => 'api'], function () {
 // Panel
 Route::group(['middleware' => 'auth:api'], function () {
     
+    
     Route::get('tiempos-maquinas', 'APIController@tiemposMaquinas');
     Route::get('tiempos-personal', 'APIController@tiemposPersonal');
 
@@ -132,6 +133,14 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::put('solicitud/{id}/atendida', 'APIController@solicitudAtendida');
     Route::put('actualizar-medidas-componente/{id}', 'APIController@actualizarMedidasComponente');
+
+    /*  */
+    Route::put('anios/{id}', 'APIController@actualizarAnio');
+    Route::put('clientes/{id}', 'APIController@actualizarCliente');
+    Route::put('proyectos/{id}', 'APIController@actualizarProyecto');
+    Route::delete('anios/{id}', 'APIController@eliminarAnio');
+    Route::delete('clientes/{id}', 'APIController@eliminarCliente');
+    Route::delete('proyectos/{id}', 'APIController@eliminarProyecto');
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
