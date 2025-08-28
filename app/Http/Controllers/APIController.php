@@ -1035,7 +1035,7 @@ class APIController extends Controller
                     }else{
                         $notificacion = new Notificacion();
                         $notificacion->roles = json_encode(['MATRICERO']);
-                        $notificacion->url_base = '/matricero/lista-componentes';
+                        $notificacion->url_base = '/matricero';
                         $notificacion->anio_id = $anio->id;
                         $notificacion->cliente_id = $cliente->id;
                         $notificacion->proyecto_id = $proyecto->id;
@@ -1407,7 +1407,7 @@ class APIController extends Controller
         } else {
             $notificacion = new Notificacion();
             $notificacion->roles = json_encode(['MATRICERO']);
-            $notificacion->url_base = '/matricero/lista-componentes';
+            $notificacion->url_base = '/matricero';
             $notificacion->anio_id = $anio->id;
             $notificacion->cliente_id = $cliente->id;
             $notificacion->proyecto_id = $proyecto->id;
@@ -1645,7 +1645,7 @@ class APIController extends Controller
 
                 $notificacion = new Notificacion();
                 $notificacion->roles = json_encode(['MATRICERO']);
-                $notificacion->url_base = '/matricero/lista-componentes';
+                $notificacion->url_base = '/matricero';
                 $notificacion->anio_id = $anio->id;
                 $notificacion->cliente_id = $cliente->id;
                 $notificacion->proyecto_id = $proyecto->id;
@@ -1742,7 +1742,7 @@ class APIController extends Controller
 
                         $notificacion = new Notificacion();
                         $notificacion->roles = json_encode(['MATRICERO']);
-                        $notificacion->url_base = '/matricero/lista-componentes';
+                        $notificacion->url_base = '/matricero';
                         $notificacion->anio_id = $anio->id;
                         $notificacion->cliente_id = $cliente->id;
                         $notificacion->proyecto_id = $proyecto->id;

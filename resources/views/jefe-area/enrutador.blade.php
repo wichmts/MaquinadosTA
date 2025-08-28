@@ -1552,49 +1552,34 @@
                 let t = this;
 
                 t.solicitud.procesos.forEach(proceso => {
+                    // 👇 convierto a número una sola vez y reutilizo
+                    let horas = parseInt(proceso.horas) || 0;
+                    let minutos = parseInt(proceso.minutos) || 0;
+
                     let task = this.tasks.find(task => task.id === proceso.id);
                     if (task) {
-                        
                         let retrabajo = task.time.find(time => time.type === "rework");
 
                         if (retrabajo) {
-                            retrabajo.horas = parseInt(proceso.horas);
-                            retrabajo.minutos = parseInt(proceso.minutos);
+                            retrabajo.horas = horas;
+                            retrabajo.minutos = minutos;
 
-                            if (proceso.horas === 0 && proceso.minutos === 0) {
+                            if (horas === 0 && minutos === 0) {
                                 task.time = task.time.filter(time => time.type !== "rework");
                             }
                         } else {
-                            if (proceso.horas !== 0 || proceso.minutos !== 0) {
+                            if (horas !== 0 || minutos !== 0) {
                                 task.time.push({
                                     hora_inicio: null,
                                     minuto_inicio: null,
-                                    horas: proceso.horas,
-                                    minutos: proceso.minutos,
+                                    horas,
+                                    minutos,
                                     type: "rework"
                                 });
                             }
                         }
                     }
                 });
-
-                // t.nuevosRetrabajos = t.solicitud.procesos
-                // .filter(actual => {
-                //     const inicial = t.procesosIniciales.find(p => p.id === actual.id);
-                //     const horasActual = parseInt(actual.horas);
-                //     const minutosActual = parseInt(actual.minutos);
-
-                //     const horasInicial = inicial ? parseInt(inicial.horas) : 0;
-                //     const minutosInicial = inicial ? parseInt(inicial.minutos) : 0;
-
-                //     const teniaRetrabajoAntes = horasInicial > 0 || minutosInicial > 0;
-                //     const tieneRetrabajoAhora = horasActual > 0 || minutosActual > 0;
-
-                //     return !teniaRetrabajoAntes && tieneRetrabajoAhora;
-                // })
-                // .map(proceso => proceso.id);
-
-                
                 this.calcularInicio();
             },
             calcularInicio() {
@@ -1657,8 +1642,8 @@
                     let totalMinutos = 0;
 
                     task.time.forEach(segmento => {
-                        totalHoras += segmento.horas;
-                        totalMinutos += segmento.minutos;
+                        totalHoras += parseInt(segmento.horas) || 0;
+                        totalMinutos += parseInt(segmento.minutos) || 0;
                     });
 
                     totalHoras += Math.floor(totalMinutos / 60);
@@ -1687,8 +1672,8 @@
                             segmento.minutos = parseInt(proceso.minutos);
                         }
 
-                        acumuladorHoras += segmento.horas;
-                        acumuladorMinutos += segmento.minutos;
+                        acumuladorHoras += parseInt(segmento.horas) || 0;
+                        acumuladorMinutos += parseInt(segmento.minutos) || 0;
 
                         if (acumuladorMinutos >= 60) {
                             acumuladorHoras += Math.floor(acumuladorMinutos / 60);
