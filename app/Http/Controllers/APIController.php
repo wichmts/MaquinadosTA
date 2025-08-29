@@ -355,12 +355,33 @@ class APIController extends Controller
             'message' => 'Usuario actualizado correctamente',
         ], 200);
     }
-    public function eliminarUsuario($id){
+    public function eliminarUsuario($id)
+    {
         $user = User::findOrFail($id);
-        $user->delete();
 
+        $relaciones = [
+            'componentes',
+            'fabricaciones',
+            'documentos',
+            'notificaciones',
+            'solicitudes',
+            'pruebasDeProceso',
+            'pruebasDeDiseno',
+        ];
+        
+        foreach ($relaciones as $relacion) {
+        if ($user->$relacion()->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => "No se puede eliminar el usuario porque tiene registros en {$relacion}."
+            ], 400);
+        }
+        
+    }
+        
+        $user->delete();
         return response()->json([
-          'success' => true,
+            'success' => true,
         ], 200);
     }
     public function obtenerMateriales(){

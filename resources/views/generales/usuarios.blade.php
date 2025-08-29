@@ -313,11 +313,10 @@
                             if(response.data.success){
                                 swal('Correcto!', 'Usuario eliminado exitosamente', 'success');
                                 t.getData(-1);
-                            }else{
-                                swal('Lo sentimos!', response.data.message, 'error');
                             }
                     }).catch(e => {
                         console.log(e);
+                        swal('Lo sentimos, no se puede eliminar este usuario!', e.response.data.message, 'error');
                     });
                     }
                 });
