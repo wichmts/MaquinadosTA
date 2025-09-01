@@ -83,9 +83,13 @@ class User extends Authenticatable implements JWTSubject
   		return $data;
   	}
 
-    public function componentes()
+    public function componentesMatricero()
     {
         return $this->hasMany(Componente::class, 'matricero_id');
+    }
+
+    public function componentesProgramador()
+    {        
         return $this->hasMany(Componente::class, 'programador_id');
     }
 

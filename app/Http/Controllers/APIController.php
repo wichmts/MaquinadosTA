@@ -359,24 +359,25 @@ class APIController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $relaciones = [
-            'componentes',
-            'fabricaciones',
-            'documentos',
-            'notificaciones',
-            'solicitudes',
-            'pruebasDeProceso',
-            'pruebasDeDiseno',
+        $relaciones = [ 
+            'componentesMatricero' => 'componentes',
+            'componentesProgramador' => 'componentes',
+            'fabricaciones' => 'fabricaciones',
+            'documentos' => 'documentos',
+            'notificaciones' => 'notificaciones',
+            'solicitudes' => 'solicitudes',
+            'pruebasDeProceso' => 'pruebas de proceso',
+            'pruebasDeDiseno' => 'pruebas de diseño',
         ];
         
-        foreach ($relaciones as $relacion) {
+        foreach ($relaciones as $relacion => $nombre) {
         if ($user->$relacion()->exists()) {
             return response()->json([
                 'success' => false,
-                'message' => "No se puede eliminar el usuario porque tiene registros en {$relacion}."
+                'message' => "No se puede eliminar el usuario porque tiene registros en {$nombre}."
             ], 400);
         }
-        
+
     }
         
         $user->delete();
