@@ -172,7 +172,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="modal-title" id="modalEditarLabel">
-                        <span>EDITAR  @{{objEditar.tipo.toUpperCase()}}</span>
+                        <span>EDITAR @{{objEditar.tipo.toUpperCase()}}</span>
                     </h3>
                     <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -258,7 +258,9 @@
                 this.ruta.anio = this.anios.find(obj => obj.id == anioId)?.nombre;
                 try {
                     const response = await axios.get(`/api/anios/${anioId}/clientes`);
-                    this.clientes = response.data.clientes;
+                    this.clientes = response.data.clientes.filter(c =>
+                        !['ORDENES EXTERNAS', 'REFACCIONES'].includes(c.nombre)
+                    );
                     this.menuStep = 2;
                 } catch (error) {
                     console.error('Error fetching clientes:', error);
@@ -338,14 +340,16 @@
                                     t.selectedAnio = responseAnios.data.id;
                                     t.menuStep = 2;
                                     t.ruta.anio = t.anios.find(obj => obj.id == t.selectedAnio)?.nombre;
-                                    console.log("La ruta es: ", t.ruta.anio);
                                     $('#modalNuevo').modal('toggle');
                                 });
                             }
                             break;
 
                         case 'carpeta':
-                            console.log(t.selectedAnio);
+                            if (t.nuevo.nombre === 'REFACCIONES' || t.nuevo.nombre === 'ORDENES EXTERNAS') {
+                                swal('Error!', 'No se puede agregar esta carpeta/cliente', 'error');
+                                break;
+                            }
                             const responseCarpeta = await axios.post(`/api/clientes/${t.selectedAnio}`, t.nuevo);
                             if (responseCarpeta.data.success) {
                                 await t.fetchClientes(t.selectedAnio);
@@ -369,6 +373,7 @@
                     }
                 } catch (error) {
                     console.error(error);
+                    swal('Error!', 'Ocurrió un problema al agregar. Intenta nuevamente.', 'error');
                 } finally {
                     t.loading_button = false;
                 }
@@ -410,6 +415,7 @@
                     }
                 } catch {
                     console.error(error);
+                    swal('Error!', 'Ocurrió un problema al editar. Intenta nuevamente.', 'error');
                 } finally {
                     t.loading_button = false;
                 }
@@ -426,39 +432,45 @@
                     })
                     .then(async (willDelete) => {
                         if (willDelete) {
-                            switch (tipo) {
-                                case 'año':
-                                    const responseAnios = await axios.delete('/api/anios/' + id)
-                                    if (responseAnios.data.success) {
-                                        console.log("Se eliminó correctamente :D");
-                                        swal('Correcto!', 'Año eliminado exitosamente', 'success');
-                                    }
-                                    await t.fetchAnios();
-                                    break;
+                            try {
+                                switch (tipo) {
+                                    case 'año':
+                                        const responseAnios = await axios.delete('/api/anios/' + id);
+                                        if (responseAnios.data.success) {
+                                            console.log("Se eliminó correctamente :D");
+                                            swal('Correcto!', 'Año eliminado exitosamente', 'success');
+                                        }
+                                        await t.fetchAnios();
+                                        break;
 
-                                case 'carpeta':
-                                    const responseClientes = await axios.delete(`/api/clientes/` + id);
-                                    if (responseClientes.data.success) {
-                                        console.log("Se eliminó correctamente :D");
-                                        swal('Correcto!', 'Carpeta eliminada exitosamente', 'success');
-                                    }
-                                    let idAnio = t.anios.find(obj => obj.nombre == t.ruta.anio)?.id;
-                                    await t.fetchClientes(idAnio);
-                                    break;
+                                    case 'carpeta':
+                                        const responseClientes = await axios.delete(`/api/clientes/` + id);
+                                        if (responseClientes.data.success) {
+                                            console.log("Se eliminó correctamente :D");
+                                            swal('Correcto!', 'Carpeta eliminada exitosamente', 'success');
+                                        }
+                                        let idAnio = t.anios.find(obj => obj.nombre == t.ruta.anio)?.id;
+                                        await t.fetchClientes(idAnio);
+                                        break;
 
-                                case 'proyecto':
-                                    const responseProyectos = await axios.delete(`/api/proyectos/` + id);
-                                    if (responseProyectos.data.success) {
-                                        console.log("Se eliminó correctamente :D");
-                                        swal('Correcto!', 'Proyecto eliminado exitosamente', 'success');
-                                    }
-                                    let idClliente = t.clientes.find(obj => obj.nombre == t.ruta.cliente)?.id;
-                                    await t.fetchProyectos(idClliente);
-                                    break;
+                                    case 'proyecto':
+                                        const responseProyectos = await axios.delete(`/api/proyectos/` + id);
+                                        if (responseProyectos.data.success) {
+                                            console.log("Se eliminó correctamente :D");
+                                            swal('Correcto!', 'Proyecto eliminado exitosamente', 'success');
+                                        }
+                                        let idClliente = t.clientes.find(obj => obj.nombre == t.ruta.cliente)?.id;
+                                        await t.fetchProyectos(idClliente);
+                                        break;
+                                }
+                            } catch (error) {
+                                console.error(error);
+                                swal('Error!', 'Ocurrió un problema al eliminar. Intenta nuevamente.', 'error');
                             }
                         }
                     });
             },
+
             abrirModalNuevo(tipo, text) {
                 this.nuevo = {
                     tipo: tipo,
