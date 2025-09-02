@@ -106,10 +106,10 @@
                                 </a>
                                 <div v-if="!cargandoMenu && menuStep == 1">
                                     <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> AÑOS </a>
-                                    <a class="nav-link cursor-pointer" @click="abrirModalNuevo('año', 'Año')">
+                                    <!-- <a class="nav-link cursor-pointer" @click="abrirModalNuevo('año', 'Año')">
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
                                         <span class="underline-hover">Nuevo año...</span>
-                                    </a>
+                                    </a> -->
                                     <a class="nav-link cursor-pointer" v-for="obj in anios" @click="fetchClientes(obj.id)">
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/calendario.png') }}"></i> &nbsp;
                                         <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; 
@@ -117,10 +117,10 @@
                                 </div>    
                                 <div v-if="!cargandoMenu && menuStep == 2">
                                     <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> CARPETAS </a>
-                                    <a class="nav-link cursor-pointer" @click="abrirModalNuevo('carpeta', 'Nombre de la carpeta')">
+                                    <!-- <a class="nav-link cursor-pointer" @click="abrirModalNuevo('carpeta', 'Nombre de la carpeta')">
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
                                         <span class="underline-hover">Nueva carpeta...</span>
-                                    </a>
+                                    </a> -->
                                     <a class="nav-link cursor-pointer" v-for="obj in clientes" @click="fetchProyectos(obj.id)" v-if="obj.nombre != 'ORDENES EXTERNAS' && obj.nombre != 'REFACCIONES'">
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
                                         <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; 
@@ -128,10 +128,10 @@
                                 </div>
                                 <div v-if="!cargandoMenu && menuStep == 3">
                                     <a class="nav-link" style="color:#939393 !important; letter-sapcing: 2px !important"> PROYECTOS </a>
-                                    <a class="nav-link cursor-pointer" @click="abrirModalNuevo('proyecto', 'Nombre del Proyecto')">
+                                    <!-- <a class="nav-link cursor-pointer" @click="abrirModalNuevo('proyecto', 'Nombre del Proyecto')">
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
                                         <span class="underline-hover">Nuevo proyecto...</span>
-                                    </a>
+                                    </a> -->
                                     <a class="nav-link cursor-pointer" v-for="obj in proyectos" @click="fetchHerramentales(obj.id)">
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
                                         <span class="underline-hover">@{{obj.nombre}}</span> &nbsp;&nbsp; 

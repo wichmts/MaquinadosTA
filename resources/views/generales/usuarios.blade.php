@@ -244,6 +244,7 @@
             maquinas: [],
             puestos: [],
             roles: [
+                'ADMINISTRADOR DE CARPETAS',
                 'ALMACENISTA',
                 'AUXILIAR DE DISEÑO',
                 'DISEÑO',
@@ -301,7 +302,7 @@
                 let t = this;
                 swal({
                     title: "¿Eliminar usuario?",
-                    text: "Una ves eliminado, no podra recuperar su información.",
+                    text: "Una vez eliminado, no podra recuperar su información.",
                     icon: "warning",
                     buttons: ['Cancelar', 'Eliminar'],
                     dangerMode: true,
@@ -312,11 +313,10 @@
                             if(response.data.success){
                                 swal('Correcto!', 'Usuario eliminado exitosamente', 'success');
                                 t.getData(-1);
-                            }else{
-                                swal('Lo sentimos!', response.data.message, 'error');
                             }
                     }).catch(e => {
                         console.log(e);
+                        swal('Lo sentimos, no se puede eliminar este usuario!', e.response.data.message, 'error');
                     });
                     }
                 });

@@ -355,12 +355,34 @@ class APIController extends Controller
             'message' => 'Usuario actualizado correctamente',
         ], 200);
     }
-    public function eliminarUsuario($id){
+    public function eliminarUsuario($id)
+    {
         $user = User::findOrFail($id);
-        $user->delete();
 
+        $relaciones = [ 
+            'componentesMatricero' => 'componentes',
+            'componentesProgramador' => 'componentes',
+            'fabricaciones' => 'fabricaciones',
+            'documentos' => 'documentos',
+            'notificaciones' => 'notificaciones',
+            'solicitudes' => 'solicitudes',
+            'pruebasDeProceso' => 'pruebas de proceso',
+            'pruebasDeDiseno' => 'pruebas de diseño',
+        ];
+        
+        foreach ($relaciones as $relacion => $nombre) {
+        if ($user->$relacion()->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => "No se puede eliminar el usuario porque tiene registros en {$nombre}."
+            ], 400);
+        }
+
+    }
+        
+        $user->delete();
         return response()->json([
-          'success' => true,
+            'success' => true,
         ], 200);
     }
     public function obtenerMateriales(){
@@ -5385,6 +5407,66 @@ class APIController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Componentes actualizados correctamente.'
+        ]);
+    }
+
+    public function actualizarAnio($id){
+        $dataAnio = request()->json()->all();
+        $anio = Anio::findOrFail($id);
+        $anio->nombre = $dataAnio['nombre'];
+        $anio->save();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function actualizarCliente($id){
+        $dataCarpeta = request()->json()->all();
+        $cliente = Cliente::findOrFail($id);
+        $cliente->nombre = $dataCarpeta['nombre'];
+        $cliente->save();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function actualizarProyecto($id){
+        $dataProyecto = request()->json()->all();
+        $proyecto = Proyecto::findOrFail($id);
+        $proyecto->nombre = $dataProyecto['nombre'];
+        $proyecto->save();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function eliminarAnio($id){
+        $anio = Anio::findOrFail($id);
+        $anio->delete();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function eliminarCliente($id){
+        $cliente = Cliente::findOrFail($id);
+        $cliente->delete();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function eliminarProyecto($id){
+        $proyecto = Proyecto::findOrFail($id);
+        $proyecto->delete();
+
+        return response()->json([
+            'success' => true,
         ]);
     }
 }

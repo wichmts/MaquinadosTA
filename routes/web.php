@@ -80,6 +80,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('finanzas-hr', 'WebController@finanzasHR');
     Route::get('costos-hora', 'WebController@puestos');
 
+    //ADMINISTRADOR DE CARPETAS
+    Route::get('/exploradorCarpetas', 'WebController@exploradorCarpetas');
+
 
     // ADMIN
     Route::get('usuario', 'WebController@usuarios');

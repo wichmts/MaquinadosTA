@@ -212,6 +212,360 @@
                         "install-path": "../dnoegel/php-xdg-base-dir"
                 },
                 {
+                        "name": "doctrine/cache",
+                        "version": "2.2.0",
+                        "version_normalized": "2.2.0.0",
+                        "source": {
+                                "type": "git",
+                                "url": "https://github.com/doctrine/cache.git",
+                                "reference": "1ca8f21980e770095a31456042471a57bc4c68fb"
+                        },
+                        "dist": {
+                                "type": "zip",
+                                "url": "https://api.github.com/repos/doctrine/cache/zipball/1ca8f21980e770095a31456042471a57bc4c68fb",
+                                "reference": "1ca8f21980e770095a31456042471a57bc4c68fb",
+                                "shasum": ""
+                        },
+                        "require": {
+                                "php": "~7.1 || ^8.0"
+                        },
+                        "conflict": {
+                                "doctrine/common": ">2.2,<2.4"
+                        },
+                        "require-dev": {
+                                "cache/integration-tests": "dev-master",
+                                "doctrine/coding-standard": "^9",
+                                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
+                                "psr/cache": "^1.0 || ^2.0 || ^3.0",
+                                "symfony/cache": "^4.4 || ^5.4 || ^6",
+                                "symfony/var-exporter": "^4.4 || ^5.4 || ^6"
+                        },
+                        "time": "2022-05-20T20:07:39+00:00",
+                        "type": "library",
+                        "installation-source": "dist",
+                        "autoload": {
+                                "psr-4": {
+                                        "Doctrine\\Common\\Cache\\": "lib/Doctrine/Common/Cache"
+                                }
+                        },
+                        "notification-url": "https://packagist.org/downloads/",
+                        "license": [
+                                "MIT"
+                        ],
+                        "authors": [
+                                {
+                                        "name": "Guilherme Blanco",
+                                        "email": "guilhermeblanco@gmail.com"
+                                },
+                                {
+                                        "name": "Roman Borschel",
+                                        "email": "roman@code-factory.org"
+                                },
+                                {
+                                        "name": "Benjamin Eberlei",
+                                        "email": "kontakt@beberlei.de"
+                                },
+                                {
+                                        "name": "Jonathan Wage",
+                                        "email": "jonwage@gmail.com"
+                                },
+                                {
+                                        "name": "Johannes Schmitt",
+                                        "email": "schmittjoh@gmail.com"
+                                }
+                        ],
+                        "description": "PHP Doctrine Cache library is a popular cache implementation that supports many different drivers such as redis, memcache, apc, mongodb and others.",
+                        "homepage": "https://www.doctrine-project.org/projects/cache.html",
+                        "keywords": [
+                                "abstraction",
+                                "apcu",
+                                "cache",
+                                "caching",
+                                "couchdb",
+                                "memcached",
+                                "php",
+                                "redis",
+                                "xcache"
+                        ],
+                        "support": {
+                                "issues": "https://github.com/doctrine/cache/issues",
+                                "source": "https://github.com/doctrine/cache/tree/2.2.0"
+                        },
+                        "funding": [
+                                {
+                                        "url": "https://www.doctrine-project.org/sponsorship.html",
+                                        "type": "custom"
+                                },
+                                {
+                                        "url": "https://www.patreon.com/phpdoctrine",
+                                        "type": "patreon"
+                                },
+                                {
+                                        "url": "https://tidelift.com/funding/github/packagist/doctrine%2Fcache",
+                                        "type": "tidelift"
+                                }
+                        ],
+                        "install-path": "../doctrine/cache"
+                },
+                {
+                        "name": "doctrine/dbal",
+                        "version": "2.13.9",
+                        "version_normalized": "2.13.9.0",
+                        "source": {
+                                "type": "git",
+                                "url": "https://github.com/doctrine/dbal.git",
+                                "reference": "c480849ca3ad6706a39c970cdfe6888fa8a058b8"
+                        },
+                        "dist": {
+                                "type": "zip",
+                                "url": "https://api.github.com/repos/doctrine/dbal/zipball/c480849ca3ad6706a39c970cdfe6888fa8a058b8",
+                                "reference": "c480849ca3ad6706a39c970cdfe6888fa8a058b8",
+                                "shasum": ""
+                        },
+                        "require": {
+                                "doctrine/cache": "^1.0|^2.0",
+                                "doctrine/deprecations": "^0.5.3|^1",
+                                "doctrine/event-manager": "^1.0",
+                                "ext-pdo": "*",
+                                "php": "^7.1 || ^8"
+                        },
+                        "require-dev": {
+                                "doctrine/coding-standard": "9.0.0",
+                                "jetbrains/phpstorm-stubs": "2021.1",
+                                "phpstan/phpstan": "1.4.6",
+                                "phpunit/phpunit": "^7.5.20|^8.5|9.5.16",
+                                "psalm/plugin-phpunit": "0.16.1",
+                                "squizlabs/php_codesniffer": "3.6.2",
+                                "symfony/cache": "^4.4",
+                                "symfony/console": "^2.0.5|^3.0|^4.0|^5.0",
+                                "vimeo/psalm": "4.22.0"
+                        },
+                        "suggest": {
+                                "symfony/console": "For helpful console commands such as SQL execution and import of files."
+                        },
+                        "time": "2022-05-02T20:28:55+00:00",
+                        "bin": [
+                                "bin/doctrine-dbal"
+                        ],
+                        "type": "library",
+                        "installation-source": "dist",
+                        "autoload": {
+                                "psr-4": {
+                                        "Doctrine\\DBAL\\": "lib/Doctrine/DBAL"
+                                }
+                        },
+                        "notification-url": "https://packagist.org/downloads/",
+                        "license": [
+                                "MIT"
+                        ],
+                        "authors": [
+                                {
+                                        "name": "Guilherme Blanco",
+                                        "email": "guilhermeblanco@gmail.com"
+                                },
+                                {
+                                        "name": "Roman Borschel",
+                                        "email": "roman@code-factory.org"
+                                },
+                                {
+                                        "name": "Benjamin Eberlei",
+                                        "email": "kontakt@beberlei.de"
+                                },
+                                {
+                                        "name": "Jonathan Wage",
+                                        "email": "jonwage@gmail.com"
+                                }
+                        ],
+                        "description": "Powerful PHP database abstraction layer (DBAL) with many features for database schema introspection and management.",
+                        "homepage": "https://www.doctrine-project.org/projects/dbal.html",
+                        "keywords": [
+                                "abstraction",
+                                "database",
+                                "db2",
+                                "dbal",
+                                "mariadb",
+                                "mssql",
+                                "mysql",
+                                "oci8",
+                                "oracle",
+                                "pdo",
+                                "pgsql",
+                                "postgresql",
+                                "queryobject",
+                                "sasql",
+                                "sql",
+                                "sqlanywhere",
+                                "sqlite",
+                                "sqlserver",
+                                "sqlsrv"
+                        ],
+                        "support": {
+                                "issues": "https://github.com/doctrine/dbal/issues",
+                                "source": "https://github.com/doctrine/dbal/tree/2.13.9"
+                        },
+                        "funding": [
+                                {
+                                        "url": "https://www.doctrine-project.org/sponsorship.html",
+                                        "type": "custom"
+                                },
+                                {
+                                        "url": "https://www.patreon.com/phpdoctrine",
+                                        "type": "patreon"
+                                },
+                                {
+                                        "url": "https://tidelift.com/funding/github/packagist/doctrine%2Fdbal",
+                                        "type": "tidelift"
+                                }
+                        ],
+                        "install-path": "../doctrine/dbal"
+                },
+                {
+                        "name": "doctrine/deprecations",
+                        "version": "1.1.5",
+                        "version_normalized": "1.1.5.0",
+                        "source": {
+                                "type": "git",
+                                "url": "https://github.com/doctrine/deprecations.git",
+                                "reference": "459c2f5dd3d6a4633d3b5f46ee2b1c40f57d3f38"
+                        },
+                        "dist": {
+                                "type": "zip",
+                                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/459c2f5dd3d6a4633d3b5f46ee2b1c40f57d3f38",
+                                "reference": "459c2f5dd3d6a4633d3b5f46ee2b1c40f57d3f38",
+                                "shasum": ""
+                        },
+                        "require": {
+                                "php": "^7.1 || ^8.0"
+                        },
+                        "conflict": {
+                                "phpunit/phpunit": "<=7.5 || >=13"
+                        },
+                        "require-dev": {
+                                "doctrine/coding-standard": "^9 || ^12 || ^13",
+                                "phpstan/phpstan": "1.4.10 || 2.1.11",
+                                "phpstan/phpstan-phpunit": "^1.0 || ^2",
+                                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.6 || ^10.5 || ^11.5 || ^12",
+                                "psr/log": "^1 || ^2 || ^3"
+                        },
+                        "suggest": {
+                                "psr/log": "Allows logging deprecations via PSR-3 logger implementation"
+                        },
+                        "time": "2025-04-07T20:06:18+00:00",
+                        "type": "library",
+                        "installation-source": "dist",
+                        "autoload": {
+                                "psr-4": {
+                                        "Doctrine\\Deprecations\\": "src"
+                                }
+                        },
+                        "notification-url": "https://packagist.org/downloads/",
+                        "license": [
+                                "MIT"
+                        ],
+                        "description": "A small layer on top of trigger_error(E_USER_DEPRECATED) or PSR-3 logging with options to disable all deprecations or selectively for packages.",
+                        "homepage": "https://www.doctrine-project.org/",
+                        "support": {
+                                "issues": "https://github.com/doctrine/deprecations/issues",
+                                "source": "https://github.com/doctrine/deprecations/tree/1.1.5"
+                        },
+                        "install-path": "../doctrine/deprecations"
+                },
+                {
+                        "name": "doctrine/event-manager",
+                        "version": "1.2.0",
+                        "version_normalized": "1.2.0.0",
+                        "source": {
+                                "type": "git",
+                                "url": "https://github.com/doctrine/event-manager.git",
+                                "reference": "95aa4cb529f1e96576f3fda9f5705ada4056a520"
+                        },
+                        "dist": {
+                                "type": "zip",
+                                "url": "https://api.github.com/repos/doctrine/event-manager/zipball/95aa4cb529f1e96576f3fda9f5705ada4056a520",
+                                "reference": "95aa4cb529f1e96576f3fda9f5705ada4056a520",
+                                "shasum": ""
+                        },
+                        "require": {
+                                "doctrine/deprecations": "^0.5.3 || ^1",
+                                "php": "^7.1 || ^8.0"
+                        },
+                        "conflict": {
+                                "doctrine/common": "<2.9"
+                        },
+                        "require-dev": {
+                                "doctrine/coding-standard": "^9 || ^10",
+                                "phpstan/phpstan": "~1.4.10 || ^1.8.8",
+                                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
+                                "vimeo/psalm": "^4.24"
+                        },
+                        "time": "2022-10-12T20:51:15+00:00",
+                        "type": "library",
+                        "installation-source": "dist",
+                        "autoload": {
+                                "psr-4": {
+                                        "Doctrine\\Common\\": "src"
+                                }
+                        },
+                        "notification-url": "https://packagist.org/downloads/",
+                        "license": [
+                                "MIT"
+                        ],
+                        "authors": [
+                                {
+                                        "name": "Guilherme Blanco",
+                                        "email": "guilhermeblanco@gmail.com"
+                                },
+                                {
+                                        "name": "Roman Borschel",
+                                        "email": "roman@code-factory.org"
+                                },
+                                {
+                                        "name": "Benjamin Eberlei",
+                                        "email": "kontakt@beberlei.de"
+                                },
+                                {
+                                        "name": "Jonathan Wage",
+                                        "email": "jonwage@gmail.com"
+                                },
+                                {
+                                        "name": "Johannes Schmitt",
+                                        "email": "schmittjoh@gmail.com"
+                                },
+                                {
+                                        "name": "Marco Pivetta",
+                                        "email": "ocramius@gmail.com"
+                                }
+                        ],
+                        "description": "The Doctrine Event Manager is a simple PHP event system that was built to be used with the various Doctrine projects.",
+                        "homepage": "https://www.doctrine-project.org/projects/event-manager.html",
+                        "keywords": [
+                                "event",
+                                "event dispatcher",
+                                "event manager",
+                                "event system",
+                                "events"
+                        ],
+                        "support": {
+                                "issues": "https://github.com/doctrine/event-manager/issues",
+                                "source": "https://github.com/doctrine/event-manager/tree/1.2.0"
+                        },
+                        "funding": [
+                                {
+                                        "url": "https://www.doctrine-project.org/sponsorship.html",
+                                        "type": "custom"
+                                },
+                                {
+                                        "url": "https://www.patreon.com/phpdoctrine",
+                                        "type": "patreon"
+                                },
+                                {
+                                        "url": "https://tidelift.com/funding/github/packagist/doctrine%2Fevent-manager",
+                                        "type": "tidelift"
+                                }
+                        ],
+                        "install-path": "../doctrine/event-manager"
+                },
+                {
                         "name": "doctrine/inflector",
                         "version": "2.0.3",
                         "version_normalized": "2.0.3.0",
@@ -695,6 +1049,155 @@
                                 "html"
                         ],
                         "install-path": "../ezyang/htmlpurifier"
+                },
+                {
+                        "name": "facade/flare-client-php",
+                        "version": "1.10.0",
+                        "version_normalized": "1.10.0.0",
+                        "source": {
+                                "type": "git",
+                                "url": "https://github.com/facade/flare-client-php.git",
+                                "reference": "213fa2c69e120bca4c51ba3e82ed1834ef3f41b8"
+                        },
+                        "dist": {
+                                "type": "zip",
+                                "url": "https://api.github.com/repos/facade/flare-client-php/zipball/213fa2c69e120bca4c51ba3e82ed1834ef3f41b8",
+                                "reference": "213fa2c69e120bca4c51ba3e82ed1834ef3f41b8",
+                                "shasum": ""
+                        },
+                        "require": {
+                                "facade/ignition-contracts": "~1.0",
+                                "illuminate/pipeline": "^5.5|^6.0|^7.0|^8.0",
+                                "php": "^7.1|^8.0",
+                                "symfony/http-foundation": "^3.3|^4.1|^5.0",
+                                "symfony/mime": "^3.4|^4.0|^5.1",
+                                "symfony/var-dumper": "^3.4|^4.0|^5.0"
+                        },
+                        "require-dev": {
+                                "friendsofphp/php-cs-fixer": "^2.14",
+                                "phpunit/phpunit": "^7.5",
+                                "spatie/phpunit-snapshot-assertions": "^2.0"
+                        },
+                        "time": "2022-08-09T11:23:57+00:00",
+                        "type": "library",
+                        "extra": {
+                                "branch-alias": {
+                                        "dev-master": "1.0-dev"
+                                }
+                        },
+                        "installation-source": "dist",
+                        "autoload": {
+                                "files": [
+                                        "src/helpers.php"
+                                ],
+                                "psr-4": {
+                                        "Facade\\FlareClient\\": "src"
+                                }
+                        },
+                        "notification-url": "https://packagist.org/downloads/",
+                        "license": [
+                                "MIT"
+                        ],
+                        "description": "Send PHP errors to Flare",
+                        "homepage": "https://github.com/facade/flare-client-php",
+                        "keywords": [
+                                "exception",
+                                "facade",
+                                "flare",
+                                "reporting"
+                        ],
+                        "support": {
+                                "issues": "https://github.com/facade/flare-client-php/issues",
+                                "source": "https://github.com/facade/flare-client-php/tree/1.10.0"
+                        },
+                        "funding": [
+                                {
+                                        "url": "https://github.com/spatie",
+                                        "type": "github"
+                                }
+                        ],
+                        "install-path": "../facade/flare-client-php"
+                },
+                {
+                        "name": "facade/ignition",
+                        "version": "2.4.2",
+                        "version_normalized": "2.4.2.0",
+                        "source": {
+                                "type": "git",
+                                "url": "https://github.com/facade/ignition.git",
+                                "reference": "2179568bdfddfa56c90c845a0be1a0b52adbf52a"
+                        },
+                        "dist": {
+                                "type": "zip",
+                                "url": "https://api.github.com/repos/facade/ignition/zipball/2179568bdfddfa56c90c845a0be1a0b52adbf52a",
+                                "reference": "2179568bdfddfa56c90c845a0be1a0b52adbf52a",
+                                "shasum": ""
+                        },
+                        "require": {
+                                "ext-json": "*",
+                                "ext-mbstring": "*",
+                                "facade/flare-client-php": "^1.0",
+                                "facade/ignition-contracts": "^1.0",
+                                "filp/whoops": "^2.4",
+                                "illuminate/support": "^7.0|^8.0",
+                                "monolog/monolog": "^2.0",
+                                "php": "^7.2.5",
+                                "scrivo/highlight.php": "^9.15",
+                                "symfony/console": "^5.0",
+                                "symfony/var-dumper": "^5.0"
+                        },
+                        "require-dev": {
+                                "friendsofphp/php-cs-fixer": "^2.14",
+                                "mockery/mockery": "^1.3",
+                                "orchestra/testbench": "^5.0|^6.0",
+                                "psalm/plugin-laravel": "^1.2"
+                        },
+                        "suggest": {
+                                "laravel/telescope": "^3.1"
+                        },
+                        "time": "2021-03-08T13:56:01+00:00",
+                        "type": "library",
+                        "extra": {
+                                "laravel": {
+                                        "aliases": {
+                                                "Flare": "Facade\\Ignition\\Facades\\Flare"
+                                        },
+                                        "providers": [
+                                                "Facade\\Ignition\\IgnitionServiceProvider"
+                                        ]
+                                },
+                                "branch-alias": {
+                                        "dev-master": "2.x-dev"
+                                }
+                        },
+                        "installation-source": "dist",
+                        "autoload": {
+                                "files": [
+                                        "src/helpers.php"
+                                ],
+                                "psr-4": {
+                                        "Facade\\Ignition\\": "src"
+                                }
+                        },
+                        "notification-url": "https://packagist.org/downloads/",
+                        "license": [
+                                "MIT"
+                        ],
+                        "description": "A beautiful error page for Laravel applications.",
+                        "homepage": "https://github.com/facade/ignition",
+                        "keywords": [
+                                "error",
+                                "flare",
+                                "laravel",
+                                "page"
+                        ],
+                        "support": {
+                                "docs": "https://flareapp.io/docs/ignition-for-laravel/introduction",
+                                "forum": "https://twitter.com/flareappio",
+                                "issues": "https://github.com/facade/ignition/issues",
+                                "source": "https://github.com/facade/ignition"
+                        },
+                        "install-path": "../facade/ignition"
                 },
                 {
                         "name": "facade/ignition-contracts",
@@ -4517,6 +5020,87 @@
                         "install-path": "../sabberworm/php-css-parser"
                 },
                 {
+                        "name": "scrivo/highlight.php",
+                        "version": "v9.18.1.10",
+                        "version_normalized": "9.18.1.10",
+                        "source": {
+                                "type": "git",
+                                "url": "https://github.com/scrivo/highlight.php.git",
+                                "reference": "850f4b44697a2552e892ffe71490ba2733c2fc6e"
+                        },
+                        "dist": {
+                                "type": "zip",
+                                "url": "https://api.github.com/repos/scrivo/highlight.php/zipball/850f4b44697a2552e892ffe71490ba2733c2fc6e",
+                                "reference": "850f4b44697a2552e892ffe71490ba2733c2fc6e",
+                                "shasum": ""
+                        },
+                        "require": {
+                                "ext-json": "*",
+                                "php": ">=5.4"
+                        },
+                        "require-dev": {
+                                "phpunit/phpunit": "^4.8|^5.7",
+                                "sabberworm/php-css-parser": "^8.3",
+                                "symfony/finder": "^2.8|^3.4|^5.4",
+                                "symfony/var-dumper": "^2.8|^3.4|^5.4"
+                        },
+                        "suggest": {
+                                "ext-mbstring": "Allows highlighting code with unicode characters and supports language with unicode keywords"
+                        },
+                        "time": "2022-12-17T21:53:22+00:00",
+                        "type": "library",
+                        "installation-source": "dist",
+                        "autoload": {
+                                "files": [
+                                        "HighlightUtilities/functions.php"
+                                ],
+                                "psr-0": {
+                                        "Highlight\\": "",
+                                        "HighlightUtilities\\": ""
+                                }
+                        },
+                        "notification-url": "https://packagist.org/downloads/",
+                        "license": [
+                                "BSD-3-Clause"
+                        ],
+                        "authors": [
+                                {
+                                        "name": "Geert Bergman",
+                                        "homepage": "http://www.scrivo.org/",
+                                        "role": "Project Author"
+                                },
+                                {
+                                        "name": "Vladimir Jimenez",
+                                        "homepage": "https://allejo.io",
+                                        "role": "Maintainer"
+                                },
+                                {
+                                        "name": "Martin Folkers",
+                                        "homepage": "https://twobrain.io",
+                                        "role": "Contributor"
+                                }
+                        ],
+                        "description": "Server side syntax highlighter that supports 185 languages. It's a PHP port of highlight.js",
+                        "keywords": [
+                                "code",
+                                "highlight",
+                                "highlight.js",
+                                "highlight.php",
+                                "syntax"
+                        ],
+                        "support": {
+                                "issues": "https://github.com/scrivo/highlight.php/issues",
+                                "source": "https://github.com/scrivo/highlight.php"
+                        },
+                        "funding": [
+                                {
+                                        "url": "https://github.com/allejo",
+                                        "type": "github"
+                                }
+                        ],
+                        "install-path": "../scrivo/highlight.php"
+                },
+                {
                         "name": "sebastian/code-unit-reverse-lookup",
                         "version": "1.0.1",
                         "version_normalized": "1.0.1.0",
@@ -8039,6 +8623,8 @@
         "dev": true,
         "dev-package-names": [
                 "doctrine/instantiator",
+                "facade/flare-client-php",
+                "facade/ignition",
                 "facade/ignition-contracts",
                 "filp/whoops",
                 "fzaninotto/faker",
@@ -8058,6 +8644,7 @@
                 "phpunit/php-timer",
                 "phpunit/php-token-stream",
                 "phpunit/phpunit",
+                "scrivo/highlight.php",
                 "sebastian/code-unit-reverse-lookup",
                 "sebastian/comparator",
                 "sebastian/diff",
