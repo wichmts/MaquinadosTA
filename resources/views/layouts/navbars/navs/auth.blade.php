@@ -111,6 +111,7 @@ input:checked + .slider:before {
                     addMenuItem('maquina', 'MAQUINAS', ['DIRECCION'], $addedRoutes);
                     addMenuItem('tiempos-maquinas', 'TIEMPOS MAQUINA', ['DIRECCION'], $addedRoutes);
                     addMenuItem('tiempos-personal', 'TIEMPOS PERSONAL', ['DIRECCION'], $addedRoutes);
+                    addMenuItem('visorGeneral', 'VISOR GENERAL', ['DIRECCION'], $addedRoutes);
                 @endphp
 
 
