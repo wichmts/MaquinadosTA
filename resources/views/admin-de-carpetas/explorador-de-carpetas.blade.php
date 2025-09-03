@@ -3,8 +3,6 @@
 'elementActive' => 'dashboard'
 ])
 
-
-
 @section('content')
 <div id="vue-app" v-show="!cargandoMenu" v-cloak>
     <div class="col-md-12" style="padding: 30px !important">
