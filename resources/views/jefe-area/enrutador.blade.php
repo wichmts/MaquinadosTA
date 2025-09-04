@@ -188,6 +188,7 @@
                                         <label class="bold">Prioridad</label>
                                         <select class="form-control" v-model="componente.prioridad" :disabled="componente.fecha_terminado || componente.cancelado == true">
                                             <option :value="null" disabled>Asignar...</option>
+                                            <option value="I">I</option>
                                             <option value="A">A</option>
                                             <option value="B">B</option>
                                             <option value="C">C</option>
@@ -406,7 +407,14 @@
                                     <button @click="fetchSolicitudes" class="btn btn-block btn-default"><i class="fa fa-clipboard-list"></i> SOLICITUDES</button>
                                 </div>
                             </div>
+                            <!-- Comentarios --> 
+                            <div class="row">
+                                <textarea rows="3" type="text" class="form-control" placeholder="Agregar comentario..." v-model="componente.comentarios" :disabled="componente.cancelado == true || componente.fecha_terminado" value="componente.comentarios" ></textarea>                            
+                                <button @click="guardarComentario(componente)" class="btn w-100">Agregar comentario</button>
+                            </div>
                         </div>
+
+                        
                     </div>
                 </div>
             </div>
@@ -665,6 +673,7 @@
     var app = new Vue({
         el: '#vue-app',
         data: {
+            nuevoComentario: '',
             nuevosRetrabajos: [], //ids de los procesos a los que se les agrego retrabajo.
             procesosIniciales: [], //copia de los procesos con retrabajo al cargar el componente
             solicitud: {
@@ -2185,7 +2194,25 @@
                 return pendientes.length 
                     ? `Pendiente: ${pendientes.join(', ')}`
                     : "No hay pendientes";
-            }
+            },
+            guardarComentario(){
+                let t = this;
+                t.cargando = true;
+                console.log(t.componente.id);
+                axios.post(`/api/componente/comentario/${t.componente.id}`, { comentario: t.componente.comentarios })
+                    .then(response => {
+                        swal('Correcto', 'Comentario agregado correctamente', 'success');
+                        t.componente.comentarios = response.data.comentarios;
+                    })
+                    .catch(error => {
+                        console.error('Error al guardar el comentario:', error);
+                        swal('Error', 'Ocurrió un error al guardar el comentario', 'error');
+                    })
+                    .finally(() => {
+                        t.cargando = false;
+                    });
+
+            },
         },
         mounted: async function() {
             let t = this;

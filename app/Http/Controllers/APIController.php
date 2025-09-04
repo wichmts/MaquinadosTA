@@ -501,6 +501,21 @@ class APIController extends Controller
             'componente' => $componente
         ]);
     }
+
+    public function guardarComentarioComponente(Request $request, $componente_id){
+        
+        $componente = Componente::findOrFail($componente_id);
+        $nuevoComentario = $request->input('comentario');
+        $componente->comentarios = $nuevoComentario;
+
+        $componente->save();
+
+        return response()->json([
+            'success' => true,
+            'comentarios' => $componente->comentarios
+        ], 200);
+    }
+
     public function obtenerComponentesMaquina($maquina_id){
         $componentes = Componente::whereHas('fabricaciones', function ($query) use ($maquina_id) {
         $query->where('maquina_id', $maquina_id)
