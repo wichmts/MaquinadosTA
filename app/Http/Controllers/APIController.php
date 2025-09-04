@@ -2519,6 +2519,20 @@ class APIController extends Controller
             'success' => true,
         ], 200);
     }
+
+    public function updateAtendida(Request $request, $id)
+{
+    $notificacion = Notificacion::findOrFail($id);
+    $notificacion->atendida = $request->input('atendida') ? 1 : 0;
+    $notificacion->save();
+
+    return response()->json([
+        'success' => true,
+        'atendida' => $notificacion->atendida
+    ]);
+}
+
+
     public function bajaHoja(Request $request, $hoja_id, $estatus){
         $hoja = Hoja::findOrFail($hoja_id);
         $hoja->estatus = filter_var($estatus, FILTER_VALIDATE_BOOLEAN);;

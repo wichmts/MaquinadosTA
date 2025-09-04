@@ -76,6 +76,14 @@ input:checked + .slider:before {
     height: 100px; /* Ajusta según el tamaño real del navbar */
 }
 
+.atendido{
+        background-color: #d4edda !important;
+    }
+
+.no-atendido{
+    background-color: #f8d7da !important;
+}
+
 </style>
 <div  id="vue-app2">
 <nav class="navbar navbar-expand-xl navbar-light bg-light mb-0 navbar11" style="background-color: #f1f1f1 !important" v-cloak>
@@ -197,7 +205,7 @@ input:checked + .slider:before {
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                         <h6 class="dropdown-header">Ultimas notificaciones</h6>
                         <h6 v-if="notificaciones.length == 0" class="dropdown-header"><small>- Sin notificaciones para mostrar -</small></h6>
-                        <a v-for="n in notificaciones" @click="irNotificacion(n)" class="dropdown-item cursor-pointer" >@{{n.fecha}} @{{n.hora}} | @{{n.componente_id ? n.componente : n.herramental}} | @{{n.descripcion}}</a>
+                        <a  v-for="n in notificaciones" @click="irNotificacion(n)" class="dropdown-item cursor-pointer" :class="n.atendida ? 'atendido' : 'no-atendido'" >@{{n.fecha}} @{{n.hora}} | @{{n.componente_id ? n.componente : n.herramental}} | @{{n.descripcion}}</a>
                         <a v-if="notificaciones.length > 0" class="dropdown-item text-center" href="/centro-notificaciones">Ver todas las notificaciones...</a>
                     </div>
                 </li>
@@ -225,11 +233,12 @@ input:checked + .slider:before {
         el: '#vue-app2',
         data: {
             notificaciones: [],
-            hay_notificaciones: @json(auth()->user()->hay_notificaciones) ? true :  false
+            hay_notificaciones: @json(auth()->user()->hay_notificaciones) ? true :  false,
         },
         methods:{
             toggleDropdown(){
                 let t = this
+                t.getNotificaciones();
                 axios.put('/api/ver-notificaciones').then( response => {
                     t.hay_notificaciones = false;
                 })

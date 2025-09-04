@@ -31,6 +31,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::put('ver-notificaciones', 'APIController@verNotificaciones');
     Route::get('ultimas-notificaciones', 'APIController@ultimasNotificaciones');
+    Route::post('notificaciones/{id}/atendida', 'APIController@updateAtendida');
 
     Route::post('solicitud-refaccion/{componente_id}', 'APIController@generarOrdenRefaccion');
     Route::post('solicitud/{componente_id}', 'APIController@registrarSolicitud');
