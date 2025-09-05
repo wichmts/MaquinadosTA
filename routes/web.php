@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\App;
 // PAGINA WEB
 Route::get('/', function () {
     if (auth()->check()) {
-        return redirect()->route('profile.edit');
+        return redirect()->route('home');
     } else {
         return redirect()->route('login');
     }
@@ -32,6 +32,7 @@ Route::get('/debug/upload-settings', function() {
 Route::get('/terminos-y-condiciones', 'UserController@terminos')->name('terminos');
 Route::get('/verificar-cuenta/{token}', 'UserController@verificarCuenta')->name('verificacion');
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/', 'HomeController@index')->name('home');
 
 Route::post('/set-language/{lang}', function ($lang) {
     if (in_array($lang, ['en', 'es'])) {

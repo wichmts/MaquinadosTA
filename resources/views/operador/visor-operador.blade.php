@@ -65,6 +65,7 @@
                                     <a class="nav-link cursor-pointer" v-for="obj in componentes" @click="fetchComponente(obj.id)">
                                         <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
                                         <span class="underline-hover">@{{obj.nombre}} &nbsp; 
+                                            <small v-if="obj.prioridad == 'I'" class="badge badge-danger badge-pill px-2 py-1"> Prioridad @{{obj.prioridad}}</small>
                                             <small v-if="obj.prioridad == 'A'" class="badge badge-danger badge-pill px-2 py-1"> Prioridad @{{obj.prioridad}}</small>
                                             <small v-if="obj.prioridad == 'B'" class="badge badge-warning badge-pill px-2 py-1"> Prioridad @{{obj.prioridad}}</small>
                                             <small v-if="obj.prioridad == 'C'" class="badge badge-info badge-pill px-2 py-1"> Prioridad @{{obj.prioridad}}</small>
@@ -1104,9 +1105,15 @@
                 try {
                     const response = await axios.get(`/api/maquinas/${maquinaId}/componentes`);
                     this.componentes = response.data.componentes;
-                    this.componentes.sort((a, b) => {
-                        const prioridadOrden = { 'A': 1, 'B': 2, 'C': 3 };
-                        return prioridadOrden[a.prioridad] - prioridadOrden[b.prioridad];
+                 this.componentes.sort((a, b) => {
+                        const prioridadOrden = { 
+                            'I': 0, 
+                            'A': 1, 
+                            'B': 2, 
+                            'C': 3 
+                        };
+
+                        return (prioridadOrden[a.prioridad] ?? 999) - (prioridadOrden[b.prioridad] ?? 999);
                     });
                     this.menuStep = 2;
                 } catch (error) {

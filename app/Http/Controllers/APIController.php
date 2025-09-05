@@ -5469,5 +5469,86 @@ class APIController extends Controller
             'success' => true,
         ]);
     }
+
+    public function trabajosPendientes(Request $request){
+        $compras = Componente::where('es_compra', true)
+            ->whereNull('fecha_real')
+            ->where('cantidad', '>', 0)
+            ->get();
+        
+        $cortes = Componente::where('es_compra', false)
+            ->where('cargado', true)
+            ->where('enrutado', true)
+            ->where('refabricado', '!=', true)
+            ->where('estatus_corte', '!=', 'finalizado')
+            ->get();
+
+        $temples = Componente::where('es_compra', false)
+            ->where('cargado', true)
+            ->where('enrutado', true)
+            ->where('refabricado', '!=', true)
+            ->where('requiere_temple', true)
+            ->whereNotNull('fecha_solicitud_temple')
+            ->whereNull('fecha_recibido_temple')
+            ->get();
+
+        $enrutamiento = Componente::where('es_compra', false)
+            ->where('cargado', true)
+            ->where('enrutado', false)
+            ->where('refabricado', '!=', true)
+            ->get();
+
+        $solicitudes = Solicitud::where('atendida', false)->get();
+
+        $query = Componente::where('es_compra', false)
+            ->where('cargado', true)
+            ->where('enrutado', true)
+            ->where('programado', false)
+            ->where('refabricado', '!=', true);
+        if (auth()->user()->hasRole('JEFE DE AREA')) {
+            $programaciones = $query->get();
+        } else {
+            $programaciones = $query->where('programador_id', auth()->id())->get();
+        }
+
+        $user = auth()->user();
+        $maquinasAsignadas = json_decode($user->maquinas, true);
+        $fabricaciones = Fabricacion::with(['componente', 'maquina'])
+        ->whereIn('maquina_id', $maquinasAsignadas)
+        ->where('estatus_fabricacion', '!=', 'finalizado')
+        ->whereHas('componente', function($query) {
+            $query->whereColumn('estatus_fabricacion', 'orden');
+        })
+        ->get()
+        ->map(function($fab) {
+            return [
+                'orden' => $fab->orden,
+                'estatus_fabricacion' => $fab->estatus_fabricacion,
+                'componente' => $fab->componente->nombre,
+                'cantidad' => $fab->componente->cantidad,
+                'prioridad' => $fab->componente->prioridad,
+                'maquina' => $fab->maquina->nombre,
+                'rutaComponente' => $fab->componente->rutaComponente,
+                'maquina_id' => $fab->maquina_id,
+                'componente_id' => $fab->componente_id,
+                'fabricacion_id' => $fab->id,
+            ];
+        });
+
+        
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'compras' => $compras,
+                'cortes' => $cortes,
+                'temples' => $temples,
+                'enrutamiento' => $enrutamiento,
+                'solicitudes' => $solicitudes,
+                'programaciones' => $programaciones,
+                'fabricaciones' => $fabricaciones,
+            ]
+        ]);
+    }
 }
 

@@ -31,6 +31,7 @@ class Solicitud extends Model
         $array['fecha_show'] = $result1;
         $array['hora_show'] = $result2;
         $array['componente'] = Componente::find($this->componente_id)->nombre ?? 'Sin nombre';
+        $array['rutaComponente'] = Componente::find($this->componente_id)->rutaComponente ?? '';
         return $array;
     }
 }

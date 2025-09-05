@@ -15,6 +15,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Componente extends Model
 {
+     public function getRutaComponenteAttribute()
+    {
+        $herramental = Herramental::find($this->herramental_id);
+        if (!$herramental) {
+            return null;
+        }
+        $proyecto = Proyecto::find($herramental->proyecto_id);
+        $cliente = Cliente::find($proyecto->cliente_id);
+        $anio = Anio::find($cliente->anio_id);
+
+        return "?a={$anio->id}&c={$cliente->id}&p={$proyecto->id}&h={$herramental->id}&co={$this->id}";
+    }
     public function material(){
         return $this->belongsTo(Material::class);
     }
@@ -246,7 +258,7 @@ class Componente extends Model
         $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
         $cliente = Cliente::findOrFail($proyecto->cliente_id);
         $anio = Anio::findOrFail($cliente->anio_id);
-        $data['rutaComponente'] = "?a={$anio->id}&c={$cliente->id}&p={$proyecto->id}&h={$herramental->id}&co={$this->id}";
+        $data['rutaComponente'] = $this->rutaComponente;
 
         $data['bAjuste'] = $this->tieneSolicitudes('ajuste');
         $data['bRetrabajo'] = $this->tieneSolicitudes('retrabajo');
