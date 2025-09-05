@@ -14,7 +14,7 @@ class AddAtendidaToNotificacion extends Migration
     public function up()
     {
         Schema::table('notificaciones', function (Blueprint $table) {
-            $table->boolean('atendida')->falseByDefault(); 
+            $table->boolean('atendida')->nullable()->default(false); 
         });
     }
 

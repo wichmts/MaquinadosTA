@@ -410,7 +410,7 @@
                             <!-- Comentarios --> 
                             <div class="row">
                                 <textarea rows="3" type="text" class="form-control" placeholder="Agregar comentario..." v-model="componente.comentarios" :disabled="componente.cancelado == true || componente.fecha_terminado" value="componente.comentarios" ></textarea>                            
-                                <button @click="guardarComentario(componente)" class="btn w-100">Agregar comentario</button>
+                                <button @click="guardarComentario(componente)" class="btn btn-default w-100">Agregar comentario</button>
                             </div>
                         </div>
 

@@ -1579,6 +1579,7 @@ class APIController extends Controller
 
             if($componente_liberado && !$liberar){
                 $componente->prioridad = $datos['prioridad'];
+                //comentario
                 $componente->save();
 
                 return response()->json([
@@ -1587,6 +1588,7 @@ class APIController extends Controller
             }
 
             $componente->prioridad = $datos['prioridad'];
+            //Comentario
             $componente->requiere_temple = $datos['requiere_temple'];
             $componente->programador_id = $datos['programador_id'];
             $componente->ruta = json_encode($datos['ruta']);
