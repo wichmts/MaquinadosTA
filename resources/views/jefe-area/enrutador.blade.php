@@ -7,6 +7,13 @@
 <link rel="stylesheet" href="{{ asset('paper/css/paper-dashboard-responsivo.css') }}?v={{ time() }}">
 @endsection
 
+<style>
+    .borderTextArea{
+        border: 2px solid #000 !important;
+        border-radius: 10px !important;
+    }
+</style>
+
 
 @section('content')
 <div id="vue-app">
@@ -409,8 +416,7 @@
                             </div>
                             <!-- Comentarios --> 
                             <div class="row">
-                                <textarea rows="3" type="text" class="form-control" placeholder="Agregar comentario..." v-model="componente.comentarios" :disabled="componente.cancelado == true || componente.fecha_terminado" value="componente.comentarios" ></textarea>                            
-                                <button @click="guardarComentario(componente)" class="btn btn-default w-100">Agregar comentario</button>
+                                <textarea rows="3" type="text" class="form-control borderTextArea" placeholder="Agregar comentario..." v-model="componente.comentarios" :disabled="componente.cancelado == true || componente.fecha_terminado" value="componente.comentarios" ></textarea>                            
                             </div>
                         </div>
 

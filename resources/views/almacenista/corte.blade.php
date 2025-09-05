@@ -176,6 +176,20 @@
                                                 {{-- <button :disabled="loading_button || c.estatus_corte == 'finalizado'" @click="actualizarMedidasComponente(c.id)" class="mt-1 btn  btn-sm"><i class="fa fa-save"></i> Actualizar medidas </button> --}}
                                                 <button v-if="c.estatus_corte != 'paro'" @click="registrarParo(c.id)" :disabled="c.estatus_corte == 'finalizado'" class="mt-1 btn  btn-danger btn-sm"><i class="fa fa-stop-circle"></i> Iniciar paro</button>
                                                 <button  v-else @click="eliminarParo(c.id)" :disabled="c.estatus_corte == 'finalizado'" class="mt-1 btn  btn-danger btn-sm"><i class="fa fa-play-circle"></i> Reanudar operacion</button>
+
+                                                <button 
+                                                    type="button" 
+                                                    class="mt-1 btn btn-default btn-sm" 
+                                                    :id="'popoverButton' + c.id"
+                                                    
+                                                    data-toggle="popover"
+                                                    data-trigger="focus"
+                                                    data-html="true"
+                                                    :data-content="c.comentarios ? c.comentarios : 'Sin comentarios...'"
+                                                    ><i class="fa fa-comment"></i>
+                                                    Comentario
+                                                </button>
+ 
                                             </td>
                                         </tr>
                                     </tbody>
@@ -1165,6 +1179,20 @@
             await t.fetchProyectos();
             await t.fetchMateriales();
             this.navigateFromUrlParams();
+            this.componentes.forEach(c => {
+                $('#popoverButton' + c.id).popover();
+            });
+        },
+        watch: {
+            componentes: {
+                handler() {
+                    this.componentes.forEach(c => {
+                        
+                        $('#popoverButton' + c.id).popover();
+                    });
+                },
+                deep: true
+            }
         }
 
                 

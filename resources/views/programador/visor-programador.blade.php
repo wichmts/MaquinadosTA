@@ -188,7 +188,7 @@
                             </div>
                         </div>
 
-                        <div class="row mb-5 mt-3">
+                        <div class="row mb-1 mt-2">
                             <div class="col-lg-4 form-group mt-3">
                                 <label class="bold">DESCRIPCION DEL TRABAJO:</label>
                                 <textarea :disabled="!puedeEditarse()" v-model="componente.descripcion_trabajo" class="form-control text-left px-1 py-1" style="min-height: 200px !important" placeholder="Descripcion del trabajo..."></textarea>
@@ -223,6 +223,10 @@
                                 </ul>
 
                             </div>
+                        </div>
+                        <div>
+                            <label class="bold">COMENTARIOS:</label>
+                            <textarea disabled  v-model="componente.comentarios" class="form-control text-left px-1 py-1" style="min-height: 100px !important" placeholder="Comentarios..."></textarea>
                         </div>
 
                     </div>

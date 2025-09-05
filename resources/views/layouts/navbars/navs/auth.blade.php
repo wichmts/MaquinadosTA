@@ -77,11 +77,21 @@ input:checked + .slider:before {
 }
 
 .atendido{
-        background-color: #d4edda !important;
-    }
+    background-color: #d4edda !important;
+}
 
 .no-atendido{
     background-color: #f8d7da !important;
+}
+
+.noti:hover{
+    color: black !important;
+    text-decoration: underline !important;
+}
+
+.dropdown-item.no-atendido:hover, .dropdown-item.atendido:hover {
+  color: black !important;
+  text-decoration: underline !important;
 }
 
 </style>
@@ -197,7 +207,7 @@ input:checked + .slider:before {
             <ul class="navbar-nav ml-auto text-center">
                 <li class="nav-item dropdown btn-rotate">
                     <a v-if="!hay_notificaciones" @click="toggleDropdown()" class="menu-link nav-link " style="text-transform: capitalize" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i  class="far fa-bell "></i> <small class="bold ">Ultimas notificaciones&nbsp;</small>
+                        <i  class="far fa-bell"></i> <small class="boldn ">Ultimas notificaciones&nbsp;</small>
                     </a>
                     <a v-else @click="toggleDropdown()"  class="menu-link nav-link  cursor-pointer" style="text-transform: capitalize" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-bell text-danger"></i> <small class="bold text-danger">Ultimas notificaciones&nbsp;</small>
@@ -205,7 +215,7 @@ input:checked + .slider:before {
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                         <h6 class="dropdown-header">Ultimas notificaciones</h6>
                         <h6 v-if="notificaciones.length == 0" class="dropdown-header"><small>- Sin notificaciones para mostrar -</small></h6>
-                        <a  v-for="n in notificaciones" @click="irNotificacion(n)" class="dropdown-item cursor-pointer" :class="n.atendida ? 'atendido' : 'no-atendido'" >@{{n.fecha}} @{{n.hora}} | @{{n.componente_id ? n.componente : n.herramental}} | @{{n.descripcion}}</a>
+                        <a  v-for="n in notificaciones" @click="irNotificacion(n)" class="dropdown-item cursor-pointer noti" :class="n.atendida ? 'atendido' : 'no-atendido'" >@{{n.fecha}} @{{n.hora}} | @{{n.componente_id ? n.componente : n.herramental}} | @{{n.descripcion}}</a>
                         <a v-if="notificaciones.length > 0" class="dropdown-item text-center" href="/centro-notificaciones">Ver todas las notificaciones...</a>
                     </div>
                 </li>

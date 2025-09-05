@@ -14,7 +14,7 @@ class AddComentariosToComponente extends Migration
     public function up()
     {
         Schema::table('componentes', function (Blueprint $table) {
-            $table->string('comentarios')->nullable(); 
+            $table->text('comentarios')->nullable(); 
         });
     }
 
