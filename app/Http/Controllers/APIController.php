@@ -5470,85 +5470,307 @@ class APIController extends Controller
         ]);
     }
 
-    public function trabajosPendientes(Request $request){
-        $compras = Componente::where('es_compra', true)
-            ->whereNull('fecha_real')
-            ->where('cantidad', '>', 0)
-            ->get();
+    // public function trabajosPendientes(Request $request){
+
         
-        $cortes = Componente::where('es_compra', false)
-            ->where('cargado', true)
-            ->where('enrutado', true)
-            ->where('refabricado', '!=', true)
-            ->where('estatus_corte', '!=', 'finalizado')
-            ->get();
 
-        $temples = Componente::where('es_compra', false)
-            ->where('cargado', true)
-            ->where('enrutado', true)
-            ->where('refabricado', '!=', true)
-            ->where('requiere_temple', true)
-            ->whereNotNull('fecha_solicitud_temple')
-            ->whereNull('fecha_recibido_temple')
-            ->get();
+    //     $compras = Componente::where('es_compra', true)
+    //         ->whereNull('fecha_real')
+    //         ->where('cantidad', '>', 0)
+    //         ->where(function ($query) {
+    //             $query->where('cancelado', false)
+    //                 ->orWhereNull('cancelado');
+    //         })
+    //         ->get();
+        
+    //     $cortes = Componente::where('es_compra', false)
+    //         ->where('cargado', true)
+    //         ->where('enrutado', true)
+    //         ->where('refabricado', '!=', true)
+    //         ->where('estatus_corte', '!=', 'finalizado')
+    //         ->where(function ($query) {
+    //             $query->where('cancelado', false)
+    //                 ->orWhereNull('cancelado');
+    //             })
+    //         ->get();
 
-        $enrutamiento = Componente::where('es_compra', false)
-            ->where('cargado', true)
-            ->where('enrutado', false)
-            ->where('refabricado', '!=', true)
-            ->get();
+    //     $temples = Componente::where('es_compra', false)
+    //         ->where('cargado', true)
+    //         ->where('enrutado', true)
+    //         ->where('refabricado', '!=', true)
+    //         ->where('requiere_temple', true)
+    //         ->whereNotNull('fecha_solicitud_temple')
+    //         ->whereNull('fecha_recibido_temple')
+    //         ->get();
 
-        $solicitudes = Solicitud::where('atendida', false)->get();
+    //     $enrutamiento = Componente::where('es_compra', false)
+    //         ->where('cargado', true)
+    //         ->where('enrutado', false)
+    //         ->where('refabricado', '!=', true)
+    //         ->where(function ($query) {
+    //             $query->where('cancelado', false)
+    //                 ->orWhereNull('cancelado');
+    //             })
+    //         ->get();
 
-        $query = Componente::where('es_compra', false)
-            ->where('cargado', true)
-            ->where('enrutado', true)
-            ->where('programado', false)
-            ->where('refabricado', '!=', true);
-        if (auth()->user()->hasRole('JEFE DE AREA')) {
-            $programaciones = $query->get();
-        } else {
-            $programaciones = $query->where('programador_id', auth()->id())->get();
+    //     $solicitudes = Solicitud::where('atendida', false)->get();
+
+    //     $query = Componente::where('es_compra', false)
+    //         ->where('cargado', true)
+    //         ->where('enrutado', true)
+    //         ->where('programado', false)
+    //         ->where('refabricado', '!=', true)
+    //         ->where(function ($query2) {
+    //             $query2->where('cancelado', false)
+    //                 ->orWhereNull('cancelado');
+    //             });
+    //     if (auth()->user()->hasRole('JEFE DE AREA')) {
+    //         $programaciones = $query->get();
+    //     } else {
+    //         $programaciones = $query->where('programador_id', auth()->id())->get();
+    //     }
+
+    //     $user = auth()->user();
+    //     $maquinasAsignadas = json_decode($user->maquinas, true);
+
+    //     if($maquinasAsignadas === null || !is_array($maquinasAsignadas) || count($maquinasAsignadas) === 0){
+    //        $fabricaciones = [];
+    //     }else{
+    //         $fabricaciones = Fabricacion::with(['componente', 'maquina'])
+    //         ->whereIn('maquina_id', $maquinasAsignadas)
+    //         ->where('estatus_fabricacion', '!=', 'finalizado')
+    //         ->whereHas('componente', function($query) {
+    //             $query->whereColumn('estatus_fabricacion', 'orden');
+    //         })
+    //         ->get()
+    //         ->map(function($fab) {
+    //             return [
+    //                 'orden' => $fab->orden,
+    //                 'estatus_fabricacion' => $fab->estatus_fabricacion,
+    //                 'componente' => $fab->componente->nombre,
+    //                 'cantidad' => $fab->componente->cantidad,
+    //                 'prioridad' => $fab->componente->prioridad,
+    //                 'maquina' => $fab->maquina->nombre,
+    //                 'rutaComponente' => $fab->componente->rutaComponente,
+    //                 'maquina_id' => $fab->maquina_id,
+    //                 'componente_id' => $fab->componente_id,
+    //                 'fabricacion_id' => $fab->id,
+    //             ];
+    //         });
+    //     }
+
+    //    $ensambles = Componente::where(function ($query) {
+    //         $query->where(function ($q) {
+    //             $q->where('es_compra', true)
+    //             ->whereNotNull('fecha_real');
+    //         })
+    //         ->orWhere(function ($q) {
+    //             $q->where('es_compra', false)
+    //             ->where('cargado', true)
+    //             ->where('enrutado', true)
+    //             ->where('refabricado', '!=', true)
+    //             ->where('programado', true)
+    //             ->where('ensamblado', false)
+    //             ->whereNotNull('fecha_terminado')
+    //             ->where(function ($qq) {
+    //                 $qq->where('cancelado', false)
+    //                     ->orWhereNull('cancelado');
+    //             });
+    //         });
+    //     })
+    //     ->get();
+
+        
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => [
+    //             'compras' => $compras,
+    //             'cortes' => $cortes,
+    //             'temples' => $temples,
+    //             'enrutamiento' => $enrutamiento,
+    //             'solicitudes' => $solicitudes,
+    //             'programaciones' => $programaciones,
+    //             'fabricaciones' => $fabricaciones,
+    //             'ensambles' => $ensambles,
+    //         ]
+    //     ]);
+    // }
+    public function trabajosPendientes(Request $request)
+    {
+        $user = auth()->user();
+        $roles = $user->getRoleNames()->toArray(); // Todos los roles del usuario
+        $data = [];
+
+        // Mapeo de roles a queries que se deben ejecutar
+        $roleQueries = [
+            'ALMACENISTA' => ['compras', 'cortes', 'temples'],
+            'JEFE DE AREA' => ['enrutamiento', 'solicitudes', 'pruebas_diseno'],
+            'DISEÑO' => ['pruebas_diseno'],
+            'PROCESOS' => ['pruebas_proceso'],
+            'PROGRAMADOR' => ['programaciones'],
+            'OPERADOR' => ['fabricaciones'],
+            'MATRICERO' => ['ensambles'],
+        ];
+
+        // Compras
+        if ($this->roleHasQuery($roles, $roleQueries, 'compras')) {
+            $data['compras'] = Componente::where('es_compra', true)
+                ->whereNull('fecha_real')
+                ->where('cantidad', '>', 0)
+                ->where(function ($query) {
+                    $query->where('cancelado', false)
+                        ->orWhereNull('cancelado');
+                })
+                ->get();
         }
 
-        $user = auth()->user();
-        $maquinasAsignadas = json_decode($user->maquinas, true);
-        $fabricaciones = Fabricacion::with(['componente', 'maquina'])
-        ->whereIn('maquina_id', $maquinasAsignadas)
-        ->where('estatus_fabricacion', '!=', 'finalizado')
-        ->whereHas('componente', function($query) {
-            $query->whereColumn('estatus_fabricacion', 'orden');
-        })
-        ->get()
-        ->map(function($fab) {
-            return [
-                'orden' => $fab->orden,
-                'estatus_fabricacion' => $fab->estatus_fabricacion,
-                'componente' => $fab->componente->nombre,
-                'cantidad' => $fab->componente->cantidad,
-                'prioridad' => $fab->componente->prioridad,
-                'maquina' => $fab->maquina->nombre,
-                'rutaComponente' => $fab->componente->rutaComponente,
-                'maquina_id' => $fab->maquina_id,
-                'componente_id' => $fab->componente_id,
-                'fabricacion_id' => $fab->id,
-            ];
-        });
+        // Cortes
+        if ($this->roleHasQuery($roles, $roleQueries, 'cortes')) {
+            $data['cortes'] = Componente::where('es_compra', false)
+                ->where('cargado', true)
+                ->where('enrutado', true)
+                ->where('refabricado', '!=', true)
+                ->where('estatus_corte', '!=', 'finalizado')
+                ->where(function ($query) {
+                    $query->where('cancelado', false)
+                        ->orWhereNull('cancelado');
+                })
+                ->get();
+        }
 
+        // Temples
+        if ($this->roleHasQuery($roles, $roleQueries, 'temples')) {
+            $data['temples'] = Componente::where('es_compra', false)
+                ->where('cargado', true)
+                ->where('enrutado', true)
+                ->where('refabricado', '!=', true)
+                ->where('requiere_temple', true)
+                ->whereNotNull('fecha_solicitud_temple')
+                ->whereNull('fecha_recibido_temple')
+                ->get();
+        }
+
+        // Enrutamiento
+        if ($this->roleHasQuery($roles, $roleQueries, 'enrutamiento')) {
+            $data['enrutamiento'] = Componente::where('es_compra', false)
+                ->where('cargado', true)
+                ->where('enrutado', false)
+                ->where('refabricado', '!=', true)
+                ->where(function ($query) {
+                    $query->where('cancelado', false)
+                        ->orWhereNull('cancelado');
+                })
+                ->get();
+        }
+
+        // Programaciones
+        if ($this->roleHasQuery($roles, $roleQueries, 'programaciones')) {
+            $query = Componente::where('es_compra', false)
+                ->where('cargado', true)
+                ->where('enrutado', true)
+                ->where('programado', false)
+                ->where('refabricado', '!=', true)
+                ->where(function ($query2) {
+                    $query2->where('cancelado', false)
+                        ->orWhereNull('cancelado');
+                });
+
+            if (!in_array('JEFE DE AREA', $roles)) {
+                $query->where('programador_id', $user->id);
+            }
+
+            $data['programaciones'] = $query->get();
+        }
+
+        // Fabricaciones (si tiene máquinas asignadas)
+        $maquinasAsignadas = json_decode($user->maquinas, true);
+        if ($maquinasAsignadas && is_array($maquinasAsignadas) && count($maquinasAsignadas) > 0) {
+            $data['fabricaciones'] = Fabricacion::with(['componente', 'maquina'])
+                ->whereIn('maquina_id', $maquinasAsignadas)
+                ->where('estatus_fabricacion', '!=', 'finalizado')
+                ->whereHas('componente', function($query) {
+                    $query->whereColumn('estatus_fabricacion', 'orden');
+                })
+                ->get()
+                ->map(function($fab) {
+                    return [
+                        'orden' => $fab->orden,
+                        'estatus_fabricacion' => $fab->estatus_fabricacion,
+                        'componente' => $fab->componente->nombre,
+                        'cantidad' => $fab->componente->cantidad,
+                        'prioridad' => $fab->componente->prioridad,
+                        'maquina' => $fab->maquina->nombre,
+                        'rutaComponente' => $fab->componente->rutaComponente,
+                        'maquina_id' => $fab->maquina_id,
+                        'componente_id' => $fab->componente_id,
+                        'fabricacion_id' => $fab->id,
+                    ];
+                });
+        } else {
+            $data['fabricaciones'] = [];
+        }
+
+        // Ensambles
+        if ($this->roleHasQuery($roles, $roleQueries, 'ensambles')) {
+            $data['ensambles'] = Componente::where(function ($query) {
+                $query->where(function ($q) {
+                    $q->where('es_compra', true)
+                    ->where('ensamblado', false)
+                    ->whereNotNull('fecha_real');
+                })
+                ->orWhere(function ($q) {
+                    $q->where('es_compra', false)
+                    ->where('cargado', true)
+                    ->where('enrutado', true)
+                    ->where('refabricado', '!=', true)
+                    ->where('programado', true)
+                    ->where('ensamblado', false)
+                    ->whereNotNull('fecha_terminado')
+                    ->where(function ($qq) {
+                        $qq->where('cancelado', false)
+                            ->orWhereNull('cancelado');
+                    });
+                });
+            })
+            ->get();
+        }
+
+        // Solicitudes
+        if ($this->roleHasQuery($roles, $roleQueries, 'solicitudes')) {
+            $data['solicitudes'] = Solicitud::where('atendida', false)->get();
+        }
         
+        if ($this->roleHasQuery($roles, $roleQueries, 'pruebas_diseno')) {
+            $data['pruebas_diseno'] = 
+                Herramental::where('estatus_ensamble', 'finalizado')
+                    ->where('estatus_pruebas_diseno', '!=', 'finalizado')->get();
+        }
+         if ($this->roleHasQuery($roles, $roleQueries, 'pruebas_proceso')) {
+            $data['pruebas_proceso'] = 
+                Herramental::where('estatus_ensamble', 'finalizado')
+                    ->where('estatus_pruebas_diseno', 'finalizado')
+                    ->where('estatus_pruebas_proceso', '!=', 'finalizado')->get();
+        }
 
         return response()->json([
             'success' => true,
-            'data' => [
-                'compras' => $compras,
-                'cortes' => $cortes,
-                'temples' => $temples,
-                'enrutamiento' => $enrutamiento,
-                'solicitudes' => $solicitudes,
-                'programaciones' => $programaciones,
-                'fabricaciones' => $fabricaciones,
-            ]
+            'data' => $data
         ]);
     }
+
+    /**
+     * Helper para verificar si alguna de las queries de un rol debe ejecutarse
+     */
+    private function roleHasQuery(array $userRoles, array $roleQueries, string $queryName): bool
+    {
+        foreach ($userRoles as $role) {
+            if (isset($roleQueries[$role]) && in_array($queryName, $roleQueries[$role])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
 

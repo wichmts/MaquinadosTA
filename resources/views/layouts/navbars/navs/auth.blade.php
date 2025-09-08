@@ -80,7 +80,7 @@ input:checked + .slider:before {
 <div  id="vue-app2">
 <nav class="navbar navbar-expand-xl navbar-light bg-light mb-0 navbar11" style="background-color: #f1f1f1 !important" v-cloak>
     <div class="container-fluid">
-        <a class="navbar-brand">
+        <a class="navbar-brand" href="/">
             <img src="{{ \App\Helpers\SystemHelper::getLogo() }}" width="120px" class="pl-2 pr-4 py-0" height="auto">
         </a>
 

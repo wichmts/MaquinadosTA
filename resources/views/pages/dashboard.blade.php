@@ -24,6 +24,11 @@
             </div>
         @endif
         <div class="container-fluid" v-cloak>
+            <div class="row">
+                <div class="col-xl-12">
+                    {{-- <h2 class="bold text-spacing">BIENVENIDO @{{user.nombre_completo}}</h2> --}}
+                </div>
+            </div>
             
             {{-- almacenista --}}
             <div class="row" v-if="roles.includes('ALMACENISTA')">
@@ -32,8 +37,8 @@
                     <small class="text-muted mt-1 mb-4 text-spacing">TRABAJOS PENDIENTES</small>
                 </div>
                 <div class="col-xl-4">
-                    <p class="text-spacing mb-1">CORTE DE COMPONENTES <span class="badge badge-pill badge-warning counter bold">@{{trabajosPendientes?.cortes?.length}}</span></p>
-                    <table class="table table-hover">
+                    <p class="text-spacing mb-1">CORTE DE COMPONENTES <span class="badge badge-pill counter bold" :class="{'badge-warning' : trabajosPendientes?.cortes?.length > 0, 'badge-secondary': trabajosPendientes?.cortes?.length == 0 }">@{{trabajosPendientes?.cortes?.length}}</span></p>
+                    <table class="table table-hover table-striped">
                         <thead class="thead-light">
                             <tr>
                                 <th class="text-none">Componente</th>
@@ -43,7 +48,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="cursor-pointer" v-for="(componente, index) in trabajosPendientes.cortes" @click="goToRuta('corte', componente.rutaComponente)">
+                            <tr class="cursor-pointer" v-for="(componente, index) in trabajosPendientes.cortes" @click="goTo('corte', componente.rutaComponente)">
                                 <td class="bold">@{{componente.nombre}}</td>
                                 <td>@{{componente.cantidad}}</td>
                                 <td>
@@ -59,12 +64,15 @@
                                     <span v-if="componente.estatus_corte == 'pausado'" class="py-2 w-100 badge badge-dark">PAUSADO</span>
                                 </td>
                             </tr>
+                            <tr v-if="trabajosPendientes?.cortes?.length == 0">
+                                <td colspan="4" class="text-center">No hay trabajo pendiente</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="col-xl-4">
-                    <p class="text-spacing mb-1">COMPRA DE COMPONENTES <span class="badge badge-pill badge-warning counter bold">@{{trabajosPendientes?.compras?.length}}</span></p>
-                    <table class="table table-hover">
+                    <p class="text-spacing mb-1">COMPRA DE COMPONENTES <span class="badge badge-pill counter bold" :class="{'badge-warning' : trabajosPendientes?.compras?.length > 0, 'badge-secondary': trabajosPendientes?.compras?.length == 0 }">@{{trabajosPendientes?.compras?.length}}</span></p>
+                    <table class="table table-hover table-striped">
                         <thead class="thead-light">
                             <tr>
                                 <th class="text-none">Componente</th>
@@ -73,17 +81,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="cursor-pointer" v-for="(componente, index) in trabajosPendientes.compras" @click="goToRuta('compra-componentes', componente.rutaComponente)">
+                            <tr class="cursor-pointer" v-for="(componente, index) in trabajosPendientes.compras" @click="goTo('compra-componentes', componente.rutaComponente)">
                                 <td class="bold">@{{componente.nombre}}</td>
                                 <td>@{{componente.cantidad}}</td>
                                 <td>@{{componente.fecha_cargado}}Hrs.</td>
+                            </tr>
+                            <tr v-if="trabajosPendientes?.compras?.length == 0">
+                                <td colspan="3" class="text-center">No hay compras pendientes</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                  <div class="col-xl-4">
-                    <p class="text-spacing mb-1">TEMPLE DE COMPONENTES <span class="badge badge-pill badge-warning counter bold">@{{trabajosPendientes?.temples?.length}}</span></p>
-                    <table class="table table-hover">
+                    <p class="text-spacing mb-1">TEMPLE DE COMPONENTES <span class="badge badge-pill counter bold" :class="{'badge-warning' : trabajosPendientes?.temples?.length > 0, 'badge-secondary': trabajosPendientes?.temples?.length == 0 }">@{{trabajosPendientes?.temples?.length}}</span></p>
+                    <table class="table table-hover table-striped">
                         <thead class="thead-light">
                             <tr>
                                 <th class="text-none">Componente</th>
@@ -91,9 +102,10 @@
                                 <th class="text-none">Prioridad</th>
                                 <th class="text-none">Fecha de solicitud</th>
                             </tr>
+                            
                         </thead>
                         <tbody>
-                            <tr class="cursor-pointer" v-for="(componente, index) in trabajosPendientes.temples" @click="goToRuta('temple', componente.rutaComponente)">
+                            <tr class="cursor-pointer" v-for="(componente, index) in trabajosPendientes.temples" @click="goTo('temple', componente.rutaComponente)">
                                 <td class="bold">@{{componente.nombre}}</td>
                                 <td>@{{componente.cantidad}}</td>
                                 <td>
@@ -103,6 +115,9 @@
                                     <span v-if="componente.prioridad == 'C'" class="badge badge-info badge-pill px-2 py-1"> Prioridad @{{componente.prioridad}}</span>
                                 </td>
                                 <td>@{{componente.fecha_solicitud_temple}}</td>
+                            </tr>
+                            <tr v-if="trabajosPendientes?.temples?.length == 0">
+                                <td colspan="4" class="text-center">No hay temples pendientes</td>
                             </tr>
                         </tbody>
                     </table>
@@ -115,8 +130,8 @@
                     <small class="text-muted mt-1 mb-4 text-spacing">TRABAJOS PENDIENTES</small>
                 </div>
                 <div class="col-xl-4">
-                    <p class="text-spacing mb-1">ENRUTAMIENTO DE COMPONENTES <span class="badge badge-pill badge-warning counter bold">@{{trabajosPendientes?.enrutamiento?.length}}</span></p>
-                    <table class="table table-hover">
+                    <p class="text-spacing mb-1">ENRUTAMIENTO DE COMPONENTES <span class="badge badge-pill counter bold" :class="{'badge-warning' : trabajosPendientes?.enrutamiento?.length > 0, 'badge-secondary': trabajosPendientes?.enrutamiento?.length == 0 }">@{{trabajosPendientes?.enrutamiento?.length}}</span></p>
+                    <table class="table table-hover table-striped">
                         <thead class="thead-light">
                             <tr>
                                 <th class="text-none">Componente</th>
@@ -125,17 +140,41 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="cursor-pointer" v-for="(componente, index) in trabajosPendientes.enrutamiento" @click="goToRuta('enrutador', componente.rutaComponente)">
+                            <tr class="cursor-pointer" v-for="(componente, index) in trabajosPendientes.enrutamiento" @click="goTo('enrutador', componente.rutaComponente)">
                                 <td class="bold">@{{componente.nombre}}</td>
                                 <td>@{{componente.cantidad}}</td>
                                 <td>@{{componente.fecha_cargado}}Hrs.</td>
                             </tr>
+                            <tr v-if="trabajosPendientes?.enrutamiento?.length == 0">
+                                <td colspan="3" class="text-center">No hay trabajo pendiente</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
-                <div class="col-xl-5">
-                    <p class="text-spacing mb-1">SOLICITUDES NO ATENDIDAS <span class="badge badge-pill badge-warning counter bold">@{{trabajosPendientes?.solicitudes?.length}}</span></p>
-                    <table class="table table-hover">
+                <div class="col-xl-4">
+                    <p class="text-spacing mb-1">PRUEBAS DE DISEÑO <span class="badge badge-pill counter bold" :class="{'badge-warning' : trabajosPendientes?.pruebas_diseno?.length > 0, 'badge-secondary': trabajosPendientes?.pruebas_diseno?.length == 0 }">@{{trabajosPendientes?.pruebas_diseno?.length}}</span></p>
+                    <table class="table table-hover table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="text-none">Herramental</th>
+                                <th class="text-none">Fecha de ensamble</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="cursor-pointer" v-for="(herramental, index) in trabajosPendientes.pruebas_diseno" @click="goTo('visor-pruebas', herramental.rutaHerramental)">
+                                <td class="bold">@{{herramental.nombre}}</td>
+                                <td>@{{herramental.termino_ensamble}}Hrs.</td>
+                            </tr>
+                            <tr v-if="trabajosPendientes?.pruebas_diseno?.length == 0">
+                                <td colspan="2" class="text-center">No hay pruebas pendientes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+               
+                <div class="col-xl-4">
+                    <p class="text-spacing mb-1">SOLICITUDES NO ATENDIDAS <span class="badge badge-pill counter bold" :class="{'badge-warning' : trabajosPendientes?.solicitudes?.length > 0, 'badge-secondary': trabajosPendientes?.solicitudes?.length == 0 }">@{{trabajosPendientes?.solicitudes?.length}}</span></p>
+                    <table class="table table-hover table-striped">
                         <thead class="thead-light">
                             <tr>
                                 <th class="text-none">Componente</th>
@@ -145,16 +184,70 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="cursor-pointer" v-for="(solicitud, index) in trabajosPendientes.solicitudes" @click="goToRuta('enrutador', solicitud.rutaComponente)">
+                            <tr class="cursor-pointer" v-for="(solicitud, index) in trabajosPendientes.solicitudes" @click="goTo('enrutador', solicitud.rutaComponente)">
                                 <td class="bold">@{{solicitud.componente}}</td>
                                 <td>@{{solicitud.fabricacion?.maquina?.nombre}}</td>
                                 <td>@{{solicitud.comentarios}}Hrs.</td>
                                 <td>@{{solicitud.fecha_show}} @{{solicitud.hora_show}} </td>
                             </tr>
+                            <tr v-if="trabajosPendientes?.solicitudes?.length == 0">
+                                <td colspan="4" class="text-center">No hay solicitudes pendientes</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
-
+            </div>
+            <div class="row" v-if="roles.includes('PROCESOS')">
+                <div class="col-xl-12 pt-3 pb-4">
+                    <h2 class="my-1 bold text-spacing">PROCESOS</h2>
+                    <small class="text-muted mt-1 mb-4 text-spacing">TRABAJOS PENDIENTES</small>
+                </div>
+                <div class="col-xl-4">
+                    <p class="text-spacing mb-1">PRUEBAS DE PROCESOS <span class="badge badge-pill counter bold" :class="{'badge-warning' : trabajosPendientes?.pruebas_proceso?.length > 0, 'badge-secondary': trabajosPendientes?.pruebas_proceso?.length == 0 }">@{{trabajosPendientes?.pruebas_proceso?.length}}</span></p>
+                    <table class="table table-hover table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="text-none">Herramental</th>
+                                <th class="text-none">Fecha de ensamble</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="cursor-pointer" v-for="(herramental, index) in trabajosPendientes.pruebas_proceso" @click="goTo('pruebas-proceso', herramental.rutaHerramental)">
+                                <td class="bold">@{{herramental.nombre}}</td>
+                                <td>@{{herramental.termino_ensamble}}Hrs.</td>
+                            </tr>
+                            <tr v-if="trabajosPendientes?.pruebas_proceso?.length == 0">
+                                <td colspan="2" class="text-center">No hay pruebas pendientes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row" v-if="roles.includes('DISEÑO')">
+                <div class="col-xl-12 pt-3 pb-4">
+                    <h2 class="my-1 bold text-spacing">DISEÑO</h2>
+                    <small class="text-muted mt-1 mb-4 text-spacing">TRABAJOS PENDIENTES</small>
+                </div>
+                <div class="col-xl-4">
+                    <p class="text-spacing mb-1">PRUEBAS DE DISEÑO <span class="badge badge-pill counter bold" :class="{'badge-warning' : trabajosPendientes?.pruebas_diseno?.length > 0, 'badge-secondary': trabajosPendientes?.pruebas_diseno?.length == 0 }">@{{trabajosPendientes?.pruebas_diseno?.length}}</span></p>
+                    <table class="table table-hover table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="text-none">Herramental</th>
+                                <th class="text-none">Fecha de ensamble</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="cursor-pointer" v-for="(herramental, index) in trabajosPendientes.pruebas_diseno" @click="goTo('visor-pruebas', herramental.rutaHerramental)">
+                                <td class="bold">@{{herramental.nombre}}</td>
+                                <td>@{{herramental.termino_ensamble}} Hrs.</td>
+                            </tr>
+                            <tr v-if="trabajosPendientes?.pruebas_diseno?.length == 0">
+                                <td colspan="2" class="text-center">No hay pruebas pendientes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             {{-- programador --}}
              <div class="row" v-if="roles.includes('PROGRAMADOR')">
@@ -163,8 +256,8 @@
                     <small class="text-muted mt-1 mb-4 text-spacing">TRABAJOS PENDIENTES</small>
                 </div>
                 <div class="col-xl-6">
-                    <p class="text-spacing mb-1">PRROGRAMACIÓN DE COMPONENTES <span class="badge badge-pill badge-warning counter bold">@{{trabajosPendientes?.programaciones?.length}}</span></p>
-                    <table class="table table-hover">
+                    <p class="text-spacing mb-1">PROGRAMACIÓN DE COMPONENTES <span class="badge badge-pill counter bold" :class="{'badge-warning' : trabajosPendientes?.programaciones?.length > 0, 'badge-secondary': trabajosPendientes?.programaciones?.length == 0 }">@{{trabajosPendientes?.programaciones?.length}}</span></p>
+                    <table class="table table-hover table-striped">
                         <thead class="thead-light">
                             <tr>
                                 <th class="text-none">Componente</th>
@@ -173,7 +266,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="cursor-pointer" v-for="(componente, index) in trabajosPendientes.programaciones" @click="goToRuta('visor-programador', componente.rutaComponente)">
+                            <tr class="cursor-pointer" v-for="(componente, index) in trabajosPendientes.programaciones" @click="goTo('visor-programador', componente.rutaComponente)">
                                 <td class="bold">@{{componente.nombre}}</td>
                                 <td>@{{componente.cantidad}}</td>
                                 <td>
@@ -183,30 +276,32 @@
                                     <span v-if="componente.prioridad == 'C'" class="badge badge-info badge-pill px-2 py-1"> Prioridad @{{componente.prioridad}}</span>
                                 </td>
                             </tr>
+                            <tr v-if="trabajosPendientes?.programaciones?.length == 0">
+                                <td colspan="3" class="text-center">No hay trabajo pendiente</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-             {{-- fabricaciones --}}
-             <div class="row" v-if="roles.includes('OPERADOR')">
+            {{-- fabricaciones --}}
+            <div class="row" v-if="roles.includes('OPERADOR')">
                 <div class="col-xl-12 pt-3 pb-4">
                     <h2 class="my-1 bold text-spacing">OPERADOR</h2>
                     <small class="text-muted mt-1 mb-4 text-spacing">TRABAJOS PENDIENTES</small>
                 </div>
                 <div class="col-xl-6">
-                    <p class="text-spacing mb-1">FABRICACIÓN DE COMPONENTES <span class="badge badge-pill badge-warning counter bold">@{{trabajosPendientes?.fabricaciones?.length}}</span></p>
-                    <table class="table table-hover">
+                    <p class="text-spacing mb-1">FABRICACIÓN DE COMPONENTES <span class="badge badge-pill counter bold" :class="{'badge-warning' : trabajosPendientes?.fabricaciones?.length > 0, 'badge-secondary': trabajosPendientes?.fabricaciones?.length == 0 }">@{{trabajosPendientes?.fabricaciones?.length}}</span></p>
+                    <table class="table table-hover table-striped">
                         <thead class="thead-light">
                             <tr>
                                 <th class="text-none">Componente</th>
                                 <th class="text-none">Cantidad</th>
                                 <th class="text-none">Maquina</th>
                                 <th class="text-none">Prioridad</th>
-                                <th class="text-none">Estatus fabricación</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="cursor-pointer" v-for="(fabricacion, index) in trabajosPendientes.fabricaciones" @click="goToRuta('visor-operador', `?maq=${fabricacion.maquina_id}&co=${fabricacion.componente_id}&fab=${fabricacion.fabricacion_id}`)">
+                            <tr class="cursor-pointer" v-for="(fabricacion, index) in trabajosPendientes.fabricaciones" @click="goTo('visor-operador', `?maq=${fabricacion.maquina_id}&co=${fabricacion.componente_id}&fab=${fabricacion.fabricacion_id}`)">
                                 <td class="bold">@{{fabricacion.componente}}</td>
                                 <td>@{{fabricacion.cantidad}}</td>
                                 <td>@{{fabricacion.maquina}}</td>
@@ -216,9 +311,40 @@
                                     <span v-if="fabricacion.prioridad == 'B'" class="badge badge-warning badge-pill px-2 py-1"> Prioridad @{{fabricacion.prioridad}}</span>
                                     <span v-if="fabricacion.prioridad == 'C'" class="badge badge-info badge-pill px-2 py-1"> Prioridad @{{fabricacion.prioridad}}</span>
                                 </td>
-                                <td>
-                                    <span class="badge px-3 py-2 badge-dark">@{{fabricacion.estatus_fabricacion.toUpperCase()}}</span>
-                                </td>
+                            </tr>
+                            <tr v-if="trabajosPendientes?.fabricaciones?.length == 0">
+                                <td colspan="4" class="text-center">No hay fabricaciones pendientes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {{-- ensamble --}}
+            <div class="row" v-if="roles.includes('MATRICERO')">
+                <div class="col-xl-12 pt-3 pb-4">
+                    <h2 class="my-1 bold text-spacing">MATRICERO</h2>
+                    <small class="text-muted mt-1 mb-4 text-spacing">TRABAJOS PENDIENTES</small>
+                </div>
+                <div class="col-xl-6">
+                    <p class="text-spacing mb-1">ENSAMBLE DE COMPONENTES <span class="badge badge-pill counter bold" :class="{'badge-warning' : trabajosPendientes?.ensambles?.length > 0, 'badge-secondary': trabajosPendientes?.ensambles?.length == 0 }">@{{trabajosPendientes?.ensambles?.length}}</span></p>
+                    <table class="table table-hover table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="text-none">Componente</th>
+                                <th class="text-none">Tipo</th>
+                                <th class="text-none">Cantidad</th>
+                                <th class="text-none">Fecha liberación / compra</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="cursor-pointer" v-for="(componente, index) in trabajosPendientes.ensambles" @click="goTo('matricero', componente.rutaComponente)">
+                                <td class="bold">@{{componente.nombre}}</td>
+                                <td>@{{componente.es_compra ? 'Compra' : 'Fabricación'}}</td>
+                                <td>@{{componente.cantidad}}</td>
+                                <td>@{{componente.es_compra ? componente.fecha_real : componente.fecha_terminado + 'Hrs.'}} </td>
+                            </tr>
+                            <tr v-if="trabajosPendientes?.ensambles?.length == 0">
+                                <td colspan="4" class="text-center">No hay ensambles pendientes</td>
                             </tr>
                         </tbody>
                     </table>
@@ -238,13 +364,6 @@
             loading: true,
             roles: @json(Auth::user()->getRoleNames()),
             user: @json(Auth::user()),
-            allPosibleRoles: [
-                'ALMACENISTA',
-                'JEFE DE AREA',
-                'PROGRAMADOR',
-                'OPERADOR',
-                'MATRICERO'
-            ],
             trabajosPendientes: {
                 compras: [],
                 cortes: [],
@@ -253,11 +372,13 @@
                 solicitudes: [],
                 programaciones: [],
                 fabricaciones: [],
-                ensambles: []
+                ensambles: [],
+                pruebas_diseno: [],
+                pruebas_proceso: [],
             }
         },
         methods:{
-            goToRuta(ruta, query){
+            goTo(ruta, query){
                 window.location.href = `/${ruta}${query}`;
             },
             async getDataInitial(){
