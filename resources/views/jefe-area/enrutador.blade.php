@@ -719,7 +719,7 @@
                  {
                     id: 3,
                     prioridad: 3,
-                    nombre: 'Carear',
+                    nombre: 'Carear y/o Escuadrar',
                     horas: 0,
                     minutos: 0,
                     incluir: false
@@ -1130,7 +1130,7 @@
                             {
                                 id: 3,
                                 prioridad: 3,
-                                nombre: 'Carear',
+                                nombre: 'Carear y/o Escuadrar',
                                 horas: 0,
                                 minutos: 0,
                             },
@@ -1982,7 +1982,7 @@
                  {
                     id: 3,
                     prioridad: 3,
-                    nombre: 'Carear',
+                    nombre: 'Carear y/o Escuadrar',
                     horas: 0,
                     minutos: 0,
                     incluir: false

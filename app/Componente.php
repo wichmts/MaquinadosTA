@@ -90,7 +90,7 @@ class Componente extends Model
         return [
             ['id' => 1, 'prioridad' => 1, 'nombre' => 'Cortar'],
             ['id' => 2, 'prioridad' => 2, 'nombre' => 'Programar'],
-            ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear'],
+            ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear y/o Escuadrar'],
             ['id' => 4, 'prioridad' => 4, 'nombre' => 'Maquinar'],
             ['id' => 5, 'prioridad' => 5, 'nombre' => 'Tornear'],
             ['id' => 6, 'prioridad' => 6, 'nombre' => 'Roscar/Rebabear'],

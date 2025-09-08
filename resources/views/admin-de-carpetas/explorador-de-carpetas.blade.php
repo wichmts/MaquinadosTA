@@ -10,22 +10,20 @@
     <div class="col-md-12" style="padding: 30px !important">
         <div class="row">
             <div class="col-md-5 mb-0">
-                <h2 class="bold my-0 py-1" style="letter-spacing: 1px;">Explorador de carpetas</h2>
+                <h2 class="bold my-0 py-1 text-decoration-underline" style="letter-spacing: 2px;">EXPLORADOR DE CARPETAS</h2>
             </div>
             <div class="col-md-7 text-right">
-                <button class="btn btn-secondary cursor-pointer" v-if="menuStep == 1" @click="abrirModalNuevo('año', 'Año')">
-                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
-                    <span class="underline-hover">Nuevo año...</span>
+                <button v-if="menuStep > 1" class="btn btn-default" @click="regresar(menuStep - 1)">
+                    <i class="fa fa-chevron-left"></i> Regresar
                 </button>
-
-                <button class="btn btn-secondary cursor-pointer" v-if="menuStep == 2" @click="abrirModalNuevo('carpeta', 'Nombre de la carpeta')">
-                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
-                    <span class="underline-hover">Nueva carpeta...</span>
+                <button class="btn btn-success" v-if="menuStep == 1" @click="abrirModalNuevo('año', 'Año')">
+                    <i class="fa fa-plus-circle"></i> Nuevo año
                 </button>
-
-                <button class="btn btn-secondary cursor-pointer" v-if="menuStep == 3" @click="abrirModalNuevo('proyecto', 'Nombre del Proyecto')">
-                    <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/plus.png') }}"></i> &nbsp;
-                    <span class="underline-hover">Nuevo proyecto...</span>
+                <button class="btn btn-success" v-if="menuStep == 2" @click="abrirModalNuevo('carpeta', 'Nombre de la carpeta')">
+                    <i class="fa fa-plus-circle"></i> Nueva carpeta
+                </button>
+                <button class="btn btn-success" v-if="menuStep == 3" @click="abrirModalNuevo('proyecto', 'Nombre del Proyecto')">
+                    <i class="fa fa-plus-circle"></i> Nuevo proyecto
                 </button>
             </div>
         </div>
@@ -52,24 +50,24 @@
         </nav>
 
         <div class="col-md-12 table-responsive card shadow" v-show="!cargandoMenu" v-cloak>
-            <table class="table align-items-center">
+            <table class="table align-items-center table-bordered">
                 <thead class="thead-light">
                     <tr>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Fecha creación</th>
-                        <th scope="col" class="no-sort">Acciones</th>
+                        <th style="width: 40%" scope="col">Nombre</th>
+                        <th style="width: 40%" scope="col">Fecha creación</th>
+                        <th style="width: 20%" scope="col" class="no-sort">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- Años -->
                     <tr v-if="!cargandoMenu && menuStep == 1" v-for="anio in anios" :key="anio.id">
-                        <td>@{{ anio.nombre }}</td>
+                        <td class="bold">@{{ anio.nombre }}</td>
                         <td>@{{ formatFecha(anio.created_at) }}</td>
                         <td>
                             <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
                                 <button class="btn btn-sm btn-link actions" style=""
                                     @click="fetchClientes(anio.id)">
-                                    <i class="fa fa-folder-open"></i> Abrir
+                                    <i class="fa fa-folder-open"></i>
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
                                     @click="abrirModalEditar('año', 'Nuevo año', anio.id)" data-toggle="tooltip" data-placement="bottom" title="Editar">
@@ -85,13 +83,13 @@
 
                     <!-- Clientes / carpetas -->
                     <tr v-if="!cargandoMenu && menuStep == 2" v-for="cliente in clientes" :key="cliente.id">
-                        <td>@{{ cliente.nombre }}</td>
+                        <td class="bold">@{{ cliente.nombre }}</td>
                         <td>@{{ formatFecha(cliente.created_at) }}</td>
                         <td>
                             <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
                                 <button class="btn btn-sm btn-link actions"
                                     @click="fetchProyectos(cliente.id)">
-                                    <i class="fa fa-folder-open"></i> Abrir
+                                    <i class="fa fa-folder-open"></i>
                                 </button>
                                 <button class="btn btn-sm btn-link actions"
                                     @click="abrirModalEditar('carpeta', 'Nuevo nobre de la carpeta', cliente.id)" data-toggle="tooltip" data-placement="bottom" title="Editar">
@@ -107,7 +105,7 @@
 
                     <!-- Proyectos -->
                     <tr v-if="!cargandoMenu && menuStep == 3" v-for="proyecto in proyectos" :key="proyecto.id">
-                        <td>@{{ proyecto.nombre }}</td>
+                        <td class="bold">@{{ proyecto.nombre }}</td>
                         <td>@{{ formatFecha(proyecto.created_at) }}</td>
                         <td>
                             <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
@@ -124,14 +122,6 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
-
-
-        <!-- Botón regresar -->
-        <div v-if="menuStep > 1" class="mt-3">
-            <button class="btn btn-secondary" @click="regresar(menuStep - 1)">
-                <i class="fa fa-arrow-left"></i> Regresar
-            </button>
         </div>
     </div>
 

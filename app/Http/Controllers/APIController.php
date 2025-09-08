@@ -962,7 +962,7 @@ class APIController extends Controller
             $procesos = [
                 ['id' => 1, 'prioridad' => 1, 'nombre' => 'Cortar'],
                 ['id' => 2, 'prioridad' => 2, 'nombre' => 'Programar'],
-                ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear'],
+                ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear y/o Escuadrar'],
                 ['id' => 4, 'prioridad' => 4, 'nombre' => 'Maquinar'],
                 ['id' => 5, 'prioridad' => 5, 'nombre' => 'Tornear'],
                 ['id' => 6, 'prioridad' => 6, 'nombre' => 'Roscar/Rebabear'],
@@ -1271,7 +1271,7 @@ class APIController extends Controller
             $procesos = [
                 ['id' => 1, 'prioridad' => 1, 'nombre' => 'Cortar'],
                 ['id' => 2, 'prioridad' => 2, 'nombre' => 'Programar'],
-                ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear'],
+                ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear y/o Escuadrar'],
                 ['id' => 4, 'prioridad' => 4, 'nombre' => 'Maquinar'],
                 ['id' => 5, 'prioridad' => 5, 'nombre' => 'Tornear'],
                 ['id' => 6, 'prioridad' => 6, 'nombre' => 'Roscar/Rebabear'],
@@ -1395,7 +1395,7 @@ class APIController extends Controller
          $procesos = [
             ['id' => 1, 'prioridad' => 1, 'nombre' => 'Cortar'],
             ['id' => 2, 'prioridad' => 2, 'nombre' => 'Programar'],
-            ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear'],
+            ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear y/o Escuadrar'],
             ['id' => 4, 'prioridad' => 4, 'nombre' => 'Maquinar'],
             ['id' => 5, 'prioridad' => 5, 'nombre' => 'Tornear'],
             ['id' => 6, 'prioridad' => 6, 'nombre' => 'Roscar/Rebabear'],
@@ -3816,7 +3816,7 @@ class APIController extends Controller
                     ['nombre' => $nombreProyecto, 'cliente_id' => $cliente->id]
                 );
 
-                $nombreHerramental = "HR" . $data['numero_hr'];
+                $nombreHerramental = $data['numero_hr'];
                 $herramental = Herramental::where('nombre', $nombreHerramental)
                     ->where('proyecto_id', $proyecto->id)
                     ->first();

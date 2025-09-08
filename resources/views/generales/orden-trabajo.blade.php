@@ -127,12 +127,7 @@
                     </div>
                     <div class="col-lg-4 form-group">
                         <label class="bold">Número de HR <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <div class="input-group-prepend" style="background-color: #efefef">
-                                <span class="bold input-group-text py-0">HR &nbsp;&nbsp;</span>
-                            </div>
-                            <input :disabled="modo_edicion" type="text" class="form-control" v-model="nuevo.numero_hr">
-                        </div>
+                        <input :disabled="modo_edicion" type="text" class="form-control" v-model="nuevo.numero_hr">
                     </div>
                     <div class="col-lg-4 form-group">
                         <label class="bold">Número de componente <span class="text-danger">*</span></label>
