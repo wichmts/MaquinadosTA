@@ -225,7 +225,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="bold">COMENTARIOS:</label>
+                            <label class="bold">COMENTARIOS DEL ENRUTADOR</label>
                             <textarea disabled  v-model="componente.comentarios" class="form-control text-left px-1 py-1" style="min-height: 100px !important" placeholder="Comentarios..."></textarea>
                         </div>
 

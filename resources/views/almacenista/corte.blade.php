@@ -178,6 +178,7 @@
                                                 <button  v-else @click="eliminarParo(c.id)" :disabled="c.estatus_corte == 'finalizado'" class="mt-1 btn  btn-danger btn-sm"><i class="fa fa-play-circle"></i> Reanudar operacion</button>
 
                                                 <button 
+                                                    v-show="c.comentarios"
                                                     type="button" 
                                                     class="mt-1 btn btn-default btn-sm" 
                                                     :id="'popoverButton' + c.id"
@@ -185,7 +186,7 @@
                                                     data-toggle="popover"
                                                     data-trigger="focus"
                                                     data-html="true"
-                                                    :data-content="c.comentarios ? c.comentarios : 'Sin comentarios...'"
+                                                    :data-content="c.comentarios"
                                                     ><i class="fa fa-comment"></i>
                                                     Comentario
                                                 </button>
