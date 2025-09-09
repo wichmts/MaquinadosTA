@@ -4460,7 +4460,7 @@ License - nucleoapp.com/license/
 .wrapper {
     position: absolute;
     width: 100%;
-    height: calc(100vh - 100px);
+    height: calc(100vh - 120px);
 }
 
 
@@ -4484,11 +4484,11 @@ License - nucleoapp.com/license/
 /* 3. Sidebar fijo a la izquierda */
 .sidebar {
     position: fixed;
-    top: 100px;
+    top: 120px;
     /* Debajo del navbar */
     left: 0;
     width: 245px;
-    height: calc(100vh - 100px);
+    height: calc(100vh - 120px);
     /* Ocupa el espacio restante */
     z-index: 1030;
     border-right: 1px solid #ddd;
@@ -4497,11 +4497,11 @@ License - nucleoapp.com/license/
 .sidebar .sidebar-wrapper,
 .off-canvas-sidebar .sidebar-wrapper {
     position: relative;
-    height: calc(100vh - 100px);
+    height: calc(100vh - 120px);
     overflow: auto;
     width: 245px;
     z-index: 4;
-    padding-bottom: 100px;
+    padding-bottom: 120px;
     /* background-color: #ae19ac; */
 }
 
@@ -4519,7 +4519,7 @@ License - nucleoapp.com/license/
 .off-canvas-sidebar .navbar-minimize {
     position: absolute;
     right: 20px;
-    top: 100px;
+    top: 120px;
     opacity: 1;
 }
 
@@ -4727,9 +4727,9 @@ License - nucleoapp.com/license/
     opacity: 1;
     position: absolute;
     width: 100%;
-    height: calc(100vh - 100px);
+    height: calc(100vh - 120px);
     /* Ocupa el espacio restante */
-    top: 100px;
+    top: 120px;
     left: 0;
 }
 
@@ -4918,7 +4918,7 @@ License - nucleoapp.com/license/
     width: calc(100% - 245px);
     /* background-color: #07e325; */
     transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
-    /* top: 100px;  Descomentar si el nabar esta en fixed*/
+    /* top: 120px;  Descomentar si el nabar esta en fixed*/
     height: 100%;
 }
 
@@ -5091,7 +5091,7 @@ License - nucleoapp.com/license/
 .fixed-plugin img {
     border-radius: 0;
     width: 100%;
-    height: 100px;
+    height: 120px;
     margin: 0 auto;
 }
 
@@ -5248,7 +5248,7 @@ License - nucleoapp.com/license/
     opacity: 1;
     cursor: pointer;
     display: block;
-    max-height: 100px;
+    max-height: 120px;
     overflow: hidden;
     padding: 0;
 }
@@ -5331,16 +5331,16 @@ License - nucleoapp.com/license/
 }
 
 .fixed-plugin .show-dropdown .dropdown-menu[x-placement=bottom-start] {
-    transform: translate3d(0, -100px, 0) !important;
+    transform: translate3d(0, -120px, 0) !important;
 }
 
 .fixed-plugin .show-dropdown .dropdown-menu[x-placement=bottom-start]:before,
 .fixed-plugin .show-dropdown .dropdown-menu[x-placement=bottom-start]:after {
-    top: 100px;
+    top: 120px;
 }
 
 .fixed-plugin .show-dropdown .dropdown-menu[x-placement=top-start] {
-    transform: translate3d(0, 100px, 0) !important;
+    transform: translate3d(0, 120px, 0) !important;
 }
 
 .fixed-plugin .show-dropdown.show .dropdown-menu.show[x-placement=bottom-start] {
@@ -6053,7 +6053,7 @@ License - nucleoapp.com/license/
     .bootstrap-navbar {
         position: fixed;
         display: block;
-        top: 100px;
+        top: 120px;
         height: 100%;
         width: 245px;
         right: auto;
@@ -6067,7 +6067,7 @@ License - nucleoapp.com/license/
     }
 
     .main-panel {
-        /* top: 100px; descomentar si navbar es fixed*/
+        /* top: 120px; descomentar si navbar es fixed*/
         width: 100%;
     }
 
@@ -6260,7 +6260,7 @@ License - nucleoapp.com/license/
     }
 
     .login-page .container {
-        padding-top: 100px !important;
+        padding-top: 120px !important;
     }
 }
 
@@ -6316,8 +6316,8 @@ License - nucleoapp.com/license/
     border: 16px solid hsla(0, 0%, 87%, .3);
     border-top: 16px solid #121935;
     border-radius: 50%;
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     animation: spin 2s linear infinite;
     margin: auto;
 }
@@ -6737,7 +6737,7 @@ input[type="number"]::-webkit-outer-spin-button {
     padding: 2px;
     transition: all 0.2s ease;
     font-family: sans-serif;
-    perspective: 100px;
+    perspective: 120px;
 }
 
 .checkbox-wrapper-10 .tgl-flip+.tgl-btn:after,
