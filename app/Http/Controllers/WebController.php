@@ -139,6 +139,12 @@ class WebController extends Controller
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');   
     }
 
+    public function visorGeneral(){
+        if(auth()->user()->hasRole('DIRECCION')) 
+            return view('visor-general.visor-general');
+        return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');   
+    }
+
     public function centroNotificaciones(){
         $user = auth()->user();
         $user->hay_notificaciones = false;

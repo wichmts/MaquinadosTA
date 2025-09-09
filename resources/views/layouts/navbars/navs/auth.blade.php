@@ -66,6 +66,24 @@
         text-decoration: underline !important;
     }
 
+.atendido{
+        background-color: #d4edda !important;
+    }
+
+    .no-atendido{
+        background-color: #f8d7da !important;
+    }
+
+    .noti:hover{
+        color: black !important;
+        text-decoration: underline !important;
+    }
+
+    .dropdown-item.no-atendido:hover, .dropdown-item.atendido:hover {
+    color: black !important;
+    text-decoration: underline !important;
+    }
+
     .navbar11 {
         position: relative;
         top: 0;
@@ -77,9 +95,9 @@
     
     .toggler-principal {
         border: 1px solid #333 !important;
+        font-size: 10px !important;
     }
-    
-    
+
     
     /* NUEVOS ESTILOS PARA EL MENÚ RESPONSIVE */
     .navbar-nav.menu-principal {
@@ -154,6 +172,7 @@
                         addMenuItem('maquina', 'MAQUINAS', ['DIRECCION'], $addedRoutes);
                         addMenuItem('tiempos-maquinas', 'TIEMPOS MAQUINA', ['DIRECCION'], $addedRoutes);
                         addMenuItem('tiempos-personal', 'TIEMPOS PERSONAL', ['DIRECCION'], $addedRoutes);
+                        addMenuItem('visorGeneral', 'VISOR GENERAL', ['DIRECCION'], $addedRoutes);
                     @endphp
 
                     {{-- FINANZAS --}}
@@ -174,12 +193,12 @@
                         addMenuItem('enrutador', 'Enrutador', ['JEFE DE AREA'], $addedRoutes);
                         addMenuItem('visor-programador', 'Programador', ['JEFE DE AREA', 'PROGRAMADOR'], $addedRoutes);
                         addMenuItem('visor-operador', 'Operador', ['JEFE DE AREA', 'OPERADOR'], $addedRoutes);
-                        addMenuItem('visor-pruebas', 'Pruebas', ['JEFE DE AREA', 'DISEÑO'], $addedRoutes);
+                        addMenuItem('visor-pruebas', 'Pruebas diseño', ['JEFE DE AREA', 'DISEÑO'], $addedRoutes);
                     @endphp
 
                     {{-- PROCESOS --}}
                     @php
-                        addMenuItem('pruebas-proceso', 'Pruebas', ['PROCESOS'], $addedRoutes);
+                        addMenuItem('pruebas-proceso', 'Pruebas proceso', ['PROCESOS'], $addedRoutes);
                     @endphp
 
                     {{-- PROGRAMADOR --}}
@@ -231,10 +250,11 @@
                     </li>
                 </ul>
 
+
                 <ul class="navbar-nav ml-auto text-center">
                     <li class="nav-item dropdown btn-rotate">
                         <a v-if="!hay_notificaciones" @click="toggleDropdown()" class="menu-link nav-link " style="text-transform: capitalize" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i  class="far fa-bell "></i> <small class="bold ">Ultimas notificaciones&nbsp;</small>
+                            <i  class="far fa-bell"></i> <small class="bold">Ultimas notificaciones&nbsp;</small>
                         </a>
                         <a v-else @click="toggleDropdown()"  class="menu-link nav-link  cursor-pointer" style="text-transform: capitalize" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-bell text-danger"></i> <small class="bold text-danger">Ultimas notificaciones&nbsp;</small>
@@ -242,7 +262,7 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                             <h6 class="dropdown-header">Ultimas notificaciones</h6>
                             <h6 v-if="notificaciones.length == 0" class="dropdown-header"><small>- Sin notificaciones para mostrar -</small></h6>
-                            <a v-for="n in notificaciones" @click="irNotificacion(n)" class="dropdown-item cursor-pointer" >@{{n.fecha}} @{{n.hora}} | @{{n.componente_id ? n.componente : n.herramental}} | @{{n.descripcion}}</a>
+                            <a  v-for="n in notificaciones" @click="irNotificacion(n)" class="dropdown-item cursor-pointer noti" :class="n.atendida ? 'atendido' : 'no-atendido'" >@{{n.fecha}} @{{n.hora}} | @{{n.componente_id ? n.componente : n.herramental}} | @{{n.descripcion}}</a>
                             <a v-if="notificaciones.length > 0" class="dropdown-item text-center" href="/centro-notificaciones">Ver todas las notificaciones...</a>
                         </div>
                     </li>
@@ -269,11 +289,12 @@
         el: '#vue-app2',
         data: {
             notificaciones: [],
-            hay_notificaciones: @json(auth()->user()->hay_notificaciones) ? true :  false
+            hay_notificaciones: @json(auth()->user()->hay_notificaciones) ? true :  false,
         },
         methods:{
             toggleDropdown(){
                 let t = this
+                t.getNotificaciones();
                 axios.put('/api/ver-notificaciones').then( response => {
                     t.hay_notificaciones = false;
                 })

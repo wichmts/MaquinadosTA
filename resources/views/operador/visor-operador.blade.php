@@ -107,7 +107,7 @@
                             <div class="col-lg-12" v-if="!selectedComponente">
                                 <h5 class="text-muted my-4"> SELECCIONE UN COMPONENTE PARA SU FABRICACION</h5>
                             </div>
-                            <div class="row mt-0 pt-0 pb-3" v-else>
+                            <div class="row mt-0 pt-0 pb-3" v-else style="padding-bottom:0px !important;">
                                 <div class="col-lg-6 form-group mb-0">
                                     <span style="font-size: 18px !important; border-color: #c0d340 !important; background-color: #c0d340 !important" class="badge badge-warning badge-pill bold my-4 py-2"> <i class="fa fa-cogs" style="font-size: 17px !important" ></i> @{{componente.nombre}}</span>
                                 </div>
@@ -124,7 +124,7 @@
                                 <div class="col-lg-4 form-group mb-0" style="height: 120px !important">
                                     <label class="bold">DESCRIPCION DEL TRABAJO</label>
                                     <textarea disabled v-model="componente.descripcion_trabajo" class="mt-0 form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Descripcion del trabajo..."></textarea>
-                                </div>
+                                </div>                        
                                 <div class="col-lg-4 form-group mb-0" style="height: 120px !important">
                                     <label class="bold">HERRAMIENTAS DE CORTE</label>
                                     <textarea disabled  v-model="componente.herramientas_corte" class="mt-0 form-control text-left px-1 py-1" style="min-height: 100% !important" placeholder="Agregar herramientas de corte..."></textarea>
@@ -146,6 +146,17 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row" style="padding-bottom: 16px;" v-if="selectedComponente">
+                                <div class="col-8"> 
+                                    <label class="bold">COMENTARIOS DE ENRUTADOR</label>
+                                    <textarea 
+                                    disabled  
+                                    v-model="componente.comentarios" 
+                                    class="mt-0 form-control text-left px-1 py-1"                                     
+                                    placeholder="Comentarios de enturador">
+                                    </textarea>
+                                </div>                                                            
                             </div>
                             <Transition name="fade" mode="out-in">
                                 <div class="row py-3" style="border-top: 2px dashed #d6d6d6; " v-if="fabricacion && selectedComponente" :key="fabricacion.id">

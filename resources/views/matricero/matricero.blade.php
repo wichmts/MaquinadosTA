@@ -523,6 +523,15 @@
                                                         <button :disabled="componente.ensamblado == true || herramental.estatus_ensamble == 'inicial'" class="btn btn-block mb-0" @click="abrirCamara()"><i class="fa fa-camera"></i> <span v-if="componente.foto_matricero">RETOMAR FOTO</span><span v-else>TOMAR FOTO</span></button>
                                                         <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;" @change="procesarFoto($event)">
                                                     </div>
+                                                    <div class="col-xl-12" style="padding-bottom: 16px;" v-if="selectedComponente">                                       
+                                                        <label class="bold">COMENTARIOS DEL ENRUTADOR</label>
+                                                        <textarea 
+                                                            disabled  
+                                                            v-model="componente.comentarios" 
+                                                            class="mt-0 form-control text-left px-1 py-1"                                     
+                                                            placeholder="Sin comentarios...">
+                                                        </textarea>
+                                                    </div>                     
                                                     <div class="col-xl-6">
                                                         <button :disabled="componente.ensamblado == true || componente.es_compra == true || herramental.estatus_ensamble == 'inicial'" @click="abrirSolicitud('ajuste')"  class="btn btn-block btn-dark"><i class="fa fa-exclamation-circle"></i> SOLICITAR AJUSTE</button>
                                                     </div>

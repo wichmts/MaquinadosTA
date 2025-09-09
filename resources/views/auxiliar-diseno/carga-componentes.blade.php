@@ -217,7 +217,7 @@
                                                     <th style="width: 10%">Tipo</th>
                                                     <th style="width: 10%">Cantidad</th>
                                                     <th style="width: 12%">Material</th>
-                                                    <th style="width: 25%">Medidas</th>
+                                                    <th style="width: 25%">Descripción</th>
                                                     <th style="width: 13%">Acciones</th>
                                                 </tr>
                                             </thead>
@@ -267,8 +267,9 @@
                                                             <input type="text" class="form-control" v-model="c.proveedor" :disabled="c.cargado == 1" >
                                                         </div>
                                                     </td>
+                                                    <!-- Cambiar esto (abajo) a enrutador -->
                                                     <td style="width: 25%">
-                                                        <div class="row" v-show="c.es_compra == 0">
+                                                        <!-- <div class="row" v-show="c.es_compra == 0">
                                                             <div class="col-lg-4 form-group pr-1 text-left bold" v-if="c.material_id == 1 || c.material_id == 6 || c.material_id == 2 || c.material_id == 4 || c.material_id == 5">
                                                                 <small class="bold">Largo</small>
                                                                 <input type="text" class="form-control" v-model="c.largo"  :disabled="c.cargado == 1">
@@ -289,7 +290,9 @@
                                                                 <small class="bold">Diametro</small>
                                                                 <input type="text" class="form-control" v-model="c.diametro"  :disabled="c.cargado == 1">
                                                             </div>
-                                                        </div>
+                                                        </div> -->
+                                                        <!-- cambiar arriba a enrutador -->
+
                                                         <div class="row" v-show="c.es_compra == 1">
                                                             <div class="col-lg-12 form-group text-left bold">
                                                                 <small class="bold">Descripción</small>
@@ -702,7 +705,7 @@
                 });
 
                 formData.append('data', JSON.stringify(t.componentes));
-                try {
+                try { 
                     const response = await axios.post(`/api/componente/${t.selectedHerramental}`, formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
@@ -1138,7 +1141,9 @@
                         errores.push(`Las nombre del material es obligatorio para ${componente.nombre}.`);
                     }
 
-                    if(componente.material_id && (componente.material_id == 1 || componente.material_id == 6 || componente.material_id == 2 || componente.material_id == 4 || componente.material_id == 5)){
+                    /* QUITAR ESTO PARA LA VALIDACIÓN DEL COMPONENTE (TOLO LO QUE TENGA QUE VER CON MEDIDAS) */
+
+                    /* if(componente.material_id && (componente.material_id == 1 || componente.material_id == 6 || componente.material_id == 2 || componente.material_id == 4 || componente.material_id == 5)){
                         if(!componente.largo || !componente.ancho){
                             errores.push(`El largo y ancho en ${componente.nombre} son obligatorios.`);
                         }
@@ -1152,7 +1157,7 @@
                         if(!componente.longitud || !componente.diametro){
                             errores.push(`La longitud y diametro en ${componente.nombre} son obligatorios.`);
                         }
-                    }
+                    } */
                     if (
                         !componente.cuotas_criticas || 
                         !Array.isArray(componente.cuotas_criticas) || 
@@ -1303,7 +1308,7 @@
             let t = this;
             await t.fetchAnios();
             await t.fetchMateriales();
-            this.navigateFromUrlParams();
+            this.navigateFromUrlParams();            
         }
 
                 

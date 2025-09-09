@@ -7,6 +7,13 @@
 <link rel="stylesheet" href="{{ asset('paper/css/paper-dashboard-responsivo.css') }}?v={{ time() }}">
 @endsection
 
+<style>
+    .borderTextArea {
+        border: 2px solid #000 !important;
+        border-radius: 10px !important;
+    }
+</style>
+
 
 @section('content')
 <div id="vue-app">
@@ -73,23 +80,23 @@
                                 <a class="d-flex align-items-center nav-link cursor-pointer" v-for="obj in componentes" v-if="!obj.refabricado" @click="fetchComponente(obj.id)">
                                     <i class="nc-icon" style="top: -3px !important"><img height="17px" src="{{ asset('paper/img/icons/componentes.png') }}"></i> &nbsp;
                                     <span class="underline-hover" :style=" obj.cancelado == true ? 'text-decoration: line-through' : ''">
-                                        @{{obj.nombre}} 
+                                        @{{obj.nombre}}
                                     </span>&nbsp;&nbsp;
-                                    <small 
-                                        v-if="tienePendientes(obj)" 
-                                        :key="'componente' + obj.id" 
-                                        class="cursor-info text-danger fa fa-info-circle" 
-                                        data-toggle="tooltip" 
-                                        data-placement="bottom" 
-                                        :title="getContenidoTooltipComponente(obj)" >
+                                    <small
+                                        v-if="tienePendientes(obj)"
+                                        :key="'componente' + obj.id"
+                                        class="cursor-info text-danger fa fa-info-circle"
+                                        data-toggle="tooltip"
+                                        data-placement="bottom"
+                                        :title="getContenidoTooltipComponente(obj)">
                                     </small>
-                                    <small 
-                                        v-if="!tienePendientes(obj) && obj.enrutado == true" 
-                                        :key="'componente-listo-' + obj.id" 
-                                        class="cursor-info text-success fa fa-check-circle" 
-                                        data-toggle="tooltip" 
-                                        data-placement="bottom" 
-                                        title="Componente liberado" >
+                                    <small
+                                        v-if="!tienePendientes(obj) && obj.enrutado == true"
+                                        :key="'componente-listo-' + obj.id"
+                                        class="cursor-info text-success fa fa-check-circle"
+                                        data-toggle="tooltip"
+                                        data-placement="bottom"
+                                        title="Componente liberado">
                                     </small>
                                 </a>
                             </div>
@@ -131,7 +138,7 @@
                     </div>
                     <div class="col-xl-3 col-lg-4 text-right" v-if="selectedComponente && componente.cancelado != true && !componente.refabricado">
                         <button class="btn btn-success btn-block" :disabled="componente.enrutado ==  true || componente.cancelado == true" @click="guardar(true)"><i class="fa fa-check-double"></i>
-                             @{{componente.enrutado == true ? 'LIBERADO' : 'LIBERAR'}}
+                            @{{componente.enrutado == true ? 'LIBERADO' : 'LIBERAR'}}
                         </button>
                     </div>
                     <div class="col-xl-6" v-if="selectedComponente && componente.cancelado == true">
@@ -188,6 +195,7 @@
                                         <label class="bold">Prioridad</label>
                                         <select class="form-control" v-model="componente.prioridad" :disabled="componente.fecha_terminado || componente.cancelado == true">
                                             <option :value="null" disabled>Asignar...</option>
+                                            <option value="I">I</option>
                                             <option value="A">A</option>
                                             <option value="B">B</option>
                                             <option value="C">C</option>
@@ -202,6 +210,51 @@
                                     </div>
                                 </div>
                             </div>
+
+
+
+                            <!-- Medidas -->
+                            <div class="row">
+                                <div class="col-md-4 form-group text-left bold">
+                                    <small class="bold">Material</small>
+                                    <input  type="text" class="form-control" :value="getMaterialName(componente.material_id)" disabled>
+                                </div>
+
+                                <div class="col-md-2 form-group text-left bold"
+                                    v-if="[1,2,4,5,6].includes(componente.material_id)">
+                                    <small class="bold">Largo</small>
+                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.largo">
+                                </div>
+
+                                <div class="col-md-2 form-group text-left bold"
+                                    v-if="[1,2,4,5,6].includes(componente.material_id)">
+                                    <small class="bold">Ancho</small>
+                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.ancho">
+                                </div>
+
+                                <div class="col-md-2 form-group text-left bold"
+                                    v-if="[1,2,5,6].includes(componente.material_id)">
+                                    <small class="bold">Espesor</small>
+                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.espesor">
+                                </div>
+
+                                <div class="col-md-2 form-group text-left bold"
+                                    v-if="componente.material_id == 3">
+                                    <small class="bold">Longitud</small>
+                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.longitud">
+                                </div>
+
+                                <div class="col-md-2 form-group text-left bold"
+                                    v-if="componente.material_id == 3">
+                                    <small class="bold">Diámetro</small>
+                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.diametro">
+                                </div>
+                            </div>
+
+
+
+                            <!-- aqui -->
+
                             <div class="row mt-2">
                                 <div class="col" style="overflow-x:scroll">
                                     <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }">
@@ -391,7 +444,7 @@
                                     <button :disabled="!componente.enrutado || componente.cancelado" class="px-1 btn btn-block btn-dark my-1" @click="generarRefabricacion()"><i class="fa fa-recycle"></i> REFABRICACIÓN</button>
                                 </div>
                                 <div class="col-lg-6 py-0 px-1">
-                                    <button :disabled="componente.cancelado"  v-if="componente.refaccion == true" @click="esRefaccion(false)" class="px-1 btn btn-block btn-success my-1"><i class="fa fa-puzzle-piece"></i> REFACCIÓN - Si</button>
+                                    <button :disabled="componente.cancelado" v-if="componente.refaccion == true" @click="esRefaccion(false)" class="px-1 btn btn-block btn-success my-1"><i class="fa fa-puzzle-piece"></i> REFACCIÓN - Si</button>
                                     <button :disabled="componente.cancelado" v-else @click="esRefaccion(true)" class="px-1 btn btn-block btn-dark my-1"><i class="fa fa-puzzle-piece"></i> REFACCIÓN - No</button>
                                 </div>
                             </div>
@@ -406,7 +459,13 @@
                                     <button @click="fetchSolicitudes" class="btn btn-block btn-default"><i class="fa fa-clipboard-list"></i> SOLICITUDES</button>
                                 </div>
                             </div>
+                            <!-- Comentarios -->
+                            <div class="row">
+                                <textarea rows="3" type="text" class="form-control borderTextArea" placeholder="Agregar comentario..." v-model="componente.comentarios" :disabled="componente.cancelado == true || componente.fecha_terminado" value="componente.comentarios"></textarea>
+                            </div>
                         </div>
+
+
                     </div>
                 </div>
             </div>
@@ -619,7 +678,7 @@
             </div>
         </div>
     </div>
-     <div class="modal fade" id="modalSolicitudExterna" tabindex="-1" aria-labelledby="modalSolicitudExternaLabel" aria-hidden="true">
+    <div class="modal fade" id="modalSolicitudExterna" tabindex="-1" aria-labelledby="modalSolicitudExternaLabel" aria-hidden="true">
         <div class="modal-dialog" style="min-width: 40%;">
             <div class="modal-content">
                 <div class="modal-header">
@@ -665,6 +724,7 @@
     var app = new Vue({
         el: '#vue-app',
         data: {
+            nuevoComentario: '',
             nuevosRetrabajos: [], //ids de los procesos a los que se les agrego retrabajo.
             procesosIniciales: [], //copia de los procesos con retrabajo al cargar el componente
             solicitud: {
@@ -716,7 +776,7 @@
                     minutos: 0,
                     incluir: false
                 },
-                 {
+                {
                     id: 3,
                     prioridad: 3,
                     nombre: 'Carear y/o Escuadrar',
@@ -780,7 +840,9 @@
             verVersiones: false,
             lineaTiempo: [],
             solicitudExterna: {
-                solicitante: {nombre_completo: ''},
+                solicitante: {
+                    nombre_completo: ''
+                },
                 archivo_2d: null,
                 archivo_3d: null,
                 dibujo: null
@@ -922,9 +984,11 @@
         },
         methods: {
 
-            async solicitudAtendida(solicitud){
+            async solicitudAtendida(solicitud) {
                 try {
-                    const response = await axios.put(`/api/solicitud/${solicitud.id}/atendida`, { atendida: solicitud.atendida });
+                    const response = await axios.put(`/api/solicitud/${solicitud.id}/atendida`, {
+                        atendida: solicitud.atendida
+                    });
                     if (response.data.success) {
                         swal('Correcto', 'La solicitud ha sido actualizada correctamente.', 'success');
                     } else {
@@ -945,7 +1009,7 @@
                         swal('Correcto', 'Se ha actualizado el componente correctamente.', 'success');
                         await t.fetchComponentes(t.selectedHerramental);
                         await t.fetchComponente(t.selectedComponente);
-                    }else{
+                    } else {
                         t.cargando = false;
                         swal('Error', 'Ocurrió un error al intentar actualizar el componente.', 'error');
                     }
@@ -954,8 +1018,8 @@
                     swal('Error', 'Ocurrió un error al intentar actualizar el componente.', 'error');
                 }
             },
-            esRefaccion(band){
-                if(band){ 
+            esRefaccion(band) {
+                if (band) {
                     swal({
                         title: "¿Está seguro de marcar este componente como refacción?",
                         text: "",
@@ -978,7 +1042,7 @@
                             this.enviarRefaccion(true);
                         }
                     });
-                }else{ //no es refaccion
+                } else { //no es refaccion
                     swal({
                         title: "¿Está seguro de eliminar este componente como refacción?",
                         text: "",
@@ -1003,7 +1067,7 @@
                     });
                 }
             },
-            async verSolicitudExterna(){
+            async verSolicitudExterna() {
                 let t = this
                 this.cargando = true;
 
@@ -1091,9 +1155,9 @@
 
                     $('#modalModificacion').modal('hide');
 
-                    if(t.componente.esComponenteExterno){
+                    if (t.componente.esComponenteExterno) {
                         swal('Correcto', 'Se ha notificado correctamente al solicitante del componente externo sobre una modificación en el componente.', 'success');
-                    }else{
+                    } else {
                         swal('Correcto', 'Se ha notificacado correctamente al auxiliar de diseno sobre una modificación en el componente.', 'success');
                     }
                     await t.fetchComponentes(t.selectedHerramental);
@@ -1267,7 +1331,7 @@
 
                     this.solicitudes = solicitudes.map(s => {
                         return {
-                            id: s.id, 
+                            id: s.id,
                             atendida: s.atendida,
                             fecha: s.fecha_show,
                             hora: s.hora_show,
@@ -1321,7 +1385,7 @@
                         break;
                     case "ensamble":
                         descripcion = tipo === 1 ?
-                             "<strong>INICIA EL PROCESO DE ENSAMBLE </strong>" :
+                            "<strong>INICIA EL PROCESO DE ENSAMBLE </strong>" :
                             "<strong>FINALIZA EL PROCESO DE ENSAMBLE </strong>";
                         break;
                     default:
@@ -1343,17 +1407,17 @@
                         case "corte_paro":
                         case "corte":
                             area = 'ALMACENISTA'
-                        break;
+                            break;
                         case "programacion":
                             area = 'PROGRAMADOR'
-                        break;
+                            break;
                         case "fabricacion_paro":
                         case "fabricacion":
                             area = 'OPERADOR'
-                        break;
+                            break;
                         case "ensamble":
                             area = 'ENSAMBLE'
-                        break;
+                            break;
                         default:
                             area = "AREA DESCONOCIDA"; // Por si hay otras acciones no previstas
                     }
@@ -2069,9 +2133,27 @@
                 let t = this
 
                 if (liberarComponente) {
-                    if (!t.componente.prioridad || !t.componente.programador_id) {
+                    if (!t.componente.prioridad || !t.componente.programador_id ) {
                         swal('Errores de validación', `Todos los campos son obligatorios para liberar.`, 'error');
                         return;
+                    }
+                    if(t.componente.material_id && (t.componente.material_id == 1 || t.componente.material_id == 6 || t.componente.material_id == 2 || t.componente.material_id == 4 || t.componente.material_id == 5)){
+                        if(!t.componente.largo || !t.componente.ancho){                            
+                            swal('Errores de validación',`El largo y ancho en ${t.componente.nombre} son obligatorios.`, 'error');
+                            return;
+                        }
+                    }
+                    if(t.componente.material_id && (t.componente.material_id == 1 || t.componente.material_id == 6 || t.componente.material_id == 2 || t.componente.material_id == 5)){
+                        if(!t.componente.espesor){                            
+                            swal('Errores de validación',`El espesor en ${t.componente.nombre} es obligatorio.`, 'error');   
+                            return;                     
+                        }                        
+                    }
+                    if(t.componente.material_id && t.componente.material_id == 3){
+                        if(!t.componente.longitud || !t.componente.diametro){                            
+                            swal('Errores de validación',`La longitud y diametro en ${t.componente.nombre} son obligatorios.`, 'error');
+                            return;
+                        }                        
                     }
                     if (t.tasks.length == 0) {
                         swal('Errores de validación', `El componente debe incluir al menos una accion para poder ser liberado a programacion.`, 'error');
@@ -2092,7 +2174,7 @@
                 t.componente.ruta = JSON.parse(JSON.stringify(t.tasks));
 
                 try {
-                    const response = await axios.put(`/api/componente/${t.selectedComponente}/enrutamiento/${liberarComponente}`, t.componente);
+                    const response = await axios.put(`/api/componente/${t.selectedComponente}/enrutamiento/${liberarComponente}`, t.componente);                    
                     if (!liberarComponente)
                         swal('Correcto', 'Informacion guardada correctamente', 'success');
                     else
@@ -2170,8 +2252,8 @@
                 }
             },
             tienePendientes(componente) {
-                return componente.bAjuste || componente.bRetrabajo || 
-                    componente.bModificacion || componente.bRefabricacion || 
+                return componente.bAjuste || componente.bRetrabajo ||
+                    componente.bModificacion || componente.bRefabricacion ||
                     componente.bRechazo;
             },
             getContenidoTooltipComponente(componente) {
@@ -2182,9 +2264,45 @@
                 if (componente.bRefabricacion) pendientes.push("Refabricación");
                 if (componente.bRechazo) pendientes.push("Rechazo");
 
-                return pendientes.length 
-                    ? `Pendiente: ${pendientes.join(', ')}`
-                    : "No hay pendientes";
+                return pendientes.length ?
+                    `Pendiente: ${pendientes.join(', ')}` :
+                    "No hay pendientes";
+            },
+            guardarComentario() {
+                let t = this;
+                t.cargando = true;
+                console.log(t.componente.id);
+                axios.post(`/api/componente/comentario/${t.componente.id}`, {
+                        comentario: t.componente.comentarios
+                    })
+                    .then(response => {
+                        swal('Correcto', 'Comentario agregado correctamente', 'success');
+                        t.componente.comentarios = response.data.comentarios;
+                    })
+                    .catch(error => {
+                        console.error('Error al guardar el comentario:', error);
+                        swal('Error', 'Ocurrió un error al guardar el comentario', 'error');
+                    })
+                    .finally(() => {
+                        t.cargando = false;
+                    });
+
+            },
+            async fetchMateriales() {
+                this.cargando = true
+                try {
+                    const response = await axios.get(`/api/materiales`);
+                    this.materiales = response.data.materiales;
+
+                } catch (error) {
+                    console.error('Error fetching materiales:', error);
+                } finally {
+                    this.cargando = false;
+                }
+            },
+            getMaterialName(id) {
+                const material = this.materiales.find(m => m.id === id);
+                return material ? material.nombre : 'N/A';
             }
         },
         mounted: async function() {
@@ -2193,6 +2311,7 @@
             await t.fetchProgramadores();
             await t.fetchMaquinas();
             this.navigateFromUrlParams();
+            await t.fetchMateriales();
         }
 
 

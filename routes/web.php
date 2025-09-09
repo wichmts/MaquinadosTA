@@ -83,6 +83,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     //ADMINISTRADOR DE CARPETAS
     Route::get('/exploradorCarpetas', 'WebController@exploradorCarpetas');
+    
 
 
     // ADMIN
@@ -91,10 +92,16 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('herramentales', 'WebController@herramentales');
     Route::get('tiempos-personal', 'WebController@tiemposPersonal');
     Route::get('tiempos-maquinas', 'WebController@tiemposMaquinas');
+    Route::get('/visorGeneral', 'WebController@visorGeneral');
+
+    //Routes para el perfil 
     Route::get('profile', ['as' => 'profile.edit', 'uses' => 'ProfileController@edit']);
     Route::put('profile', ['as' => 'profile.update', 'uses' => 'ProfileController@update']);
     Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'ProfileController@password']);
+
+    //Ruta para atrapar todas las demas rutas y enviarlas al controlador de paginas
     Route::get('{page}', ['as' => 'page.index', 'uses' => 'PageController@index']);
     Route::get('/stream/{folder}/{filename}', ['uses' => 'PageController@stream']);
+    
 });
 

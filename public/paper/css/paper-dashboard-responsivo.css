@@ -3024,7 +3024,7 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
 }
 
 .navbar .navbar-collapse .nav-item a {
-    font-size: 14px;
+    /* font-size: 14px; */
 }
 
 .bg-default {
