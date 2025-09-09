@@ -15,6 +15,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Componente extends Model
 {
+     public function getRutaComponenteAttribute()
+    {
+        $herramental = Herramental::find($this->herramental_id);
+        if (!$herramental) {
+            return null;
+        }
+        $proyecto = Proyecto::find($herramental->proyecto_id);
+        $cliente = Cliente::find($proyecto->cliente_id);
+        $anio = Anio::find($cliente->anio_id);
+
+        return "?a={$anio->id}&c={$cliente->id}&p={$proyecto->id}&h={$herramental->id}&co={$this->id}";
+    }
     public function material(){
         return $this->belongsTo(Material::class);
     }
@@ -78,7 +90,7 @@ class Componente extends Model
         return [
             ['id' => 1, 'prioridad' => 1, 'nombre' => 'Cortar'],
             ['id' => 2, 'prioridad' => 2, 'nombre' => 'Programar'],
-            ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear'],
+            ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear y/o Escuadrar'],
             ['id' => 4, 'prioridad' => 4, 'nombre' => 'Maquinar'],
             ['id' => 5, 'prioridad' => 5, 'nombre' => 'Tornear'],
             ['id' => 6, 'prioridad' => 6, 'nombre' => 'Roscar/Rebabear'],
@@ -246,7 +258,7 @@ class Componente extends Model
         $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
         $cliente = Cliente::findOrFail($proyecto->cliente_id);
         $anio = Anio::findOrFail($cliente->anio_id);
-        $data['rutaComponente'] = "?a={$anio->id}&c={$cliente->id}&p={$proyecto->id}&h={$herramental->id}&co={$this->id}";
+        $data['rutaComponente'] = $this->rutaComponente;
 
         $data['bAjuste'] = $this->tieneSolicitudes('ajuste');
         $data['bRetrabajo'] = $this->tieneSolicitudes('retrabajo');

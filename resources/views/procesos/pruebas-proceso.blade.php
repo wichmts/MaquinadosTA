@@ -23,7 +23,7 @@
     </div>
     @endif
 
-    <div class="col-xl-12" v-show="cargando">
+    <div class="col-lg-12" v-show="cargando">
         <div style="margin-top: 200px; max-width: 100% !important; margin-bottom: auto; text-align:center; letter-spacing: 2px">
             <h5 class="mb-5">CARGANDO...</h5>
             <div class="loader"></div>
@@ -185,7 +185,7 @@
                                         </label>
                                         <small >Archivo: <strong>@{{prueba.archivo_show ?? 'Sin cargar'}}</strong></small>
                                     </div>
-                                    <div class="col-xl-6 form-group">
+                                    <div class="col-lg-6 form-group">
                                         <label class="bold">TOMAR FOTO</label>
                                         <a target="_blank" v-if="prueba.foto" :href="'/storage/pruebas-proceso/' + prueba.foto">
                                             <img :src="'/storage/pruebas-proceso/' + prueba.foto" style="border-radius: 10px; width: 100%; height: auto; object-fit: cover" alt="">
@@ -204,31 +204,31 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-4 ">
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="row px-2 pt-3 pb-1 my-2 bg-warning" style="border-radius: 10px; background-color: #f7dc6f !important">
-                                            <div class="col-xl-2 text-right">
+                                            <div class="col-lg-2 text-right">
                                                 <div class="checkbox-wrapper-19">
                                                    <input :disabled="prueba.liberada == true" type="checkbox" id="cbtest-19" v-model="prueba.lista_refacciones" />
                                                    <label for="cbtest-19" class="check-box"></label>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-10">
-                                                <h5 style="font-size: 11px !important" class="bold">SE CUENTA CON LISTA DE REFACCIONES.</h5>
+                                            <div class="col-lg-10 pt-1">
+                                                <h5 style="font-size: 14px !important; letter-spacing: 1px" class="bold">REFACCIONES CRÍTICAS</h5>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-lg-12">
                                         <div class="row px-2 pt-3 pb-1 my-2 bg-warning" style="border-radius: 10px; background-color: #f7dc6f !important">
-                                            <div class="col-xl-2 text-right">
+                                            <div class="col-lg-2 text-right">
                                                 <div class="checkbox-wrapper-19">
                                                    <input :disabled="prueba.liberada == true" type="checkbox" id="cbtest-191" v-model="prueba.kit_conversion" />
                                                    <label for="cbtest-191" class="check-box"></label>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-10">
-                                                <h5 style="font-size: 11px !important" class="bold">SE CUENTA CON KIT DE CONVERSIÓN <br>(MATRICERIA ADICIONAL)</h5>
+                                            <div class="col-lg-10 pt-1">
+                                                <h5 style="font-size: 14px !important; letter-spacing: 1px" class="bold">MATRICERÍA DE RECAMBIO</h5>
                                             </div>
                                         </div>
                                     </div>
@@ -236,7 +236,7 @@
                                         <label class="bold">DESCRIPCIÓN DE LA PRUEBA <span class="text-danger">*</span></label>
                                         <textarea :disabled="prueba.liberada == true" class="form-control w-100 px-1 py-1 text-left" style="min-height: 150px !important" placeholder="Descripcion..." v-model="prueba.descripcion"></textarea>
                                     </div>
-                                    <div class="col-xl-12">
+                                    <div class="col-lg-12">
                                         <button :disabled="prueba.liberada == true" @click="abrirSolicitud()" class="btn btn-dark btn-block mt-0"><i class="fa fa-edit"></i> SOLICITAR MODIFICACIÓN</button>
                                     </div>
                                 </div>
@@ -261,19 +261,19 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-xl-12 form-group">
+                            <div class="col-lg-12 form-group">
                                 <label class="bold">Seleccionar componentes a modificar <span style="color: red">*</span></label>
                                 <ul style="height: 250px !important; overflow-y: scroll" class="dropdown-menu show w-100 position-static border mt-0">
                                     <li v-for="c in componentes" class="dropdown-item" :class="{ maquinaSeleccionada: c.seleccionado}" @click="c.seleccionado = !c.seleccionado"><i class="fa fa-check-circle" v-if="c.seleccionado"></i> @{{c.nombre}}</li>
                                 </ul>
                             </div>
-                            <div class="py-0 col-xl-12">
+                            <div class="py-0 col-lg-12">
                                 <label class="bold">Comentarios <span class="text-danger">*</span></label>
                             <textarea v-model="solicitud.comentarios" class="form-control w-100 text-left px-2 py-1" placeholder="Agregar comentarios..."></textarea>
                         </div>                           
                         </div>
                         <div class="row">
-                            <div class="col-xl-12 text-right">
+                            <div class="col-lg-12 text-right">
                                 <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
                                 <button class="btn btn-dark" v-if="!loading_button" type="button" @click="enviarSolicitud()"><i class="fa fa-paper-plane"></i> ENVIAR SOLICITUD</button>
                                 <button class="btn btn-dark" type="button" disabled v-if="loading_button"><i class="fa fa-spinner"></i> ENVIANDO, ESPERE ...</button>

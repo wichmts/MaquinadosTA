@@ -144,6 +144,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::delete('anios/{id}', 'APIController@eliminarAnio');
     Route::delete('clientes/{id}', 'APIController@eliminarCliente');
     Route::delete('proyectos/{id}', 'APIController@eliminarProyecto');
+
+    Route::get('trabajos-pendientes', 'APIController@trabajosPendientes');
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {

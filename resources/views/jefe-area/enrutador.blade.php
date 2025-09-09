@@ -779,7 +779,7 @@
                 {
                     id: 3,
                     prioridad: 3,
-                    nombre: 'Carear',
+                    nombre: 'Carear y/o Escuadrar',
                     horas: 0,
                     minutos: 0,
                     incluir: false
@@ -1178,70 +1178,70 @@
                             tipo: tipo,
                             reasignar: 'corte',
                             procesos: [{
-                                    id: 1,
-                                    prioridad: 1,
-                                    nombre: 'Cortar',
-                                    horas: 0,
-                                    minutos: 0,
-                                },
-                                {
-                                    id: 2,
-                                    prioridad: 2,
-                                    nombre: 'Programar',
-                                    horas: 0,
-                                    minutos: 0,
-                                },
-                                {
-                                    id: 3,
-                                    prioridad: 3,
-                                    nombre: 'Carear',
-                                    horas: 0,
-                                    minutos: 0,
-                                },
-                                {
-                                    id: 4,
-                                    prioridad: 4,
-                                    nombre: 'Maquinar',
-                                    horas: 0,
-                                    minutos: 0,
-                                },
-                                {
-                                    id: 5,
-                                    prioridad: 5,
-                                    nombre: 'Tornear',
-                                    horas: 0,
-                                    minutos: 0,
-                                },
-                                {
-                                    id: 6,
-                                    prioridad: 6,
-                                    nombre: 'Roscar/Rebabear',
-                                    horas: 0,
-                                    minutos: 0,
-                                },
-                                // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-                                {
-                                    id: 8,
-                                    prioridad: 8,
-                                    nombre: 'Rectificar',
-                                    horas: 0,
-                                    minutos: 0,
-                                },
-                                {
-                                    id: 9,
-                                    prioridad: 9,
-                                    nombre: 'EDM',
-                                    horas: 0,
-                                    minutos: 0,
-                                },
-                                {
-                                    id: 11,
-                                    prioridad: 11,
-                                    nombre: 'Marcar',
-                                    horas: 0,
-                                    minutos: 0,
-                                    incluir: false
-                                }
+                                id: 1,
+                                prioridad: 1,
+                                nombre: 'Cortar',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            {
+                                id: 2,
+                                prioridad: 2,
+                                nombre: 'Programar',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            {
+                                id: 3,
+                                prioridad: 3,
+                                nombre: 'Carear y/o Escuadrar',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            {
+                                id: 4,
+                                prioridad: 4,
+                                nombre: 'Maquinar',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            {
+                                id: 5,
+                                prioridad: 5,
+                                nombre: 'Tornear',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            {
+                                id: 6,
+                                prioridad: 6,
+                                nombre: 'Roscar/Rebabear',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                            {
+                                id: 8,
+                                prioridad: 8,
+                                nombre: 'Rectificar',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            {
+                                id: 9,
+                                prioridad: 9,
+                                nombre: 'EDM',
+                                horas: 0,
+                                minutos: 0,
+                            },
+                            {
+                                id: 11,
+                                prioridad: 11,
+                                nombre: 'Marcar',
+                                horas: 0,
+                                minutos: 0,
+                                incluir: false
+                            }
                             ],
                         };
                         this.solicitud.procesos = this.solicitud.procesos.filter(proceso => {
@@ -2027,79 +2027,79 @@
                     }
                 })
 
-                t.procesos = [{
-                        id: 1,
-                        prioridad: 1,
-                        nombre: 'Cortar',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    },
-                    {
-                        id: 2,
-                        prioridad: 2,
-                        nombre: 'Programar',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    },
-                    {
-                        id: 3,
-                        prioridad: 3,
-                        nombre: 'Carear',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    },
-                    {
-                        id: 4,
-                        prioridad: 4,
-                        nombre: 'Maquinar',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    },
-                    {
-                        id: 5,
-                        prioridad: 5,
-                        nombre: 'Tornear',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    },
-                    {
-                        id: 6,
-                        prioridad: 6,
-                        nombre: 'Roscar/Rebabear',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    },
-                    // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-                    {
-                        id: 8,
-                        prioridad: 8,
-                        nombre: 'Rectificar',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    },
-                    {
-                        id: 9,
-                        prioridad: 9,
-                        nombre: 'EDM',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    },
-                    {
-                        id: 11,
-                        prioridad: 11,
-                        nombre: 'Marcar',
-                        horas: 0,
-                        minutos: 0,
-                        incluir: false
-                    }
+                t.procesos =  [{
+                    id: 1,
+                    prioridad: 1,
+                    nombre: 'Cortar',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 2,
+                    prioridad: 2,
+                    nombre: 'Programar',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                 {
+                    id: 3,
+                    prioridad: 3,
+                    nombre: 'Carear y/o Escuadrar',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 4,
+                    prioridad: 4,
+                    nombre: 'Maquinar',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 5,
+                    prioridad: 5,
+                    nombre: 'Tornear',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 6,
+                    prioridad: 6,
+                    nombre: 'Roscar/Rebabear',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                {
+                    id: 8,
+                    prioridad: 8,
+                    nombre: 'Rectificar',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 9,
+                    prioridad: 9,
+                    nombre: 'EDM',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                },
+                {
+                    id: 11,
+                    prioridad: 11,
+                    nombre: 'Marcar',
+                    horas: 0,
+                    minutos: 0,
+                    incluir: false
+                }
                 ];
 
                 t.tasks.forEach(task => {
