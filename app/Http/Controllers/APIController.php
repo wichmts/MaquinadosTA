@@ -1488,7 +1488,7 @@ class APIController extends Controller
         ], 200);
     }
     public function guardarComponenteEnrutamiento(Request $request, $componente_id, $liberar){
-        $datos = $request->json()->all();
+        $datos = $request->json()->all();        
         $liberar = filter_var($liberar, FILTER_VALIDATE_BOOLEAN);
         $componente = Componente::findOrFail($componente_id);
 
@@ -1578,8 +1578,14 @@ class APIController extends Controller
             $componente_liberado = $componente->enrutado;
 
             if($componente_liberado && !$liberar){
+                
                 $componente->prioridad = $datos['prioridad'];
                 $componente->comentarios = $datos['comentarios'];
+                $componente->largo = $this->emptyToNull($datos['largo']);
+                $componente->ancho = $this->emptyToNull($datos['ancho']);
+                $componente->espesor = $this->emptyToNull($datos['espesor']);
+                $componente->longitud = $this->emptyToNull($datos['longitud']);
+                $componente->diametro = $this->emptyToNull($datos['diametro']);                              
                 $componente->save();
 
                 return response()->json([
@@ -1593,6 +1599,11 @@ class APIController extends Controller
             $componente->programador_id = $datos['programador_id'];
             $componente->ruta = json_encode($datos['ruta']);
             $componente->enrutado = $liberar;
+            $componente->largo = $this->emptyToNull($datos['largo']);
+            $componente->ancho = $this->emptyToNull($datos['ancho']);
+            $componente->espesor = $this->emptyToNull($datos['espesor']);
+            $componente->longitud = $this->emptyToNull($datos['longitud']);
+            $componente->diametro = $this->emptyToNull($datos['diametro']);
             $componente->save();
             
             if($liberar){
@@ -1938,11 +1949,7 @@ class APIController extends Controller
             }
             if(!$nuevoComponente->cargado){
                 $nuevoComponente->nombre = $this->emptyToNull($componente['nombre']);
-                $nuevoComponente->largo = $this->emptyToNull($componente['largo']);
-                $nuevoComponente->ancho = $this->emptyToNull($componente['ancho']);
-                $nuevoComponente->espesor = $this->emptyToNull($componente['espesor']);
-                $nuevoComponente->longitud = $this->emptyToNull($componente['longitud']);
-                $nuevoComponente->diametro = $this->emptyToNull($componente['diametro']);
+                //aqui estaban las medidas
                 $nuevoComponente->es_compra = $this->emptyToNull($componente['es_compra']);
                 $nuevoComponente->cantidad = $this->emptyToNull($componente['cantidad']);
                 $nuevoComponente->proveedor = $this->emptyToNull($componente['proveedor']);
