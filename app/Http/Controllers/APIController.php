@@ -25,6 +25,7 @@ use App\SeguimientoTiempo;
 use App\Solicitud;
 use App\Puesto;
 use App\SolicitudExterna;
+use App\SolicitudAfilado;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
@@ -5506,6 +5507,40 @@ class APIController extends Controller
         return response()->json([
             'success' => true,
         ]);
+    }
+
+    public function generarOrdenAfilado(Request $request){
+        $data = json_decode($request->data, true);
+
+        try{
+            DB::beginTransaction();
+            $ordenAfilado = new SolicitudAfilado();
+            $ordenAfilado->componente_id = $data['componente_id'];
+            $ordenAfilado->solicitante_id = $data['solicitante_id'];
+            $ordenAfilado->cantidad = $data['cantidad'];
+            $ordenAfilado->fecha_solicitud = $data['fecha_solicitud'];
+            $ordenAfilado->fecha_entrega_solicitada = $data['fecha_entrega_solicitada'];
+            $ordenAfilado->area_solicitud = $data['area_solicitud'];            
+            $ordenAfilado->numero_hr = $data['numero_hr'];
+            $ordenAfilado->nombre_componente = $data['nombre_componente'];
+            $ordenAfilado->cantidad = $data['cantidad'];            
+            $ordenAfilado->comentarios = $data['comentarios'];  
+            $ordenAfilado->caras_a_afilar = $data['caras_a_afilar'];
+            $ordenAfilado->cuanto_afilar = $data['cuanto_afilar'];          
+            $ordenAfilado->save();
+
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+            ], 200);
+        }catch(\Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al generar la orden de afilado: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     // public function trabajosPendientes(Request $request){

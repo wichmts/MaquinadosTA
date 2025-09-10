@@ -145,6 +145,12 @@ class WebController extends Controller
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');   
     }
 
+    public function cargaAfilados(){
+        if(auth()->user()->hasRole('SOLICITUD EXTERNA')) 
+            return view('generales.orden-afilados');
+        return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
+
     public function centroNotificaciones(){
         $user = auth()->user();
         $user->hay_notificaciones = false;
