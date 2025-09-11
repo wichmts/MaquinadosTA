@@ -3592,6 +3592,14 @@ class APIController extends Controller
             'success' => true,
         ], 200);
     }
+    public function misSolicitudesAfilado() {
+        $solicitudes = SolicitudAfilado::where('solicitante_id', auth()->user()->id)->get();
+
+        return response()->json([
+            'solicitudes' => $solicitudes,
+            'success' => true,
+        ], 200);
+    }
     public function generarOrdenRefaccion(Request $request, $id){
         $data = $request->json()->all();
 
@@ -4071,6 +4079,8 @@ class APIController extends Controller
             'success' => true,
         ], 200);
     }
+
+    
     public function obtenerHerramentales(){
         $herramentales = Herramental::all();
 
@@ -5519,7 +5529,8 @@ class APIController extends Controller
             $ordenAfilado->solicitante_id = $data['solicitante_id'];
             $ordenAfilado->cantidad = $data['cantidad'];
             $ordenAfilado->fecha_solicitud = $data['fecha_solicitud'];
-            $ordenAfilado->fecha_entrega_solicitada = $data['fecha_entrega_solicitada'];
+            $ordenAfilado->fecha_deseada_entrega = $data['fecha_deseada_entrega'];
+            $ordenAfilado->fecha_real_entrega = $data['fecha_real_entrega'];
             $ordenAfilado->area_solicitud = $data['area_solicitud'];            
             $ordenAfilado->numero_hr = $data['numero_hr'];
             $ordenAfilado->nombre_componente = $data['nombre_componente'];
@@ -5528,6 +5539,110 @@ class APIController extends Controller
             $ordenAfilado->caras_a_afilar = $data['caras_a_afilar'];
             $ordenAfilado->cuanto_afilar = $data['cuanto_afilar'];          
             $ordenAfilado->save();
+
+            if ($request->hasFile('archivo_2d')) {
+                    $file2D = $request->file('archivo_2d');
+                    $resultado = $this->validarArchivo($file2D); 
+                    if (!$resultado['success']) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => $resultado['message'],
+                        ], 200);
+                    }
+
+                $name2D = uniqid() . '_' . $file2D->getClientOriginalName();
+                    Storage::disk('public')->put('ordenes_trabajo/' . $name2D, \File::get($file2D));
+                    $ordenAfilado->archivo_2d = $name2D;
+                }
+            $ordenAfilado->save();
+
+            $anio = Anio::firstOrCreate(['nombre' => date('Y')]);
+            $cliente = Cliente::firstOrCreate(['nombre' => 'ORDENES AFILADO'], ['anio_id' => $anio->id]);
+            $nombreProyecto = auth()->user()->id . '.' .  auth()->user()->nombre_completo;
+
+            $proyecto = Proyecto::firstOrCreate(
+                ['nombre' => $nombreProyecto, 'cliente_id' => $cliente->id]
+            );
+
+            $nombreHerramental = $data['numero_hr'];
+            $herramental = Herramental::where('nombre', $nombreHerramental)
+                ->where('proyecto_id', $proyecto->id)
+                ->first();
+
+            if (!$herramental) {
+                $herramental = new Herramental();
+                $herramental->nombre = $nombreHerramental;
+                $herramental->proyecto_id = $proyecto->id;
+                $herramental->estatus_ensamble = 'inicial';
+                $herramental->estatus_pruebas_diseno = 'inicial';
+                $herramental->estatus_pruebas_proceso = 'inicial';
+                $herramental->save();
+            }
+            $nombreComponente = $nombreHerramental . '-' . $data['nombre_componente'];
+                $componenteExistente = Componente::where('nombre', $nombreComponente)->where('herramental_id', $herramental->id)->exists();
+
+                if ($componenteExistente) {
+                    $ordenAfilado->delete();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'El componente ya existe, verifique el numero de componente e intentelo nuevamente',
+                    ]);
+                }
+            $nuevoComponente = new Componente();
+            $nuevoComponente->nombre = $herramental->nombre . '-' . $data['nombre_componente'];
+            $nuevoComponente->version = 1;
+            $nuevoComponente->cantidad = $data['cantidad'];
+            $nuevoComponente->fecha_cargado = date('Y-m-d H:i');
+            $nuevoComponente->prioridad = 'A';
+            $nuevoComponente->refabricado = false;
+            $nuevoComponente->refaccion = false;
+            $nuevoComponente->es_compra = false;
+            $nuevoComponente->cargado = true;
+            $nuevoComponente->comprado = false;
+            $nuevoComponente->programado = false;
+            $nuevoComponente->cortado = false;
+            $nuevoComponente->enrutado = false;
+            $nuevoComponente->ensamblado = false;
+            $nuevoComponente->estatus_corte = 'inicial';
+            $nuevoComponente->estatus_programacion = 'inicial';
+            $nuevoComponente->estatus_fabricacion = 1;
+            $nuevoComponente->herramental_id = $herramental->id;
+            //$nuevoComponente->material_id = $data['material_id'];
+
+            $rutaBase = "{$herramental->proyecto_id}/{$herramental->id}/componentes/";
+            Storage::disk('public')->makeDirectory($rutaBase);
+
+            if ($ordenAfilado->archivo_2d) {
+                $nuevoNombre2D = $this->generarNuevoNombre($ordenAfilado->archivo_2d);
+                Storage::disk('public')->copy(
+                    "ordenes_trabajo/{$ordenAfilado->archivo_2d}", // Ruta correcta de origen
+                    "{$rutaBase}{$nuevoNombre2D}" // Ruta de destino
+                );
+                $nuevoComponente->archivo_2d = $nuevoNombre2D;
+            }
+
+            $nuevoComponente->save();
+            $ordenAfilado->componente_id = $nuevoComponente->id;
+            $ordenAfilado->save();
+
+            $notificacion = new Notificacion();
+            $notificacion->roles = json_encode(['JEFE DE AREA']);
+            $notificacion->url_base = '/enrutador';
+            $notificacion->anio_id = $anio->id;
+            $notificacion->cliente_id = $cliente->id;
+            $notificacion->proyecto_id = $proyecto->id;
+            $notificacion->herramental_id = $herramental->id;
+            $notificacion->componente_id = $nuevoComponente->id;
+            $notificacion->cantidad = $nuevoComponente->cantidad;
+            $notificacion->descripcion = 'SE HA LIBERADO UN NUEVO COMPONENTE PARA ENRUTAMIENTO DESDE ORDENES DE AFILADO.';
+            $notificacion->save();
+
+            $users = User::role('JEFE DE AREA')->get();
+            foreach ($users as $user) {
+                $user->hay_notificaciones = true;
+                $user->save();
+            }
 
 
             DB::commit();
@@ -5541,6 +5656,70 @@ class APIController extends Controller
                 'message' => 'Error al generar la orden de afilado: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function editarOrdenAfilado(Request $request, $id){
+        $data = json_decode($request->data, true);
+        $ordenAfilado = SolicitudAfilado::findOrFail($id);
+        $componente = Componente::findOrFail($ordenAfilado->componente_id);
+        $herramental = Herramental::findOrFail($componente->herramental_id);
+        $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
+        $cliente = Cliente::findOrFail($proyecto->cliente_id);
+        $anio = Anio::findOrFail($cliente->anio_id);
+
+        $ordenAfilado->fecha_deseada_entrega = $data['fecha_deseada_entrega'];
+        $ordenAfilado->comentarios = $data['comentarios'];
+        $ordenAfilado->save();
+
+        $rutaBaseSolicitud = "generar-orden-afilado/";
+        $rutaBaseComponente = "{$proyecto->id}/{$herramental->id}/componentes/";
+        Storage::disk('public')->makeDirectory($rutaBaseComponente);
+
+        if ($request->hasFile('archivo_2d')) {
+            if ($componente->archivo_2d) {
+                Storage::disk('public')->delete("{$rutaBaseComponente}{$componente->archivo_2d}");
+            }
+            $archivo2D = $request->file('archivo_2d');
+            $nombre2D = $this->generarNuevoNombre($archivo2D->getClientOriginalName());
+            $archivo2D->storeAs($rutaBaseSolicitud, $nombre2D, 'public');
+            Storage::disk('public')->copy("{$rutaBaseSolicitud}{$nombre2D}", "{$rutaBaseComponente}{$nombre2D}");
+            $componente->archivo_2d = $nombre2D;
+            $ordenAfilado->archivo_2d = $nombre2D;
+        }
+        $componente->save();
+        $ordenAfilado->save();
+
+        $notificacion = new Notificacion();
+        $notificacion->roles = json_encode(['JEFE DE AREA']);
+        $notificacion->url_base = '/enrutador';
+        $notificacion->anio_id = $anio->id;
+        $notificacion->cliente_id = $cliente->id;
+        $notificacion->proyecto_id = $proyecto->id;
+        $notificacion->herramental_id = $herramental->id;
+        $notificacion->componente_id = $componente->id;
+        $notificacion->cantidad = $componente->cantidad;
+        $notificacion->descripcion = 'EL DISEÑO DE UN COMPONENTE PARA AFILADO HA SIDO MODIFICADO, SE REQUIERE UN RETRABAJO / REFABRICACIÓN';
+        $notificacion->save();
+
+        $solicitud = new Solicitud();
+        $solicitud->tipo = 'retrabajo';
+        $solicitud->componente_id = $componente->id;
+        $solicitud->comentarios = 'El diseño de un componente para afilado ha sido modificado, se requiere un retrabajo / refabricación';
+        $solicitud->area_solicitante = 'DISEÑO';
+        $solicitud->usuario_id = auth()->user()->id;
+        $solicitud->save();
+
+        $users = User::role('JEFE DE AREA')->get();
+        foreach ($users as $user) {
+            $user->hay_notificaciones = true;
+            $user->save();
+        }
+
+
+        return response()->json([
+            'success' => true,
+            'ordenAfilado' => $ordenAfilado,
+        ]);
     }
 
     // public function trabajosPendientes(Request $request){

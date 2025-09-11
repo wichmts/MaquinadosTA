@@ -117,8 +117,8 @@
                     <input :disabled="modo_edicion" type="date" class="form-control" v-model="nuevo.fecha_solicitud" readonly>
                 </div>
                 <div class="col-lg-6 form-group">
-                    <label class="bold">Fecha entrega solicitada <span class="text-danger">*</span></label>
-                    <input type="date" class="form-control" v-model="nuevo.fecha_entrega_solicitada" :min="new Date().toISOString().split('T')[0]">
+                    <label class="bold">Fecha deseada de entrega <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" v-model="nuevo.fecha_deseada_entrega" :min="new Date().toISOString().split('T')[0]">
                 </div>
             </div>
 
@@ -175,6 +175,14 @@
                     </label>
                     <small>Archivo: <strong>@{{nuevo.archivo_2d ?? 'Sin cargar'}}</strong></small>
                 </div>
+                <div class="col-lg-4 form-group">
+                    <label class="bold">Caras a afilar <span class="text-danger">*</span></label>
+                    <input :disabled="modo_edicion" type="number" step="1" class="form-control" v-model="nuevo.caras_a_afilar">
+                </div>
+                <div class="col-lg-4 form-group">
+                    <label class="bold">Cuanto afilar <span class="text-danger">*</span></label>
+                    <input :disabled="modo_edicion" type="number" step="1" class="form-control" v-model="nuevo.cuanto_afilar">
+                </div>
             </div>
 
             <div class="row">
@@ -186,9 +194,9 @@
 
             <div class="row">
                 <div class="col-lg-12 text-center form-group">
-                    <button class="btn btn-default" v-if="modo_edicion"><i class="fa fa-times-circle"></i> CANCELAR MODIFICACIÓN</button>
+                    <button class="btn btn-default" @click="cancelarModificacion()" v-if="modo_edicion"><i class="fa fa-times-circle"></i> CANCELAR MODIFICACIÓN</button>
 
-                    <button v-if="!cargando && modo_edicion" class="btn btn-success"><i class="fa fa-paper-plane"></i> ENVIAR MODIFICACIÓN</button>
+                    <button v-if="!cargando && modo_edicion" @click="enviarModificacion()" class="btn btn-success"><i class="fa fa-paper-plane"></i> ENVIAR MODIFICACIÓN</button>
                     <button v-if="cargando && modo_edicion" disabled class="btn btn-success"><i class="fa fa-spinner"></i> ENVIANDO, ESPERE...</button>
 
                     <button v-if="!cargando && !modo_edicion" @click="enviar()" class="btn btn-success"><i class="fa fa-paper-plane"></i> ENVIAR SOLICITUD</button>
@@ -255,15 +263,17 @@
                 usuarios: [],
                 nuevo: {
                     fecha_solicitud: new Date().toISOString().slice(0, 10),
-                    fecha_entrega_solicitada: new Date().toISOString().slice(0, 10),
+                    fecha_deseada_entrega: new Date().toISOString().slice(0, 10),
                     nombre_solicitante: '',
+                    fecha_real_entrega: "",
                     area_solicitud: 'Herramentales',
                     numero_hr: '',
                     cantidad: 1,
                     archivo_2d: null,
                     comentarios: '',
                     solcitudante_id: null,
-
+                    caras_a_afilar: '',
+                    cuanto_afilar: '',
                     solicitante_id: JSON.parse('{!! json_encode(auth()->user()->id) !!}')
 
                 },
@@ -295,15 +305,69 @@
                 },
                 async validarFormulario(nuevo) {
                     let t = this;
-                    if (t.nuevo.fecha_entrega_solicitada == "" || t.nuevo.area_solicitud == "" || t.nuevo.solicitante_id == "" || t.nuevo.numero_hr == "" || t.nuevo.nombre_componente == "" || t.nuevo.cantidad == "" || t.nuevo.comentarios == "") {
+                    if (t.nuevo.fecha_deseada_entrega == "" || t.nuevo.area_solicitud == "" || t.nuevo.solicitante_id == "" || t.nuevo.numero_hr == "" || t.nuevo.nombre_componente == "" || t.nuevo.cantidad == "" || t.nuevo.comentarios == "" || t.nuevo.caras_a_afilar == "" || t.nuevo.cuanto_afilar == "") {
                         swal('Error', 'Debes llenar todos los campos marcados con un asterisco.', 'error');
                         return false;
                     }
-                    if ((!t.archivo_2d && !t.archivo_3d && !t.dibujo) && (!t.nuevo.archivo_2d && !t.nuevo.archivo_3d && !t.nuevo.dibujo)) {
-                        swal('Error', 'Debes cargar al menos uno de los archivos: 2D, 3D o el dibujo a mano.', 'error');
-                        return false;
-                    }
                     return true;
+                },
+                getClaseColor(componente, fecha_real_entrega) {
+                    const {
+                        cargado,
+                        enrutado,
+                        cortado,
+                        programado
+                    } = componente;
+
+                    let resultado = "badge-dark";
+                    if (cargado) {
+                        resultado = "badge-dark";
+                    }
+                    if (enrutado) {
+                        resultado = "badge-dark";
+                    }
+                    if (cortado) {
+                        resultado = "badge-dark";
+                    }
+                    if (programado) {
+                        resultado = "badge-dark";
+                    }
+                    if (programado && cortado) {
+                        resultado = "badge-dark";
+                    }
+                    if (fecha_real_entrega) {
+                        resultado = "badge-success";
+                    }
+                    return resultado;
+                },
+                determinarEstatus(componente, fecha_real_entrega) {
+                    const {
+                        cargado,
+                        enrutado,
+                        cortado,
+                        programado
+                    } = componente;
+
+                    let resultado = "Sin estatus";
+                    if (cargado) {
+                        resultado = "Enrutamiento";
+                    }
+                    if (enrutado) {
+                        resultado = "Corte y programacion";
+                    }
+                    if (cortado) {
+                        resultado = "Programación";
+                    }
+                    if (programado) {
+                        resultado = "Corte";
+                    }
+                    if (programado && cortado) {
+                        resultado = "Fabricacion";
+                    }
+                    if (fecha_real_entrega) {
+                        resultado = "Finalizado";
+                    }
+                    return resultado;
                 },
                 async fetchUsuarios() {
                     this.cargando = true
@@ -312,6 +376,17 @@
                         this.usuarios = response.data.usuarios;
                     } catch (error) {
                         console.error('Error fetching usuarios:', error);
+                    } finally {
+                        this.cargando = false;
+                    }
+                },
+                async fetchSolicitudes() {
+                    this.cargando = true
+                    try {
+                        const response = await axios.get(`/api/mis-solicitudes-afilado`);
+                        this.solicitudes = response.data.solicitudes;
+                    } catch (error) {
+                        console.error('Error fetching solicitudes:', error);
                     } finally {
                         this.cargando = false;
                     }
@@ -331,7 +406,6 @@
                     t.cargando = true;
                     const formData = new FormData();
                     formData.append('data', JSON.stringify(t.nuevo));
-                    console.log(t.nuevo);
                     formData.append('archivo_2d', t.archivo_2d);
 
                     try {
@@ -340,12 +414,11 @@
                                 'Content-Type': 'multipart/form-data'
                             }
                         });
-                        console.log(response);
-                        if (response.data.success)  {
+                        if (response.data.success) {
                             swal('Éxito', 'La orden de afilado ha sido creada exitosamente.', 'success');
                             t.nuevo = {
                                 fecha_solicitud: new Date().toISOString().slice(0, 10),
-                                fecha_entrega_solicitada: new Date().toISOString().slice(0, 10),
+                                fecha_deseada_entrega: new Date().toISOString().slice(0, 10),
                                 nombre_solicitante: '',
                                 area_solicitud: 'Herramentales',
                                 numero_hr: '',
@@ -355,8 +428,7 @@
                                 solicitante_id: JSON.parse('{!! json_encode(auth()->user()->id) !!}')
                             };
                             t.archivo_2d = null;
-                            t.obtenerAreasSolicitud();
-                            t.fetchUsuarios();
+
                         } else {
                             swal('Error', response.data.message, 'error');
                             t.cargando = false;
@@ -367,7 +439,75 @@
                         t.cargando = false;
                     } finally {
                         t.cargando = false;
+                        t.fetchSolicitudes();
                     }
+                },
+                editarSolicitud(solicitud) {
+                    this.modo_edicion = true;
+                    this.nuevo = JSON.parse(JSON.stringify(solicitud));
+                    swal('Modo edición activo', 'Estás en modo edición, puedes modificar los archivos y algunos datos de la solicitud y enviarla nuevamente.', 'info');
+                },
+                async enviarModificacion() {
+                    let t = this
+
+                    let valido = await t.validarFormulario();
+                    if (!valido) {
+                        return
+                    }
+
+                    t.cargando = true
+                    const formData = new FormData();
+                    formData.append('data', JSON.stringify(t.nuevo));
+                    formData.append('archivo_2d', t.archivo_2d);
+
+                    try {
+                        const response = await axios.post(`/api/editar-orden-afilado/${t.nuevo.id}`, formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        });
+
+                        if (response.data.success) {
+                            swal('Guardado', 'Tu modiciación se ha guardado correctamente y se notificará al jefe de area, puedes ver el estado del componente desde la lista de la derecha o desde el visor de avance.', 'success');
+                            t.nuevo = {
+                                fecha_solicitud: new Date().toISOString().slice(0, 10),
+                                fecha_deseada_entrega: new Date().toISOString().slice(0, 10),
+                                nombre_solicitante: '',
+                                area_solicitud: 'Herramentales',
+                                numero_hr: '',
+                                cantidad: 1,
+                                archivo_2d: null,
+                                comentarios: '',
+                                solicitante_id: JSON.parse('{!! json_encode(auth()->user()->id) !!}')
+                            }
+                            t.modo_edicion = false;
+                            t.fetchSolicitudes();
+                        } else
+                            swal('Error', response.data.message, 'error');
+                        t.cargando = false;
+
+                    } catch (error) {
+                        const mensaje = error.response?.data?.error || 'Error al guardar el componente.';
+                        swal('Error', mensaje, 'error');
+                        t.cargando = false;
+                    }
+                },
+                cancelarModificacion() {
+                    this.nuevo = {
+                        fecha_solicitud: new Date().toISOString().slice(0, 10),
+                        fecha_deseada_entrega: new Date().toISOString().slice(0, 10),
+                        solicitante_id: JSON.parse('{!! json_encode(auth()->user()->id) !!}'),
+                        fecha_real_entrega: "",
+                        area_solicitud: "Herramentales",
+                        numero_hr: "",
+                        numero_componente: "",
+                        cantidad: 1,
+                        archivo_2d: null,
+                        comentarios: "",
+                        caras_a_afilar: '',
+                        cuanto_afilar: '',
+                    }
+                    this.modo_edicion = false;
                 },
 
             },
@@ -389,6 +529,7 @@
 
                 t.obtenerAreasSolicitud();
                 t.fetchUsuarios();
+                t.fetchSolicitudes();
             }
         });
     </script>
