@@ -87,18 +87,22 @@ class Componente extends Model
         return $resultado->values()->all();
     }
     public static function procesosFijos(){
-        return [
-            ['id' => 1, 'prioridad' => 1, 'nombre' => 'Cortar'],
-            ['id' => 2, 'prioridad' => 2, 'nombre' => 'Programar'],
-            ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear y/o Escuadrar'],
-            ['id' => 4, 'prioridad' => 4, 'nombre' => 'Maquinar'],
-            ['id' => 5, 'prioridad' => 5, 'nombre' => 'Tornear'],
-            ['id' => 6, 'prioridad' => 6, 'nombre' => 'Roscar/Rebabear'],
-            ['id' => 7, 'prioridad' => 7, 'nombre' => 'Templar'],
-            ['id' => 8, 'prioridad' => 8, 'nombre' => 'Rectificar'],
-            ['id' => 9, 'prioridad' => 9, 'nombre' => 'EDM'],
-            ['id' => 11, 'prioridad' => 11, 'nombre' => 'Marcar'],
-        ];
+        $ruta = json_decode($this->ruta, true); // Convertir JSON a array
+        return $ruta;
+
+        
+        // return [
+        //     ['id' => 1, 'prioridad' => 1, 'nombre' => 'Cortar'],
+        //     ['id' => 2, 'prioridad' => 2, 'nombre' => 'Programar'],
+        //     ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear y/o Escuadrar'],
+        //     ['id' => 4, 'prioridad' => 4, 'nombre' => 'Maquinar'],
+        //     ['id' => 5, 'prioridad' => 5, 'nombre' => 'Tornear'],
+        //     ['id' => 6, 'prioridad' => 6, 'nombre' => 'Roscar/Rebabear'],
+        //     ['id' => 7, 'prioridad' => 7, 'nombre' => 'Templar'],
+        //     ['id' => 8, 'prioridad' => 8, 'nombre' => 'Rectificar'],
+        //     ['id' => 9, 'prioridad' => 9, 'nombre' => 'EDM'],
+        //     ['id' => 11, 'prioridad' => 11, 'nombre' => 'Marcar'],
+        // ];
     }
     public function rutaAvance(){
         $procesos = $this->procesosFijos(); // Obtén los procesos fijos
@@ -107,7 +111,7 @@ class Componente extends Model
         foreach ($procesos as $proceso) {
             // Filtra los registros de seguimiento para el proceso actual
             $seguimientos = SeguimientoTiempo::where('componente_id', $this->id)
-                ->where('accion_id', $proceso['id'])
+                ->where('accion_id', $proceso['uuid'])
                 ->orderBy('fecha')
                 ->orderBy('hora')
                 ->get();

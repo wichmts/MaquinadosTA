@@ -27,6 +27,7 @@ class CreateFabricacionesTable extends Migration
             $table->text('motivo_retraso')->nullable();
             $table->integer('orden')->nullable();
             $table->text('checklist_fabricadas')->nullable();
+            $table->string('proceso_uuid')->nullable(); // Para enlazar con el proceso/task del componente ya que se pueden repetir los IDS
             $table->timestamps();
         });
     }
