@@ -5852,7 +5852,7 @@ class APIController extends Controller
     {
         $user = auth()->user();
         $roles = $user->getRoleNames()->toArray(); // Todos los roles del usuario
-        $data = [];
+        $data = []; 
 
         // Mapeo de roles a queries que se deben ejecutar
         $roleQueries = [
@@ -6004,6 +6004,94 @@ class APIController extends Controller
                     ->where('estatus_pruebas_diseno', 'finalizado')
                     ->where('estatus_pruebas_proceso', '!=', 'finalizado')->get();
         }
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+
+    public function trabajosPendientesGeneral(){
+
+        $user = auth()->user();        
+        $data = []; 
+
+
+        // Enrutamiento        
+        $data['enrutamiento'] = Componente::where('es_compra', false)
+            ->where('cargado', true)
+            ->where('enrutado', false)
+            ->where('refabricado', '!=', true)
+            ->where(function ($query) {
+                $query->where('cancelado', false)
+                    ->orWhereNull('cancelado');
+            })
+            ->get();
+
+        // Programaciones
+        $query = Componente::where('es_compra', false)
+            ->where('cargado', true)
+            ->where('enrutado', true)
+            ->where('programado', false)
+            ->where('refabricado', '!=', true)
+            ->where(function ($query2) {
+                $query2->where('cancelado', false)
+                    ->orWhereNull('cancelado');
+            })
+            ->get();
+
+        $data['programaciones'] = $query
+            ->groupBy('programador_id')
+            ->map(function ($items, $programadorId) {
+                // Obtener el nombre del programador
+                $programador = User::find($programadorId);
+
+                return [
+                    'programador_id' => $programadorId,
+                    'programador_nombre' => $programador ? $programador->nombre . ' ' . $programador->ap_paterno . ' ' . $programador->ap_materno : 'Desconocido',
+                    'componentes' => $items
+                ];
+            })
+            ->values();
+
+
+        //Corte
+        $data['cortes'] = Componente::where('es_compra', false)
+            ->where('cargado', true)
+            ->where('enrutado', true)
+            ->where('refabricado', '!=', true)
+            ->where('estatus_corte', '!=', 'finalizado')
+            ->where(function ($query) {
+                $query->where('cancelado', false)
+                    ->orWhereNull('cancelado');
+            })
+            ->get();
+
+        // Fabricaciones        
+        $data['fabricaciones'] = Fabricacion::where('fabricado', false)
+            ->where('estatus_fabricacion', '!=', 'finalizado')
+            ->get()
+            ->map(function ($fab) {                
+                $maquina = Maquina::find($fab->maquina_id);
+                $componente = Componente::find($fab->componente_id);                
+                $operadores = User::whereJsonContains('maquinas', $fab->maquina_id)->get();
+
+                return [
+                    'id' => $fab->id,
+                    'orden' => $fab->orden,
+                    'estatus_fabricacion' => $fab->estatus_fabricacion,
+                    'maquina_id' => $fab->maquina_id,
+                    'maquina_nombre' => $maquina ? $maquina->nombre : 'Desconocida',
+                    'componente' => $componente,
+                    'operadores' => $operadores->map(function ($op) {
+                        return [
+                            'id' => $op->id,                            
+                            'nombre' => $op ? $op->nombre . ' ' . $op->ap_paterno . ' ' . $op->ap_materno : null,
+                        ];
+                    }),
+                    // Agrega aquí otros campos de Fabricacion que necesites
+                ];
+            });
 
         return response()->json([
             'success' => true,

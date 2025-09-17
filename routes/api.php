@@ -150,6 +150,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::delete('proyectos/{id}', 'APIController@eliminarProyecto');
 
     Route::get('trabajos-pendientes', 'APIController@trabajosPendientes');
+    Route::get('trabajos-pendientes-general', 'APIController@trabajosPendientesGeneral');
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {

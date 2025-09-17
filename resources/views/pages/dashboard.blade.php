@@ -387,6 +387,7 @@
                 if(response.data.success){
                     t.trabajosPendientes = response.data.data;
                 }
+                console.log(t.trabajosPendientes);
                 t.loading = false;
             },
         },
