@@ -335,7 +335,7 @@
                                                             @{{ hour }}
                                                         </div>
                                                     </div>
-                                                    <div class="gantt-row" v-for="task in tasks" :key="task.id" >
+                                                    <div class="gantt-row" v-for="task in tasks" :key="task.uuid" >
                                                         <div class="gantt-cell task-name pt-1">@{{ task.name }}</div>
                                                         <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
                                                             <div
@@ -361,7 +361,7 @@
                                                         <div class="gantt-cell task-name pt-1">ACCIONES</div>
                                                         <div class="gantt-cell pt-1" v-for="hour in duracionTotal" :key="hour">@{{ hour }}</div>
                                                     </div>
-                                                    <div class="gantt-row" v-for="task in rutaAvance" :key="task.id" >
+                                                    <div class="gantt-row" v-for="task in rutaAvance" :key="task.uuid" >
                                                         <div class="gantt-cell task-name pt-1">@{{ task.name }}</div>
                                                         <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
                                                             <div
@@ -714,43 +714,36 @@
             },
             calcularInicioAvance() {
                 let t = this;
-                let acumuladorHoras1 = 1; 
+                let acumuladorHoras1 = 1;
                 let acumuladorMinutos1 = 0;
-                let acumuladorHoras2 = 1; 
+                let acumuladorHoras2 = 1;
                 let acumuladorMinutos2 = 0;
 
-                this.rutaAvance.sort((a, b) => {
-                    const prioridadA = this.procesos.find(p => p.id === a.id).prioridad;
-                    const prioridadB = this.procesos.find(p => p.id === b.id).prioridad;
-                    return prioridadA - prioridadB;
-                });
-
-                const tareasFijas = this.rutaAvance.filter(task => task.id === 1 || task.id === 2);
-                const otrasTareas = this.rutaAvance.filter(task => task.id !== 1 && task.id !== 2);
+                let tareasFijas = this.rutaAvance.filter(task => task.id === 1 || task.id === 2);
+                let otrasTareas = this.rutaAvance.filter(task => task.id !== 1 && task.id !== 2);
 
                 tareasFijas.forEach(task => {
-                    let proceso = t.procesos.find(p => p.id === task.id);
-
+                    // let proceso = t.procesos.find(p => p.id === task.id);
                     task.time.forEach((segmento, index) => {
-                      
-                            if(task.id == 1){
-                                segmento.hora_inicio = acumuladorHoras1;
-                                segmento.minuto_inicio = acumuladorMinutos1;
-                            }else{
-                                segmento.hora_inicio = acumuladorHoras2;
-                                segmento.minuto_inicio = acumuladorMinutos2;
-                            }
-                        
-                        if(task.id == 1){
+
+                        if (task.id == 1) {
+                            segmento.hora_inicio = acumuladorHoras1;
+                            segmento.minuto_inicio = acumuladorMinutos1;
+                        } else {
+                            segmento.hora_inicio = acumuladorHoras2;
+                            segmento.minuto_inicio = acumuladorMinutos2;
+                        }
+
+                        if (task.id == 1) {
                             acumuladorHoras1 += segmento.horas;
                             acumuladorMinutos1 += segmento.minutos;
-                        }else{
+                        } else {
                             acumuladorHoras2 += segmento.horas;
                             acumuladorMinutos2 += segmento.minutos;
                         }
                     });
                 });
-                
+
                 let maxHoras = 1;
                 let maxMinutos = 0;
                 tareasFijas.forEach(task => {
@@ -778,7 +771,7 @@
                 let acumuladorHoras = maxHoras;
                 let acumuladorMinutos = maxMinutos;
                 otrasTareas.forEach(task => {
-                    let proceso = t.procesos.find(p => p.id === task.id);
+                    // let proceso = t.procesos.find(p => p.id === task.id);
                     task.time.forEach((segmento, index) => {
                         segmento.hora_inicio = acumuladorHoras;
                         segmento.minuto_inicio = acumuladorMinutos;
@@ -884,33 +877,22 @@
                 t.rutaAvance = JSON.parse(JSON.stringify(t.tasks));
                 t.rutaAvance.forEach(element => {
                     element.time = []
-                    let find = t.componente.rutaAvance.find(obj => obj.id == element.id)
+                    let find = t.componente.rutaAvance.find(obj => obj.uuid == element.uuid)
                     if(find){
                         element.time = find.time
                     }
                 })
                 
-                t.procesos = [
-                    {id: 1, prioridad: 1, nombre: 'Cortar', horas: 0, minutos: 0, incluir: false},
-                    {id: 2, prioridad: 2, nombre: 'Programar', horas: 0, minutos: 0, incluir: false},
-                    {id: 3, prioridad: 3, nombre: 'Carear y/o Escuadrar', horas: 0, minutos: 0, incluir: false},
-                    {id: 4, prioridad: 4, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
-                    {id: 5, prioridad: 5, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
-                    {id: 6, prioridad: 6, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
-                    {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-                    {id: 8, prioridad: 8, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
-                    {id: 9, prioridad: 9, nombre: 'EDM', horas: 0, minutos: 0, incluir: false},
-                    {id: 11, prioridad: 11, nombre: 'Marcar', horas: 0, minutos: 0, incluir: false}
-                ];
-    
-                t.tasks.forEach(task => {
-                    let proceso = t.procesos.find(obj => obj.id === task.id);
-                    if (proceso) {
-                        proceso.horas = task.time[0]?.horas ?? 0;  
-                        proceso.minutos = task.time[0]?.minutos ?? 0;
-                        proceso.incluir = true;
-                    }
-                });
+                t.procesos = [];
+                t.tasks.forEach((element) => {
+                    t.procesos.push({
+                        uuid: element.uuid,
+                        id: element.id,
+                        nombre: element.name,
+                        horas: element.time[0]?.horas ?? 0,
+                        minutos: element.time[0]?.minutos ?? 0,                        
+                    })
+                })
 
                 Vue.nextTick(function(){
                     t.rutaAvance = t.ajustarRutaAvance(t.tasks, t.rutaAvance);
