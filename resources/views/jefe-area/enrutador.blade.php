@@ -215,46 +215,60 @@
 
                             <!-- Medidas -->
                             <div class="row">
-                                <div class="col-md-4 form-group text-left bold">
+                                <div class="col-lg-3 form-group text-left bold">
                                     <small class="bold">Material</small>
                                     <input  type="text" class="form-control" :value="getMaterialName(componente.material_id)" disabled>
                                 </div>
+                                <div class="col-lg-5">
+                                    <div class="row">
+                                        <div class="col form-group text-left bold"
+                                            v-if="[1,2,4,5,6].includes(componente.material_id)">
+                                            <small class="bold">Largo</small>
+                                            <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.largo">
+                                        </div>
 
-                                <div class="col-md-2 form-group text-left bold"
-                                    v-if="[1,2,4,5,6].includes(componente.material_id)">
-                                    <small class="bold">Largo</small>
-                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.largo">
-                                </div>
+                                        <div class="col form-group text-left bold"
+                                            v-if="[1,2,4,5,6].includes(componente.material_id)">
+                                            <small class="bold">Ancho</small>
+                                            <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.ancho">
+                                        </div>
 
-                                <div class="col-md-2 form-group text-left bold"
-                                    v-if="[1,2,4,5,6].includes(componente.material_id)">
-                                    <small class="bold">Ancho</small>
-                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.ancho">
-                                </div>
+                                        <div class="col form-group text-left bold"
+                                            v-if="[1,2,5,6].includes(componente.material_id)">
+                                            <small class="bold">Espesor</small>
+                                            <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.espesor">
+                                        </div>
 
-                                <div class="col-md-2 form-group text-left bold"
-                                    v-if="[1,2,5,6].includes(componente.material_id)">
-                                    <small class="bold">Espesor</small>
-                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.espesor">
-                                </div>
+                                        <div class="col form-group text-left bold"
+                                            v-if="componente.material_id == 3">
+                                            <small class="bold">Longitud</small>
+                                            <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.longitud">
+                                        </div>
 
-                                <div class="col-md-2 form-group text-left bold"
-                                    v-if="componente.material_id == 3">
-                                    <small class="bold">Longitud</small>
-                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.longitud">
+                                        <div class="col form-group text-left bold"
+                                            v-if="componente.material_id == 3">
+                                            <small class="bold">Diámetro</small>
+                                            <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.diametro">
+                                        </div>
+                                    </div>
                                 </div>
-
-                                <div class="col-md-2 form-group text-left bold"
-                                    v-if="componente.material_id == 3">
-                                    <small class="bold">Diámetro</small>
-                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.diametro">
-                                </div>
+                                {{-- <div class="col-lg-4">
+                                    <div class="form-check">
+                                        <label class="form-check-label bold">
+                                            <input class="form-check-input" type="checkbox" v-model="componente.requiere_pruebas" :disabled="componente.enrutado == true || componente.cancelado == true">
+                                            <span class="form-check-sign"></span>
+                                            ¿Requiere ensamble?
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <label class="form-check-label bold">
+                                            <input class="form-check-input" type="checkbox" v-model="componente.requiere_ensamble" :disabled="componente.enrutado == true || componente.cancelado == true">
+                                            <span class="form-check-sign"></span>
+                                            ¿Requiere pruebas?
+                                        </label>
+                                    </div>
+                                </div> --}}
                             </div>
-
-
-
-                            <!-- aqui -->
-
                             <div class="row mt-2">
                                 <div class="col" style="overflow-x:scroll">
                                     <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }">
@@ -328,7 +342,7 @@
                                         <tbody id="tablaProcesos">
                                             <tr v-for="(p, index) in procesos" :key="p.uuid" :class="p.id == 1 || p.id == 2 ? 'no-sort' : ''">
                                                 <td>
-                                                    <i v-if="p.id != 1 && p.id != 2 && !componente.enrutado && !componente.cancelado " class="fa fa-bars" style="cursor: grab !important"></i>
+                                                    <i v-if="p.id != 1 && p.id != 2 && !componente.enrutado && !componente.cancelado " class="fa fa-bars text-muted" style="cursor: grab !important"></i>
                                                 </td>
                                                 <td class="py-1">@{{p.nombre}}</td>
                                                 <td class="py-1">
@@ -377,22 +391,10 @@
                                  <div class="col-7 text-center px-1">
                                     <h5 class="badge badge-dark badge-pill px-3 py-2 w-100" style="background-color: #c0d340 !important; color: black !important"> Tiempo estimado: <br> @{{totalHoras}} horas y @{{totalMinutos}} minutos. </h5>
                                 </div>
-                                <div class="col-5 text-center px-0">
-                                      <div class="dropdown mb-3">
-                                        <button :disabled="componente.cancelado == true || componente.enrutado == true" class="btn btn-block btn-success dropdown-toggle mt-0" type="button" id="dropdownProcesos" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fa fa-plus-circle"></i> AGREGAR PROCESO
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownProcesos">
-                                        <a 
-                                            class="dropdown-item" 
-                                            v-for="p in procesosDisponibles" 
-                                            :key="p.id" 
-                                            href="#" 
-                                            @click.prevent="agregarProceso(p)">
-                                            @{{ p.nombre }}
-                                        </a>
-                                        </div>
-                                    </div>
+                                <div class="col-5 text-center px-0 mt-0">
+                                    <button class="btn btn-success btn-block mt-0" data-toggle="modal" data-target="#modalProcesos">
+                                        <i class="fa fa-list"></i> AGREGAR PROCESOS
+                                    </button>
                                 </div>
                             </div>
                             <div class="row" v-if="!componente.refabricado">
@@ -431,7 +433,32 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="modalProcesos" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="bold">AGREGAR PROCESOS A LA RUTA</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        <li 
+                        v-for="p in procesosDisponibles" 
+                        :key="'add-' + p.id" 
+                        class="list-group-item d-flex justify-content-between align-items-center list-group-item-action" 
+                        @click="agregarProceso(p)"
+                        >
+                            @{{ p.nombre }}
+                            <span class="badge badge-pill px-2 py-1 bold" :class="contadorProcesos[p.id] ? 'badge-success' : 'badge-secondary'">
+                                @{{ contadorProcesos[p.id] || 0 }}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
 
+            </div>
+        </div>
+    </div>
     <div class="modal fade" id="modalLineaTiempo" tabindex="-1" aria-labelledby="modalLineaTiempoLabel" aria-hidden="true">
         <div class="modal-dialog" style="min-width: 70%;">
             <div class="modal-content">
@@ -800,6 +827,13 @@
             }
         },
         computed: {
+            contadorProcesos() {
+                let conteo = {};
+                this.procesos.forEach(p => {
+                conteo[p.id] = (conteo[p.id] || 0) + 1;
+                });
+                return conteo;
+            },
             duracionTotal() {
                 let maxHour = 0;
 
@@ -925,9 +959,13 @@
                 this.calcularInicioAvance();
             },
             agregarProceso(proceso) {
-                if ((proceso.id === 1 || proceso.id === 2) && this.procesos.some(p => p.id === proceso.id)) {
+                
+                // si el proceso es cortar o programar y ya existe, no hacer nada
+                if ((proceso.id === 1 || proceso.id === 2 || proceso.id == 7) && this.procesos.some(p => p.id === proceso.id)) {
+                    swal('Proceso duplicado', `El proceso "${proceso.nombre}" ya ha sido agregado y no puede repetirse.`, 'warning');
                     return; 
                 }
+
                 let uuid = crypto.randomUUID();
                 let nuevo = {
                     uuid: uuid,
@@ -1361,6 +1399,7 @@
                 }
                 return area;
             },
+            // modificada con uuid
             ajustarRutaAvance(tasks, rutaAvance) {
                 let convertirAMinutos = (horas, minutos) => horas * 60 + minutos;
 
@@ -1375,7 +1414,7 @@
 
                 let tiempoActualEnMinutos = 60;
                 rutaAvance.forEach((tareaAvance) => {
-                    let tareaTeorica = tasks.find((t) => t.id === tareaAvance.id);
+                    let tareaTeorica = tasks.find((t) => t.uuid === tareaAvance.uuid);
 
                     if (tareaTeorica) {
                         // Calcular tiempo total en tasks
@@ -1514,7 +1553,7 @@
                     case 6:
                     case 7:
                     case 8:
-                        let fabricaciones = this.componente.fabricaciones.filter(element => element.proceso_id == task.id)
+                        let fabricaciones = this.componente.fabricaciones.filter(element => element.proceso_uuid == task.uuid)
                         let motivosRetraso = fabricaciones.map(f => f.motivo_retraso).filter(motivo => motivo).join(', ')
                         return motivosRetraso ? `(${motivosRetraso})` : '';
                         break
@@ -1676,7 +1715,6 @@
                 let otrasTareas = this.rutaAvance.filter(task => task.id !== 1 && task.id !== 2);
 
                 tareasFijas.forEach(task => {
-                    // let proceso = t.procesos.find(p => p.id === task.id);
                     task.time.forEach((segmento, index) => {
 
                         if (task.id == 1) {
@@ -1916,27 +1954,29 @@
 
                 if(!t.tasks || t.tasks.length == 0){
                     t.procesosDisponibles.forEach((obj, index) => {
-                        let uuid = crypto.randomUUID();
-                        t.procesos.push({
-                            uuid: uuid,
-                            id: obj.id,
-                            nombre: obj.nombre,
-                            horas: 0,
-                            minutos: 0,
-                        })
-                        t.tasks.push({
-                            uuid: uuid,
-                            id: obj.id,
-                            name: obj.nombre,
-                            time: [{
-                                hora_inicio: null,
-                                minuto_inicio: null,
+                        if(obj.id === 1 || obj.id === 2){
+                            let uuid = crypto.randomUUID();
+                            t.procesos.push({
+                                uuid: uuid,
+                                id: obj.id,
+                                nombre: obj.nombre,
                                 horas: 0,
                                 minutos: 0,
-                                type: "normal",
-                            }]
-                        })
-                        t.calcularInicio();
+                            })
+                            t.tasks.push({
+                                uuid: uuid,
+                                id: obj.id,
+                                name: obj.nombre,
+                                time: [{
+                                    hora_inicio: null,
+                                    minuto_inicio: null,
+                                    horas: 0,
+                                    minutos: 0,
+                                    type: "normal",
+                                }]
+                            })
+                            t.calcularInicio();
+                        }
                     })
                 }else{
                    t.tasks.forEach(task => {
@@ -1954,7 +1994,7 @@
                 let rutaAvanceAux = JSON.parse(JSON.stringify(t.tasks));
                 rutaAvanceAux.forEach(element => {
                         element.time = []
-                        let find = t.componente.rutaAvance.find(obj => obj.id == element.id)
+                        let find = t.componente.rutaAvance.find(obj => obj.uuid == element.uuid)
                         if (find) {
                             element.time = find.time
                         }
@@ -1975,11 +2015,15 @@
                         });
 
                         if(!t.componente.enrutado && !t.componente.cancelado){
-                            new Sortable(document.getElementById('tablaProcesos'), {
+                          new Sortable(document.getElementById('tablaProcesos'), {
                                 animation: 150,
                                 filter: ".no-sort",
                                 preventOnFilter: false,
+                                onMove: function (evt) {
+                                    return !evt.related.classList.contains('no-sort');
+                                },
                                 onEnd: function (evt) {
+                                    // Tu lógica existente no cambia
                                     let movedProceso = t.procesos.splice(evt.oldIndex, 1)[0];
                                     t.procesos.splice(evt.newIndex, 0, movedProceso);
                                     t.igualarTasksConProcesos();

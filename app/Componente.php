@@ -55,21 +55,63 @@ class Componente extends Model
 
         return $refabricaciones; // Devuelve el array con los componentes
     }
-    public function maquinas(){
-        $maquinas = Maquina::select('maquinas.id as maquina_id','maquinas.requiere_programa', 'maquinas.nombre', 'fabricaciones.id as documento_id', 'fabricaciones.archivo as documento_nombre')
-            ->leftJoin('fabricaciones', function($join) {
+    // public function maquinas(){
+    //     $maquinas = Maquina::select('maquinas.id as maquina_id','maquinas.requiere_programa', 'maquinas.nombre', 'fabricaciones.id as documento_id', 'fabricaciones.archivo as documento_nombre')
+    //         ->leftJoin('fabricaciones', function($join) {
+    //             $join->on('fabricaciones.maquina_id', '=', 'maquinas.id');
+    //         })
+    //         ->where('fabricaciones.componente_id', $this->id)
+    //         ->get()
+    //         ->groupBy('maquina_id');
+
+    //     $resultado = $maquinas->map(function ($maquina) {
+    //         $archivos = $maquina->map(function ($fabricacion) {
+    //             return [
+    //                 'id' => $fabricacion->documento_id,
+    //                 'nombre' => $fabricacion->documento_nombre,
+    //                 'tamano' => $fabricacion->documento_tamano,
+    //             ];
+    //         });
+
+    //         if ($archivos->isEmpty()) {
+    //             $archivos = [];
+    //         }
+
+    //         return [
+    //             'maquina_id' => $maquina[0]->maquina_id,
+    //             'nombre' => $maquina[0]->nombre,
+    //             'requiere_programa' => $maquina[0]->requiere_programa,
+    //             'archivos' => $archivos,
+    //         ];
+    //     });
+    //     return $resultado->values()->all();
+    // }
+    public function maquinas()
+    {
+        $maquinas = Maquina::select(
+                'maquinas.id as maquina_id',
+                'maquinas.requiere_programa',
+                'maquinas.nombre',
+                'fabricaciones.id as documento_id',
+                'fabricaciones.archivo as documento_nombre',
+                'fabricaciones.proceso_uuid'
+            )
+            ->leftJoin('fabricaciones', function ($join) {
                 $join->on('fabricaciones.maquina_id', '=', 'maquinas.id');
             })
             ->where('fabricaciones.componente_id', $this->id)
             ->get()
-            ->groupBy('maquina_id');
+            ->groupBy(function ($item) {
+                // agrupamos por maquina + uuid
+                return $item->maquina_id . '_' . $item->proceso_uuid;
+            });
 
-        $resultado = $maquinas->map(function ($maquina) {
-            $archivos = $maquina->map(function ($fabricacion) {
+        $resultado = $maquinas->map(function ($items) {
+            $archivos = $items->map(function ($fabricacion) {
                 return [
-                    'id' => $fabricacion->documento_id,
+                    'id'     => $fabricacion->documento_id,
                     'nombre' => $fabricacion->documento_nombre,
-                    'tamano' => $fabricacion->documento_tamano,
+                    'tamano' => $fabricacion->documento_tamano ?? null,
                 ];
             });
 
@@ -78,34 +120,20 @@ class Componente extends Model
             }
 
             return [
-                'maquina_id' => $maquina[0]->maquina_id,
-                'nombre' => $maquina[0]->nombre,
-                'requiere_programa' => $maquina[0]->requiere_programa,
-                'archivos' => $archivos,
+                'uuid'             => $items[0]->proceso_uuid, // clave importante
+                'maquina_id'       => $items[0]->maquina_id,
+                'nombre'           => $items[0]->nombre,
+                'requiere_programa'=> $items[0]->requiere_programa,
+                'archivos'         => $archivos,
             ];
         });
+
         return $resultado->values()->all();
     }
-    public static function procesosFijos(){
-        $ruta = json_decode($this->ruta, true); // Convertir JSON a array
-        return $ruta;
 
-        
-        // return [
-        //     ['id' => 1, 'prioridad' => 1, 'nombre' => 'Cortar'],
-        //     ['id' => 2, 'prioridad' => 2, 'nombre' => 'Programar'],
-        //     ['id' => 3, 'prioridad' => 3, 'nombre' => 'Carear y/o Escuadrar'],
-        //     ['id' => 4, 'prioridad' => 4, 'nombre' => 'Maquinar'],
-        //     ['id' => 5, 'prioridad' => 5, 'nombre' => 'Tornear'],
-        //     ['id' => 6, 'prioridad' => 6, 'nombre' => 'Roscar/Rebabear'],
-        //     ['id' => 7, 'prioridad' => 7, 'nombre' => 'Templar'],
-        //     ['id' => 8, 'prioridad' => 8, 'nombre' => 'Rectificar'],
-        //     ['id' => 9, 'prioridad' => 9, 'nombre' => 'EDM'],
-        //     ['id' => 11, 'prioridad' => 11, 'nombre' => 'Marcar'],
-        // ];
-    }
+
     public function rutaAvance(){
-        $procesos = $this->procesosFijos(); // Obtén los procesos fijos
+        $procesos = json_decode($this->ruta, true); // Obtén los procesos fijos
         $resultados = [];
 
         foreach ($procesos as $proceso) {
@@ -161,6 +189,7 @@ class Componente extends Model
 
             $resultados[] = [
                 'id' => $proceso['id'],
+                'uuid' => $proceso['uuid'],
                 'name' => $proceso['nombre'],
                 'time' => [
                     [

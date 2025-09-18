@@ -189,46 +189,59 @@
                         </div>
 
                         <div class="row mb-1 mt-2">
-                            <div class="col-lg-4 form-group mt-3">
-                                <label class="bold">DESCRIPCION DEL TRABAJO:</label>
-                                <textarea :disabled="!puedeEditarse()" v-model="componente.descripcion_trabajo" class="form-control text-left px-1 py-1" style="min-height: 200px !important" placeholder="Descripcion del trabajo..."></textarea>
-                            </div>
-                            <div class="col-lg-4 form-group mt-3">
-                                <label class="bold">HERRAMIENTAS DE CORTE:</label>
-                                <textarea :disabled="!puedeEditarse()" v-model="componente.herramientas_corte" class="form-control text-left px-1 py-1" style="min-height: 200px !important" placeholder="Agregar herramientas de corte..."></textarea>
-                            </div>
+                            <div class="col-lg-8">
+                                <div class="row">
+                                    <div class="col-lg-6 form-group mt-3">
+                                        <label class="bold">DESCRIPCION DEL TRABAJO:</label>
+                                        <textarea :disabled="!puedeEditarse()" v-model="componente.descripcion_trabajo" class="form-control text-left px-1 py-1" style="min-height: 200px !important" placeholder="Descripcion del trabajo..."></textarea>
+                                    </div>
+                                    <div class="col-lg-6 form-group mt-3">
+                                        <label class="bold">HERRAMIENTAS DE CORTE:</label>
+                                        <textarea :disabled="!puedeEditarse()" v-model="componente.herramientas_corte" class="form-control text-left px-1 py-1" style="min-height: 200px !important" placeholder="Agregar herramientas de corte..."></textarea>
+                                    </div>
+                                    <div class="col-lg-12 form-group mt-3">
+                                        <label class="bold">COMENTARIOS DEL ENRUTADOR</label>
+                                        <textarea disabled  v-model="componente.comentarios" class="form-control text-left px-1 py-1" style="min-height: 100px !important" placeholder="Comentarios..."></textarea>
+                                    </div>
+                                </div>
+                            </div> 
                             <div class="col-lg-4 form-group mt-3" >
                                 <label class="bold">SELECCIONAR MAQUINA(S):</label>
-                                <ul
-                                    style="height: 200px !important; overflow-y: scroll"
-                                    :class="[
-                                        'dropdown-menu',
-                                        'show',
-                                        'w-100',
-                                        'position-static',
-                                        'border',
-                                        { 'disabled-ul': !puedeEditarse() }
-                                    ]">
-                                    <li
-                                        v-for="m in maquinas"
-                                        :class="[
-                                            'dropdown-item',
-                                            { 'disabled-item': !puedeEditarse() },
-                                            { 'maquinaSeleccionada': existeMaquina(m.id) }
-                                        ]"
-                                        @click="puedeEditarse() && incluirMaquina(m.id)">
-                                        <i class="fa fa-check-circle" v-if="existeMaquina(m.id)"></i>
-                                        @{{ m.nombre }}
-                                    </li>
-                                </ul>
-
+                                <div v-for="paso in maquinasFiltradas">
+                                    <div>
+                                        <span class="text-muted bold">@{{paso.proceso}} (PASO: @{{paso.step}})</span>
+                                    </div>
+                                    <div>
+                                        <ul
+                                            style="max-height: 200px; overflow-y: auto"
+                                            :class="[
+                                                'dropdown-menu',
+                                                'mb-2',
+                                                'show',
+                                                'w-100',
+                                                'position-static',
+                                                'border',
+                                                { 'disabled-ul': !puedeEditarse() }
+                                            ]"
+                                        >
+                                            <li
+                                                v-for="m in paso.maquinas"
+                                                :key="m.id"
+                                                :class="[
+                                                    'dropdown-item',
+                                                    { 'disabled-item': !puedeEditarse() },
+                                                    { 'maquinaSeleccionada': existeMaquina(m.id, paso.uuid) }
+                                                ]"
+                                                @click="puedeEditarse() && incluirMaquina(m.id, paso.uuid)"
+                                            >
+                                                <i class="fa fa-check-circle" v-if="existeMaquina(m.id, paso.uuid)"></i>
+                                                @{{ m.nombre }}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <label class="bold">COMENTARIOS DEL ENRUTADOR</label>
-                            <textarea disabled  v-model="componente.comentarios" class="form-control text-left px-1 py-1" style="min-height: 100px !important" placeholder="Comentarios..."></textarea>
-                        </div>
-
                     </div>
 
                     <!-- BLOQUE ARCHIVOS -->
@@ -241,7 +254,7 @@
                         <div class="text-center pt-5" v-if="componente.maquinas.length == 0">
                             <span class="text-muted">Es necesario seleccionar una o más <strong>máquinas</strong> para poder cargar los programas</span>
                         </div>
-                        <div class="row" v-for="(m, ind) in componente.maquinas">
+                        <div class="row" v-for="(m, indexMaquina) in componente.maquinas">
                             <div class="col-xl-6">
                                 <h5 class="bold" style="letter-spacing: 1px"><i class="fa fa-computer"></i> @{{m.nombre}}</h5>
                             </div>
@@ -249,7 +262,7 @@
                                 <small class="cursor-pointer" style="text-decoration: underline" @click="agregarArchivo(m)"><i class="fa fa-plus-circle"></i> Agregar programa</small>
                             </div>
                             <div class="col-xl-12">
-                                <div class="row mb-2" v-for="(a, index) in m.archivos" :key="index + '-' + m.maquina_id">
+                                <div class="row mb-2" v-for="(a, indexArchivo) in m.archivos" :key="indexArchivo + '-' + m.uuid">
                                     <div class="col-xl-12 mb-2" v-if="!m.requiere_programa">
                                         <small> Esta maquina no requiere programa </small>
                                     </div>
@@ -257,17 +270,17 @@
                                         <input
                                             :disabled="!puedeEditarse()"
                                             class="input-file"
-                                            :id="'archivo-' + m.maquina_id + '-' + index"
+                                            :id="'archivo-' + m.uuid + '-' + indexMaquina + '-' + indexArchivo"
                                             type="file"
-                                            :name="'file['+ m.maquina_id +'][' + index + ']'"
-                                            @change="handleFileChange($event, ind, index)"
+                                            :name="'file['+ m.uuid +'][' + indexMaquina + '][' + indexArchivo + ']'"
+                                            @change="handleFileChange($event, indexMaquina, indexArchivo)"
                                             style="display: none;"
                                             />
                                         <label
                                             tabindex="0"
-                                            :for="'archivo-' + m.maquina_id + '-' + index"
+                                            :for="'archivo-' + m.uuid + '-' + indexMaquina + '-' + indexArchivo"
                                             class="input-file-trigger col-12 text-center">
-                                            <i class="fa fa-upload"></i> Subir programa (.txt)
+                                            <i class="fa fa-upload"></i> Subir programa (.txt) 
                                         </label>
                                         <small style="font-style: italic" v-if="!a.id">
                                             @{{ a.nombre ? getElipsis(a.nombre) : "Archivo no seleccionado" }}
@@ -277,7 +290,7 @@
                                         </small>
                                     </div>
                                     <div class="col-xl-2 text-center ml-0 pl-0" v-if="componente.programado != true && componente.programador_id == user_id  && m.requiere_programa">
-                                        <button class="btn btn-block btn-link my-0" @click="eliminarArchivo(m, index)" :disabled="!puedeEditarse()">
+                                        <button class="btn btn-block btn-link my-0" @click="eliminarArchivo(m, indexArchivo)" :disabled="!puedeEditarse()">
                                             <i class="fa fa-times-circle text-danger" style="font-size: 20px !important"></i>
                                         </button>
                                     </div>
@@ -440,86 +453,13 @@
                 herramental: null,
                 componente: null,
             },
-            // procesos: [{
-            //         id: 1,
-            //         prioridad: 1,
-            //         nombre: 'Cortar',
-            //         horas: 0,
-            //         minutos: 0,
-            //         incluir: false
-            //     },
-            //     {
-            //         id: 2,
-            //         prioridad: 2,
-            //         nombre: 'Programar',
-            //         horas: 0,
-            //         minutos: 0,
-            //         incluir: false
-            //     },
-            //     {
-            //         id: 3,
-            //         prioridad: 3,
-            //         nombre: 'Carear y/o Escuadrar',
-            //         horas: 0,
-            //         minutos: 0,
-            //         incluir: false
-            //     },
-            //     {
-            //         id: 4,
-            //         prioridad: 4,
-            //         nombre: 'Maquinar',
-            //         horas: 0,
-            //         minutos: 0,
-            //         incluir: false
-            //     },
-            //     {
-            //         id: 5,
-            //         prioridad: 5,
-            //         nombre: 'Tornear',
-            //         horas: 0,
-            //         minutos: 0,
-            //         incluir: false
-            //     },
-            //     {
-            //         id: 6,
-            //         prioridad: 6,
-            //         nombre: 'Roscar/Rebabear',
-            //         horas: 0,
-            //         minutos: 0,
-            //         incluir: false
-            //     },
-            //     // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-            //     {
-            //         id: 8,
-            //         prioridad: 8,
-            //         nombre: 'Rectificar',
-            //         horas: 0,
-            //         minutos: 0,
-            //         incluir: false
-            //     },
-            //     {
-            //         id: 9,
-            //         prioridad: 9,
-            //         nombre: 'EDM',
-            //         horas: 0,
-            //         minutos: 0,
-            //         incluir: false
-            //     },
-            //     {
-            //         id: 11,
-            //         prioridad: 11,
-            //         nombre: 'Marcar',
-            //         horas: 0,
-            //         minutos: 0,
-            //         incluir: false
-            //     }
-            // ],
             procesos: [],
             procesosValidos: [3, 4, 5, 6, 8, 9, 11],
             tasks: [],
             rutaAvance: [],
             archivos: [],
             hay_retraso: false,
+            maquinasFiltradas: [],
         },
         watch: {
 
@@ -644,35 +584,19 @@
                 if(this.componente.programado == true || this.componente.estatus_programacion == 'inicial' || this.componente.estatus_programacion == 'detenido') return false;
                 return true;
             },
-            // cincoMinutosPasaron() {
-            //     let fecha_actual = "{{ now()->toDateTimeString() }}";
-            //     console.log(fecha_actual);
-            //     console.log(this.componente.fecha_programado)
-
-            //     if (!this.componente.fecha_programado || !fecha_actual) {
-            //         return true;
-            //     }
-
-            //    // Parsear ambas fechas
-            //     const fechaProgramado = new Date(this.componente.fecha_programado.replace(' ', 'T'));
-            //     const fechaActual = new Date(fecha_actual.replace(' ', 'T'));
-
-            //     const diferenciaMs = fechaActual - fechaProgramado;
-
-            //     return diferenciaMs > (5 * 60 * 1000);
-            // },
-            incluirMaquina(maquina_id) {
+            incluirMaquina(maquina_id, uuid) {
                 let t = this;
                 let indiceMaquina = this.componente.maquinas.findIndex(
-                    (m) => m.maquina_id === maquina_id
+                    (m) => m.maquina_id === maquina_id && m.uuid === uuid
                 );
 
                 // Si la máquina ya existe, elimínala del arreglo
                 if (indiceMaquina !== -1) {
                     this.componente.maquinas.splice(indiceMaquina, 1); // Elimina la máquina
                 } else {
-                    if(this.maquinas.find(obj => obj.id === maquina_id)?.requiere_programa != 1){
+                    if(this.maquinas.find(obj => obj.id === maquina_id )?.requiere_programa != 1){
                         this.componente.maquinas.push({
+                            uuid: uuid,
                             maquina_id: maquina_id,
                             nombre: this.maquinas.find(obj => obj.id === maquina_id)?.nombre,
                             requiere_programa: this.maquinas.find(obj => obj.id === maquina_id)?.requiere_programa,
@@ -687,6 +611,7 @@
                         });
                     }else{
                         this.componente.maquinas.push({
+                            uuid: uuid,
                             maquina_id: maquina_id,
                             nombre: this.maquinas.find(obj => obj.id === maquina_id)?.nombre,
                             requiere_programa: this.maquinas.find(obj => obj.id === maquina_id)?.requiere_programa,
@@ -717,9 +642,10 @@
                     });
                 }
             },
-            existeMaquina(maquina_id) {
-                return this.componente.maquinas?.some(obj => obj.maquina_id == maquina_id);
+            existeMaquina(maquina_id, uuid) {
+                return this.componente.maquinas?.some(obj => obj.maquina_id == maquina_id && obj.uuid === uuid);
             },
+            // modificada con uuid
             async cargarRuta() {
                 let t = this
                 t.procesos = [];
@@ -753,9 +679,21 @@
 
                     t.rutaAvance.forEach(element => {
                         element.time = []
-                        let find = response.data.componente.rutaAvance.find(obj => obj.id == element.id)
+                        let find = response.data.componente.rutaAvance.find(obj => obj.uuid == element.uuid)
                         if (find) {
                             element.time = find.time
+                        }
+                    })
+                    t.maquinasFiltradas = [];
+                    t.tasks.forEach((task, idx) =>{
+                        if(t.procesosValidos.includes(task.id)){
+                            let maquinasTask = t.maquinas.filter(m => parseInt(m.tipo_proceso) == task.id);
+                            t.maquinasFiltradas.push({
+                                proceso: task.name,
+                                step: idx + 1,
+                                uuid: task.uuid,
+                                maquinas: [...maquinasTask],
+                            })
                         }
                     })
                 } catch (error) {
@@ -844,7 +782,7 @@
             eliminarArchivo(maquina, index) {
                 maquina.archivos.splice(index, 1);
                 if(maquina.archivos.length == 0){
-                    this.componente.maquinas.splice(this.componente.maquinas.findIndex(m => m.maquina_id == maquina.maquina_id), 1);
+                    this.componente.maquinas.splice(this.componente.maquinas.findIndex(m => m.maquina_id == maquina.maquina_id && m.uuid == maquina.uuid), 1);
                 }
             },
             ajustarRutaAvance(tasks, rutaAvance) {
@@ -927,87 +865,6 @@
 
                 return rutaAvance; // Devuelve la estructura modificada
             },
-            // calcularInicioAvance() {
-            //     let t = this;
-            //     let acumuladorHoras1 = 1;
-            //     let acumuladorMinutos1 = 0;
-            //     let acumuladorHoras2 = 1;
-            //     let acumuladorMinutos2 = 0;
-
-            //     this.rutaAvance.sort((a, b) => {
-            //         const prioridadA = this.procesos.find(p => p.id === a.id).prioridad;
-            //         const prioridadB = this.procesos.find(p => p.id === b.id).prioridad;
-            //         return prioridadA - prioridadB;
-            //     });
-
-            //     const tareasFijas = this.rutaAvance.filter(task => task.id === 1 || task.id === 2);
-            //     const otrasTareas = this.rutaAvance.filter(task => task.id !== 1 && task.id !== 2);
-
-            //     tareasFijas.forEach(task => {
-            //         let proceso = t.procesos.find(p => p.id === task.id);
-
-            //         task.time.forEach((segmento, index) => {
-
-            //             if (task.id == 1) {
-            //                 segmento.hora_inicio = acumuladorHoras1;
-            //                 segmento.minuto_inicio = acumuladorMinutos1;
-            //             } else {
-            //                 segmento.hora_inicio = acumuladorHoras2;
-            //                 segmento.minuto_inicio = acumuladorMinutos2;
-            //             }
-
-            //             if (task.id == 1) {
-            //                 acumuladorHoras1 += segmento.horas;
-            //                 acumuladorMinutos1 += segmento.minutos;
-            //             } else {
-            //                 acumuladorHoras2 += segmento.horas;
-            //                 acumuladorMinutos2 += segmento.minutos;
-            //             }
-            //         });
-            //     });
-
-            //     let maxHoras = 1;
-            //     let maxMinutos = 0;
-            //     tareasFijas.forEach(task => {
-            //         let totalHoras = 1;
-            //         let totalMinutos = 0;
-
-            //         task.time.forEach(segmento => {
-            //             totalHoras += segmento.horas;
-            //             totalMinutos += segmento.minutos;
-            //         });
-
-            //         totalHoras += Math.floor(totalMinutos / 60);
-            //         totalMinutos = totalMinutos % 60;
-
-            //         if (totalHoras > maxHoras || (totalHoras === maxHoras && totalMinutos > maxMinutos)) {
-            //             maxHoras = totalHoras;
-            //             maxMinutos = totalMinutos;
-            //         }
-            //     });
-            //     if (maxMinutos >= 60) {
-            //         maxHoras += Math.floor(maxMinutos / 60);
-            //         maxMinutos = maxMinutos % 60;
-            //     }
-
-            //     let acumuladorHoras = maxHoras;
-            //     let acumuladorMinutos = maxMinutos;
-            //     otrasTareas.forEach(task => {
-            //         let proceso = t.procesos.find(p => p.id === task.id);
-            //         task.time.forEach((segmento, index) => {
-            //             segmento.hora_inicio = acumuladorHoras;
-            //             segmento.minuto_inicio = acumuladorMinutos;
-
-            //             acumuladorHoras += segmento.horas;
-            //             acumuladorMinutos += segmento.minutos;
-
-            //             if (acumuladorMinutos >= 60) {
-            //                 acumuladorHoras += Math.floor(acumuladorMinutos / 60);
-            //                 acumuladorMinutos = acumuladorMinutos % 60;
-            //             }
-            //         });
-            //     });
-            // },
             calcularInicioAvance() {
                 let t = this;
                 let acumuladorHoras1 = 1;
@@ -1144,24 +1001,19 @@
                 tooltipContent += `</div>`;
                 return tooltipContent;
             },
-            getMotivoRetraso(task) {
-                switch (task.id) {
-                    case 1:
+            getMotivoRetraso(task){
+                switch(task.id){
+                    case 1: 
                         return this.componente.retraso_corte ? `(${this.componente.retraso_corte})` : '';
-                        break
-                    case 2:
+                    break
+                    case 2: 
                         return this.componente.retraso_programacion ? `(${this.componente.retraso_programacion})` : '';
-                        break
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 6:
-                    case 7:
-                    case 8:
-                        let fabricaciones = this.componente.fabricaciones.filter(element => element.proceso_id == task.id)
+                    break
+                    case 3:case 4:case 5:case 6:case 8:case 9:case 11:
+                        let fabricaciones = this.componente.fabricaciones.filter(element => element.proceso_uuid === task.uuid)
                         let motivosRetraso = fabricaciones.map(f => f.motivo_retraso).filter(motivo => motivo).join(', ')
                         return motivosRetraso ? `(${motivosRetraso})` : '';
-                        break
+                    break
                 }
             },
             isTaskInHour(segment, hour) {
@@ -1251,7 +1103,7 @@
                 this.cargando = true
                 try {
                     const response = await axios.get('/api/maquinas');
-                    this.maquinas = response.data.maquinas.filter(maq => maq.tipo_proceso != 10);
+                    this.maquinas = response.data.maquinas.filter(maq => maq.tipo_proceso != 10); //proceso solo informativo no para programar
                 } catch (error) {
                     console.error('Error fetching maquinas:', error);
                 } finally {
@@ -1336,43 +1188,37 @@
                     swal('Errores de validación', `Todos los campos son obligatorios para liberar el componente.`, 'error');
                     return;
                 }
-                
-                //verificar procesos
-                let maquinasCargadas = t.componente.maquinas.map(m => m.maquina_id);
-                let procesosRequierenMaquina = t.tasks
-                    .map(task => task.id)
-                    .filter(id => t.procesosValidos.includes(id));
-
-                let procesosCubiertos = t.maquinas
-                    .filter(m => maquinasCargadas.includes(m.id))
-                    .map(m => parseInt(m.tipo_proceso));
-
-                for (let procesoId of procesosRequierenMaquina) {
-                    if (!procesosCubiertos.includes(procesoId)) {
-                        let proceso = t.tasks.find(t => t.id === procesoId);
+            
+                for (let [index, task] of t.tasks.entries()) {
+                    if (!t.procesosValidos.includes(task.id)) {
+                        continue; 
+                    }
+                    let maquinaAsignada = t.componente.maquinas.find(m => m.uuid === task.uuid);
+                    if (!maquinaAsignada) {
                         swal(
                             'Errores de validación',
-                            `Debe asignar una máquina que cubra el proceso "${proceso?.name ?? 'ID ' + procesoId}".`,
+                            `Debe asignar una máquina para el proceso "${task.name ?? 'ID ' + task.id}" en el paso ${index + 1}.`,
                             'error'
                         );
                         return;
                     }
                 }
-
+            
                 let todasTienenArchivo = this.componente.maquinas.every(maquina =>
-                    Array.isArray(maquina.archivos) &&
-                    maquina.archivos.some(archivo =>
+                        Array.isArray(maquina.archivos) &&
+                        maquina.archivos.some(archivo =>
                         archivo.archivo instanceof File ||                             // archivo nuevo (File)
                         (typeof archivo.archivo === 'string' && archivo.archivo.trim() !== '') || // string no vacía
                         archivo.id ||                                                  // archivo ya guardado
                         (archivo.nombre && archivo.nombre.trim() !== '')              // nombre de archivo existente
                     )
                 );
-
+                
                 if (!todasTienenArchivo) {
                     swal('Errores de validación', 'Cada máquina debe tener al menos un archivo cargado.', 'error');
                     return;
                 }
+               
 
                 this.hay_retraso = false;
                 await this.fetchComponente(this.selectedComponente);
@@ -1400,17 +1246,41 @@
                 t.loading_button = true;
 
                 let formData = new FormData();
+                let contadorPorMaquina = {};
 
-                t.componente.maquinas.forEach((maquina, maquinaIndex) => {
-                    maquina.archivos.forEach((archivo, archivoIndex) => {
-                        if (archivo.archivo)
-                            formData.append(`archivo[${maquina.maquina_id}][${archivoIndex}]`, archivo.archivo);
-                        if (archivo.id)
-                            formData.append(`archivo_ids[${maquina.maquina_id}][${archivoIndex}]`, archivo.id);
+                // t.componente.maquinas.forEach((maquina) => {
+                //     if (!contadorPorMaquina[maquina.maquina_id]) {
+                //         contadorPorMaquina[maquina.maquina_id] = 0;
+                //     }
+
+                //     maquina.archivos.forEach((archivo) => {
+                //         let idx = contadorPorMaquina[maquina.maquina_id];
+
+                //         if (archivo.archivo)
+                //             formData.append(`archivo[${maquina.maquina_id}][${idx}]`, archivo.archivo);
+                //         if (archivo.id)
+                //             formData.append(`archivo_ids[${maquina.maquina_id}][${idx}]`, archivo.id);
+
+                //         formData.append(`proceso_uuid[${maquina.maquina_id}][${idx}]`, maquina.uuid);
+
+                //         contadorPorMaquina[maquina.maquina_id]++;
+                //     });
+                // });
+                t.componente.maquinas.forEach((maquina, i) => {
+                    maquina.archivos.forEach((archivo, j) => {
+                        if (archivo.archivo) {
+                            formData.append(`maquinas[${i}][archivos][${j}]`, archivo.archivo);
+                        }
+                        if (archivo.id) {
+                            formData.append(`maquinas[${i}][archivo_ids][${j}]`, archivo.id);
+                        }
+
+                        formData.append(`maquinas[${i}][maquina_id]`, maquina.maquina_id);
+                        formData.append(`maquinas[${i}][uuid]`, maquina.uuid);
                     });
                 });
-                formData.append('data', JSON.stringify(t.componente));
 
+                formData.append('data', JSON.stringify(t.componente));
                 try {
                     const response = await axios.post(`/api/componente/${t.selectedComponente}/programacion/${liberarComponente}`, formData, {
                         headers: {
@@ -1428,7 +1298,6 @@
                     await t.fetchComponentes(t.selectedHerramental);
                     await t.fetchComponente(t.selectedComponente);
                     $('#modalRetraso').modal('hide');
-
                 } catch (error) {
                     console.log(error);
                     const mensaje = error.response?.data?.error || 'Error al guardar el componente.';
