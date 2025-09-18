@@ -215,46 +215,60 @@
 
                             <!-- Medidas -->
                             <div class="row">
-                                <div class="col-md-4 form-group text-left bold">
+                                <div class="col-lg-3 form-group text-left bold">
                                     <small class="bold">Material</small>
                                     <input  type="text" class="form-control" :value="getMaterialName(componente.material_id)" disabled>
                                 </div>
+                                <div class="col-lg-5">
+                                    <div class="row">
+                                        <div class="col form-group text-left bold"
+                                            v-if="[1,2,4,5,6].includes(componente.material_id)">
+                                            <small class="bold">Largo</small>
+                                            <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.largo">
+                                        </div>
 
-                                <div class="col-md-2 form-group text-left bold"
-                                    v-if="[1,2,4,5,6].includes(componente.material_id)">
-                                    <small class="bold">Largo</small>
-                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.largo">
-                                </div>
+                                        <div class="col form-group text-left bold"
+                                            v-if="[1,2,4,5,6].includes(componente.material_id)">
+                                            <small class="bold">Ancho</small>
+                                            <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.ancho">
+                                        </div>
 
-                                <div class="col-md-2 form-group text-left bold"
-                                    v-if="[1,2,4,5,6].includes(componente.material_id)">
-                                    <small class="bold">Ancho</small>
-                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.ancho">
-                                </div>
+                                        <div class="col form-group text-left bold"
+                                            v-if="[1,2,5,6].includes(componente.material_id)">
+                                            <small class="bold">Espesor</small>
+                                            <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.espesor">
+                                        </div>
 
-                                <div class="col-md-2 form-group text-left bold"
-                                    v-if="[1,2,5,6].includes(componente.material_id)">
-                                    <small class="bold">Espesor</small>
-                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.espesor">
-                                </div>
+                                        <div class="col form-group text-left bold"
+                                            v-if="componente.material_id == 3">
+                                            <small class="bold">Longitud</small>
+                                            <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.longitud">
+                                        </div>
 
-                                <div class="col-md-2 form-group text-left bold"
-                                    v-if="componente.material_id == 3">
-                                    <small class="bold">Longitud</small>
-                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.longitud">
+                                        <div class="col form-group text-left bold"
+                                            v-if="componente.material_id == 3">
+                                            <small class="bold">Diámetro</small>
+                                            <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.diametro">
+                                        </div>
+                                    </div>
                                 </div>
-
-                                <div class="col-md-2 form-group text-left bold"
-                                    v-if="componente.material_id == 3">
-                                    <small class="bold">Diámetro</small>
-                                    <input :disabled="componente.enrutado == true || componente.cancelado == true" type="text" class="form-control" v-model="componente.diametro">
-                                </div>
+                                {{-- <div class="col-lg-4">
+                                    <div class="form-check">
+                                        <label class="form-check-label bold">
+                                            <input class="form-check-input" type="checkbox" v-model="componente.requiere_pruebas" :disabled="componente.enrutado == true || componente.cancelado == true">
+                                            <span class="form-check-sign"></span>
+                                            ¿Requiere ensamble?
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <label class="form-check-label bold">
+                                            <input class="form-check-input" type="checkbox" v-model="componente.requiere_ensamble" :disabled="componente.enrutado == true || componente.cancelado == true">
+                                            <span class="form-check-sign"></span>
+                                            ¿Requiere pruebas?
+                                        </label>
+                                    </div>
+                                </div> --}}
                             </div>
-
-
-
-                            <!-- aqui -->
-
                             <div class="row mt-2">
                                 <div class="col" style="overflow-x:scroll">
                                     <div class="gantt-chart" :style="{ '--columns': duracionTotal.length }">
@@ -267,7 +281,7 @@
                                                 @{{ hour }}
                                             </div>
                                         </div>
-                                        <div class="gantt-row" v-for="task in tasks" :key="task.id">
+                                        <div class="gantt-row" v-for="task in tasks" :key="task.uuid">
                                             <div class="gantt-cell task-name pt-1">@{{ task.name }}</div>
                                             <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
                                                 <div
@@ -293,7 +307,7 @@
                                             <div class="gantt-cell task-name pt-1">ACCIONES</div>
                                             <div class="gantt-cell pt-1" v-for="hour in duracionTotal" :key="hour">@{{ hour }}</div>
                                         </div>
-                                        <div class="gantt-row" v-for="task in rutaAvance" :key="task.id">
+                                        <div class="gantt-row" v-for="task in rutaAvance" :key="task.uuid">
                                             <div class="gantt-cell task-name pt-1">@{{ task.name }}</div>
                                             <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
                                                 <div
@@ -318,85 +332,24 @@
                                     <table class="table">
                                         <thead class="thead-light">
                                             <tr>
-                                                <th>Incluir</th>
-                                                <th>Accion</th>
+                                                <th></th>
+                                                <th>Proceso</th>
                                                 <th>Horas</th>
                                                 <th>Minutos</th>
+                                                <th></th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <tr v-for="p in procesos" :key="p.id" v-if="p.id > 0 && p.id <= 6">
-                                                <td class="py-1">
-                                                    <div class="form-group">
-                                                        <div class="form-check">
-                                                            <label class="form-check-label" style="font-size: 10px">
-                                                                <input type="checkbox" class="form-check-input" @change="toggleTask(p)" v-model="p.incluir" :disabled="componente.enrutado == true || componente.cancelado == true">
-                                                                <span class="form-check-sign"></span>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="py-1">@{{p.nombre}}</td>
-                                                <td class="py-1">
-                                                    <div class="row">
-                                                        <div class="col-xl-12">
-                                                            <div class="input-group mb-0">
-                                                                <div class="input-group-prepend">
-                                                                    <button :disabled="componente.enrutado == true || componente.cancelado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.horas > 0 ? p.horas-- : p.horas"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
-                                                                </div>
-                                                                <input type="number" v-model="p.horas" class="form-control text-center px-1 py-1" step="1" @change="calcularInicio()">
-                                                                <div class="input-group-append">
-                                                                    <button :disabled="componente.enrutado == true || componente.cancelado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.horas++"> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="py-1">
-                                                    <div class="row">
-                                                        <div class="col-xl-12">
-                                                            <div class="input-group mb-0">
-                                                                <div class="input-group-prepend">
-                                                                    <button :disabled="componente.enrutado == true || componente.cancelado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.minutos > 0 ? p.minutos-- : p.minutos"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
-                                                                </div>
-                                                                <input type="number" v-model="p.minutos" class="form-control text-center px-1 py-1" step="1" @change="calcularInicio()">
-                                                                <div class="input-group-append">
-                                                                    <button :disabled="componente.enrutado == true || componente.cancelado == true" class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="p.minutos < 60 ? p.minutos++ : p.minutos "> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
+                                        <tbody id="tablaProcesos">
+                                            <tr v-for="(p, index) in procesos" :key="p.uuid" :class="p.id == 1 || p.id == 2 ? 'no-sort' : ''">
                                                 <td>
-                                                    <div class="form-group">
-                                                        <div class="form-check">
-                                                            <label class="form-check-label" style="font-size: 10px">
-                                                                <input type="checkbox" class="form-check-input" v-model="componente.requiere_temple" :disabled="componente.enrutado == true || componente.cancelado == true">
-                                                                <span class="form-check-sign"></span>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td> Temple </td>
-                                                <td> - </td>
-                                                <td> - </td>
-                                            </tr>
-                                            <tr v-for="p in procesos" :key="p.id" v-if="p.id > 6 && p.id < 12 && p.id != 10">
-                                                <td class="py-1">
-                                                    <div class="form-group">
-                                                        <div class="form-check">
-                                                            <label class="form-check-label" style="font-size: 10px">
-                                                                <input type="checkbox" class="form-check-input" @change="toggleTask(p)" v-model="p.incluir" :disabled="componente.enrutado == true || componente.cancelado == true">
-                                                                <span class="form-check-sign"></span>
-                                                            </label>
-                                                        </div>
-                                                    </div>
+                                                    <i v-if="p.id != 1 && p.id != 2 && !componente.enrutado && !componente.cancelado " class="fa fa-bars text-muted" style="cursor: grab !important"></i>
                                                 </td>
                                                 <td class="py-1">@{{p.nombre}}</td>
                                                 <td class="py-1">
-                                                    <div class="row">
+                                                    <div v-if="p.id == 7">
+                                                        -
+                                                    </div>
+                                                    <div class="row" v-else>
                                                         <div class="col-xl-12">
                                                             <div class="input-group mb-0">
                                                                 <div class="input-group-prepend">
@@ -411,7 +364,10 @@
                                                     </div>
                                                 </td>
                                                 <td class="py-1">
-                                                    <div class="row">
+                                                    <div v-if="p.id == 7">
+                                                        -
+                                                    </div>
+                                                    <div class="row" v-else>
                                                         <div class="col-xl-12">
                                                             <div class="input-group mb-0">
                                                                 <div class="input-group-prepend">
@@ -424,13 +380,21 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </td>
+                                                <td>
+                                                    <button :disabled="componente.cancelado == true || componente.enrutado == true" class="btn btn-danger btn-sm" @click="eliminarProceso(p.uuid)"><i class="fa fa-trash"></i></button>
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="col-12 text-center mt-4">
-                                    <h5 class="badge badge-dark badge-pill px-3 py-2 w-100" style="background-color: #c0d340 !important; color: black !important"> Tiempo estimado: @{{totalHoras}} horas y @{{totalMinutos}} minutos. </h5>
+                                 <div class="col-7 text-center px-1">
+                                    <h5 class="badge badge-dark badge-pill px-3 py-2 w-100" style="background-color: #c0d340 !important; color: black !important"> Tiempo estimado: <br> @{{totalHoras}} horas y @{{totalMinutos}} minutos. </h5>
+                                </div>
+                                <div class="col-5 text-center px-0 mt-0">
+                                    <button class="btn btn-success btn-block mt-0" data-toggle="modal" data-target="#modalProcesos">
+                                        <i class="fa fa-list"></i> AGREGAR PROCESOS
+                                    </button>
                                 </div>
                             </div>
                             <div class="row" v-if="!componente.refabricado">
@@ -464,14 +428,37 @@
                                 <textarea rows="3" type="text" class="form-control borderTextArea" placeholder="Agregar comentario..." v-model="componente.comentarios" :disabled="componente.cancelado == true || componente.fecha_terminado" value="componente.comentarios"></textarea>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="modal fade" id="modalProcesos" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="bold">AGREGAR PROCESOS A LA RUTA</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        <li 
+                        v-for="p in procesosDisponibles" 
+                        :key="'add-' + p.id" 
+                        class="list-group-item d-flex justify-content-between align-items-center list-group-item-action" 
+                        @click="agregarProceso(p)"
+                        >
+                            @{{ p.nombre }}
+                            <span class="badge badge-pill px-2 py-1 bold" :class="contadorProcesos[p.id] ? 'badge-success' : 'badge-secondary'">
+                                @{{ contadorProcesos[p.id] || 0 }}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
 
+            </div>
+        </div>
+    </div>
     <div class="modal fade" id="modalLineaTiempo" tabindex="-1" aria-labelledby="modalLineaTiempoLabel" aria-hidden="true">
         <div class="modal-dialog" style="min-width: 70%;">
             <div class="modal-content">
@@ -597,7 +584,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="p in solicitud.procesos" :key="'sol-' + p.id">
+                                    <tr v-for="p in solicitud.procesos" :key="'sol-' + p.uuid">
                                         <td class="py-1">@{{p.nombre}}</td>
                                         <td class="py-1">
                                             <div class="row">
@@ -718,7 +705,9 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script type="text/javascript">
+
     Vue.component('v-select', VueSelect.VueSelect)
 
     var app = new Vue({
@@ -760,80 +749,49 @@
                 herramental: null,
                 componente: null,
             },
-            procesos: [{
+            procesosDisponibles: [
+                {
                     id: 1,
-                    prioridad: 1,
                     nombre: 'Cortar',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
                 },
                 {
                     id: 2,
-                    prioridad: 2,
                     nombre: 'Programar',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
                 },
                 {
                     id: 3,
-                    prioridad: 3,
                     nombre: 'Carear y/o Escuadrar',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
                 },
                 {
                     id: 4,
-                    prioridad: 4,
                     nombre: 'Maquinar',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
                 },
                 {
                     id: 5,
-                    prioridad: 5,
                     nombre: 'Tornear',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
                 },
                 {
                     id: 6,
-                    prioridad: 6,
                     nombre: 'Roscar/Rebabear',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
                 },
-                // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
+                {
+                    id: 7, 
+                    nombre: 'Templar'
+                },
                 {
                     id: 8,
-                    prioridad: 8,
                     nombre: 'Rectificar',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
                 },
                 {
                     id: 9,
-                    prioridad: 9,
                     nombre: 'EDM',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
                 },
                 {
                     id: 11,
-                    prioridad: 11,
                     nombre: 'Marcar',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
                 }
             ],
+            procesos: [],
             tasks: [],
             rutaAvance: [],
             programadores: [],
@@ -869,6 +827,13 @@
             }
         },
         computed: {
+            contadorProcesos() {
+                let conteo = {};
+                this.procesos.forEach(p => {
+                conteo[p.id] = (conteo[p.id] || 0) + 1;
+                });
+                return conteo;
+            },
             duracionTotal() {
                 let maxHour = 0;
 
@@ -983,7 +948,67 @@
             }
         },
         methods: {
+            eliminarProceso(uuid){
+                const index = this.procesos.findIndex(p => p.uuid === uuid);
+                if (index !== -1) {
+                    this.procesos.splice(index, 1);
+                }
+                // igualo 
+                this.igualarTasksConProcesos();
+                this.calcularInicio();
+                this.calcularInicioAvance();
+            },
+            agregarProceso(proceso) {
+                
+                // si el proceso es cortar o programar y ya existe, no hacer nada
+                if ((proceso.id === 1 || proceso.id === 2 || proceso.id == 7) && this.procesos.some(p => p.id === proceso.id)) {
+                    swal('Proceso duplicado', `El proceso "${proceso.nombre}" ya ha sido agregado y no puede repetirse.`, 'warning');
+                    return; 
+                }
 
+                let uuid = crypto.randomUUID();
+                let nuevo = {
+                    uuid: uuid,
+                    id: proceso.id,
+                    nombre: proceso.nombre,
+                    horas: 0,
+                    minutos: 0,
+                };
+
+                let nuevoTask = {
+                    uuid: uuid,
+                    id: proceso.id,
+                    name: proceso.nombre,
+                    time: [{
+                        hora_inicio: null,
+                        minuto_inicio: null,
+                        horas: 0,
+                        minutos: 0,
+                        type: "normal"
+                    }]
+                };
+
+                if (proceso.id === 1) {
+                    this.procesos.unshift(nuevo);
+                    this.tasks.unshift(nuevoTask);
+                } else if (proceso.id === 2) {
+                    const index1 = this.procesos.findIndex(p => p.id === 1);
+                    if (index1 !== -1) {
+                        this.procesos.splice(index1 + 1, 0, nuevo);
+                        this.tasks.splice(index1 + 1, 0, nuevoTask);
+                    } else {
+                        this.procesos.unshift(nuevo);
+                        this.tasks.unshift(nuevoTask);
+                    }
+                } else {
+                    this.procesos.push(nuevo);
+                    this.tasks.push(nuevoTask);
+                }
+                // igualo 
+                this.igualarTasksConProcesos();
+                this.calcularInicio();
+                this.calcularInicioAvance();
+            },
             async solicitudAtendida(solicitud) {
                 try {
                     const response = await axios.put(`/api/solicitud/${solicitud.id}/atendida`, {
@@ -1177,79 +1202,21 @@
                         this.solicitud = {
                             tipo: tipo,
                             reasignar: 'corte',
-                            procesos: [{
-                                id: 1,
-                                prioridad: 1,
-                                nombre: 'Cortar',
-                                horas: 0,
-                                minutos: 0,
-                            },
-                            {
-                                id: 2,
-                                prioridad: 2,
-                                nombre: 'Programar',
-                                horas: 0,
-                                minutos: 0,
-                            },
-                            {
-                                id: 3,
-                                prioridad: 3,
-                                nombre: 'Carear y/o Escuadrar',
-                                horas: 0,
-                                minutos: 0,
-                            },
-                            {
-                                id: 4,
-                                prioridad: 4,
-                                nombre: 'Maquinar',
-                                horas: 0,
-                                minutos: 0,
-                            },
-                            {
-                                id: 5,
-                                prioridad: 5,
-                                nombre: 'Tornear',
-                                horas: 0,
-                                minutos: 0,
-                            },
-                            {
-                                id: 6,
-                                prioridad: 6,
-                                nombre: 'Roscar/Rebabear',
-                                horas: 0,
-                                minutos: 0,
-                            },
-                            // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-                            {
-                                id: 8,
-                                prioridad: 8,
-                                nombre: 'Rectificar',
-                                horas: 0,
-                                minutos: 0,
-                            },
-                            {
-                                id: 9,
-                                prioridad: 9,
-                                nombre: 'EDM',
-                                horas: 0,
-                                minutos: 0,
-                            },
-                            {
-                                id: 11,
-                                prioridad: 11,
-                                nombre: 'Marcar',
-                                horas: 0,
-                                minutos: 0,
-                                incluir: false
-                            }
-                            ],
+                            procesos: [],
                         };
-                        this.solicitud.procesos = this.solicitud.procesos.filter(proceso => {
-                            return this.tasks.some(task => task.id === proceso.id);
-                        });
-
+                        this.procesos.forEach(proc =>{
+                            if(proc.id != 7){
+                                this.solicitud.procesos.push({
+                                    uuid: proc.uuid,
+                                    id: proc.id,
+                                    nombre: proc.nombre,
+                                    horas: 0,
+                                    minutos: 0,
+                                });
+                            }
+                        })
                         this.solicitud.procesos.forEach(proceso => {
-                            let task = this.tasks.find(task => task.id === proceso.id);
+                            let task = this.tasks.find(task => task.uuid === proceso.uuid);
                             if (task) {
                                 let retrabajo = task.time.find(time => time.type === "rework");
                                 if (retrabajo) {
@@ -1432,6 +1399,7 @@
                 }
                 return area;
             },
+            // modificada con uuid
             ajustarRutaAvance(tasks, rutaAvance) {
                 let convertirAMinutos = (horas, minutos) => horas * 60 + minutos;
 
@@ -1446,7 +1414,7 @@
 
                 let tiempoActualEnMinutos = 60;
                 rutaAvance.forEach((tareaAvance) => {
-                    let tareaTeorica = tasks.find((t) => t.id === tareaAvance.id);
+                    let tareaTeorica = tasks.find((t) => t.uuid === tareaAvance.uuid);
 
                     if (tareaTeorica) {
                         // Calcular tiempo total en tasks
@@ -1585,42 +1553,20 @@
                     case 6:
                     case 7:
                     case 8:
-                        let fabricaciones = this.componente.fabricaciones.filter(element => element.proceso_id == task.id)
+                        let fabricaciones = this.componente.fabricaciones.filter(element => element.proceso_uuid == task.uuid)
                         let motivosRetraso = fabricaciones.map(f => f.motivo_retraso).filter(motivo => motivo).join(', ')
                         return motivosRetraso ? `(${motivosRetraso})` : '';
                         break
                 }
             },
-            toggleTask(proceso) {
-                let t = this
-
-                const index = this.tasks.findIndex(task => task.id === proceso.id);
-                if (index === -1) {
-                    this.tasks.push({
-                        id: proceso.id,
-                        name: proceso.nombre,
-                        time: [{
-                            hora_inicio: null,
-                            minuto_inicio: null,
-                            horas: proceso.horas,
-                            minutos: proceso.minutos,
-                            type: "normal"
-                        }]
-                    });
-                } else {
-                    this.tasks.splice(index, 1);
-                }
-                this.calcularInicio();
-            },
             actualizarRetrabajos() {
                 let t = this;
 
                 t.solicitud.procesos.forEach(proceso => {
-                    // 👇 convierto a número una sola vez y reutilizo
                     let horas = parseInt(proceso.horas) || 0;
                     let minutos = parseInt(proceso.minutos) || 0;
 
-                    let task = this.tasks.find(task => task.id === proceso.id);
+                    let task = this.tasks.find(task => task.uuid === proceso.uuid);
                     if (task) {
                         let retrabajo = task.time.find(time => time.type === "rework");
 
@@ -1653,17 +1599,11 @@
                 let acumuladorHoras2 = 1;
                 let acumuladorMinutos2 = 0;
 
-                this.tasks.sort((a, b) => {
-                    const prioridadA = this.procesos.find(p => p.id === a.id).prioridad;
-                    const prioridadB = this.procesos.find(p => p.id === b.id).prioridad;
-                    return prioridadA - prioridadB;
-                });
-
                 // Actualizo las tareas avance con los checkbox de las tareas
                 t.rutaAvance = JSON.parse(JSON.stringify(t.tasks));
                 t.rutaAvance.forEach(element => {
                     element.time = []
-                    let find = t.componente.rutaAvance.find(obj => obj.id == element.id)
+                    let find = t.componente.rutaAvance.find(obj => obj.uuid == element.uuid)
                     if (find) {
                         element.time = find.time
                     }
@@ -1673,7 +1613,7 @@
                 const otrasTareas = this.tasks.filter(task => task.id !== 1 && task.id !== 2);
 
                 tareasFijas.forEach(task => {
-                    let proceso = t.procesos.find(p => p.id === task.id);
+                    let proceso = t.procesos.find(p => p.uuid === task.uuid);
                     task.time.forEach((segmento, index) => {
                         if (index == 0) {
                             segmento.hora_inicio = 1;
@@ -1726,7 +1666,7 @@
                 let acumuladorHoras = maxHoras;
                 let acumuladorMinutos = maxMinutos;
                 otrasTareas.forEach(task => {
-                    let proceso = t.procesos.find(p => p.id === task.id);
+                    let proceso = t.procesos.find(p => p.uuid === task.uuid);
                     task.time.forEach((segmento, index) => {
                         segmento.hora_inicio = acumuladorHoras;
                         segmento.minuto_inicio = acumuladorMinutos;
@@ -1771,17 +1711,10 @@
                 let acumuladorHoras2 = 1;
                 let acumuladorMinutos2 = 0;
 
-                this.rutaAvance.sort((a, b) => {
-                    let prioridadA = this.procesos.find(p => p.id === a.id).prioridad;
-                    let prioridadB = this.procesos.find(p => p.id === b.id).prioridad;
-                    return prioridadA - prioridadB;
-                });
-
                 let tareasFijas = this.rutaAvance.filter(task => task.id === 1 || task.id === 2);
                 let otrasTareas = this.rutaAvance.filter(task => task.id !== 1 && task.id !== 2);
 
                 tareasFijas.forEach(task => {
-                    // let proceso = t.procesos.find(p => p.id === task.id);
                     task.time.forEach((segmento, index) => {
 
                         if (task.id == 1) {
@@ -2009,108 +1942,63 @@
             },
             async fetchComponente(componenteId) {
                 let t = this;
+                t.procesos = [];
                 t.rutaAvance = [];
                 t.tasks = [];
 
                 t.selectedComponente = componenteId;
                 t.ruta.componente = t.componentes.find(obj => obj.id == componenteId)?.nombre;
                 t.componente = t.componentes.find(obj => obj.id == componenteId);
+                
                 t.tasks = JSON.parse(JSON.stringify(t.componente.ruta));
 
-                let rutaAvanceAux = JSON.parse(JSON.stringify(t.tasks));
-
-                rutaAvanceAux.forEach(element => {
-                    element.time = []
-                    let find = t.componente.rutaAvance.find(obj => obj.id == element.id)
-                    if (find) {
-                        element.time = find.time
-                    }
-                })
-
-                t.procesos =  [{
-                    id: 1,
-                    prioridad: 1,
-                    nombre: 'Cortar',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
-                },
-                {
-                    id: 2,
-                    prioridad: 2,
-                    nombre: 'Programar',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
-                },
-                 {
-                    id: 3,
-                    prioridad: 3,
-                    nombre: 'Carear y/o Escuadrar',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
-                },
-                {
-                    id: 4,
-                    prioridad: 4,
-                    nombre: 'Maquinar',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
-                },
-                {
-                    id: 5,
-                    prioridad: 5,
-                    nombre: 'Tornear',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
-                },
-                {
-                    id: 6,
-                    prioridad: 6,
-                    nombre: 'Roscar/Rebabear',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
-                },
-                // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-                {
-                    id: 8,
-                    prioridad: 8,
-                    nombre: 'Rectificar',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
-                },
-                {
-                    id: 9,
-                    prioridad: 9,
-                    nombre: 'EDM',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
-                },
-                {
-                    id: 11,
-                    prioridad: 11,
-                    nombre: 'Marcar',
-                    horas: 0,
-                    minutos: 0,
-                    incluir: false
+                if(!t.tasks || t.tasks.length == 0){
+                    t.procesosDisponibles.forEach((obj, index) => {
+                        if(obj.id === 1 || obj.id === 2){
+                            let uuid = crypto.randomUUID();
+                            t.procesos.push({
+                                uuid: uuid,
+                                id: obj.id,
+                                nombre: obj.nombre,
+                                horas: 0,
+                                minutos: 0,
+                            })
+                            t.tasks.push({
+                                uuid: uuid,
+                                id: obj.id,
+                                name: obj.nombre,
+                                time: [{
+                                    hora_inicio: null,
+                                    minuto_inicio: null,
+                                    horas: 0,
+                                    minutos: 0,
+                                    type: "normal",
+                                }]
+                            })
+                            t.calcularInicio();
+                        }
+                    })
+                }else{
+                   t.tasks.forEach(task => {
+                        let proceso = t.procesosDisponibles.find(obj => obj.id === task.id);
+                        t.procesos.push({
+                            uuid: task.uuid,
+                            id: proceso.id,
+                            nombre: proceso.nombre,
+                            horas: task.time[0]?.horas ?? 0,
+                            minutos: task.time[0]?.minutos ?? 0,
+                        })
+                    });
                 }
-                ];
 
-                t.tasks.forEach(task => {
-                    let proceso = t.procesos.find(obj => obj.id === task.id);
-
-                    if (proceso) {
-                        proceso.horas = task.time[0]?.horas ?? 0;
-                        proceso.minutos = task.time[0]?.minutos ?? 0;
-                        proceso.incluir = true;
-                    }
-                });
+                let rutaAvanceAux = JSON.parse(JSON.stringify(t.tasks));
+                rutaAvanceAux.forEach(element => {
+                        element.time = []
+                        let find = t.componente.rutaAvance.find(obj => obj.uuid == element.uuid)
+                        if (find) {
+                            element.time = find.time
+                        }
+                    })
 
                 Vue.nextTick(function() {
                     t.rutaAvance = t.ajustarRutaAvance(t.tasks, rutaAvanceAux);
@@ -2125,6 +2013,25 @@
                             allowHTML: true,
                             theme: 'light-border',
                         });
+
+                        if(!t.componente.enrutado && !t.componente.cancelado){
+                          new Sortable(document.getElementById('tablaProcesos'), {
+                                animation: 150,
+                                filter: ".no-sort",
+                                preventOnFilter: false,
+                                onMove: function (evt) {
+                                    return !evt.related.classList.contains('no-sort');
+                                },
+                                onEnd: function (evt) {
+                                    // Tu lógica existente no cambia
+                                    let movedProceso = t.procesos.splice(evt.oldIndex, 1)[0];
+                                    t.procesos.splice(evt.newIndex, 0, movedProceso);
+                                    t.igualarTasksConProcesos();
+                                    t.calcularInicio();
+                                    t.calcularInicioAvance();   
+                                }
+                            });
+                        }
                     })
                 })
 
@@ -2160,11 +2067,13 @@
                         return;
                     }
                     for (const proceso of t.tasks) {
-                        for (const segmento of proceso.time) {
-                            const totalMinutos = (segmento.horas || 0) * 60 + (segmento.minutos || 0);
-                            if (totalMinutos === 0) {
-                                swal('Errores de validación', `El proceso "${proceso.name}" debe tener tiempo asignado.`, 'error');
-                                return;
+                        if(proceso.id != 7){
+                            for (const segmento of proceso.time) {
+                                const totalMinutos = (segmento.horas || 0) * 60 + (segmento.minutos || 0);
+                                if (totalMinutos === 0) {
+                                    swal('Errores de validación', `El proceso "${proceso.name}" debe tener tiempo asignado.`, 'error');
+                                    return;
+                                }
                             }
                         }
                     }
@@ -2172,6 +2081,7 @@
 
                 t.cargando = true;
                 t.componente.ruta = JSON.parse(JSON.stringify(t.tasks));
+                t.componente.requiere_temple = t.tasks.some(p => p.id === 7);
 
                 try {
                     const response = await axios.put(`/api/componente/${t.selectedComponente}/enrutamiento/${liberarComponente}`, t.componente);                    
@@ -2271,7 +2181,6 @@
             guardarComentario() {
                 let t = this;
                 t.cargando = true;
-                console.log(t.componente.id);
                 axios.post(`/api/componente/comentario/${t.componente.id}`, {
                         comentario: t.componente.comentarios
                     })
@@ -2303,6 +2212,11 @@
             getMaterialName(id) {
                 const material = this.materiales.find(m => m.id === id);
                 return material ? material.nombre : 'N/A';
+            },
+            igualarTasksConProcesos(){
+                this.tasks = this.procesos.map(p => {
+                    return this.tasks.find(tk => tk.uuid === p.uuid);
+                }).filter(Boolean); 
             }
         },
         mounted: async function() {

@@ -305,7 +305,7 @@
                                                             @{{ hour }}
                                                         </div>
                                                     </div>
-                                                    <div class="gantt-row" v-for="task in tasks" :key="task.id" >
+                                                    <div class="gantt-row" v-for="task in tasks" :key="task.uuid" >
                                                         <div class="gantt-cell task-name pt-1">@{{ task.name }}</div>
                                                         <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
                                                             <div
@@ -331,7 +331,7 @@
                                                         <div class="gantt-cell task-name pt-1">ACCIONES</div>
                                                         <div class="gantt-cell pt-1" v-for="hour in duracionTotal" :key="hour">@{{ hour }}</div>
                                                     </div>
-                                                    <div class="gantt-row" v-for="task in rutaAvance" :key="task.id" >
+                                                    <div class="gantt-row" v-for="task in rutaAvance" :key="task.uuid" >
                                                         <div class="gantt-cell task-name pt-1">@{{ task.name }}</div>
                                                         <div class="gantt-cell gantt-bar" v-for="hour in duracionTotal" :key="hour">
                                                             <div
@@ -464,18 +464,7 @@
                 herramental: null,
                 componente: null,
             },
-            procesos: [
-                {id: 1, prioridad: 1, nombre: 'Cortar', horas: 0, minutos: 0, incluir: false},
-                {id: 2, prioridad: 2, nombre: 'Programar', horas: 0, minutos: 0, incluir: false},
-                {id: 3, prioridad: 3, nombre: 'Carear y/o Escuadrar', horas: 0, minutos: 0, incluir: false},
-                {id: 4, prioridad: 4, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
-                {id: 5, prioridad: 5, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
-                {id: 6, prioridad: 6, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
-                // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-                {id: 8, prioridad: 8, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
-                {id: 9, prioridad: 9, nombre: 'EDM', horas: 0, minutos: 0, incluir: false},
-                {id: 11, prioridad: 11, nombre: 'Marcar', horas: 0, minutos: 0, incluir: false},
-            ],
+            procesos: [],
             tasks: [],
             rutaAvance: [],
             archivos: [],
@@ -747,32 +736,20 @@
                 }
                 this.guardar(false)
             },
-            async cargarRuta(){
+            async cargarRuta() {
                 let t = this
+                t.procesos = [];
+                t.tasks.forEach((element) => {
+                    t.procesos.push({
+                        uuid: element.uuid,
+                        id: element.id,
+                        nombre: element.name,
+                        horas: element.time[0]?.horas ?? 0,
+                        minutos: element.time[0]?.minutos ?? 0,                        
+                    })
+                })
 
-                t.procesos = [
-                    {id: 1, prioridad: 1, nombre: 'Cortar', horas: 0, minutos: 0, incluir: false},
-                    {id: 2, prioridad: 2, nombre: 'Programar', horas: 0, minutos: 0, incluir: false},
-                    {id: 3, prioridad: 3, nombre: 'Carear y/o Escuadrar', horas: 0, minutos: 0, incluir: false},
-                    {id: 4, prioridad: 4, nombre: 'Maquinar', horas: 0, minutos: 0, incluir: false},
-                    {id: 5, prioridad: 5, nombre: 'Tornear', horas: 0, minutos: 0, incluir: false},
-                    {id: 6, prioridad: 6, nombre: 'Roscar/Rebabear', horas: 0, minutos: 0, incluir: false},
-                    // {id: 7, prioridad: 7, nombre: 'Templar', horas: 0, minutos: 0, incluir: false},
-                    {id: 8, prioridad: 8, nombre: 'Rectificar', horas: 0, minutos: 0, incluir: false},
-                    {id: 9, prioridad: 9, nombre: 'EDM', horas: 0, minutos: 0, incluir: false},
-                    {id: 11, prioridad: 11, nombre: 'Marcar', horas: 0, minutos: 0, incluir: false}
-                ];
-    
-                t.tasks.forEach(task => {
-                    let proceso = t.procesos.find(obj => obj.id === task.id);
-                    if (proceso) {
-                        proceso.horas = task.time[0]?.horas ?? 0;  
-                        proceso.minutos = task.time[0]?.minutos ?? 0;
-                        proceso.incluir = true;
-                    }
-                });
-
-                Vue.nextTick(function(){
+                Vue.nextTick(function() {
                     t.rutaAvance = t.ajustarRutaAvance(t.tasks, t.rutaAvance);
                     t.calcularInicioAvance();
                     return true;
@@ -796,7 +773,7 @@
 
                     t.rutaAvance.forEach(element => {
                         element.time = []
-                        let find = response.data.componente.rutaAvance.find(obj => obj.id == element.id)
+                        let find = response.data.componente.rutaAvance.find(obj => obj.uuid == element.uuid)
                         if(find){
                             element.time = find.time
                         }
@@ -853,7 +830,7 @@
                 // Recorremos las tareas de rutaAvance
                 rutaAvance.forEach((tareaAvance) => {
                     // Buscar la tarea correspondiente en tasks
-                    let tareaTeorica = tasks.find((t) => t.id === tareaAvance.id);
+                    let tareaTeorica = tasks.find((t) => t.uuid === tareaAvance.uuid);
 
                     if (tareaTeorica) {
                     // Calcular tiempo total en tasks
@@ -916,15 +893,11 @@
                 let acumuladorHoras2 = 1; 
                 let acumuladorMinutos2 = 0;
 
-                this.rutaAvance.sort((a, b) => {
-                    const prioridadA = this.procesos.find(p => p.id === a.id).prioridad;
-                    const prioridadB = this.procesos.find(p => p.id === b.id).prioridad;
-                    return prioridadA - prioridadB;
-                });
+
                 const tareasFijas = this.rutaAvance.filter(task => task.id === 1 || task.id === 2);
                 const otrasTareas = this.rutaAvance.filter(task => task.id !== 1 && task.id !== 2);
                 tareasFijas.forEach(task => {
-                    let proceso = t.procesos.find(p => p.id === task.id);
+                    let proceso = t.procesos.find(p => p.uuid === task.uuid);
                     task.time.forEach((segmento, index) => {
                             if(task.id == 1){
                                 segmento.hora_inicio = acumuladorHoras1;
@@ -1046,8 +1019,8 @@
                     case 2: 
                         return this.componente.retraso_programacion ? `(${this.componente.retraso_programacion})` : '';
                     break
-                    case 3:case 4:case 5:case 6:case 7:case 8:
-                        let fabricaciones = this.componente.fabricaciones.filter(element => element.proceso_id == task.id)
+                    case 3:case 4:case 5:case 6:case 8:case 9:case 11:
+                        let fabricaciones = this.componente.fabricaciones.filter(element => element.proceso_uuid === task.uuid)
                         let motivosRetraso = fabricaciones.map(f => f.motivo_retraso).filter(motivo => motivo).join(', ')
                         return motivosRetraso ? `(${motivosRetraso})` : '';
                     break
