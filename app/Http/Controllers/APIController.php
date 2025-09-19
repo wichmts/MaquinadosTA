@@ -1059,7 +1059,34 @@ class APIController extends Controller
                         $notificacion->save();
                         
 
-                    }else{
+                    }else if($componente->esComponenteAfilado())
+                    {
+                        $componente->fecha_terminado = date('Y-m-d H:i');
+                        $componente->save();
+
+                        $solicitud = SolicitudAfilado::where('componente_id', $componente->id)->first();
+                        $solicitud->fecha_real_entrega = date('Y-m-d');
+                        $solicitud->save();
+                        
+                        $user = User::findOrFail($solicitud->solicitante_id);
+                        $user->hay_notificaciones = true;
+                        $user->save();
+                        
+                        $rolesSolicitante = User::findOrFail($solicitud->solicitante_id)->roles->pluck('name')->toArray();
+
+                        $notificacion = new Notificacion();
+                        $notificacion->url_base = '/orden-trabajo';
+                        $notificacion->roles = json_encode($rolesSolicitante, JSON_UNESCAPED_UNICODE);
+                        $notificacion->anio_id = $anio->id;
+                        $notificacion->cliente_id = $cliente->id;
+                        $notificacion->proyecto_id = $proyecto->id;
+                        $notificacion->herramental_id = $herramental->id;
+                        $notificacion->componente_id = $componente->id;
+                        $notificacion->responsables = json_encode([$solicitud->solicitante_id]);
+                        $notificacion->descripcion = 'EL COMPONENTE DE AFILADO ESTÁ LISTO';
+                        $notificacion->save();
+                    }
+                    else{
                         $notificacion = new Notificacion();
                         $notificacion->roles = json_encode(['MATRICERO']);
                         $notificacion->url_base = '/matricero';
@@ -1777,7 +1804,34 @@ class APIController extends Controller
                         $notificacion->responsables = json_encode([$solicitud->solicitante_id]);
                         $notificacion->descripcion = 'EL COMPONENTE EXTERNO ESTÁ LISTO';
                         $notificacion->save();
-                    }else{
+                    }else if($nuevoComponente->esComponenteAfilado())
+                    {
+                        $nuevoComponente->fecha_terminado = date('Y-m-d H:i');
+                        $nuevoComponente->save();
+
+                        $solicitud = SolicitudAfilado::where('componente_id', $nuevoComponente->id)->first();
+                        $solicitud->fecha_real_entrega = date('Y-m-d');
+                        $solicitud->save();
+                        
+                        $user = User::findOrFail($solicitud->solicitante_id);
+                        $user->hay_notificaciones = true;
+                        $user->save();
+                        
+                        $rolesSolicitante = User::findOrFail($solicitud->solicitante_id)->roles->pluck('name')->toArray();
+
+                        $notificacion = new Notificacion();
+                        $notificacion->url_base = '/orden-trabajo';
+                        $notificacion->roles = json_encode($rolesSolicitante, JSON_UNESCAPED_UNICODE);
+                        $notificacion->anio_id = $anio->id;
+                        $notificacion->cliente_id = $cliente->id;
+                        $notificacion->proyecto_id = $proyecto->id;
+                        $notificacion->herramental_id = $herramental->id;
+                        $notificacion->componente_id = $nuevoComponente->id;
+                        $notificacion->responsables = json_encode([$solicitud->solicitante_id]);
+                        $notificacion->descripcion = 'EL COMPONENTE DE AFILADO ESTÁ LISTO';
+                        $notificacion->save();
+                    }
+                    else{
                         
                         $notificacion = new Notificacion();
                         $notificacion->roles = json_encode(['MATRICERO']);
@@ -4082,6 +4136,21 @@ class APIController extends Controller
     }
     public function obtenerSolicitudExterna($componente_id){
         $solicitud = SolicitudExterna::where('componente_id', $componente_id)->first();
+        if ($solicitud) {
+            $solicitudArray = $solicitud->toArray(); // Convertir a array
+            unset($solicitudArray['componente']); // Eliminar el campo
+        } else {
+            $solicitudArray = null;
+        }
+
+        return response()->json([
+            'solicitud' => $solicitudArray,
+            'success' => true,
+        ], 200);
+    }
+
+    public function obtenerSolicitudAfilado($componente_id){
+        $solicitud = SolicitudAfilado::where('componente_id', $componente_id)->first();
         if ($solicitud) {
             $solicitudArray = $solicitud->toArray(); // Convertir a array
             unset($solicitudArray['componente']); // Eliminar el campo

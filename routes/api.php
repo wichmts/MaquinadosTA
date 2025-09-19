@@ -132,6 +132,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('mis-solicitudes-externas', 'APIController@misSolicitudesExternas');
     Route::get('solicitud-externa/{componente_id}', 'APIController@obtenerSolicitudExterna');
     Route::get('solicitud-ensamble/{herramental_id}', 'APIController@obtenerSolicitudesEnsamble');
+    Route::get('solicitud-afilado/{componente_id}', 'APIController@obtenerSolicitudAfilado');
 
     Route::post('generar-orden-afilado', 'APIController@generarOrdenAfilado');
     Route::post('editar-orden-afilado/{id}', 'APIController@editarOrdenAfilado');

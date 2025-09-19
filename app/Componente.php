@@ -230,6 +230,9 @@ class Componente extends Model
     public function esComponenteExterno(){
         return SolicitudExterna::where('componente_id', $this->id)->exists();
     }
+    public function esComponenteAfilado(){
+        return SolicitudAfilado::where('componente_id', $this->id)->exists();
+    }
     public function tieneRetrasos(){
         return $this->fabricaciones()->whereNotNull('motivo_retraso')->exists();
     }
@@ -278,6 +281,7 @@ class Componente extends Model
         $data['rutaAvance'] = $this->rutaAvance();
         $data['maquinas'] = $this->maquinas();
         $data['esComponenteExterno'] = $this->esComponenteExterno();
+        $data['esComponenteAfilado'] = $this->esComponenteAfilado();
         $data['refabricaciones'] = $this->refabricaciones();
         $data['tieneRetrasos'] = $this->tieneRetrasos();
         $data['tieneRetrabajos'] = $this->tieneRetrabajos();
