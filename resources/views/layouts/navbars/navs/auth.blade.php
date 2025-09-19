@@ -237,6 +237,7 @@
                     {{-- SOLICITUD EXTERNA --}}
                     @php
                         addMenuItem('orden-trabajo', 'Orden de trabajo', ['SOLICITUD EXTERNA'], $addedRoutes);
+                        addMenuItem('carga-afilados', 'Carga Afilados', ['SOLICITUD EXTERNA'], $addedRoutes);
                     @endphp
 
                     {{-- ADMINISTRADOR DE CARPETAS --}}

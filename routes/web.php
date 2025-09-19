@@ -84,7 +84,8 @@ Route::group(['middleware' => 'auth'], function () {
     //ADMINISTRADOR DE CARPETAS
     Route::get('/exploradorCarpetas', 'WebController@exploradorCarpetas');
     
-
+    //SOLICITUD EXTERNA
+    Route::get('/carga-afilados', 'WebController@cargaAfilados');
 
     // ADMIN
     Route::get('usuario', 'WebController@usuarios');

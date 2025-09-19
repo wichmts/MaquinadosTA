@@ -25,6 +25,7 @@ use App\SeguimientoTiempo;
 use App\Solicitud;
 use App\Puesto;
 use App\SolicitudExterna;
+use App\SolicitudAfilado;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
@@ -3606,6 +3607,14 @@ class APIController extends Controller
             'success' => true,
         ], 200);
     }
+    public function misSolicitudesAfilado() {
+        $solicitudes = SolicitudAfilado::where('solicitante_id', auth()->user()->id)->get();
+
+        return response()->json([
+            'solicitudes' => $solicitudes,
+            'success' => true,
+        ], 200);
+    }
     public function generarOrdenRefaccion(Request $request, $id){
         $data = $request->json()->all();
 
@@ -4085,6 +4094,8 @@ class APIController extends Controller
             'success' => true,
         ], 200);
     }
+
+    
     public function obtenerHerramentales(){
         $herramentales = Herramental::all();
 
@@ -5522,11 +5533,212 @@ class APIController extends Controller
             'success' => true,
         ]);
     }
-    public function trabajosPendientes(Request $request)
-    {
+
+    public function generarOrdenAfilado(Request $request){
+        $data = json_decode($request->data, true);
+
+        try{
+            DB::beginTransaction();
+            $ordenAfilado = new SolicitudAfilado();
+            $ordenAfilado->componente_id = $data['componente_id'];
+            $ordenAfilado->solicitante_id = $data['solicitante_id'];
+            $ordenAfilado->cantidad = $data['cantidad'];
+            $ordenAfilado->fecha_solicitud = $data['fecha_solicitud'];
+            $ordenAfilado->fecha_deseada_entrega = $data['fecha_deseada_entrega'];
+            $ordenAfilado->fecha_real_entrega = $data['fecha_real_entrega'];
+            $ordenAfilado->area_solicitud = $data['area_solicitud'];            
+            $ordenAfilado->numero_hr = $data['numero_hr'];
+            $ordenAfilado->nombre_componente = $data['nombre_componente'];
+            $ordenAfilado->cantidad = $data['cantidad'];            
+            $ordenAfilado->comentarios = $data['comentarios'];  
+            $ordenAfilado->caras_a_afilar = $data['caras_a_afilar'];
+            $ordenAfilado->cuanto_afilar = $data['cuanto_afilar'];          
+            $ordenAfilado->save();
+
+            if ($request->hasFile('archivo_2d')) {
+                    $file2D = $request->file('archivo_2d');
+                    $resultado = $this->validarArchivo($file2D); 
+                    if (!$resultado['success']) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => $resultado['message'],
+                        ], 200);
+                    }
+
+                $name2D = uniqid() . '_' . $file2D->getClientOriginalName();
+                    Storage::disk('public')->put('ordenes_trabajo/' . $name2D, \File::get($file2D));
+                    $ordenAfilado->archivo_2d = $name2D;
+                }
+            $ordenAfilado->save();
+
+            $anio = Anio::firstOrCreate(['nombre' => date('Y')]);
+            $cliente = Cliente::firstOrCreate(['nombre' => 'ORDENES AFILADO'], ['anio_id' => $anio->id]);
+            $nombreProyecto = auth()->user()->id . '.' .  auth()->user()->nombre_completo;
+
+            $proyecto = Proyecto::firstOrCreate(
+                ['nombre' => $nombreProyecto, 'cliente_id' => $cliente->id]
+            );
+
+            $nombreHerramental = $data['numero_hr'];
+            $herramental = Herramental::where('nombre', $nombreHerramental)
+                ->where('proyecto_id', $proyecto->id)
+                ->first();
+
+            if (!$herramental) {
+                $herramental = new Herramental();
+                $herramental->nombre = $nombreHerramental;
+                $herramental->proyecto_id = $proyecto->id;
+                $herramental->estatus_ensamble = 'inicial';
+                $herramental->estatus_pruebas_diseno = 'inicial';
+                $herramental->estatus_pruebas_proceso = 'inicial';
+                $herramental->save();
+            }
+            $nombreComponente = $nombreHerramental . '-' . $data['nombre_componente'];
+                $componenteExistente = Componente::where('nombre', $nombreComponente)->where('herramental_id', $herramental->id)->exists();
+
+                if ($componenteExistente) {
+                    $ordenAfilado->delete();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'El componente ya existe, verifique el numero de componente e intentelo nuevamente',
+                    ]);
+                }
+            $nuevoComponente = new Componente();
+            $nuevoComponente->nombre = $herramental->nombre . '-' . $data['nombre_componente'];
+            $nuevoComponente->version = 1;
+            $nuevoComponente->cantidad = $data['cantidad'];
+            $nuevoComponente->fecha_cargado = date('Y-m-d H:i');
+            $nuevoComponente->prioridad = 'A';
+            $nuevoComponente->refabricado = false;
+            $nuevoComponente->refaccion = false;
+            $nuevoComponente->es_compra = false;
+            $nuevoComponente->cargado = true;
+            $nuevoComponente->comprado = false;
+            $nuevoComponente->programado = false;
+            $nuevoComponente->cortado = false;
+            $nuevoComponente->enrutado = false;
+            $nuevoComponente->ensamblado = false;
+            $nuevoComponente->estatus_corte = 'inicial';
+            $nuevoComponente->estatus_programacion = 'inicial';
+            $nuevoComponente->estatus_fabricacion = 1;
+            $nuevoComponente->herramental_id = $herramental->id;
+            //$nuevoComponente->material_id = $data['material_id'];
+
+            $rutaBase = "{$herramental->proyecto_id}/{$herramental->id}/componentes/";
+            Storage::disk('public')->makeDirectory($rutaBase);
+
+            if ($ordenAfilado->archivo_2d) {
+                $nuevoNombre2D = $this->generarNuevoNombre($ordenAfilado->archivo_2d);
+                Storage::disk('public')->copy(
+                    "ordenes_trabajo/{$ordenAfilado->archivo_2d}", // Ruta correcta de origen
+                    "{$rutaBase}{$nuevoNombre2D}" // Ruta de destino
+                );
+                $nuevoComponente->archivo_2d = $nuevoNombre2D;
+            }
+
+            $nuevoComponente->save();
+            $ordenAfilado->componente_id = $nuevoComponente->id;
+            $ordenAfilado->save();
+
+            $notificacion = new Notificacion();
+            $notificacion->roles = json_encode(['JEFE DE AREA']);
+            $notificacion->url_base = '/enrutador';
+            $notificacion->anio_id = $anio->id;
+            $notificacion->cliente_id = $cliente->id;
+            $notificacion->proyecto_id = $proyecto->id;
+            $notificacion->herramental_id = $herramental->id;
+            $notificacion->componente_id = $nuevoComponente->id;
+            $notificacion->cantidad = $nuevoComponente->cantidad;
+            $notificacion->descripcion = 'SE HA LIBERADO UN NUEVO COMPONENTE PARA ENRUTAMIENTO DESDE ORDENES DE AFILADO.';
+            $notificacion->save();
+
+            $users = User::role('JEFE DE AREA')->get();
+            foreach ($users as $user) {
+                $user->hay_notificaciones = true;
+                $user->save();
+            }
+
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+            ], 200);
+        }catch(\Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al generar la orden de afilado: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function editarOrdenAfilado(Request $request, $id){
+        $data = json_decode($request->data, true);
+        $ordenAfilado = SolicitudAfilado::findOrFail($id);
+        $componente = Componente::findOrFail($ordenAfilado->componente_id);
+        $herramental = Herramental::findOrFail($componente->herramental_id);
+        $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
+        $cliente = Cliente::findOrFail($proyecto->cliente_id);
+        $anio = Anio::findOrFail($cliente->anio_id);
+
+        $ordenAfilado->fecha_deseada_entrega = $data['fecha_deseada_entrega'];
+        $ordenAfilado->comentarios = $data['comentarios'];
+        $ordenAfilado->save();
+
+        $rutaBaseSolicitud = "generar-orden-afilado/";
+        $rutaBaseComponente = "{$proyecto->id}/{$herramental->id}/componentes/";
+        Storage::disk('public')->makeDirectory($rutaBaseComponente);
+
+        if ($request->hasFile('archivo_2d')) {
+            if ($componente->archivo_2d) {
+                Storage::disk('public')->delete("{$rutaBaseComponente}{$componente->archivo_2d}");
+            }
+            $archivo2D = $request->file('archivo_2d');
+            $nombre2D = $this->generarNuevoNombre($archivo2D->getClientOriginalName());
+            $archivo2D->storeAs($rutaBaseSolicitud, $nombre2D, 'public');
+            Storage::disk('public')->copy("{$rutaBaseSolicitud}{$nombre2D}", "{$rutaBaseComponente}{$nombre2D}");
+            $componente->archivo_2d = $nombre2D;
+            $ordenAfilado->archivo_2d = $nombre2D;
+        }
+        $componente->save();
+        $ordenAfilado->save();
+
+        $notificacion = new Notificacion();
+        $notificacion->roles = json_encode(['JEFE DE AREA']);
+        $notificacion->url_base = '/enrutador';
+        $notificacion->anio_id = $anio->id;
+        $notificacion->cliente_id = $cliente->id;
+        $notificacion->proyecto_id = $proyecto->id;
+        $notificacion->herramental_id = $herramental->id;
+        $notificacion->componente_id = $componente->id;
+        $notificacion->cantidad = $componente->cantidad;
+        $notificacion->descripcion = 'EL DISEÑO DE UN COMPONENTE PARA AFILADO HA SIDO MODIFICADO, SE REQUIERE UN RETRABAJO / REFABRICACIÓN';
+        $notificacion->save();
+
+        $solicitud = new Solicitud();
+        $solicitud->tipo = 'retrabajo';
+        $solicitud->componente_id = $componente->id;
+        $solicitud->comentarios = 'El diseño de un componente para afilado ha sido modificado, se requiere un retrabajo / refabricación';
+        $solicitud->area_solicitante = 'DISEÑO';
+        $solicitud->usuario_id = auth()->user()->id;
+        $solicitud->save();
+
+        $users = User::role('JEFE DE AREA')->get();
+        foreach ($users as $user) {
+            $user->hay_notificaciones = true;
+            $user->save();
+        }
+
+
+        return response()->json([
+            'success' => true,
+            'ordenAfilado' => $ordenAfilado,
+        ]);
+    }
+    public function trabajosPendientes(Request $request){
         $user = auth()->user();
         $roles = $user->getRoleNames()->toArray(); // Todos los roles del usuario
-        $data = [];
+        $data = []; 
 
         // Mapeo de roles a queries que se deben ejecutar
         $roleQueries = [
@@ -5678,6 +5890,94 @@ class APIController extends Controller
                     ->where('estatus_pruebas_diseno', 'finalizado')
                     ->where('estatus_pruebas_proceso', '!=', 'finalizado')->get();
         }
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+    public function trabajosPendientesGeneral(){
+
+        $user = auth()->user();        
+        $data = []; 
+        // Enrutamiento        
+        $data['enrutamiento'] = Componente::where('es_compra', false)
+            ->where('cargado', true)
+            ->where('enrutado', false)
+            ->where('refabricado', '!=', true)
+            ->where(function ($query) {
+                $query->where('cancelado', false)
+                    ->orWhereNull('cancelado');
+            })
+            ->get();
+
+        // Programaciones
+        $query = Componente::where('es_compra', false)
+            ->where('cargado', true)
+            ->where('enrutado', true)
+            ->where('programado', false)
+            ->where('refabricado', '!=', true)
+            ->where(function ($query2) {
+                $query2->where('cancelado', false)
+                    ->orWhereNull('cancelado');
+            })
+            ->get();
+
+        $data['programaciones'] = $query
+            ->groupBy('programador_id')
+            ->map(function ($items, $programadorId) {
+                // Obtener el nombre del programador
+                $programador = User::find($programadorId);
+
+                return [
+                    'programador_id' => $programadorId,
+                    'programador_nombre' => $programador ? $programador->nombre . ' ' . $programador->ap_paterno . ' ' . $programador->ap_materno : 'Desconocido',
+                    'componentes' => $items
+                ];
+            })
+            ->values();
+
+
+        //Corte
+        $data['cortes'] = Componente::where('es_compra', false)
+            ->where('cargado', true)
+            ->where('enrutado', true)
+            ->where('refabricado', '!=', true)
+            ->where('estatus_corte', '!=', 'finalizado')
+            ->where(function ($query) {
+                $query->where('cancelado', false)
+                    ->orWhereNull('cancelado');
+            })
+            ->get();
+
+        // Fabricaciones        
+        $data['fabricaciones'] = Fabricacion::where('fabricado', false)
+            ->where('estatus_fabricacion', '!=', 'finalizado')
+            ->get()
+            ->groupBy('maquina_id')
+            ->map(function ($fabricacionesPorMaquina, $maquinaId) {
+                $maquina = Maquina::find($maquinaId);
+                $operadores = User::whereJsonContains('maquinas', $maquinaId)->get();
+
+                return [
+                    'maquina_id' => $maquinaId,
+                    'maquina_nombre' => $maquina ? $maquina->nombre : 'Desconocida',
+                    'proceso_maquina' => $maquina ? $maquina->tipo_proceso : 'Desconocido',
+                    'fecha' => $fabricacionesPorMaquina->first()->created_at->format('d-m-Y H:i'),
+                    'operadores' => $operadores->map(function ($op) {
+                        return [
+                            'id' => $op->id,
+                            'nombre' => $op->nombre . ' ' . $op->ap_paterno . ' ' . $op->ap_materno,
+                        ];
+                    }),
+                    // 🔑 Aquí va la colección de componentes de esa máquina
+                    'componentes' => $fabricacionesPorMaquina->map(function ($fab) {
+                        return Componente::find($fab->componente_id);
+                    })->values(),
+                ];
+            })
+            ->values();
+
 
         return response()->json([
             'success' => true,

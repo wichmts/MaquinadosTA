@@ -1169,16 +1169,15 @@
         watch: {
             componentes: {
                 handler() {
-                    this.componentes.forEach(c => {
-                        
-                        $('#popoverButton' + c.id).popover();
+                    this.$nextTick(() => {
+                        this.componentes.forEach(c => {
+                            $('#popoverButton' + c.id).popover();
+                        });
                     });
                 },
                 deep: true
             }
-        }
-
-                
+        } 
     })
 
     </script>
