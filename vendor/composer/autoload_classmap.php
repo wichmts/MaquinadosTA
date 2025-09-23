@@ -74,6 +74,7 @@ return array(
     'App\\Rules\\CurrentPasswordCheckRule' => $baseDir . '/app/Rules/CurrentPasswordCheckRule.php',
     'App\\SeguimientoTiempo' => $baseDir . '/app/SeguimientoTiempo.php',
     'App\\Solicitud' => $baseDir . '/app/Solicitud.php',
+    'App\\SolicitudAfilado' => $baseDir . '/app/SolicitudAfilado.php',
     'App\\SolicitudExterna' => $baseDir . '/app/SolicitudExterna.php',
     'App\\User' => $baseDir . '/app/User.php',
     'ArithmeticError' => $vendorDir . '/symfony/polyfill-php70/Resources/stubs/ArithmeticError.php',

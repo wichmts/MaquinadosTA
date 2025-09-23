@@ -13,19 +13,20 @@
         padding: 11px 22px;
         cursor: pointer;
     }
-
     .navBtn:hover {
         background-color: #eee;
     }
-
-    .container-general {
-        margin: 30px;
+    thead th{
+        text-transform: none !important;
     }
 </style>
 
 @section('content')
 <div id="vue-app" v-cloak>
-    <div class="container-general">
+    <div class="container-fluid mt-3">
+        <div class="col-lg-12">
+            <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR GENERAL</h2> 
+        </div>
         <div class="col-lg-12">
             <!-- Nav -->
             <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -42,203 +43,210 @@
                     <button class="nav-link" id="fabricacion-tab" data-toggle="tab" data-target="#fabricacion" type="button" role="tab" aria-controls="fabricacion" aria-selected="false">FABRICACIONES POR MÁQUINA</button>
                 </li>
             </ul>
-            <div class="tab-content" id="myTabContent">
+            <div class="tab-content pt-4" id="myTabContent">
 
                 <div class="tab-pane fade show active" id="enrutamiento" role="tabpanel" aria-labelledby="home-tab">
-                    <!-- Vista enrutamiento -->
-                    <div class="table-responsive card shadow">
-                        <table class="table align-items-center">
-                            <thead>
-                                <tr>
-                                    <th>Nombre del componente</th>
-                                    <th>Cantidad</th>
-                                    <th>Fecha Liberacion</th>
-                                    <th>Comentarios del enrutador</th>                                    
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="cursor-pointer" v-for="(componente, index) in trabajosPendientes.enrutamiento" @click="goTo('enrutador', componente.rutaComponente)">
-                                    <td class="bold">@{{componente.nombre}}</td>
-                                    <td>@{{componente.cantidad}}</td>
-                                    <td>@{{componente.fecha_cargado}}Hrs.</td>
-                                    <td>@{{componente.comentarios}}</td>                                    
-                                </tr>
-                                <tr v-if="trabajosPendientes?.enrutamiento?.length == 0">
-                                    <td colspan="3" class="text-center">No hay trabajos de enrutamiento pendiente</td>
-                                </tr>
-                            </tbody>
-
-                        </table>
+                    <div class="row mb-3">
+                        <div class="table-responsive col-lg-12">
+                            <table class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Nombre del componente</th>
+                                        <th>Cantidad</th>
+                                        <th>Fecha Liberacion</th>
+                                        <th>Comentarios del enrutador</th>                                    
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(componente, index) in trabajosPendientes.enrutamiento">
+                                        <td class="bold">@{{componente.nombre}}</td>
+                                        <td>@{{componente.cantidad}}</td>
+                                        <td>@{{componente.fecha_cargado}}Hrs.</td>
+                                        <td>@{{componente.comentarios}}</td>                                    
+                                    </tr>
+                                    <tr v-if="trabajosPendientes?.enrutamiento?.length == 0">
+                                        <td colspan="3" class="text-center">No hay trabajos de enrutamiento pendiente</td>
+                                    </tr>
+                                </tbody>
+    
+                            </table>
+                        </div>
                     </div>
+                    <!-- Vista enrutamiento -->
                 </div>
                 <div class="tab-pane fade" id="programacion" role="tabpanel" aria-labelledby="profile-tab">
-                    <!-- Vista programacion -->
-                    <div class="table-responsive card shadow">
-                        <table class="table align-items-center">
-                            <thead>
-                                <tr>
-                                    <th>Nombre del programador</th>
-                                    <th>Cola de trabajos activos</th>
-                                    <th>Comentarios del enrutador</th>
-                                    <th>Ver ruta componente</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(programador, pIndex) in trabajosPendientes.programaciones" :key="'prog-' + programador.programador_id">
-                                    <td class="bold">@{{ programador.programador_nombre }}</td>
-
-                                    <td>
-                                        <div class="my-4" v-for="componente in programador.componentes" :key="'comp-nombre-' + componente.id">
-                                            @{{ componente.nombre }}
-                                        </div>
-                                    </td>
-
-                                    <td>
-                                        <div class="my-4" v-for="componente in programador.componentes" :key="'comp-comentarios-' + componente.id">
-                                            @{{ componente.comentarios ?? 'Sin comentarios' }}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div v-for="componente in programador.componentes" :key="'comp-ruta-' + componente.id">
-                                            <button @click="goTo('visor-avance-hr', componente.rutaComponente)" class="btn btn-sm btn-default actions my-1"><i class="fa fa-eye">&nbsp;</i>Ver ruta componente</button>
-                                        </div>
-                                    </td>
-                                </tr>
-
-
-                                <tr v-if="!trabajosPendientes.programaciones || trabajosPendientes.programaciones.length === 0">
-                                    <td colspan="4" class="text-center">No hay trabajos de programación pendiente</td>
-                                </tr>
-                            </tbody>
-
-
-                        </table>
+                    <div class="row mb-3">
+                        <div class="table-responsive col-lg-12">
+                            <table class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Nombre del programador</th>
+                                        <th>Cola de trabajos activos</th>
+                                        <th>Comentarios del enrutador</th>
+                                        <th>Ver ruta componente</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(programador, pIndex) in trabajosPendientes.programaciones" :key="'prog-' + programador.programador_id">
+                                        <td class="bold">@{{ programador.programador_nombre }}</td>
+    
+                                        <td>
+                                            <div class="my-4" v-for="componente in programador.componentes" :key="'comp-nombre-' + componente.id">
+                                                @{{ componente.nombre }}
+                                            </div>
+                                        </td>
+    
+                                        <td>
+                                            <div class="my-4" v-for="componente in programador.componentes" :key="'comp-comentarios-' + componente.id">
+                                                @{{ componente.comentarios ?? 'Sin comentarios' }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div v-for="componente in programador.componentes" :key="'comp-ruta-' + componente.id">
+                                                <button @click="goTo('visor-avance-hr', componente.rutaComponente)" class="btn btn-sm btn-default my-1"><i class="fa fa-eye">&nbsp;</i>Ver ruta componente</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+    
+    
+                                    <tr v-if="!trabajosPendientes.programaciones || trabajosPendientes.programaciones.length === 0">
+                                        <td colspan="4" class="text-center">No hay trabajos de programación pendiente</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                    <!-- Vista programacion -->
                 </div>
                 <div class="tab-pane fade" id="corte-mp" role="tabpanel" aria-labelledby="profile-tab">
-                    <!-- Vista corte de mp -->
-                    <div class="table-responsive card shadow">
-                        <table class="table align-items-center">
-                            <thead>
-                                <tr>
-                                    <th>Nombre del componente</th>
-                                    <th>Cantidad</th>
-                                    <th>Medidas de corte</th>
-                                    <th>Materia prima</th>
-                                    <th>Comentarios del enrutador</th>
-                                    <th>Estatus del corte</th>
-                                    <th>Ver ruta componente</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="cursor-pointer" v-for="(componente, index) in trabajosPendientes.cortes">
-                                    <td class="bold">@{{componente.nombre}}</td>
-                                    <td>
-                                        <div class="col-lg-12 form-group text-left pl-1">
-                                            <small class="bold">&nbsp;</small>
-                                            <input class="form-control text-center" type="text" disabled v-model="componente.cantidad">
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="row">
-                                            <div class="col-lg-4 text-left form-group pl-1" v-if="componente.largo">
-                                                <small class="bold">Largo</small>
-                                                <input class="form-control text-center" type="text" disabled v-model="componente.largo">
+                    <div class="row mb-3">
+                        
+                        <div class="table-responsive col-lg-12">
+                            <table class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Nombre del componente</th>
+                                        <th>Cantidad</th>
+                                        <th>Medidas de corte</th>
+                                        <th>Materia prima</th>
+                                        <th>Comentarios del enrutador</th>
+                                        <th>Estatus del corte</th>
+                                        <th>Ver ruta componente</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="cursor-pointer" v-for="(componente, index) in trabajosPendientes.cortes">
+                                        <td class="bold">@{{componente.nombre}}</td>
+                                        <td>
+                                            <div class="col-lg-12 form-group text-left pl-1">
+                                                <small class="bold">&nbsp;</small>
+                                                <input class="form-control text-center" type="text" disabled v-model="componente.cantidad">
                                             </div>
-
-                                            <div class="col-lg-4 text-left form-group pl-1" v-if="componente.ancho">
-                                                <small class="bold">Ancho</small>
-                                                <input class="form-control text-center" type="text" disabled v-model="componente.ancho">
+                                        </td>
+                                        <td>
+                                            <div class="row">
+                                                <div class="col text-left form-group" v-if="componente.largo">
+                                                    <small class="bold">Largo</small>
+                                                    <input class="form-control text-center" type="text" disabled v-model="componente.largo">
+                                                </div>
+    
+                                                <div class="col text-left form-group" v-if="componente.ancho">
+                                                    <small class="bold">Ancho</small>
+                                                    <input class="form-control text-center" type="text" disabled v-model="componente.ancho">
+                                                </div>
+    
+                                                <div class="col text-left form-group" v-if="componente.espesor">
+                                                    <small class="bold">Espesor</small>
+                                                    <input class="form-control text-center" type="text" disabled v-model="componente.espesor">
+                                                </div>
+    
+                                                <div class="col text-left form-group" v-if="componente.longitud">
+                                                    <small class="bold">Longitud</small>
+                                                    <input class="form-control text-center" type="text" disabled v-model="componente.longitud">
+                                                </div>
+    
+                                                <div class="col text-left form-group" v-if="componente.diametro">
+                                                    <small class="bold">Diametro</small>
+                                                    <input class="form-control text-center" type="text" disabled v-model="componente.diametro">
+                                                </div>
                                             </div>
+                                        </td>
+                                        <td>@{{componente.material_nombre}}</td>
+                                        <td>@{{componente.comentarios}}</td>
+                                        <td>
+                                            <span v-if="componente.estatus_corte == 'paro'" class="py-2 w-100 badge badge-danger" style="font-size: 13px">EN PARO</span>
+                                            <span v-if="componente.estatus_corte == 'inicial'" class="py-2 w-100 badge badge-warning" style="font-size: 13px">POR CORTAR</span>
+                                            <span v-if="componente.estatus_corte == 'proceso'" class="py-2 w-100 badge badge-info" style="font-size: 13px">EN PROCESO...</span>
+                                            <span v-if="componente.estatus_corte == 'pausado'" class="py-2 w-100 badge badge-dark" style="font-size: 13px">PAUSADO</span>
+                                        </td>
+                                        <td><button @click="goTo('visor-avance-hr', componente.rutaComponente)" class="btn btn-sm btn-default"><i class="fa fa-eye">&nbsp;</i>Ver ruta componente</button></td>
+                                    </tr>
+                                    <tr v-if="trabajosPendientes?.cortes?.length == 0">
+                                        <td colspan="3" class="text-center">No hay trabajos de corte pendiente</td>
 
-                                            <div class="col-lg-4 text-left form-group pl-1" v-if="componente.espesor">
-                                                <small class="bold">Espesor</small>
-                                                <input class="form-control text-center" type="text" disabled v-model="componente.espesor">
-                                            </div>
-
-                                            <div class="col-lg-4 text-left form-group pl-1" v-if="componente.longitud">
-                                                <small class="bold">Longitud</small>
-                                                <input class="form-control text-center" type="text" disabled v-model="componente.longitud">
-                                            </div>
-
-                                            <div class="col-lg-4 text-left form-group pl-1" v-if="componente.diametro">
-                                                <small class="bold">Diametro</small>
-                                                <input class="form-control text-center" type="text" disabled v-model="componente.diametro">
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>@{{componente.material_nombre}}</td>
-                                    <td>@{{componente.comentarios}}</td>
-                                    <td>
-                                        <span v-if="componente.estatus_corte == 'paro'" class="py-2 w-100 badge badge-danger" style="font-size: 13px">EN PARO</span>
-                                        <span v-if="componente.estatus_corte == 'inicial'" class="py-2 w-100 badge badge-warning" style="font-size: 13px">POR CORTAR</span>
-                                        <span v-if="componente.estatus_corte == 'proceso'" class="py-2 w-100 badge badge-info" style="font-size: 13px">EN PROCESO...</span>
-                                        <span v-if="componente.estatus_corte == 'pausado'" class="py-2 w-100 badge badge-dark" style="font-size: 13px">PAUSADO</span>
-                                    </td>
-                                    <td><button @click="goTo('visor-avance-hr', componente.rutaComponente)" class="btn btn-sm btn-default actions"><i class="fa fa-eye">&nbsp;</i>Ver ruta componente</button></td>
-                                </tr>
-                                <tr v-if="trabajosPendientes?.programaciones?.length == 0">
-                                    <td colspan="3" class="text-center">No hay trabajos de programación pendiente</td>
-
-                                </tr>
-                            </tbody>
-
-                        </table>
+                                    </tr>
+                                </tbody>
+    
+                            </table>
+                        </div>
                     </div>
+                    <!-- Vista corte de mp -->
                 </div>
                 <div class="tab-pane fade" id="fabricacion" role="tabpanel" aria-labelledby="profile-tab">
-                    <div class="table-responsive card shadow">
-                        <!-- Vista de Fabricaciones -->
-                        <table class="table align-items-center">
-                            <thead>
-                                <tr>
-                                    <th>Máquina</th>
-                                    <th>Proceso Asignado</th>
-                                    <th>Operadores asignados</th>
-                                    <th>Cola de trabajos</th>
-                                    <th>Comentarios de enrutamiento</th>
-                                    <th>Fecha y hora de llegada del trabajo</th>
-                                    <th>Ver ruta componente</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="cursor-pointer" v-for="(fabricaciones, index) in trabajosPendientes.fabricaciones">
-                                    <td class="bold">@{{fabricaciones.maquina_nombre}}</td>
-                                    <td>@{{getTipoProcesoString(fabricaciones.proceso_maquina)}}</td>
-
-                                    <td>
-                                        <div v-if="fabricaciones.operadores.length > 0" v-for="operador in fabricaciones.operadores" :key="operador.id">
-                                            @{{operador.nombre}}
-                                        </div>
-                                        <div>
-                                            <span v-if="fabricaciones.operadores.length == 0">Sin operador</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="my-4" v-for="componente in fabricaciones.componentes" :key="'comp-nombre-' + componente.id">
-                                            @{{ componente.nombre ?? 'Sin nombre' }}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="my-4" v-for="componente in fabricaciones.componentes" :key="'comp-comentarios-' + componente.id">
-                                            @{{ componente.comentarios ?? 'Sin comentarios' }}
-                                        </div>
-                                    </td>
-                                    <td>@{{fabricaciones.fecha}} Hrs.</td> <!-- PENDIENTEEEEEEE -->
-                                    <td>
-                                        <div class="my-1" v-for="componente in fabricaciones.componentes" :key="'comp-comentarios-' + componente.id">
-                                            <button @click="goTo('visor-avance-hr', componente.rutaComponente)" class="btn btn-sm btn-default actions"><i class="fa fa-eye">&nbsp;</i>Ver ruta componente</button>
-                                        </div>
-
-                                    </td>
-                                </tr>
-                                <tr v-if="trabajosPendientes?.fabricaciones?.length == 0">
-                                    <td colspan="3" class="text-center">No hay trabajos de fabricaciones pendiente</td>
-
-                                </tr>
-                            </tbody>
-
-                        </table>
+                    <div class="row mb-3">
+                        <div class="table-responsive col-lg-12">
+                            <!-- Vista de Fabricaciones -->
+                            <table class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Máquina</th>
+                                        <th>Proceso Asignado</th>
+                                        <th>Operadores asignados</th>
+                                        <th>Cola de trabajos</th>
+                                        <th>Comentarios de enrutamiento</th>
+                                        <th>Fecha y hora de llegada del trabajo</th>
+                                        <th>Ver ruta componente</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="cursor-pointer" v-for="(fabricaciones, index) in trabajosPendientes.fabricaciones">
+                                        <td class="bold">@{{fabricaciones.maquina_nombre}}</td>
+                                        <td>@{{getTipoProcesoString(fabricaciones.proceso_maquina)}}</td>
+    
+                                        <td>
+                                            <div v-if="fabricaciones.operadores.length > 0" v-for="operador in fabricaciones.operadores" :key="operador.id">
+                                                @{{operador.nombre}}
+                                            </div>
+                                            <div>
+                                                <span v-if="fabricaciones.operadores.length == 0">Sin operador</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="my-4" v-for="componente in fabricaciones.componentes" :key="'comp-nombre-' + componente.id">
+                                                @{{ componente.nombre ?? 'Sin nombre' }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="my-4" v-for="componente in fabricaciones.componentes" :key="'comp-comentarios-' + componente.id">
+                                                @{{ componente.comentarios ?? 'Sin comentarios' }}
+                                            </div>
+                                        </td>
+                                        <td>@{{fabricaciones.fecha}} Hrs.</td> <!-- PENDIENTEEEEEEE -->
+                                        <td>
+                                            <div class="my-1" v-for="componente in fabricaciones.componentes" :key="'comp-comentarios-' + componente.id">
+                                                <button @click="goTo('visor-avance-hr', componente.rutaComponente)" class="btn btn-sm btn-default"><i class="fa fa-eye">&nbsp;</i>Ver ruta componente</button>
+                                            </div>
+    
+                                        </td>
+                                    </tr>
+                                    <tr v-if="trabajosPendientes?.fabricaciones?.length == 0">
+                                        <td colspan="3" class="text-center">No hay fabricaciones pendientes</td>
+    
+                                    </tr>
+                                </tbody>
+    
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

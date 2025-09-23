@@ -252,22 +252,22 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{-- <div class="col-lg-4">
+                                <div class="col-lg-4">
                                     <div class="form-check">
                                         <label class="form-check-label bold">
-                                            <input class="form-check-input" type="checkbox" v-model="componente.requiere_pruebas" :disabled="componente.enrutado == true || componente.cancelado == true">
+                                            <input class="form-check-input" type="checkbox" v-model="componente.requiere_ensamble" :disabled="componente.enrutado == true || componente.cancelado == true">
                                             <span class="form-check-sign"></span>
                                             ¿Requiere ensamble?
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <label class="form-check-label bold">
-                                            <input class="form-check-input" type="checkbox" v-model="componente.requiere_ensamble" :disabled="componente.enrutado == true || componente.cancelado == true">
+                                            <input class="form-check-input" type="checkbox" v-model="componente.requiere_pruebas" :disabled="componente.enrutado == true || componente.cancelado == true">
                                             <span class="form-check-sign"></span>
                                             ¿Requiere pruebas?
                                         </label>
                                     </div>
-                                </div> --}}
+                                </div>
                             </div>
                             <div class="row mt-2">
                                 <div class="col" style="overflow-x:scroll">
@@ -950,10 +950,14 @@
         methods: {
             eliminarProceso(uuid){
                 const index = this.procesos.findIndex(p => p.uuid === uuid);
-                if (index !== -1) {
-                    this.procesos.splice(index, 1);
+                if (index === -1) return;
+
+                if (this.procesos[index].id === 2) {
+                    swal('Acción no permitida', 'El proceso "Programar" es obligatorio.', 'warning');
+                    return;
                 }
-                // igualo 
+                this.procesos.splice(index, 1);
+
                 this.igualarTasksConProcesos();
                 this.calcularInicio();
                 this.calcularInicioAvance();

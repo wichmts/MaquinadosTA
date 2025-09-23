@@ -696,42 +696,42 @@
                     this.loading_button = false;
                 }
             },
-            async liberarHerramental(){
-                let t = this;
+            // async liberarHerramental(){
+            //     let t = this;
             
-                let unassembledComponents = this.componentes.filter(c => !c.ensamblado);
-                if (unassembledComponents.length > 0) {
-                    swal('Error', 'No se puede liberar el herramental. Todos los componentes deben estar ensamblados.', 'error');
-                    return;
-                }
+            //     let unassembledComponents = this.componentes.filter(c => !c.ensamblado);
+            //     if (unassembledComponents.length > 0) {
+            //         swal('Error', 'No se puede liberar el herramental. Todos los componentes deben estar ensamblados.', 'error');
+            //         return;
+            //     }
 
-                swal({
-                    title: "¿Está seguro?",
-                    text: "¿Desea liberar el herramental para comenzar con las pruebas?",
-                    icon: "info",
-                    buttons: ['Cancelar', 'Si, liberar'],
-                    dangerMode: false,
-                }).then((willChange) => {
-                    if (willChange) {
-                        t.liberar();
-                    }
-                });
-            },
-            async liberar(){
-                let t = this;
-                axios.put(`/api/liberar-herramental-ensamble/${t.selectedHerramental}`)
-                .then(response => {
-                    if(response.data.success){
-                        swal('Herramental liberado', 'El herramental ha sido liberado exitosamente.', 'success');
-                        t.selectedHerramental = null;
-                        t.fetchHerramentales(t.selectedProyecto);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error liberando herramental:', error);
-                    swal('Error', 'Hubo un problema al intentar liberar el herramental.', 'error');
-                });
-            },
+            //     swal({
+            //         title: "¿Está seguro?",
+            //         text: "¿Desea liberar el herramental para comenzar con las pruebas?",
+            //         icon: "info",
+            //         buttons: ['Cancelar', 'Si, liberar'],
+            //         dangerMode: false,
+            //     }).then((willChange) => {
+            //         if (willChange) {
+            //             t.liberar();
+            //         }
+            //     });
+            // },
+            // async liberar(){
+            //     let t = this;
+            //     axios.put(`/api/liberar-herramental-ensamble/${t.selectedHerramental}`)
+            //     .then(response => {
+            //         if(response.data.success){
+            //             swal('Herramental liberado', 'El herramental ha sido liberado exitosamente.', 'success');
+            //             t.selectedHerramental = null;
+            //             t.fetchHerramentales(t.selectedProyecto);
+            //         }
+            //     })
+            //     .catch(error => {
+            //         console.error('Error liberando herramental:', error);
+            //         swal('Error', 'Hubo un problema al intentar liberar el herramental.', 'error');
+            //     });
+            // },
             abrirSolicitud(tipo){
                 this.solicitud = {
                     tipo: tipo,
@@ -1284,7 +1284,7 @@
                             cantidad: obj.cantidad,
                             nombre: obj.nombre,
                             es_compra: obj.es_compra,
-                            checked: false,
+                            checked: obj.matricero_id?false:true,
                             cantidad_sobrantes: 0,
                         };
                     });
