@@ -176,51 +176,6 @@ class APIController extends Controller
             'puesto' => $puesto
         ]);
     }
-    // public function consultarConfiguracion(){
-    //     $configuracion = Configuracion::first();
-
-    //     return response()->json([
-    //         'configuracion' => $configuracion,
-    //         'success' => true
-    //     ]);
-    // }
-    // public function guardarConfiguracion(Request $request){
-    //     $datos = $request->json()->all();
-    //     $configuracion = Configuracion::first();
-    //     if(!$configuracion){
-    //         $configuracion = new Configuracion();
-    //     }
-    //     $configuracion->razon_social = $datos['razon_social'];
-    //     $configuracion->rfc = $datos['rfc'];
-    //     $configuracion->estado = $datos['estado'];
-    //     $configuracion->ciudad = $datos['ciudad'];
-    //     $configuracion->colonia = $datos['colonia'];
-    //     $configuracion->calle = $datos['calle'];
-    //     $configuracion->codigo_postal = $datos['codigo_postal'];
-    //     $configuracion->save();
-        
-    //      return response()->json([
-    //         'success' => true
-    //     ]);
-    // }
-    // public function guardarConfiguracionLogo(Request $request){
-
-    //     $configuracion = Configuracion::first();
-    //     if(!$configuracion){
-    //         $configuracion = new Configuracion();
-    //     }
-    //     if ($request->hasFile('logo')) {
-    //         $file = $request->file('logo');
-    //         $name = uniqid().'_'.$file->getClientOriginalName();
-    //         Storage::disk('public')->put('logo/'.$name, \File::get($file));
-    //         $configuracion->logo = $name;
-    //         $configuracion->save();
-    //     }
-
-    //     return response()->json([
-    //         'success' => true,
-    //     ], 200);
-    // }
     public function download(Request $request, $folder, $filename){
         $file_path = storage_path('app/public/'.$folder.'/'.$filename);
         if (file_exists($file_path)) {
@@ -231,31 +186,6 @@ class APIController extends Controller
             exit('Requested file does not exist on our server!');
         }
     }
-    // public function subirDocumentos(Request $request, $modelo, $id_modelo){
-    //     if ($request->hasFile('documentos')) {
-    //         foreach ($request->file('documentos') as $file) {
-    //             $name = time().'_'.$file->getClientOriginalName();
-    //             Storage::disk('public')->put("{$modelo}/{$name}", \File::get($file));
-    //             $d = new Documento();
-    //             $d->modelo = $modelo;
-    //             $d->id_modelo = $id_modelo;
-    //             $d->nombre = $name;
-    //             $d->usuario_id = auth()->user()->id;
-
-    //             $sizeInBytes = $file->getSize();
-    //             $sizeInMB = $sizeInBytes / (1024 * 1024);
-    //             $formattedSizeInMB = number_format($sizeInMB, 2); // Formatear a 2 decimales
-    //             $d->tamano = $formattedSizeInMB . ' MB'; // Guardar como string con 'MB'
-    //             $d->save();
-    //         }
-    //     }
-    //     $documentos = Documento::where('modelo', $modelo)->where('id_modelo', $id_modelo)->get();
-        
-    //     return response()->json([
-    //         'documentos' => $documentos,
-    //         'success' => true,
-    //     ]);
-    // }
     public function eliminarDocumento($id){
         $documento = Documento::findOrFail($id);
         $modelo = $documento->modelo;
@@ -356,8 +286,7 @@ class APIController extends Controller
             'message' => 'Usuario actualizado correctamente',
         ], 200);
     }
-    public function eliminarUsuario($id)
-    {
+    public function eliminarUsuario($id){
         $user = User::findOrFail($id);
 
         $relaciones = [ 
@@ -372,15 +301,13 @@ class APIController extends Controller
         ];
         
         foreach ($relaciones as $relacion => $nombre) {
-        if ($user->$relacion()->exists()) {
-            return response()->json([
-                'success' => false,
-                'message' => "No se puede eliminar el usuario porque tiene registros en {$nombre}."
-            ], 400);
+            if ($user->$relacion()->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "No se puede eliminar el usuario porque tiene registros en {$nombre}."
+                ], 400);
+            }
         }
-
-    }
-        
         $user->delete();
         return response()->json([
             'success' => true,
@@ -502,20 +429,19 @@ class APIController extends Controller
             'componente' => $componente
         ]);
     }
-
-    public function guardarComentarioComponente(Request $request, $componente_id){
+    // public function guardarComentarioComponente(Request $request, $componente_id){
         
-        $componente = Componente::findOrFail($componente_id);
-        $nuevoComentario = $request->input('comentario');
-        $componente->comentarios = $nuevoComentario;
+    //     $componente = Componente::findOrFail($componente_id);
+    //     $nuevoComentario = $request->input('comentario');
+    //     $componente->comentarios = $nuevoComentario;
 
-        $componente->save();
+    //     $componente->save();
 
-        return response()->json([
-            'success' => true,
-            'comentarios' => $componente->comentarios
-        ], 200);
-    }
+    //     return response()->json([
+    //         'success' => true,
+    //         'comentarios' => $componente->comentarios
+    //     ], 200);
+    // }
 
     public function obtenerComponentesMaquina($maquina_id){
         $componentes = Componente::whereHas('fabricaciones', function ($query) use ($maquina_id) {
@@ -758,7 +684,7 @@ class APIController extends Controller
             'herramental' => $herramental
         ]);
     }
-    public function actualizarHerramental(Request $request, $id, $tipo) {
+    public function actualizarHerramental(Request $request, $id, $tipo) { // desde ensamble
         $datos = $request->json()->all();
         
         switch ($tipo) {
@@ -1031,7 +957,7 @@ class APIController extends Controller
                         }
                     }
                 }else{
-                    if($componente->esComponenteExterno()){
+                    if($componente->esComponenteExterno()){    //si es componente externo, refaccion: finalizar el componente
                         
                         $componente->fecha_terminado = date('Y-m-d H:i');
                         $componente->save();
@@ -1060,53 +986,7 @@ class APIController extends Controller
                         
 
                     }else{
-                        $notificacion = new Notificacion();
-                        $notificacion->roles = json_encode(['MATRICERO']);
-                        $notificacion->url_base = '/matricero';
-                        $notificacion->anio_id = $anio->id;
-                        $notificacion->cliente_id = $cliente->id;
-                        $notificacion->proyecto_id = $proyecto->id;
-                        $notificacion->herramental_id = $herramental->id;
-                        $notificacion->componente_id = $componente->id;
-                        $notificacion->descripcion = 'COMPONENTE LISTO PARA ENSAMBLE';
-                        $notificacion->save();
-        
-                        $componente->fecha_terminado = date('Y-m-d H:i');
-                        $componente->save();
-        
-                        $users = User::role('MATRICERO')->get();
-                        foreach ($users as $user) {
-                            $user->hay_notificaciones = true;
-                            $user->save();
-                        }
-        
-                        $herramentalListo = true;
-                        $componentes = Componente::where('herramental_id', $herramental->id)->where('refabricado', false)->with('fabricaciones')->get();
-                        foreach ($componentes as $comp) {
-                            foreach ($comp->fabricaciones as $fabriComp) {
-                                if (!$fabriComp->fabricado) {
-                                    $herramentalListo = false;
-                                    break 2;
-                                }
-                            }
-                        }
-        
-                        if ($herramentalListo) {
-                            $notificacionHerramental = new Notificacion();
-                            $notificacionHerramental->roles = json_encode(['MATRICERO']);
-                            $notificacionHerramental->url_base = '/matricero';
-                            $notificacionHerramental->anio_id = $anio->id;
-                            $notificacionHerramental->cliente_id = $cliente->id;
-                            $notificacionHerramental->proyecto_id = $proyecto->id;
-                            $notificacionHerramental->herramental_id = $herramental->id;
-                            $notificacionHerramental->descripcion = 'HERRAMENTAL COMPLETO Y LISTO PARA ENSAMBLE';
-                            $notificacionHerramental->save();
-        
-                            foreach ($users as $user) {
-                                $user->hay_notificaciones = true;
-                                $user->save();
-                            }
-                        }
+                        $this->verificarEnsambleOSiguientePaso($componente);
                     }
                 }
             } else { //si mis fabricaciones no estan vacías
@@ -1201,8 +1081,6 @@ class APIController extends Controller
                     }
                 }
             }            
-            
-            // $maquina = Maquina::findOrFail($fabricacion->maquina_id);
             $ultimoSeguimiento = SeguimientoTiempo::where('componente_id', $componente->id)
                 ->where('accion', 'fabricacion')
                 ->where('accion_id', $fabricacion->proceso_uuid)
@@ -1294,8 +1172,6 @@ class APIController extends Controller
             }
         }
 
-
-        
         if($liberar){
             $herramental = Herramental::findOrFail($componente->herramental_id);
             $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
@@ -1435,6 +1311,16 @@ class APIController extends Controller
                 $usuario->save();
             }
         } else {
+            $this->verificarEnsambleOSiguientePaso($componente);
+        }
+    }
+    protected function verificarEnsambleOSiguientePaso($componente){
+        $herramental = Herramental::findOrFail($componente->herramental_id);
+        $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
+        $cliente = Cliente::findOrFail($proyecto->cliente_id);
+        $anio = Anio::findOrFail($cliente->anio_id);
+
+        if($componente->requiere_ensamble){   //si requiere ensamble, notificar al matricero
             $notificacion = new Notificacion();
             $notificacion->roles = json_encode(['MATRICERO']);
             $notificacion->url_base = '/matricero';
@@ -1446,13 +1332,119 @@ class APIController extends Controller
             $notificacion->descripcion = 'COMPONENTE LISTO PARA ENSAMBLE';
             $notificacion->save();
 
+
             $componente->fecha_terminado = date('Y-m-d H:i');
             $componente->save();
+
+            // preparo para pruebas y pruebas
+            $herramental->estatus_ensamble = 'inicial';
+            $herramental->estatus_pruebas_diseno = 'inicial';
+            $herramental->estatus_pruebas_proceso = 'inicial';
+            $herramental->save();
 
             $users = User::role('MATRICERO')->get();
             foreach ($users as $user) {
                 $user->hay_notificaciones = true;
                 $user->save();
+            }
+
+            $herramentalListo = true;
+            $componentes = Componente::where('herramental_id', $herramental->id)->where('refabricado', false)->with('fabricaciones')->get();
+            foreach ($componentes as $comp) {
+                foreach ($comp->fabricaciones as $fabriComp) {
+                    if (!$fabriComp->fabricado) {
+                        $herramentalListo = false;
+                        break 2;
+                    }
+                }
+            }
+            if ($herramentalListo) {
+                $notificacionHerramental = new Notificacion();
+                $notificacionHerramental->roles = json_encode(['MATRICERO']);
+                $notificacionHerramental->url_base = '/matricero';
+                $notificacionHerramental->anio_id = $anio->id;
+                $notificacionHerramental->cliente_id = $cliente->id;
+                $notificacionHerramental->proyecto_id = $proyecto->id;
+                $notificacionHerramental->herramental_id = $herramental->id;
+                $notificacionHerramental->descripcion = 'HERRAMENTAL COMPLETO Y LISTO PARA ENSAMBLE';
+                $notificacionHerramental->save();
+
+                foreach ($users as $user) {
+                    $user->hay_notificaciones = true;
+                    $user->save();
+                }
+            }
+        }elseif($componente->requiere_pruebas){    // el componente no requiere ensamble pero si pruebas: notificar al jefe de area y a diseño
+
+            $componente->fecha_terminado = date('Y-m-d H:i');
+            $componente->ensamblado = true;
+            $componente->fecha_ensamblado = date('Y-m-d H:i');
+            $componente->save();
+
+            // termino ensamble
+            $herramental->estatus_ensamble = 'finalizado';
+            $herramental->inicio_ensamble = date('Y-m-d H:i');
+            $herramental->termino_ensamble = date('Y-m-d H:i');
+            
+            // preparo para pruebas
+            $herramental->estatus_pruebas_diseno = 'inicial';
+            $herramental->estatus_pruebas_proceso = 'inicial';
+            $herramental->save();
+
+            $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
+            $cliente = Cliente::findOrFail($proyecto->cliente_id);
+            $anio = Anio::findOrFail($cliente->anio_id);
+
+            $notificacion = new Notificacion();
+            $notificacion->roles = json_encode(['JEFE DE AREA', 'DISEÑO'], JSON_UNESCAPED_UNICODE);
+            $notificacion->url_base = '/visor-pruebas';
+            $notificacion->anio_id = $anio->id;
+            $notificacion->cliente_id = $cliente->id;
+            $notificacion->proyecto_id = $proyecto->id;
+            $notificacion->herramental_id = $herramental->id;
+            $notificacion->descripcion = 'SE HA LIBERADO UN HERRAMENTAL PARA PRUEBAS DE DISEÑO.';
+            $notificacion->save();
+
+            $users = User::role('JEFE DE AREA')->get();
+            foreach ($users as $user) {
+                $user->hay_notificaciones = true;
+                $user->save();
+            }
+            $users = User::role('DISEÑO')->get();
+            foreach ($users as $user) {
+                $user->hay_notificaciones = true;
+                $user->save();
+            }
+        }
+        else{   //si no requiere ensamble ni pruebas, finalizar el componente y el herrmental y notificar al jefe de area
+           
+            $componente->fecha_terminado = date('Y-m-d H:i');
+            $componente->ensamblado = true;
+            $componente->fecha_ensamblado = date('Y-m-d H:i');
+            $componente->save();
+
+            $herramental->estatus_ensamble = 'finalizado';
+            $herramental->inicio_ensamble = date('Y-m-d H:i');
+            $herramental->termino_ensamble = date('Y-m-d H:i');
+            $herramental->estatus_pruebas_diseno = 'finalizado';
+            $herramental->estatus_pruebas_proceso = 'finalizado';
+            $herramental->fecha_terminado = date('Y-m-d H:i');
+            $herramental->save();
+
+            $notificacion = new Notificacion();
+            $notificacion->roles = json_encode(['JEFE DE AREA']);
+            $notificacion->url_base = '/visor-avance-hr';
+            $notificacion->anio_id = $anio->id;
+            $notificacion->cliente_id = $cliente->id;
+            $notificacion->proyecto_id = $proyecto->id;
+            $notificacion->herramental_id = $herramental->id;
+            $notificacion->descripcion = 'EL HERRAMENTAL HA SIDO FINALIZADO';
+            $notificacion->save();
+
+            $usuarios = User::role('JEFE DE AREA')->get();
+            foreach ($usuarios as $usuario) {
+                $usuario->hay_notificaciones = true;
+                $usuario->save();
             }
         }
     }
@@ -1587,6 +1579,8 @@ class APIController extends Controller
             $componente->prioridad = $datos['prioridad'];            
             $componente->comentarios = $datos['comentarios'];
             $componente->requiere_temple = $datos['requiere_temple'];
+            $componente->requiere_pruebas = $datos['requiere_pruebas'];
+            $componente->requiere_ensamble = $datos['requiere_ensamble'];
             $componente->programador_id = $datos['programador_id'];
             $componente->ruta = json_encode($datos['ruta']);
             $componente->enrutado = $liberar;
@@ -1598,7 +1592,6 @@ class APIController extends Controller
             $componente->save();
             
             if($liberar){
-                
                 $herramental = Herramental::findOrFail($componente->herramental_id);
                 $proyecto = Proyecto::findOrFail($herramental->proyecto_id);
                 $cliente = Cliente::findOrFail($proyecto->cliente_id);
@@ -1633,7 +1626,6 @@ class APIController extends Controller
                         $user->save();
                     }
                 }
-    
                 $notificacion = new Notificacion();
                 $notificacion->roles = json_encode(['PROGRAMADOR']);
                 $notificacion->url_base = '/visor-programador';
@@ -1778,54 +1770,55 @@ class APIController extends Controller
                         $notificacion->descripcion = 'EL COMPONENTE EXTERNO ESTÁ LISTO';
                         $notificacion->save();
                     }else{
-                        
-                        $notificacion = new Notificacion();
-                        $notificacion->roles = json_encode(['MATRICERO']);
-                        $notificacion->url_base = '/matricero';
-                        $notificacion->anio_id = $anio->id;
-                        $notificacion->cliente_id = $cliente->id;
-                        $notificacion->proyecto_id = $proyecto->id;
-                        $notificacion->herramental_id = $herramental->id;
-                        $notificacion->componente_id = $nuevoComponente->id;
-                        $notificacion->descripcion = 'COMPONENTE LISTO PARA ENSAMBLE';
-                        $notificacion->save();
-        
-                        $nuevoComponente->fecha_terminado = date('Y-m-d H:i');
-                        $nuevoComponente->save();
-        
-                        $users = User::role('MATRICERO')->get();
+                        $this->verificarEnsambleOSiguientePaso($nuevoComponente);
 
-                        foreach ($users as $user) {
-                            $user->hay_notificaciones = true;
-                            $user->save();
-                        }
-                        $herramentalListo = true;
-                        $otrosComponentes = Componente::where('herramental_id', $herramental->id)->where('refabricado', false)->with('fabricaciones')->get();
-
-                        foreach ($otrosComponentes as $comp) {
-                            foreach ($comp->fabricaciones as $fabriComp) {
-                                if (!$fabriComp->fabricado) {
-                                    $herramentalListo = false;
-                                    break 2;
-                                }
-                            }
-                        }
-                        if ($herramentalListo) {
-                            $notificacionHerramental = new Notificacion();
-                            $notificacionHerramental->roles = json_encode(['MATRICERO']);
-                            $notificacionHerramental->url_base = '/matricero';
-                            $notificacionHerramental->anio_id = $anio->id;
-                            $notificacionHerramental->cliente_id = $cliente->id;
-                            $notificacionHerramental->proyecto_id = $proyecto->id;
-                            $notificacionHerramental->herramental_id = $herramental->id;
-                            $notificacionHerramental->descripcion = 'HERRAMENTAL COMPLETO Y LISTO PARA ENSAMBLE';
-                            $notificacionHerramental->save();
+                        // $notificacion = new Notificacion();
+                        // $notificacion->roles = json_encode(['MATRICERO']);
+                        // $notificacion->url_base = '/matricero';
+                        // $notificacion->anio_id = $anio->id;
+                        // $notificacion->cliente_id = $cliente->id;
+                        // $notificacion->proyecto_id = $proyecto->id;
+                        // $notificacion->herramental_id = $herramental->id;
+                        // $notificacion->componente_id = $nuevoComponente->id;
+                        // $notificacion->descripcion = 'COMPONENTE LISTO PARA ENSAMBLE';
+                        // $notificacion->save();
         
-                            foreach ($users as $user) {
-                                $user->hay_notificaciones = true;
-                                $user->save();
-                            }
-                        }
+                        // $nuevoComponente->fecha_terminado = date('Y-m-d H:i');
+                        // $nuevoComponente->save();
+        
+                        // $users = User::role('MATRICERO')->get();
+
+                        // foreach ($users as $user) {
+                        //     $user->hay_notificaciones = true;
+                        //     $user->save();
+                        // }
+                        // $herramentalListo = true;
+                        // $otrosComponentes = Componente::where('herramental_id', $herramental->id)->where('refabricado', false)->with('fabricaciones')->get();
+
+                        // foreach ($otrosComponentes as $comp) {
+                        //     foreach ($comp->fabricaciones as $fabriComp) {
+                        //         if (!$fabriComp->fabricado) {
+                        //             $herramentalListo = false;
+                        //             break 2;
+                        //         }
+                        //     }
+                        // }
+                        // if ($herramentalListo) {
+                        //     $notificacionHerramental = new Notificacion();
+                        //     $notificacionHerramental->roles = json_encode(['MATRICERO']);
+                        //     $notificacionHerramental->url_base = '/matricero';
+                        //     $notificacionHerramental->anio_id = $anio->id;
+                        //     $notificacionHerramental->cliente_id = $cliente->id;
+                        //     $notificacionHerramental->proyecto_id = $proyecto->id;
+                        //     $notificacionHerramental->herramental_id = $herramental->id;
+                        //     $notificacionHerramental->descripcion = 'HERRAMENTAL COMPLETO Y LISTO PARA ENSAMBLE';
+                        //     $notificacionHerramental->save();
+        
+                        //     foreach ($users as $user) {
+                        //         $user->hay_notificaciones = true;
+                        //         $user->save();
+                        //     }
+                        // }
                     }
                 }else{
                     $siguienteFabricacion = $fabricacionesPendientes->firstWhere('orden', $nuevoComponente->estatus_fabricacion);
@@ -2145,6 +2138,8 @@ class APIController extends Controller
         $nuevoComponente->herramental_id = $componente->herramental_id;
         $nuevoComponente->material_id = $componente->material_id;
         $nuevoComponente->otro_material = $componente->otro_material;
+        $nuevoComponente->requiere_ensamble = $componente->requiere_ensamble;
+        $nuevoComponente->requiere_pruebas = $componente->requiere_pruebas;
         
         $rutaBase = "{$herramental->proyecto_id}/{$herramental->id}/componentes/";
         if ($componente->archivo_2d) {
@@ -2534,20 +2529,16 @@ class APIController extends Controller
             'success' => true,
         ], 200);
     }
+    public function updateAtendida(Request $request, $id){
+        $notificacion = Notificacion::findOrFail($id);
+        $notificacion->atendida = $request->input('atendida') ? 1 : 0;
+        $notificacion->save();
 
-    public function updateAtendida(Request $request, $id)
-{
-    $notificacion = Notificacion::findOrFail($id);
-    $notificacion->atendida = $request->input('atendida') ? 1 : 0;
-    $notificacion->save();
-
-    return response()->json([
-        'success' => true,
-        'atendida' => $notificacion->atendida
-    ]);
-}
-
-
+        return response()->json([
+            'success' => true,
+            'atendida' => $notificacion->atendida
+        ]);
+    }
     public function bajaHoja(Request $request, $hoja_id, $estatus){
         $hoja = Hoja::findOrFail($hoja_id);
         $hoja->estatus = filter_var($estatus, FILTER_VALIDATE_BOOLEAN);;
@@ -4094,8 +4085,6 @@ class APIController extends Controller
             'success' => true,
         ], 200);
     }
-
-    
     public function obtenerHerramentales(){
         $herramentales = Herramental::all();
 
