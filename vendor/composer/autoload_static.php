@@ -207,9 +207,9 @@ class ComposerStaticInit60eef7165f8ea49c6781e3119c6a5a04
         ),
         'phpDocumentor\\Reflection\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
-            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
+            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
         'ZipStream\\' => 
         array (
@@ -687,6 +687,7 @@ class ComposerStaticInit60eef7165f8ea49c6781e3119c6a5a04
         'App\\Rules\\CurrentPasswordCheckRule' => __DIR__ . '/../..' . '/app/Rules/CurrentPasswordCheckRule.php',
         'App\\SeguimientoTiempo' => __DIR__ . '/../..' . '/app/SeguimientoTiempo.php',
         'App\\Solicitud' => __DIR__ . '/../..' . '/app/Solicitud.php',
+        'App\\SolicitudAfilado' => __DIR__ . '/../..' . '/app/SolicitudAfilado.php',
         'App\\SolicitudExterna' => __DIR__ . '/../..' . '/app/SolicitudExterna.php',
         'App\\User' => __DIR__ . '/../..' . '/app/User.php',
         'ArithmeticError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/ArithmeticError.php',
