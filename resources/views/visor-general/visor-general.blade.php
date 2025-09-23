@@ -44,7 +44,6 @@
                 </li>
             </ul>
             <div class="tab-content pt-4" id="myTabContent">
-
                 <div class="tab-pane fade show active" id="enrutamiento" role="tabpanel" aria-labelledby="home-tab">
                     <div class="row mb-3">
                         <div class="table-responsive col-lg-12">
@@ -62,7 +61,7 @@
                                         <td class="bold">@{{componente.nombre}}</td>
                                         <td>@{{componente.cantidad}}</td>
                                         <td>@{{componente.fecha_cargado}}Hrs.</td>
-                                        <td>@{{componente.comentarios}}</td>                                    
+                                        <td>@{{componente.comentarios??'Sin comentarios'}}</td>                                    
                                     </tr>
                                     <tr v-if="trabajosPendientes?.enrutamiento?.length == 0">
                                         <td colspan="3" class="text-center">No hay trabajos de enrutamiento pendiente</td>
@@ -72,7 +71,6 @@
                             </table>
                         </div>
                     </div>
-                    <!-- Vista enrutamiento -->
                 </div>
                 <div class="tab-pane fade" id="programacion" role="tabpanel" aria-labelledby="profile-tab">
                     <div class="row mb-3">
@@ -182,7 +180,7 @@
                                         <td><button @click="goTo('visor-avance-hr', componente.rutaComponente)" class="btn btn-sm btn-default"><i class="fa fa-eye">&nbsp;</i>Ver ruta componente</button></td>
                                     </tr>
                                     <tr v-if="trabajosPendientes?.cortes?.length == 0">
-                                        <td colspan="3" class="text-center">No hay trabajos de corte pendiente</td>
+                                        <td colspan="7" class="text-center">No hay trabajos de corte pendiente</td>
 
                                     </tr>
                                 </tbody>
@@ -209,7 +207,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="cursor-pointer" v-for="(fabricaciones, index) in trabajosPendientes.fabricaciones">
+                                    <tr class="cursor-pointer" v-for="(fabricaciones, index) in trabajosPendientes.fabricaciones" v-if="fabricaciones.componentes?.length > 0">
                                         <td class="bold">@{{fabricaciones.maquina_nombre}}</td>
                                         <td>@{{getTipoProcesoString(fabricaciones.proceso_maquina)}}</td>
     

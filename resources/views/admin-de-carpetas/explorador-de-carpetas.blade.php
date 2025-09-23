@@ -247,7 +247,7 @@
                 try {
                     const response = await axios.get(`/api/anios/${anioId}/clientes`);
                     this.clientes = response.data.clientes.filter(c =>
-                        !['ORDENES EXTERNAS', 'REFACCIONES'].includes(c.nombre)
+                        !['ORDENES EXTERNAS', 'REFACCIONES', 'ORDENES AFILADO'].includes(c.nombre)
                     );
                     this.menuStep = 2;
                 } catch (error) {
@@ -334,7 +334,7 @@
                             break;
 
                         case 'carpeta':
-                            if (t.nuevo.nombre === 'REFACCIONES' || t.nuevo.nombre === 'ORDENES EXTERNAS') {
+                            if (t.nuevo.nombre === 'REFACCIONES' || t.nuevo.nombre === 'ORDENES EXTERNAS'  || t.nuevo.nombre === 'ORDENES AFILADO') {
                                 swal('Error!', 'No se puede agregar esta carpeta/cliente', 'error');
                                 break;
                             }
