@@ -5818,6 +5818,7 @@ class APIController extends Controller
                 ->where('estatus_fabricacion', '!=', 'finalizado')
                 ->whereHas('componente', function($query) {
                     $query->whereColumn('estatus_fabricacion', 'orden');
+                    $query->where('refabricado', false);
                 })
                 ->get()
                 ->map(function($fab) {
@@ -5939,7 +5940,7 @@ class APIController extends Controller
             })
             ->get();
 
-        // Fabricaciones        
+        // Fabricaciones
         $data['fabricaciones'] = Fabricacion::where('fabricado', false)
             ->where('estatus_fabricacion', '!=', 'finalizado')
             ->get()
@@ -5947,7 +5948,11 @@ class APIController extends Controller
             ->map(function ($fabricacionesPorMaquina, $maquinaId) {
                 $maquina = Maquina::find($maquinaId);
                 $operadores = User::whereJsonContains('maquinas', $maquinaId)->get();
+                $componenteIds = $fabricacionesPorMaquina->pluck('componente_id')->unique();
 
+                $componentesFiltrados = Componente::whereIn('id', $componenteIds)
+                                                ->where('refabricado', false) 
+                                                ->get();
                 return [
                     'maquina_id' => $maquinaId,
                     'maquina_nombre' => $maquina ? $maquina->nombre : 'Desconocida',
@@ -5956,16 +5961,13 @@ class APIController extends Controller
                     'operadores' => $operadores->map(function ($op) {
                         return [
                             'id' => $op->id,
-                            'nombre' => $op->nombre . ' ' . $op->ap_paterno . ' ' . $op->ap_materno,
+                            'nombre' => $op->nombre_completo,
                         ];
                     }),
-                    // 🔑 Aquí va la colección de componentes de esa máquina
-                    'componentes' => $fabricacionesPorMaquina->map(function ($fab) {
-                        return Componente::find($fab->componente_id);
-                    })->values(),
+                    'componentes' => $componentesFiltrados,
                 ];
             })
-            ->values();
+        ->values();
 
 
         return response()->json([

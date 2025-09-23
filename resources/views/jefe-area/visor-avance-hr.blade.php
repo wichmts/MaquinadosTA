@@ -379,7 +379,7 @@
                                                         <div class="mb-2" v-if="!component.info.es_compra">
                                                             <span><strong>Fecha de Carga:</strong> @{{ component.info.fecha_cargado }}</span> <br>
                                                             <span><strong>Fecha Términado:</strong> @{{ component.info.fecha_terminado ?? ' Sin finalizar' }}</span> <br>
-                                                            <span><strong>Fecha Ensamblado:</strong> @{{ component.info.matricero_id ? (component.info.fecha_ensamblado ?? 'Sin ensamblar') : 'No requiere ensamble' }}</span> <br>
+                                                            <span><strong>Fecha Ensamblado:</strong> @{{ component.info.requiere_ensamble ? (component.info.fecha_ensamblado ?? 'Sin ensamblar') : 'No requiere ensamble' }}</span> <br>
                                                             <span><strong>Ultimo estatus:</strong> </span> <span class="badge badge-dark badge-pill px-2 py-1 my-2">@{{determinarEstatus(component.info)}}</span> <br>
                                                             <div v-if="component.info.requiere_temple">
                                                                 <span class="bold">Detalles de temple: <br></span>
