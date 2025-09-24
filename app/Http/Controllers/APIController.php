@@ -26,6 +26,7 @@ use App\Solicitud;
 use App\Puesto;
 use App\SolicitudExterna;
 use App\SolicitudAfilado;
+use App\UnidadDeMedida;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
@@ -4164,6 +4165,15 @@ class APIController extends Controller
         ], 200);
     }
 
+    public function obtenerUnidadDeMedida(){
+        $medidas = UnidadDeMedida::all();
+
+        return response()->json([
+            'medidas' => $medidas,
+            'success' => true,
+        ], 200);
+    }
+
     
     public function obtenerHerramentales(){
         $herramentales = Herramental::all();
@@ -5621,7 +5631,8 @@ class APIController extends Controller
             $ordenAfilado->cantidad = $data['cantidad'];            
             $ordenAfilado->comentarios = $data['comentarios'];  
             $ordenAfilado->caras_a_afilar = $data['caras_a_afilar'];
-            $ordenAfilado->cuanto_afilar = $data['cuanto_afilar'];          
+            $ordenAfilado->cuanto_afilar = $data['cuanto_afilar'];  
+            $ordenAfilado->unidad_medida_id = $data['unidad_medida_id'];
             $ordenAfilado->save();
 
             if ($request->hasFile('archivo_2d')) {

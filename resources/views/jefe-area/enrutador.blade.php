@@ -726,7 +726,7 @@
                             <p><strong>Area de solicitud </strong><br> @{{solicitudAfilado.area_solicitud}}</p>
                             <p><strong>Comentarios e intrucciones </strong><br> @{{solicitudAfilado.comentarios}}</p>
                             <p><strong>Caras a afilar </strong><br> @{{solicitudAfilado.caras_a_afilar}}</p>
-                            <p><strong>Cuanto afilar </strong><br> @{{solicitudAfilado.cuanto_afilar}}</p>
+                            <p><strong>Cuanto afilar </strong><br> @{{solicitudAfilado.cuanto_afilar}} @{{solicitudAfilado.unidad_de_medida}}</p>
                             <p><strong>Archivos</strong></p>
                             <p v-if="!solicitudAfilado.archivo_2d">Sin archivos disponibles</p>
                             <a :href="'/api/download/ordenes_trabajo/' + solicitudAfilado.archivo_2d" v-if="solicitudAfilado.archivo_2d" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo 2D</a>

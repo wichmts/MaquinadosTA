@@ -24,6 +24,11 @@ class SolicitudAfilado extends Model
     {
         return $this->belongsTo('App\Componente', 'componente_id');
     }
+
+    public function unidadMedida()
+    {
+        return $this->belongsTo('App\UnidadDeMedida', 'unidad_medida_id');
+    }
     
     public function toArray()
     {
@@ -35,6 +40,7 @@ class SolicitudAfilado extends Model
         $array['usuario'] = $this->usuario;
         $array['solicitante'] = $this->solicitante;
         $array['componente'] = $this->componente;
+        $array['unidad_de_medida'] = $this->unidadMedida->abreviatura;
         return $array;
     }
 
