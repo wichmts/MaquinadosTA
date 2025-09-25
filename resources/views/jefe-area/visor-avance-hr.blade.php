@@ -210,7 +210,7 @@
                                         <span class="underline-hover">@{{obj.nombre}}</span> 
                                     </a>
                                     @else
-                                    <a class="nav-link cursor-pointer"  @click="fetchHerramentales(obj.id)"  v-if="(ruta.cliente !== 'REFACCIONES' && ruta.cliente !== 'ORDENES EXTERNAS') || esMiCarpeta(obj.nombre)">
+                                    <a class="nav-link cursor-pointer"  @click="fetchHerramentales(obj.id)"  v-if="(ruta.cliente !== 'REFACCIONES' && ruta.cliente !== 'ORDENES EXTERNAS' && ruta.cliente !== 'ORDENES AFILADO') || esMiCarpeta(obj.nombre)">
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
                                         <span class="underline-hover">@{{obj.nombre}}</span> 
                                     </a>
