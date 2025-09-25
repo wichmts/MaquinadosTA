@@ -4174,6 +4174,52 @@ class APIController extends Controller
         ], 200);
     }
 
+    public function nuevaUnidadDeMedida(Request $request){        
+        try{
+            $nuevaMedida = new UnidadDeMedida;
+            $nuevaMedida->nombre = $request->nombre;
+            $nuevaMedida->abreviatura = $request->abreviatura;
+            $nuevaMedida->save();
+
+            return response()->json([
+                'success' => true,
+            ], 200);
+        }catch(\Exception $e){
+            return response()->json([
+                    'success' => false,
+                    'message' => 'Ocurrió un error inesperado al agregar la medida.',
+                    'error' => $e->getMessage(), 
+                ], 500);
+        }
+    }
+
+    public function editarUnidadDeMedida(Request $request, $medidaId){        
+        try {
+            $medida = UnidadDeMedida::findOrFail($medidaId);
+            $medida->nombre = $request->nombre;
+            $medida->abreviatura = $request->abreviatura;
+            $medida->save();
+            return response()->json([
+                'success' => true,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error inesperado al agregar medida.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function eliminarUnidadDeMedida($medidaId){
+        $medida = UnidadDeMedida::findOrFail($medidaId);
+        $medida->delete();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
     
     public function obtenerHerramentales(){
         $herramentales = Herramental::all();
@@ -6064,6 +6110,7 @@ class APIController extends Controller
             'data' => $data
         ]);
     }
+
 
     /**
      * Helper para verificar si alguna de las queries de un rol debe ejecutarse

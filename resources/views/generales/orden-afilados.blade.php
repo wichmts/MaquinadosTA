@@ -409,8 +409,7 @@
                     this.cargando = true
                     try {
                         const response = await axios.get(`/api/mis-solicitudes-afilado`);
-                        this.solicitudes = response.data.solicitudes;
-                        console.log("Solicitudes: ", this.solicitudes)
+                        this.solicitudes = response.data.solicitudes;                        
                     } catch (error) {
                         console.error('Error fetching solicitudes:', error);
                     } finally {
@@ -427,8 +426,7 @@
                 },
                 async enviar() {
                     let t = this;
-                    let valido = await t.validarFormulario(t.nuevo);
-                    console.log(t.nuevo);
+                    let valido = await t.validarFormulario(t.nuevo);                
                     if (!valido) return;
                     t.cargando = true;
                     const formData = new FormData();

@@ -93,7 +93,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('herramentales', 'WebController@herramentales');
     Route::get('tiempos-personal', 'WebController@tiemposPersonal');
     Route::get('tiempos-maquinas', 'WebController@tiemposMaquinas');
-    Route::get('/visorGeneral', 'WebController@visorGeneral');
+    Route::get('visorGeneral', 'WebController@visorGeneral');
+    Route::get('medidas', 'WebController@medidas');
 
     //Routes para el perfil 
     Route::get('profile', ['as' => 'profile.edit', 'uses' => 'ProfileController@edit']);

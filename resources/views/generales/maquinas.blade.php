@@ -93,10 +93,10 @@
             <div class="card-header border-0">
                 <div class="row align-items-center">
                     <div class="col-md-10   mb-0">
-                        <h3 class="bold my-0 py-1" style="letter-spacing: 1px;">ADMINISTRAR MAQUINAS DE TRABAJO</h3>
+                        <h3 class="bold my-0 py-1" style="letter-spacing: 1px;">ADMINISTRAR MÁQUINAS DE TRABAJO</h3>
                     </div>
                     <div class="form-group col-md-2 col-xs-12 mt-4">
-                        <button class="btn btn-normal col-md-12" @click="reiniciarModal"><i class="fa fa-circle-plus"></i> NUEVA MAQUINA</button>
+                        <button class="btn btn-normal col-md-12" @click="reiniciarModal"><i class="fa fa-circle-plus"></i> NUEVA MÁQUINA</button>
                     </div>
 
                     <div class="col-md-12 table-responsive">            
