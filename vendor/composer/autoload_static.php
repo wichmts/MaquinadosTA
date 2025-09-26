@@ -624,6 +624,7 @@ class ComposerStaticInit60eef7165f8ea49c6781e3119c6a5a04
         'App\\Channels\\WhatsAppChannel' => __DIR__ . '/../..' . '/app/Channels/WhatsAppChannel.php',
         'App\\Cliente' => __DIR__ . '/../..' . '/app/Cliente.php',
         'App\\Componente' => __DIR__ . '/../..' . '/app/Componente.php',
+        'App\\ComponenteCompra' => __DIR__ . '/../..' . '/app/ComponenteCompra.php',
         'App\\Console\\Commands\\TareasNoAtendidas' => __DIR__ . '/../..' . '/app/Console/Commands/TareasNoAtendidas.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Documento' => __DIR__ . '/../..' . '/app/Documento.php',

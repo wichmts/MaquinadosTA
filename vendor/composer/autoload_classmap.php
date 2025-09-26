@@ -11,6 +11,7 @@ return array(
     'App\\Channels\\WhatsAppChannel' => $baseDir . '/app/Channels/WhatsAppChannel.php',
     'App\\Cliente' => $baseDir . '/app/Cliente.php',
     'App\\Componente' => $baseDir . '/app/Componente.php',
+    'App\\ComponenteCompra' => $baseDir . '/app/ComponenteCompra.php',
     'App\\Console\\Commands\\TareasNoAtendidas' => $baseDir . '/app/Console/Commands/TareasNoAtendidas.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Documento' => $baseDir . '/app/Documento.php',

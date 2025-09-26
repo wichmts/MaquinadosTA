@@ -96,43 +96,90 @@
             </div>
         </div>
         <div class="row mt-3 px-5" v-cloak v-show="!cargando" >
-            <div class="col-lg-9 d-flex align-items-start">
+            <div class="col-lg-8 d-flex align-items-start">
                 <h2 class="bold my-0 py-1 " style="letter-spacing: 2px">COMPONENTES REUTILIZABLES</h2>
             </div>
-            <div class="col-lg-3 d-flex align-items-end">
+            <div class="col-lg-2 d-flex align-items-end">
+                <button class="btn btn-block btn-success" @click="ingresarComponente"><i class="fa fa-plus-circle"></i> INGRESAR COMPONENTE</button>
+            </div>
+            <div class="col-lg-2 d-flex align-items-end">
                 <button class="btn btn-block" @click="guardarCambios"><i class="fa fa-save"></i> GUARDAR CAMBIOS</button>
             </div>
             <div class="col-lg-12 mt-3" >
                 <table class="table" id="tabla">
                     <thead class="thead-light">
                         <tr>
-                            <th style="width: 20%" >Componente</th>
-                            <th style="width: 35%" >Descripción</th>
+                            <th style="width: 15%" >Fecha ingreso</th>
+                            <th style="width: 15%" >Componente</th>
+                            <th style="width: 30%" >Descripción</th>
                             <th style="width: 20%" >Proveedor / Material</th>
                             <th style="text-transform: none !important; width: 15%">Disponibles</th>
+                            <th style="text-transform: none !important; width: 10%"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="c in componentes">
+                            <td>@{{c.created_at_show}}</td>
                             <td class="bold">@{{c.nombre}}</td>
                             <td>@{{c.descripcion}}</td>
                             <td>@{{c.proveedor}}</td>
                             <td>
                                 <div class="input-group mb-0">
                                         <div class="input-group-prepend">
-                                            <button class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="c.cantidad_reutilizable > 0 ? c.cantidad_reutilizable-- : c.cantidad_reutilizable"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
+                                            <button class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="c.cantidad > 0 ? c.cantidad-- : c.cantidad"> <i class="fa fa-minus"></i> &nbsp;&nbsp;</button>
                                         </div>
-                                        <input type="number" v-model="c.cantidad_reutilizable" class="form-control text-center px-1 py-1" step="1">
+                                        <input type="number" v-model="c.cantidad" class="form-control text-center px-1 py-1" step="1">
                                         <div class="input-group-append">
-                                            <button class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="c.cantidad_reutilizable++"> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
+                                            <button class="input-group-text py-0 cursor-pointer" style="background-color: #e3e3e3 !important" @click="c.cantidad++"> &nbsp;&nbsp;<i class="fa fa-plus"></i> </button>
                                         </div>
                                     </div>
                                 </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" @click="eliminarComponente(c.id)"><i class="fa fa-times-circle"></i> Dar de baja</button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+
+            {{-- modal nuevo componente --}}
+            <div class="modal fade" id="modalNuevo" tabindex="-1" role="dialog" aria-labelledby="modalNuevoLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title bold" id="modalNuevoLabel">INGRESAR NUEVO COMPONENTE</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label class="bold" for="nombre">Nombre <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" v-model="nuevo.nombre" placeholder="Nombre del componente">
+                            </div>
+                            <div class="form-group">
+                                <label class="bold" for="descripcion">Descripción</label>
+                                <textarea class="form-control text-left px-1 py-1" v-model="nuevo.descripcion" rows="3" placeholder="Descripción del componente"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="bold" for="proveedor">Proveedor / Material</label>
+                                <input type="text" class="form-control" v-model="nuevo.proveedor" placeholder="Proveedor o material">
+                            </div>
+                            <div class="form-group">
+                                <label class="bold" for="cantidad">Cantidad Inicial <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" v-model.number="nuevo.cantidad" min="0">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                            <button type="button" class="btn" @click="guardarNuevoComponente"> <i class="fa fa-save"></i> Guardar componente</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
         </div>
 
     </div>
@@ -148,12 +195,89 @@
         data: {
             cargando: false,
             componentes: [],
+            nuevo: {nombre:'', descripcion:'', proveedor:'', cantidad: 0},
         },
         methods:{
+            async eliminarComponente(id){
+                let t = this
+                swal({
+                    title: '¿Estás seguro?',
+                    text: "Esta acción eliminará el componente seleccionado del inventario.",
+                    icon: 'warning',
+                    buttons: {
+                        cancel: {
+                            text: "Cancelar",
+                            value: null,
+                            visible: true,
+                            className: "",
+                            closeModal: true,
+                        },
+                        confirm: {
+                            text: "Eliminar",
+                            value: true,
+                            visible: true,
+                            className: "btn-danger",
+                            closeModal: true
+                        }
+                    },
+                    dangerMode: true,
+                }).then(async (willDelete) => {
+                    if (willDelete) {
+                        t.cargando = true;
+                        try {
+                            const response = await axios.delete(`/api/componentes-reutilizables/${id}`);
+                            if (response.data.success) {
+                                swal('Éxito', 'Componente eliminado correctamente.', 'success');
+                                t.fetchComponentes();
+                            } else {
+                                swal('Error', response.data.message || 'Ocurrió un error al eliminar el componente.', 'error');
+                            }
+                        } catch (error) {
+                            console.error('Error deleting componente:', error);
+                            swal('Error', 'Ocurrió un error al eliminar el componente.', 'error');
+                        } finally {
+                            t.cargando = false;
+                        }
+                    }
+                });
+            },
+            async guardarNuevoComponente(){
+                let t = this
+                if (!t.nuevo.nombre || t.nuevo.nombre.trim() === '') {
+                    swal('Error', 'El nombre del componente es obligatorio.', 'error');
+                    return;
+                }
+                if (t.nuevo.cantidad === null || t.nuevo.cantidad < 0) {
+                    swal('Error', 'La cantidad inicial debe ser un número mayor o igual a cero.', 'error');
+                    return;
+                }
+                t.cargando = true;
+                try {
+                    const response = await axios.post('/api/componentes-reutilizables', this.nuevo);
+                    if (response.data.success) {
+                        swal('Éxito', 'Componente guardado correctamente.', 'success');
+                    } else {
+                        swal('Error', response.data.message || 'Ocurrió un error al guardar los cambios.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error saving componentes:', error);
+                    swal('Error', 'Ocurrió un error al guardar los cambios.', 'error');
+                } finally {
+                    this.fetchComponentes();
+                    $('#modalNuevo').modal('hide');
+                    this.cargando = false;
+                }
+
+            },
+            ingresarComponente(){
+                let t = this
+                t.nuevo = {nombre:'', descripcion:'', proveedor:'', cantidad: 0};
+                $('#modalNuevo').modal('show');
+            },
             async guardarCambios(){
                 this.cargando = true;
                 try {
-                    const response = await axios.post('/api/componentes-reutilizables', this.componentes);
+                    const response = await axios.put('/api/componentes-reutilizables', this.componentes);
                     if (response.data.success) {
                         swal('Éxito', 'Cambios guardados correctamente.', 'success');
                         this.fetchComponentes();

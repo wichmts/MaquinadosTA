@@ -47,24 +47,38 @@
                 <div class="tab-pane fade show active" id="enrutamiento" role="tabpanel" aria-labelledby="home-tab">
                     <div class="row mb-3">
                         <div class="table-responsive col-lg-12">
-                            <table class="table">
+                            <table class="table table-bordered">
                                 <thead class="thead-light">
+                                    <tr>
+                                        <th rowspan="2">ENRUTADORES</th>
+                                        <th colspan="5" class="bg-warning text-dark">COLA DE TRABAJOS PENDIENTE</th>
+                                    </tr>
                                     <tr>
                                         <th>Nombre del componente</th>
                                         <th>Cantidad</th>
-                                        <th>Fecha Liberacion</th>
+                                        <th>Fecha Liberación</th>
                                         <th>Comentarios del enrutador</th>                                    
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="(componente, index) in trabajosPendientes.enrutamiento">
+                                        <td :rowspan="trabajosPendientes.enrutamiento.length" v-if="index === 0">
+                                            <p class="bold" v-for="enrutador in trabajosPendientes.enrutadores" :key="enrutador.id">
+                                               @{{enrutador}}
+                                            </p>
+                                        </td>
                                         <td class="bold">@{{componente.nombre}}</td>
                                         <td>@{{componente.cantidad}}</td>
-                                        <td>@{{componente.fecha_cargado}}Hrs.</td>
+                                        <td>@{{componente.fecha_cargado}}Hrs. </td>
                                         <td>@{{componente.comentarios??'Sin comentarios'}}</td>                                    
                                     </tr>
                                     <tr v-if="trabajosPendientes?.enrutamiento?.length == 0">
-                                        <td colspan="3" class="text-center">No hay trabajos de enrutamiento pendiente</td>
+                                        <td>
+                                            <p class="bold" v-for="enrutador in trabajosPendientes.enrutadores" :key="enrutador.id">
+                                               @{{enrutador}}<br>
+                                            </p>
+                                        </td>
+                                        <td colspan="4" class="text-center">No hay trabajos de enrutamiento pendiente</td>
                                     </tr>
                                 </tbody>
     
@@ -75,11 +89,14 @@
                 <div class="tab-pane fade" id="programacion" role="tabpanel" aria-labelledby="profile-tab">
                     <div class="row mb-3">
                         <div class="table-responsive col-lg-12">
-                            <table class="table">
+                            <table class="table table-bordered">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th>Nombre del programador</th>
-                                        <th>Cola de trabajos activos</th>
+                                        <th rowspan="2">PROGRAMADOR</th>
+                                        <th colspan="3" class="bg-warning text-dark">COLA DE TRABAJOS PENDIENTE</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Nombre del componente</th>
                                         <th>Comentarios del enrutador</th>
                                         <th>Ver ruta componente</th>
                                     </tr>
@@ -87,13 +104,11 @@
                                 <tbody>
                                     <tr v-for="(programador, pIndex) in trabajosPendientes.programaciones" :key="'prog-' + programador.programador_id">
                                         <td class="bold">@{{ programador.programador_nombre }}</td>
-    
                                         <td>
-                                            <div class="my-4" v-for="componente in programador.componentes" :key="'comp-nombre-' + componente.id">
+                                            <div class="my-4 bold" v-for="componente in programador.componentes" :key="'comp-nombre-' + componente.id">
                                                 @{{ componente.nombre }}
                                             </div>
                                         </td>
-    
                                         <td>
                                             <div class="my-4" v-for="componente in programador.componentes" :key="'comp-comentarios-' + componente.id">
                                                 @{{ componente.comentarios ?? 'Sin comentarios' }}
@@ -105,8 +120,6 @@
                                             </div>
                                         </td>
                                     </tr>
-    
-    
                                     <tr v-if="!trabajosPendientes.programaciones || trabajosPendientes.programaciones.length === 0">
                                         <td colspan="4" class="text-center">No hay trabajos de programación pendiente</td>
                                     </tr>
@@ -120,7 +133,7 @@
                     <div class="row mb-3">
                         
                         <div class="table-responsive col-lg-12">
-                            <table class="table">
+                            <table class="table table-bordered">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>Nombre del componente</th>
@@ -194,7 +207,7 @@
                     <div class="row mb-3">
                         <div class="table-responsive col-lg-12">
                             <!-- Vista de Fabricaciones -->
-                            <table class="table">
+                            <table class="table table-bordered">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>Máquina</th>
@@ -262,6 +275,7 @@
         data: {
             loading: true,
             trabajosPendientes: {
+                enrutadores: [],
                 compras: [],
                 cortes: [],
                 temples: [],
@@ -273,54 +287,18 @@
                 pruebas_diseno: [],
                 pruebas_proceso: [],
             },
-            procesos: [
-                // {id: 1, prioridad: 1, nombre: 'Cortar'},
-                // {id: 2, prioridad: 2, nombre: 'Programar'},
-                {
-                    id: 3,
-                    prioridad: 3,
-                    nombre: 'Carear y/o Escuadrar'
-                },
-                {
-                    id: 4,
-                    prioridad: 4,
-                    nombre: 'Maquinar'
-                },
-                {
-                    id: 5,
-                    prioridad: 5,
-                    nombre: 'Tornear'
-                },
-                {
-                    id: 6,
-                    prioridad: 6,
-                    nombre: 'Roscar/Rebabear'
-                },
-                // {id: 7, prioridad: 7, nombre: 'Templar'},
-                {
-                    id: 8,
-                    prioridad: 8,
-                    nombre: 'Rectificar'
-                },
-                {
-                    id: 9,
-                    prioridad: 9,
-                    nombre: 'EDM'
-                },
-                {
-                    id: 10,
-                    prioridad: 10,
-                    nombre: 'Cortar'
-                },
-                {
-                    id: 11,
-                    prioridad: 11,
-                    nombre: 'Marcar'
-                },
+            procesos: [    
+                { id: 3,  nombre: 'Carear y/o Escuadrar'},
+                { id: 4,  nombre: 'Maquinar'},
+                { id: 5,  nombre: 'Tornear'},
+                { id: 6,  nombre: 'Roscar/Rebabear'},
+                { id: 8,  nombre: 'Rectificar'},
+                { id: 9,  nombre: 'EDM'},
+                { id: 10,  nombre: 'Cortar'},
+                { id: 11, nombre: 'Marcar'},
             ]
         },
         methods: {
-
             setActive(tab) {
                 this.activeTab = tab;
             },

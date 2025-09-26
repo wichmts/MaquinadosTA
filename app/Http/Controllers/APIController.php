@@ -18,6 +18,7 @@ use App\Componente;
 use App\Notificacion;
 use App\Fabricacion;
 use App\PruebaDiseno;
+use App\ComponenteCompra;
 use App\PruebaProceso;
 use App\Hoja;
 use App\MovimientoHoja;
@@ -429,20 +430,6 @@ class APIController extends Controller
             'componente' => $componente
         ]);
     }
-    // public function guardarComentarioComponente(Request $request, $componente_id){
-        
-    //     $componente = Componente::findOrFail($componente_id);
-    //     $nuevoComentario = $request->input('comentario');
-    //     $componente->comentarios = $nuevoComentario;
-
-    //     $componente->save();
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'comentarios' => $componente->comentarios
-    //     ], 200);
-    // }
-
     public function obtenerComponentesMaquina($maquina_id){
         $componentes = Componente::whereHas('fabricaciones', function ($query) use ($maquina_id) {
         $query->where('maquina_id', $maquina_id)
@@ -779,11 +766,25 @@ class APIController extends Controller
                             continue; 
 
                         $comp = Componente::find($item['id']);
-                        if ($comp) {
-                            $comp->cantidad_reutilizable = isset($item['cantidad_sobrantes']) 
-                                ? (int) $item['cantidad_sobrantes'] 
-                                : 0;
+                        if ($comp && $comp->es_compra && isset($item['cantidad_sobrantes']) && $item['cantidad_sobrantes'] > 0) {
+                            $comp->cantidad_reutilizable = (int)$item['cantidad_sobrantes'];
                             $comp->save();
+
+                            $compCompra = ComponenteCompra::where('nombre', $comp->nombre)->first();
+                            if($compCompra){
+                                $compCompra->cantidad += (int) $item['cantidad_sobrantes'];
+                                $compCompra->save();
+                            }else{
+                                $compCompra = new ComponenteCompra();
+                                $compCompra->nombre = $comp->nombre;
+                                $compCompra->descripcion = $comp->descripcion;
+                                $compCompra->proveedor = $comp->proveedor;
+                                $compCompra->componente_id = $comp->id;
+                                $compCompra->cantidad = (int) $item['cantidad_sobrantes'];
+                                $compCompra->save();
+
+
+                            }
                         }
                     }
                 }
@@ -5436,12 +5437,7 @@ class APIController extends Controller
         return $detalles;
     }
     public function obtenerComponentesReutilizables(){
-       $componentes = Componente::whereNotNull('cantidad_reutilizable')
-        ->where('cantidad_reutilizable', '>', 0)
-        ->where('es_compra', true)
-        ->whereNotNull('fecha_real')
-        ->get();
-
+        $componentes = ComponenteCompra::all();
         return response()->json([
             'success' => true,
             'componentes' => $componentes
@@ -5450,9 +5446,9 @@ class APIController extends Controller
     public function guardarComponentesReutilizables(Request $request){
         $componentes = $request->json()->all();
         foreach ($componentes as $comp) {
-            $componente = Componente::find($comp['id']);
+            $componente = ComponenteCompra::find($comp['id']);
             if ($componente) {
-                $componente->cantidad_reutilizable = $comp['cantidad_reutilizable'];
+                $componente->cantidad = $comp['cantidad'];
                 $componente->save();
             }
         }
@@ -5460,6 +5456,35 @@ class APIController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Componentes actualizados correctamente.'
+        ]);
+    }
+
+    public function nuevoComponenteReutilizable(Request $request){
+        $data = $request->json()->all();
+
+        if(ComponenteCompra::where('nombre', $data['nombre'])->exists()){
+            return response()->json([
+                'success' => false,
+                'message' => 'Ya existe un componente con ese nombre.'
+            ], 200);
+        }
+        $componente = new ComponenteCompra();
+        $componente->nombre = $data['nombre'];
+        $componente->descripcion = $data['descripcion'];
+        $componente->proveedor = $data['proveedor'];
+        $componente->cantidad = $data['cantidad'];
+        $componente->save();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+    public function eliminarComponenteReutilizable($id){
+        $componente = ComponenteCompra::findOrFail($id);
+        $componente->delete();
+
+        return response()->json([
+            'success' => true,
         ]);
     }
 
@@ -5802,11 +5827,7 @@ class APIController extends Controller
                     $query2->where('cancelado', false)
                         ->orWhereNull('cancelado');
                 });
-
-            if (!in_array('JEFE DE AREA', $roles)) {
-                $query->where('programador_id', $user->id);
-            }
-
+            $query->where('programador_id', $user->id);
             $data['programaciones'] = $query->get();
         }
 
@@ -5888,7 +5909,6 @@ class APIController extends Controller
     }
     public function trabajosPendientesGeneral(){
 
-        $user = auth()->user();        
         $data = []; 
         // Enrutamiento        
         $data['enrutamiento'] = Componente::where('es_compra', false)
@@ -5900,6 +5920,8 @@ class APIController extends Controller
                     ->orWhereNull('cancelado');
             })
             ->get();
+        $data['enrutadores'] = User::role('JEFE DE AREA')->get()->pluck('nombre_completo');
+
 
         // Programaciones
         $query = Componente::where('es_compra', false)
@@ -5916,12 +5938,11 @@ class APIController extends Controller
         $data['programaciones'] = $query
             ->groupBy('programador_id')
             ->map(function ($items, $programadorId) {
-                // Obtener el nombre del programador
                 $programador = User::find($programadorId);
 
                 return [
                     'programador_id' => $programadorId,
-                    'programador_nombre' => $programador ? $programador->nombre . ' ' . $programador->ap_paterno . ' ' . $programador->ap_materno : 'Desconocido',
+                    'programador_nombre' => $programador ? $programador->nombre_completo : 'Desconocido',
                     'componentes' => $items
                 ];
             })
@@ -5941,18 +5962,50 @@ class APIController extends Controller
             ->get();
 
         // Fabricaciones
-        $data['fabricaciones'] = Fabricacion::where('fabricado', false)
-            ->where('estatus_fabricacion', '!=', 'finalizado')
+        // $data['fabricaciones'] = Fabricacion::where('fabricado', false)
+        //     ->where('estatus_fabricacion', '!=', 'finalizado')
+        //     ->get()
+        //     ->groupBy('maquina_id')
+        //     ->map(function ($fabricacionesPorMaquina, $maquinaId) {
+        //         $maquina = Maquina::find($maquinaId);
+        //         $operadores = User::whereJsonContains('maquinas', $maquinaId)->get();
+        //         $componenteIds = $fabricacionesPorMaquina->pluck('componente_id')->unique();
+
+        //         $componentesFiltrados = Componente::whereIn('id', $componenteIds)
+        //                                         ->where('refabricado', false) 
+        //                                         ->get();
+        //         return [
+        //             'maquina_id' => $maquinaId,
+        //             'maquina_nombre' => $maquina ? $maquina->nombre : 'Desconocida',
+        //             'proceso_maquina' => $maquina ? $maquina->tipo_proceso : 'Desconocido',
+        //             'fecha' => $fabricacionesPorMaquina->first()->created_at->format('d-m-Y H:i'),
+        //             'operadores' => $operadores->map(function ($op) {
+        //                 return [
+        //                     'id' => $op->id,
+        //                     'nombre' => $op->nombre_completo,
+        //                 ];
+        //             }),
+        //             'componentes' => $componentesFiltrados,
+        //         ];
+        //     })
+        // ->values();
+
+        // Fabricaciones
+        $data['fabricaciones'] = Fabricacion::query()
+            ->join('componentes', 'fabricaciones.componente_id', '=', 'componentes.id')
+            ->where('fabricaciones.fabricado', false)
+            ->where('fabricaciones.estatus_fabricacion', '!=', 'finalizado')
+            ->where('componentes.refabricado', false)
+            ->whereColumn('fabricaciones.orden', '=', 'componentes.estatus_fabricacion') //se agrego esta linea para que solo muestre la fabricacion que toque y no todas
+            ->select('fabricaciones.*')
+            ->with('componente')
             ->get()
+
             ->groupBy('maquina_id')
             ->map(function ($fabricacionesPorMaquina, $maquinaId) {
                 $maquina = Maquina::find($maquinaId);
                 $operadores = User::whereJsonContains('maquinas', $maquinaId)->get();
-                $componenteIds = $fabricacionesPorMaquina->pluck('componente_id')->unique();
-
-                $componentesFiltrados = Componente::whereIn('id', $componenteIds)
-                                                ->where('refabricado', false) 
-                                                ->get();
+                $componentes = $fabricacionesPorMaquina->pluck('componente')->unique('id');
                 return [
                     'maquina_id' => $maquinaId,
                     'maquina_nombre' => $maquina ? $maquina->nombre : 'Desconocida',
@@ -5964,15 +6017,15 @@ class APIController extends Controller
                             'nombre' => $op->nombre_completo,
                         ];
                     }),
-                    'componentes' => $componentesFiltrados,
+                    'componentes' => $componentes->values(),
                 ];
             })
-        ->values();
+            ->values();
 
 
         return response()->json([
             'success' => true,
-            'data' => $data
+            'data' => $data,
         ]);
     }
 
