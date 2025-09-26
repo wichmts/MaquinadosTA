@@ -76,7 +76,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('componente/{componente}', 'APIController@obtenerComponente');
     Route::post('componente/comentario/{componente}', 'APIController@guardarComentarioComponente');
     Route::get('componentes-reutilizables', 'APIController@obtenerComponentesReutilizables');
-    Route::post('componentes-reutilizables', 'APIController@guardarComponentesReutilizables');
+    Route::post('componentes-reutilizables', 'APIController@nuevoComponenteReutilizable');
+    Route::put('componentes-reutilizables', 'APIController@guardarComponentesReutilizables');
+    Route::delete('componentes-reutilizables/{id}', 'APIController@eliminarComponenteReutilizable');
     Route::get('notificaciones', 'APIController@notificaciones');
     Route::get('hojas/{material_id}', 'APIController@obtenerHojas');
     Route::get('movimientos-hoja/{hoja_id}', 'APIController@obtenerMovimientosHoja');

@@ -55,37 +55,6 @@ class Componente extends Model
 
         return $refabricaciones; // Devuelve el array con los componentes
     }
-    // public function maquinas(){
-    //     $maquinas = Maquina::select('maquinas.id as maquina_id','maquinas.requiere_programa', 'maquinas.nombre', 'fabricaciones.id as documento_id', 'fabricaciones.archivo as documento_nombre')
-    //         ->leftJoin('fabricaciones', function($join) {
-    //             $join->on('fabricaciones.maquina_id', '=', 'maquinas.id');
-    //         })
-    //         ->where('fabricaciones.componente_id', $this->id)
-    //         ->get()
-    //         ->groupBy('maquina_id');
-
-    //     $resultado = $maquinas->map(function ($maquina) {
-    //         $archivos = $maquina->map(function ($fabricacion) {
-    //             return [
-    //                 'id' => $fabricacion->documento_id,
-    //                 'nombre' => $fabricacion->documento_nombre,
-    //                 'tamano' => $fabricacion->documento_tamano,
-    //             ];
-    //         });
-
-    //         if ($archivos->isEmpty()) {
-    //             $archivos = [];
-    //         }
-
-    //         return [
-    //             'maquina_id' => $maquina[0]->maquina_id,
-    //             'nombre' => $maquina[0]->nombre,
-    //             'requiere_programa' => $maquina[0]->requiere_programa,
-    //             'archivos' => $archivos,
-    //         ];
-    //     });
-    //     return $resultado->values()->all();
-    // }
     public function maquinas()
     {
         $maquinas = Maquina::select(

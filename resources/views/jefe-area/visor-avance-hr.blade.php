@@ -210,7 +210,7 @@
                                         <span class="underline-hover">@{{obj.nombre}}</span> 
                                     </a>
                                     @else
-                                    <a class="nav-link cursor-pointer"  @click="fetchHerramentales(obj.id)"  v-if="(ruta.cliente !== 'REFACCIONES' && ruta.cliente !== 'ORDENES EXTERNAS') || esMiCarpeta(obj.nombre)">
+                                    <a class="nav-link cursor-pointer"  @click="fetchHerramentales(obj.id)"  v-if="(ruta.cliente !== 'REFACCIONES' && ruta.cliente !== 'ORDENES EXTERNAS' && ruta.cliente !== 'ORDENES AFILADO') || esMiCarpeta(obj.nombre)">
                                         <i class="nc-icon"><img height="17px" src="{{ asset('paper/img/icons/carpetas.png') }}"></i> &nbsp;
                                         <span class="underline-hover">@{{obj.nombre}}</span> 
                                     </a>
@@ -379,7 +379,7 @@
                                                         <div class="mb-2" v-if="!component.info.es_compra">
                                                             <span><strong>Fecha de Carga:</strong> @{{ component.info.fecha_cargado }}</span> <br>
                                                             <span><strong>Fecha Términado:</strong> @{{ component.info.fecha_terminado ?? ' Sin finalizar' }}</span> <br>
-                                                            <span><strong>Fecha Ensamblado:</strong> @{{ component.info.fecha_ensamblado ?? 'Sin ensamblar' }}</span> <br>
+                                                            <span><strong>Fecha Ensamblado:</strong> @{{ component.info.requiere_ensamble ? (component.info.fecha_ensamblado ?? 'Sin ensamblar') : 'No requiere ensamble' }}</span> <br>
                                                             <span><strong>Ultimo estatus:</strong> </span> <span class="badge badge-dark badge-pill px-2 py-1 my-2">@{{determinarEstatus(component.info)}}</span> <br>
                                                             <div v-if="component.info.requiere_temple">
                                                                 <span class="bold">Detalles de temple: <br></span>
@@ -792,7 +792,7 @@
                                 <div class="container">
                                     <div v-if="componentes.length">
                                         <div class="row">
-                                            <div class="col-md-4 mb-3" v-for="componente in componentes" :key="componente.id">
+                                            <div class="col-md-4 mb-3" v-for="componente in componentes" :key="componente.id" v-if="componente.foto_matricero">
                                                 <div class="card gallery-card">
                                                     <a class="px-0 mx-0" :href="'/storage/fotos_matricero/' + componente.foto_matricero" v-if="componente.foto_matricero" data-lightbox="fabricacion" :data-title="componente.nombre + ' (' + componente.fecha_ensamblado??'Sin ensamblar' + ')'">
                                                         <img :src="'/storage/fotos_matricero/' + componente.foto_matricero" class="gallery-img" alt="Foto de ensamble">
@@ -1509,7 +1509,7 @@
                 return maquina ? maquina.nombre : '-';
             },
             determinarEstatus(componente) {
-                const { cargado, enrutado, cortado, programado, ensamblado, fecha_terminado, esComponenteExterno } = componente;
+                const { cargado, enrutado, cortado, programado, ensamblado, fecha_terminado, esComponenteExterno, requiere_ensamble } = componente;
 
                 let resultado = "Sin estatus";
                 if (cargado) {
@@ -1525,13 +1525,16 @@
                     resultado = "En corte";
                 }
                 if (programado && cortado) {
-                    resultado = "En Fabricacion";
+                    resultado = "En Fabricación";
                 }
-                if(esComponenteExterno && fecha_terminado){
-                    resultado = "Terminado";
+                if (!esComponenteExterno && fecha_terminado) {
+                    resultado = "En Ensamble";
                 }
                 if (ensamblado) {
                     resultado = "Ensamblado";
+                }
+                if((esComponenteExterno || !requiere_ensamble) && fecha_terminado){
+                    resultado = "Terminado";
                 }
                 return resultado;
             },   
