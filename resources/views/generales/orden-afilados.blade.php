@@ -177,12 +177,27 @@
                 </div>
                 <div class="col-lg-4 form-group">
                     <label class="bold">Caras a afilar <span class="text-danger">*</span></label>
-                    <input :disabled="modo_edicion" type="number" step="1" class="form-control" v-model="nuevo.caras_a_afilar">
+                    <input :disabled="modo_edicion" type="string" step="1" class="form-control" v-model="nuevo.caras_a_afilar">
                 </div>
-                <div class="col-lg-4 form-group">
+                <div class="col-lg-2 form-group">
                     <label class="bold">Cuanto afilar <span class="text-danger">*</span></label>
                     <input :disabled="modo_edicion" type="number" step="1" class="form-control" v-model="nuevo.cuanto_afilar">
                 </div>
+                <div class="col-lg-2 form-group">
+                    <label class="bold">
+                        Unidad de medida <span class="text-danger">*</span>
+                    </label>
+                    <select
+                        :disabled="modo_edicion"
+                        class="form-control"
+                        v-model="nuevo.unidad_medida_id">
+                        <option disabled value="">Seleccione una medida</option>
+                        <option v-for="medida in medidas" :key="medida.id" :value="medida.id">
+                            @{{ medida.nombre }} (@{{medida.abreviatura }})
+                        </option>
+                    </select>
+                </div>
+
             </div>
 
             <div class="row">
@@ -261,6 +276,7 @@
                 cargando: false,
                 materiales: [],
                 usuarios: [],
+                medidas: {},
                 nuevo: {
                     fecha_solicitud: new Date().toISOString().slice(0, 10),
                     fecha_deseada_entrega: new Date().toISOString().slice(0, 10),
@@ -269,6 +285,7 @@
                     area_solicitud: 'Herramentales',
                     numero_hr: '',
                     cantidad: 1,
+                    unidad_medida_id: null,
                     archivo_2d: null,
                     comentarios: '',
                     solcitudante_id: null,
@@ -303,9 +320,17 @@
                         }
                     });
                 },
+                async obtenerMedidas() {
+                    try {
+                        const response = await axios.get(`/api/unidad-medida`);
+                        this.medidas = response.data.medidas;
+                    } catch (error) {
+                        console.error('Error fetching medidas:', error);
+                    }
+                },
                 async validarFormulario(nuevo) {
                     let t = this;
-                    if (t.nuevo.fecha_deseada_entrega == "" || t.nuevo.area_solicitud == "" || t.nuevo.solicitante_id == "" || t.nuevo.numero_hr == "" || t.nuevo.nombre_componente == "" || t.nuevo.cantidad == "" || t.nuevo.comentarios == "" || t.nuevo.caras_a_afilar == "" || t.nuevo.cuanto_afilar == "") {
+                    if (t.nuevo.fecha_deseada_entrega == "" || t.nuevo.area_solicitud == "" || t.nuevo.solicitante_id == "" || t.nuevo.numero_hr == "" || t.nuevo.nombre_componente == "" || t.nuevo.cantidad == "" || t.nuevo.comentarios == "" || t.nuevo.caras_a_afilar == "" || t.nuevo.cuanto_afilar == "" || t.nuevo.unidad_medida_id == null) {
                         swal('Error', 'Debes llenar todos los campos marcados con un asterisco.', 'error');
                         return false;
                     }
@@ -384,7 +409,7 @@
                     this.cargando = true
                     try {
                         const response = await axios.get(`/api/mis-solicitudes-afilado`);
-                        this.solicitudes = response.data.solicitudes;
+                        this.solicitudes = response.data.solicitudes;                        
                     } catch (error) {
                         console.error('Error fetching solicitudes:', error);
                     } finally {
@@ -401,7 +426,7 @@
                 },
                 async enviar() {
                     let t = this;
-                    let valido = await t.validarFormulario(t.nuevo);
+                    let valido = await t.validarFormulario(t.nuevo);                
                     if (!valido) return;
                     t.cargando = true;
                     const formData = new FormData();
@@ -423,6 +448,7 @@
                                 area_solicitud: 'Herramentales',
                                 numero_hr: '',
                                 cantidad: 1,
+                                unidad_medida_id: null,
                                 archivo_2d: null,
                                 comentarios: '',
                                 solicitante_id: JSON.parse('{!! json_encode(auth()->user()->id) !!}')
@@ -475,6 +501,7 @@
                                 nombre_solicitante: '',
                                 area_solicitud: 'Herramentales',
                                 numero_hr: '',
+                                unidad_medida_id: null,
                                 cantidad: 1,
                                 archivo_2d: null,
                                 comentarios: '',
@@ -530,6 +557,7 @@
                 t.obtenerAreasSolicitud();
                 t.fetchUsuarios();
                 t.fetchSolicitudes();
+                t.obtenerMedidas();
             }
         });
     </script>

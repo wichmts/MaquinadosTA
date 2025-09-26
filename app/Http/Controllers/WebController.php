@@ -60,6 +60,14 @@ class WebController extends Controller
           return view('generales.maquinas');
       return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
+
+    public function medidas(){
+        if (auth()->user()->hasRole('DIRECCION'))
+          return view('generales.medidas');
+      return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
+
+
     public function visorProgramador(){
         if(auth()->user()->hasAnyRole(['JEFE DE AREA', 'PROGRAMADOR'])) 
             return view('programador.visor-programador');

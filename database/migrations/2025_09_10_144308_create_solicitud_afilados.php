@@ -25,10 +25,11 @@ class CreateSolicitudAfilados extends Migration
             $table->string("archivo_2d")->nullable();            
             $table->text("comentarios")->nullable();   
             $table->string("caras_a_afilar")->nullable();
-            $table->string("cuanto_afilar")->nullable();                                    
+            $table->decimal("cuanto_afilar")->nullable();                                    
             
             $table->unsignedBigInteger('solicitante_id')-> nullable();
             $table->unsignedBigInteger('componente_id')->nullable();
+            
             $table->timestamps();
 
             $table->foreign('solicitante_id')
@@ -38,6 +39,8 @@ class CreateSolicitudAfilados extends Migration
             $table->foreign('componente_id')
                 ->references('id')->on('componentes')
                 ->onDelete('cascade');
+
+
         });
     }
 

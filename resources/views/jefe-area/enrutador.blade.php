@@ -416,6 +416,9 @@
                                 <div class="col-xl-12 px-1" v-if="componente && componente.esComponenteExterno">
                                     <button @click="verSolicitudExterna(componente.id)" class="btn btn-block my-0 btn-default"><i class="fa fa-info-circle"></i> VER ORDEN DE TRABAJO </button>
                                 </div>
+                                <div class="col-xl-12 px-1" v-if="componente && componente.esComponenteAfilado">
+                                    <button @click="verSolicitudAfilado(componente.id)" class="btn btn-block my-0 btn-default"><i class="fa fa-info-circle"></i> VER ORDEN AFILADO </button>
+                                </div>
                                 <div class="col-lg-6 px-1">
                                     <button @click="mostrarLineaDeTiempo" class="btn btn-block btn-default"><i class="fa fa-calendar"></i> LINEA DEL TIEMPO </button>
                                 </div>
@@ -701,6 +704,45 @@
         </div>
     </div>
 
+
+<!-- Modal para el boton de afilados -->
+    <div class="modal fade" id="modalSolicitudAfilados" tabindex="-1" aria-labelledby="modalSolicitudAfiladosLabel" aria-hidden="true">
+        <div class="modal-dialog" style="min-width: 40%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="bold modal-title" id="modalSolicitudAfiladosLabel">
+                        INFORMACIÓN DE LA ORDEN DE AFILADO
+                    </h3>
+                    <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xl-12 text-center">
+                            <p><strong>Fecha de solicitud </strong><br>@{{solicitudAfilado.fecha_solicitud_show}}</p>
+                            <p><strong>Fecha deseada entrega </strong><br> @{{solicitudAfilado.fecha_deseada_show}}</p>
+                            <p><strong>Nombre del solicitante </strong><br> @{{solicitudAfilado.solicitante.nombre_completo}}</p>
+                            <p><strong>Area de solicitud </strong><br> @{{solicitudAfilado.area_solicitud}}</p>
+                            <p><strong>Comentarios e intrucciones </strong><br> @{{solicitudAfilado.comentarios}}</p>
+                            <p><strong>Caras a afilar </strong><br> @{{solicitudAfilado.caras_a_afilar}}</p>
+                            <p><strong>Cuanto afilar </strong><br> @{{solicitudAfilado.cuanto_afilar}} @{{solicitudAfilado.unidad_de_medida}}</p>
+                            <p><strong>Archivos</strong></p>
+                            <p v-if="!solicitudAfilado.archivo_2d">Sin archivos disponibles</p>
+                            <a :href="'/api/download/ordenes_trabajo/' + solicitudAfilado.archivo_2d" v-if="solicitudAfilado.archivo_2d" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo 2D</a>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-12 text-center mt-4">
+                            <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 @endsection
 
@@ -804,6 +846,12 @@
                 archivo_2d: null,
                 archivo_3d: null,
                 dibujo: null
+            },
+            solicitudAfilado: {
+                solicitante: {
+                    nombre_completo: ''
+                },
+                archivo_2d: null,
             },
 
         },
@@ -1109,6 +1157,21 @@
                 } finally {
                     this.cargando = false;
                     $('#modalSolicitudExterna').modal();
+                }
+            },
+            async verSolicitudAfilado() {
+                let t = this
+                this.cargando = true;
+
+                try {
+                    const response = await axios.get(`/api/solicitud-afilado/${t.componente.id}`);
+                    t.solicitudAfilado = response.data.solicitud;
+
+                } catch (error) {
+                    console.error('Error fetching solicitudes:', error);
+                } finally {
+                    this.cargando = false;                    
+                    $('#modalSolicitudAfilados').modal();
                 }
             },
             async generarRefabricacion() {

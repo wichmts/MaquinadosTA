@@ -27,6 +27,7 @@ use App\Solicitud;
 use App\Puesto;
 use App\SolicitudExterna;
 use App\SolicitudAfilado;
+use App\UnidadDeMedida;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
@@ -984,9 +985,34 @@ class APIController extends Controller
                         $notificacion->responsables = json_encode([$solicitud->solicitante_id]);
                         $notificacion->descripcion = 'EL COMPONENTE EXTERNO O DE REFACCIÓN ESTÁ LISTO';
                         $notificacion->save();
-                        
+                    }else if($componente->esComponenteAfilado())
+                    {
+                        $componente->fecha_terminado = date('Y-m-d H:i');
+                        $componente->save();
 
-                    }else{
+                        $solicitud = SolicitudAfilado::where('componente_id', $componente->id)->first();
+                        $solicitud->fecha_real_entrega = date('Y-m-d');
+                        $solicitud->save();
+                        
+                        $user = User::findOrFail($solicitud->solicitante_id);
+                        $user->hay_notificaciones = true;
+                        $user->save();
+                        
+                        $rolesSolicitante = User::findOrFail($solicitud->solicitante_id)->roles->pluck('name')->toArray();
+
+                        $notificacion = new Notificacion();
+                        $notificacion->url_base = '/orden-trabajo';
+                        $notificacion->roles = json_encode($rolesSolicitante, JSON_UNESCAPED_UNICODE);
+                        $notificacion->anio_id = $anio->id;
+                        $notificacion->cliente_id = $cliente->id;
+                        $notificacion->proyecto_id = $proyecto->id;
+                        $notificacion->herramental_id = $herramental->id;
+                        $notificacion->componente_id = $componente->id;
+                        $notificacion->responsables = json_encode([$solicitud->solicitante_id]);
+                        $notificacion->descripcion = 'EL COMPONENTE DE AFILADO ESTÁ LISTO';
+                        $notificacion->save();
+                    }
+                    else{
                         $this->verificarEnsambleOSiguientePaso($componente);
                     }
                 }
@@ -1770,56 +1796,35 @@ class APIController extends Controller
                         $notificacion->responsables = json_encode([$solicitud->solicitante_id]);
                         $notificacion->descripcion = 'EL COMPONENTE EXTERNO ESTÁ LISTO';
                         $notificacion->save();
-                    }else{
+                    }
+                    else if($nuevoComponente->esComponenteAfilado()){
+                        $nuevoComponente->fecha_terminado = date('Y-m-d H:i');
+                        $nuevoComponente->save();
+
+                        $solicitud = SolicitudAfilado::where('componente_id', $nuevoComponente->id)->first();
+                        $solicitud->fecha_real_entrega = date('Y-m-d');
+                        $solicitud->save();
+                        
+                        $user = User::findOrFail($solicitud->solicitante_id);
+                        $user->hay_notificaciones = true;
+                        $user->save();
+                        
+                        $rolesSolicitante = User::findOrFail($solicitud->solicitante_id)->roles->pluck('name')->toArray();
+
+                        $notificacion = new Notificacion();
+                        $notificacion->url_base = '/orden-trabajo';
+                        $notificacion->roles = json_encode($rolesSolicitante, JSON_UNESCAPED_UNICODE);
+                        $notificacion->anio_id = $anio->id;
+                        $notificacion->cliente_id = $cliente->id;
+                        $notificacion->proyecto_id = $proyecto->id;
+                        $notificacion->herramental_id = $herramental->id;
+                        $notificacion->componente_id = $nuevoComponente->id;
+                        $notificacion->responsables = json_encode([$solicitud->solicitante_id]);
+                        $notificacion->descripcion = 'EL COMPONENTE DE AFILADO ESTÁ LISTO';
+                        $notificacion->save();
+                    }
+                    else{
                         $this->verificarEnsambleOSiguientePaso($nuevoComponente);
-
-                        // $notificacion = new Notificacion();
-                        // $notificacion->roles = json_encode(['MATRICERO']);
-                        // $notificacion->url_base = '/matricero';
-                        // $notificacion->anio_id = $anio->id;
-                        // $notificacion->cliente_id = $cliente->id;
-                        // $notificacion->proyecto_id = $proyecto->id;
-                        // $notificacion->herramental_id = $herramental->id;
-                        // $notificacion->componente_id = $nuevoComponente->id;
-                        // $notificacion->descripcion = 'COMPONENTE LISTO PARA ENSAMBLE';
-                        // $notificacion->save();
-        
-                        // $nuevoComponente->fecha_terminado = date('Y-m-d H:i');
-                        // $nuevoComponente->save();
-        
-                        // $users = User::role('MATRICERO')->get();
-
-                        // foreach ($users as $user) {
-                        //     $user->hay_notificaciones = true;
-                        //     $user->save();
-                        // }
-                        // $herramentalListo = true;
-                        // $otrosComponentes = Componente::where('herramental_id', $herramental->id)->where('refabricado', false)->with('fabricaciones')->get();
-
-                        // foreach ($otrosComponentes as $comp) {
-                        //     foreach ($comp->fabricaciones as $fabriComp) {
-                        //         if (!$fabriComp->fabricado) {
-                        //             $herramentalListo = false;
-                        //             break 2;
-                        //         }
-                        //     }
-                        // }
-                        // if ($herramentalListo) {
-                        //     $notificacionHerramental = new Notificacion();
-                        //     $notificacionHerramental->roles = json_encode(['MATRICERO']);
-                        //     $notificacionHerramental->url_base = '/matricero';
-                        //     $notificacionHerramental->anio_id = $anio->id;
-                        //     $notificacionHerramental->cliente_id = $cliente->id;
-                        //     $notificacionHerramental->proyecto_id = $proyecto->id;
-                        //     $notificacionHerramental->herramental_id = $herramental->id;
-                        //     $notificacionHerramental->descripcion = 'HERRAMENTAL COMPLETO Y LISTO PARA ENSAMBLE';
-                        //     $notificacionHerramental->save();
-        
-                        //     foreach ($users as $user) {
-                        //         $user->hay_notificaciones = true;
-                        //         $user->save();
-                        //     }
-                        // }
                     }
                 }else{
                     $siguienteFabricacion = $fabricacionesPendientes->firstWhere('orden', $nuevoComponente->estatus_fabricacion);
@@ -4086,6 +4091,78 @@ class APIController extends Controller
             'success' => true,
         ], 200);
     }
+
+    public function obtenerSolicitudAfilado($componente_id){
+        $solicitud = SolicitudAfilado::where('componente_id', $componente_id)->first();
+        if ($solicitud) {
+            $solicitudArray = $solicitud->toArray(); // Convertir a array
+            unset($solicitudArray['componente']); // Eliminar el campo
+        } else {
+            $solicitudArray = null;
+        }
+
+        return response()->json([
+            'solicitud' => $solicitudArray,
+            'success' => true,
+        ], 200);
+    }
+
+    public function obtenerUnidadDeMedida(){
+        $medidas = UnidadDeMedida::all();
+
+        return response()->json([
+            'medidas' => $medidas,
+            'success' => true,
+        ], 200);
+    }
+
+    public function nuevaUnidadDeMedida(Request $request){        
+        try{
+            $nuevaMedida = new UnidadDeMedida;
+            $nuevaMedida->nombre = $request->nombre;
+            $nuevaMedida->abreviatura = $request->abreviatura;
+            $nuevaMedida->save();
+
+            return response()->json([
+                'success' => true,
+            ], 200);
+        }catch(\Exception $e){
+            return response()->json([
+                    'success' => false,
+                    'message' => 'Ocurrió un error inesperado al agregar la medida.',
+                    'error' => $e->getMessage(), 
+                ], 500);
+        }
+    }
+
+    public function editarUnidadDeMedida(Request $request, $medidaId){        
+        try {
+            $medida = UnidadDeMedida::findOrFail($medidaId);
+            $medida->nombre = $request->nombre;
+            $medida->abreviatura = $request->abreviatura;
+            $medida->save();
+            return response()->json([
+                'success' => true,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error inesperado al agregar medida.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function eliminarUnidadDeMedida($medidaId){
+        $medida = UnidadDeMedida::findOrFail($medidaId);
+        $medida->delete();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    
     public function obtenerHerramentales(){
         $herramentales = Herramental::all();
 
@@ -5566,7 +5643,8 @@ class APIController extends Controller
             $ordenAfilado->cantidad = $data['cantidad'];            
             $ordenAfilado->comentarios = $data['comentarios'];  
             $ordenAfilado->caras_a_afilar = $data['caras_a_afilar'];
-            $ordenAfilado->cuanto_afilar = $data['cuanto_afilar'];          
+            $ordenAfilado->cuanto_afilar = $data['cuanto_afilar'];  
+            $ordenAfilado->unidad_medida_id = $data['unidad_medida_id'];
             $ordenAfilado->save();
 
             if ($request->hasFile('archivo_2d')) {
@@ -6028,6 +6106,7 @@ class APIController extends Controller
             'data' => $data,
         ]);
     }
+
 
     /**
      * Helper para verificar si alguna de las queries de un rol debe ejecutarse

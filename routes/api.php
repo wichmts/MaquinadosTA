@@ -134,6 +134,12 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('mis-solicitudes-externas', 'APIController@misSolicitudesExternas');
     Route::get('solicitud-externa/{componente_id}', 'APIController@obtenerSolicitudExterna');
     Route::get('solicitud-ensamble/{herramental_id}', 'APIController@obtenerSolicitudesEnsamble');
+    Route::get('solicitud-afilado/{componente_id}', 'APIController@obtenerSolicitudAfilado');
+
+    Route::post('nueva-unidad-medida', 'APIController@nuevaUnidadDeMedida');
+    Route::get('unidad-medida', 'APIController@obtenerUnidadDeMedida');
+    Route::put('editar-unidad-medida/{medida_id}', 'APIController@editarUnidadDeMedida');
+    Route::delete('eliminar-unidad-medida/{medida_id}', 'APIController@eliminarUnidadDeMedida');
 
     Route::post('generar-orden-afilado', 'APIController@generarOrdenAfilado');
     Route::post('editar-orden-afilado/{id}', 'APIController@editarOrdenAfilado');
@@ -153,6 +159,8 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::get('trabajos-pendientes', 'APIController@trabajosPendientes');
     Route::get('trabajos-pendientes-general', 'APIController@trabajosPendientesGeneral');
+
+
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
