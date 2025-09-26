@@ -27,17 +27,17 @@
         <div class="card-header border-0">
             <div class="row align-items-center">
                 <div class="col-md-10   mb-0">
-                    <h3 class="bold my-0 py-1" style="letter-spacing: 1px;">ADMINISTRAR MEDIDAS</h3>
+                    <h3 class="bold my-0 py-1" style="letter-spacing: 1px;">ADMINISTRAR UNIDADES DE MEDIDA</h3>
                 </div>
                 <div class="form-group col-md-2 col-xs-12 mt-4">
-                    <button class="btn btn-normal col-md-12" @click="abrirModal('agregar')"><i class="fa fa-circle-plus"></i> NUEVA MEDIDA</button>
+                    <button class="btn btn-normal col-md-12" @click="abrirModal('agregar')"><i class="fa fa-circle-plus"></i> NUEVA UNIDAD DE MEDIDA</button>
                 </div>
 
                 <div class="col-md-12 table-responsive">
                     <table class="table align-items-center" id="tabla">
                         <thead class="thead-light">
                             <tr>
-                                <th style="text-transform: none !important" scope="col">Nombre de medida</th>
+                                <th style="text-transform: none !important" scope="col">Nombre unidad</th>
                                 <th style="text-transform: none !important" scope="col">Abreviatura</th>
                                 <th style="text-transform: none !important" scope="col" class="no-sort">Acciones</th>
                             </tr>
@@ -78,7 +78,7 @@
                 <div class="modal-body">
                     <div class="row ">
                         <div class="form-group col-md-12">
-                            <label class="bold">Nombre de la medida<span style="color: red">*</span></label>
+                            <label class="bold">Nombre de la unidad de medida<span style="color: red">*</span></label>
                             <input placeholder="Nombre de la medida..." class=" form-control" type="text" v-model="medida.nombre" />
                         </div>
                         <div class="form-group col-md-12">
@@ -142,7 +142,7 @@
                 try {
                     const response = await axios.post('/api/nueva-unidad-medida', t.medida);
                     if (response.data.success) {
-                        swal('Éxito', 'La medida ha sido creada exitosamente.', 'success');
+                        swal('Éxito', 'La unidad de medida ha sido creada exitosamente.', 'success');
                         $('#modalMedida').modal('hide');
                         t.fetchMedidas();
                         t.medida = {
@@ -167,7 +167,7 @@
                 try {
                     const response = await axios.put(`/api/editar-unidad-medida/${medidaId}`, t.medida);                
                     if(response.data.success){
-                        swal('Éxito', 'La medida ha sido editada exitosamente.', 'success');
+                        swal('Éxito', 'La unidad de medida ha sido editada exitosamente.', 'success');
                         $('#modalMedida').modal('hide');
                         t.fetchMedidas();
                         t.medida = {
@@ -198,7 +198,7 @@
                         try {
                             const response = await axios.delete(`/api/eliminar-unidad-medida/${medidaId}`);
                             if (response.data.success) {
-                                swal('Éxito', 'La medida ha sido eliminada exitosamente.', 'success');
+                                swal('Éxito', 'La unidad medida ha sido eliminada exitosamente.', 'success');
                                 t.fetchMedidas();
                             } else {
                                 swal('Error', response.data.message || 'No se pudo eliminar la medida.', 'error');

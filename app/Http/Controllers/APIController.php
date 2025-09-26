@@ -4155,6 +4155,13 @@ class APIController extends Controller
 
     public function eliminarUnidadDeMedida($medidaId){
         $medida = UnidadDeMedida::findOrFail($medidaId);
+        if ($medida->solicitudAfilado()->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede eliminar la unidad de medida porque está siendo utilizada por uno o mas registros.'
+            ], 200);
+        }
+
         $medida->delete();
 
         return response()->json([

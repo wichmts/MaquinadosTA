@@ -168,12 +168,12 @@
                     
                     {{-- DIRECCION --}}
                     @php
+                        addMenuItem('visorGeneral', 'VISOR GENERAL', ['DIRECCION'], $addedRoutes);
                         addMenuItem('usuario', 'USUARIOS', ['DIRECCION'], $addedRoutes);
                         addMenuItem('maquina', 'MAQUINAS', ['DIRECCION'], $addedRoutes);
+                        addMenuItem('medidas', 'UNIDADES DE MEDIDA', ['DIRECCION'], $addedRoutes);
                         addMenuItem('tiempos-maquinas', 'TIEMPOS MAQUINA', ['DIRECCION'], $addedRoutes);
                         addMenuItem('tiempos-personal', 'TIEMPOS PERSONAL', ['DIRECCION'], $addedRoutes);
-                        addMenuItem('visorGeneral', 'VISOR GENERAL', ['DIRECCION'], $addedRoutes);
-                        addMenuItem('medidas', 'MEDIDAS', ['DIRECCION'], $addedRoutes);
                     @endphp
 
                     {{-- FINANZAS --}}
@@ -238,7 +238,7 @@
                     {{-- SOLICITUD EXTERNA --}}
                     @php
                         addMenuItem('orden-trabajo', 'Orden de trabajo', ['SOLICITUD EXTERNA'], $addedRoutes);
-                        addMenuItem('carga-afilados', 'Carga Afilados', ['SOLICITUD EXTERNA'], $addedRoutes);
+                        addMenuItem('carga-afilados', 'Orden de Afilados', ['SOLICITUD EXTERNA'], $addedRoutes);
                     @endphp
 
                     {{-- ADMINISTRADOR DE CARPETAS --}}
