@@ -5666,7 +5666,7 @@ class APIController extends Controller
                     }
 
                 $name2D = uniqid() . '_' . $file2D->getClientOriginalName();
-                    Storage::disk('public')->put('ordenes_trabajo/' . $name2D, \File::get($file2D));
+                    Storage::disk('public')->put('ordenes_afilado/' . $name2D, \File::get($file2D));
                     $ordenAfilado->archivo_2d = $name2D;
                 }
             $ordenAfilado->save();
@@ -5730,7 +5730,7 @@ class APIController extends Controller
             if ($ordenAfilado->archivo_2d) {
                 $nuevoNombre2D = $this->generarNuevoNombre($ordenAfilado->archivo_2d);
                 Storage::disk('public')->copy(
-                    "ordenes_trabajo/{$ordenAfilado->archivo_2d}", // Ruta correcta de origen
+                    "ordenes_afilado/{$ordenAfilado->archivo_2d}", // Ruta correcta de origen
                     "{$rutaBase}{$nuevoNombre2D}" // Ruta de destino
                 );
                 $nuevoComponente->archivo_2d = $nuevoNombre2D;

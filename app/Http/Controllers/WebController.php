@@ -131,7 +131,7 @@ class WebController extends Controller
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
     public function almacenMP(){
-        if(auth()->user()->hasRole('ALMACENISTA')) 
+        if(auth()->user()->hasAnyRole(['ALMACENISTA', 'AUXILIAR DE DISEÑO'])) 
             return view('almacenista.almacen-mp');
         return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }

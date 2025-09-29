@@ -111,12 +111,13 @@
                                     <table class="table">
                                         <thead class="thead-light">
                                             <tr>
-                                                <th style="width: 25%" >Componente</th>
+                                                <th style="width: 15%" >Componente</th>
                                                 <th style="width: 15%" >Cantidad</th>
                                                 <th style="width: 15%" style="text-transform: normal !important">Fecha de solicitud</th>
                                                 <th style="width: 15%" style="text-transform: normal !important">Fecha envio</th>
                                                 <th style="width: 15%" style="text-transform: normal !important">Fecha estimada recepcion</th>
                                                 <th style="width: 15%" style="text-transform: normal !important">Fecha recibido</th>
+                                                <th style="width: 15%" style="text-transform: normal !important">Información</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -130,10 +131,54 @@
                                                 <td><input :disabled="c.cancelado || c.fecha_recibido_temple" class="form-control text-center" type="date"  v-model="c.fecha_envio_temple"></td>
                                                 <td><input :disabled="c.cancelado || c.fecha_recibido_temple" class="form-control text-center" type="date"  v-model="c.fecha_estimada_temple"></td>
                                                 <td><input :disabled="c.cancelado || c.fecha_recibido_temple" class="form-control text-center" type="date"  v-model="c.fecha_real_temple"></td>
+                                                <td>                                                <button                                                     
+                                                        type="button" 
+                                                        class="mt-1 btn btn-default btn-sm" 
+                                                        @click="abrirModalInfo(c)"                                                    
+                                                        ><i class="fa fa-info-circle "></i>
+                                                        Info                                            
+                                                    </button>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal info componente -->
+        <div class="modal fade" id="modalInfo" tabindex="-1" aria-labelledby="modalInfoLabel" aria-hidden="true">
+            <div class="modal-dialog" style="min-width: 40%;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="bold modal-title" id="modalInfoLabel">
+                            INFORMACIÓN DEL COMPONENTE PARA TEMPLE
+                        </h3>
+                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xl-12 text-center">
+                                <p><strong>Comentarios del enrutador</strong><br>@{{componenteModal.comentarios}}</p>
+
+                                <p v-if="!componenteModal.archivo_2d && !componenteModal.archivo_3d && !componenteModal.archivo_explosionado_public">Sin archivos disponibles</p>
+
+                                <a :href="'/storage/' + componenteModal.archivo_2d_public" target="_blank" v-if="componenteModal.archivo_2d" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo Plano</a>
+
+                                <a :href="'/storage/' + componenteModal.archivo_3d_public" target="_blank" v-if="componenteModal.archivo_3d" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo 3D</a>
+
+                                <a :href="'/storage/' + componenteModal.archivo_explosionado_public" target="_blank" v-if="componenteModal.archivo_explosionado_public" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo Explosionado</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-12 text-center mt-4">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
                             </div>
                         </div>
                     </div>
@@ -153,7 +198,8 @@
         data: {
             estatusTemple: -1,
             loading_button: false,
-            cargando: false,            
+            cargando: false,   
+            componenteModal: {},         
             //MENU IZQUIERDO 
             anios: [],         
             clientes: [],      
@@ -315,6 +361,11 @@
                     console.error("Error navigating from URL parameters:", error);
                 }
             },
+            abrirModalInfo(componente){   
+                this.componenteModal = componente;     
+                console.log(this.componenteModal);        
+                $('#modalInfo').modal();
+            }
             
         },
         mounted: async function () {
