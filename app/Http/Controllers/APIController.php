@@ -5918,16 +5918,29 @@ class APIController extends Controller
 
         // Fabricaciones (si tiene máquinas asignadas)
         $maquinasAsignadas = json_decode($user->maquinas, true);
+
         if ($maquinasAsignadas && is_array($maquinasAsignadas) && count($maquinasAsignadas) > 0) {
-            $data['fabricaciones'] = Fabricacion::with(['componente', 'maquina'])
+            $fabricacionesConNotificacion = Fabricacion::with(['componente', 'maquina'])
                 ->whereIn('maquina_id', $maquinasAsignadas)
                 ->where('estatus_fabricacion', '!=', 'finalizado')
-                ->whereHas('componente', function($query) {
+                ->where('fabricado', false)
+                ->whereHas('componente', function ($query) {
                     $query->whereColumn('estatus_fabricacion', 'orden');
                     $query->where('refabricado', false);
                 })
                 ->get()
-                ->map(function($fab) {
+                ->map(function ($fab) {
+                    $notificacion = Notificacion::where('componente_id', $fab->componente_id)
+                        ->where('maquina_id', $fab->maquina_id)
+                        ->where('fabricacion_id', $fab->id)
+                        ->where('descripcion', 'like', 'COMPONENTE LIBERADO PARA FABRICACION%')
+                        ->oldest()
+                        ->first();
+
+                    if (!$notificacion) {
+                        return null;
+                    }
+                    
                     return [
                         'orden' => $fab->orden,
                         'estatus_fabricacion' => $fab->estatus_fabricacion,
@@ -5939,8 +5952,15 @@ class APIController extends Controller
                         'maquina_id' => $fab->maquina_id,
                         'componente_id' => $fab->componente_id,
                         'fabricacion_id' => $fab->id,
+                        'fecha_liberacion' => $notificacion->created_at->format('d/m/Y h:i a'), 
                     ];
-                });
+                })
+                // 4. Eliminar todas las entradas que retornaron null (las que no tenían notificación)
+                ->filter()
+                ->values();
+                
+            $data['fabricaciones'] = $fabricacionesConNotificacion;
+
         } else {
             $data['fabricaciones'] = [];
         }
@@ -5966,6 +5986,14 @@ class APIController extends Controller
                             ->orWhereNull('cancelado');
                     });
                 });
+            })
+            ->whereNotIn('id', function ($query) {
+            $query->select('componente_id')
+                ->from('solicitudes_externas');
+            })
+            ->whereNotIn('id', function ($query) {
+                $query->select('componente_id')
+                    ->from('solicitud_afilados');
             })
             ->get();
         }
@@ -6046,34 +6074,6 @@ class APIController extends Controller
             })
             ->get();
 
-        // Fabricaciones
-        // $data['fabricaciones'] = Fabricacion::where('fabricado', false)
-        //     ->where('estatus_fabricacion', '!=', 'finalizado')
-        //     ->get()
-        //     ->groupBy('maquina_id')
-        //     ->map(function ($fabricacionesPorMaquina, $maquinaId) {
-        //         $maquina = Maquina::find($maquinaId);
-        //         $operadores = User::whereJsonContains('maquinas', $maquinaId)->get();
-        //         $componenteIds = $fabricacionesPorMaquina->pluck('componente_id')->unique();
-
-        //         $componentesFiltrados = Componente::whereIn('id', $componenteIds)
-        //                                         ->where('refabricado', false) 
-        //                                         ->get();
-        //         return [
-        //             'maquina_id' => $maquinaId,
-        //             'maquina_nombre' => $maquina ? $maquina->nombre : 'Desconocida',
-        //             'proceso_maquina' => $maquina ? $maquina->tipo_proceso : 'Desconocido',
-        //             'fecha' => $fabricacionesPorMaquina->first()->created_at->format('d-m-Y H:i'),
-        //             'operadores' => $operadores->map(function ($op) {
-        //                 return [
-        //                     'id' => $op->id,
-        //                     'nombre' => $op->nombre_completo,
-        //                 ];
-        //             }),
-        //             'componentes' => $componentesFiltrados,
-        //         ];
-        //     })
-        // ->values();
 
         // Fabricaciones
         $data['fabricaciones'] = Fabricacion::query()
@@ -6081,39 +6081,53 @@ class APIController extends Controller
             ->where('fabricaciones.fabricado', false)
             ->where('fabricaciones.estatus_fabricacion', '!=', 'finalizado')
             ->where('componentes.refabricado', false)
-            ->whereColumn('fabricaciones.orden', '=', 'componentes.estatus_fabricacion') //se agrego esta linea para que solo muestre la fabricacion que toque y no todas
+            ->whereColumn('fabricaciones.orden', '=', 'componentes.estatus_fabricacion')
             ->select('fabricaciones.*')
             ->with('componente')
             ->get()
             ->groupBy('maquina_id')
             ->map(function ($fabricacionesPorMaquina, $maquinaId) {
-            $maquina = Maquina::find($maquinaId);
-            $operadores = User::whereJsonContains('maquinas', $maquinaId)->get();
-            $componentes = $fabricacionesPorMaquina->map(function($fabricacion) use ($maquinaId) {
-                $componente = $fabricacion->componente;
-                $notificacion = Notificacion::where('componente_id', $componente->id)
-                            ->where('maquina_id', $maquinaId)
-                            ->where('fabricacion_id', $fabricacion->id)
-                            ->where('descripcion', 'like', 'COMPONENTE LIBERADO PARA FABRICACION%')
-                            ->oldest()
-                            ->first();
-                $componente->fecha_liberacion = $notificacion ? $notificacion->created_at->format('d/m/Y h:i a') : null;
-                return $componente;
-            })->unique('id');
+                $maquina = Maquina::find($maquinaId);
+                $operadores = User::whereJsonContains('maquinas', $maquinaId)->get();
 
-            return [
-                'maquina_id' => $maquinaId,
-                'maquina_nombre' => $maquina ? $maquina->nombre : 'Desconocida',
-                'proceso_maquina' => $maquina ? $maquina->tipo_proceso : 'Desconocido',
-                'operadores' => $operadores->map(function ($op) {
+                $componentesConNotificacion = $fabricacionesPorMaquina->map(function ($fabricacion) use ($maquinaId) {
+                    $componente = $fabricacion->componente;
+
+                    $notificacion = Notificacion::where('componente_id', $componente->id)
+                        ->where('maquina_id', $maquinaId)
+                        ->where('fabricacion_id', $fabricacion->id)
+                        ->where('descripcion', 'like', 'COMPONENTE LIBERADO PARA FABRICACION%')
+                        ->oldest()
+                        ->first();
+
+                    if (!$notificacion) {
+                        return null;
+                    }
+
+                    $componente->fecha_liberacion = $notificacion->created_at->format('d/m/Y h:i a');
+                    return $componente;
+                })
+                ->filter()
+                ->unique('id')->values();
+
+                if ($componentesConNotificacion->isEmpty()) {
+                    return null;
+                }
+
                 return [
-                    'id' => $op->id,
-                    'nombre' => $op->nombre_completo,
+                    'maquina_id' => $maquinaId,
+                    'maquina_nombre' => $maquina ? $maquina->nombre : 'Desconocida',
+                    'proceso_maquina' => $maquina ? $maquina->tipo_proceso : 'Desconocido',
+                    'operadores' => $operadores->map(function ($op) {
+                        return [
+                            'id' => $op->id,
+                            'nombre' => $op->nombre_completo,
+                        ];
+                    }),
+                    'componentes' => $componentesConNotificacion,
                 ];
-                }),
-                'componentes' => $componentes->values(),
-            ];
             })
+            ->filter()
             ->values();
 
 

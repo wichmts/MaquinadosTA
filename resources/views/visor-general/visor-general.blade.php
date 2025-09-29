@@ -207,7 +207,7 @@
                     <div class="row mb-3">
                         <div class="table-responsive col-lg-12">
                             <!-- Vista de Fabricaciones -->
-                            <table class="table table-bordered">
+                            <table class="table table-bordered table-striped">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>Máquina</th>
@@ -221,9 +221,12 @@
                                 </thead>
                                 <tbody>
                                     <tr class="cursor-pointer" v-for="(fabricaciones, index) in trabajosPendientes.fabricaciones" v-if="fabricaciones.componentes?.length > 0">
-                                        <td class="bold">@{{fabricaciones.maquina_nombre}}</td>
-                                        <td>@{{getTipoProcesoString(fabricaciones.proceso_maquina)}}</td>
-    
+                                        <td class="bold bg-warning">
+                                            @{{fabricaciones.maquina_nombre}}
+                                        </td>
+                                        <td>
+                                            @{{getTipoProcesoString(fabricaciones.proceso_maquina)}}
+                                        </td>
                                         <td>
                                             <div v-if="fabricaciones.operadores.length > 0" v-for="operador in fabricaciones.operadores" :key="operador.id">
                                                 @{{operador.nombre}}
