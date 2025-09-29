@@ -242,7 +242,11 @@
                                                 @{{ componente.comentarios ?? 'Sin comentarios' }}
                                             </div>
                                         </td>
-                                        <td>@{{fabricaciones.fecha}} Hrs.</td> <!-- PENDIENTEEEEEEE -->
+                                        <td>
+                                            <div class="my-4" v-for="componente in fabricaciones.componentes" :key="'comp-comentarios-' + componente.id">
+                                                @{{ componente.fecha_liberacion ?? '-' }}
+                                            </div>
+                                        </td> 
                                         <td>
                                             <div class="my-1" v-for="componente in fabricaciones.componentes" :key="'comp-comentarios-' + componente.id">
                                                 <button @click="goTo('visor-avance-hr', componente.rutaComponente)" class="btn btn-sm btn-default"><i class="fa fa-eye">&nbsp;</i>Ver ruta componente</button>

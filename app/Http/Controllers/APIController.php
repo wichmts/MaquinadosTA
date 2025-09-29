@@ -6085,25 +6085,34 @@ class APIController extends Controller
             ->select('fabricaciones.*')
             ->with('componente')
             ->get()
-
             ->groupBy('maquina_id')
             ->map(function ($fabricacionesPorMaquina, $maquinaId) {
-                $maquina = Maquina::find($maquinaId);
-                $operadores = User::whereJsonContains('maquinas', $maquinaId)->get();
-                $componentes = $fabricacionesPorMaquina->pluck('componente')->unique('id');
+            $maquina = Maquina::find($maquinaId);
+            $operadores = User::whereJsonContains('maquinas', $maquinaId)->get();
+            $componentes = $fabricacionesPorMaquina->map(function($fabricacion) use ($maquinaId) {
+                $componente = $fabricacion->componente;
+                $notificacion = Notificacion::where('componente_id', $componente->id)
+                            ->where('maquina_id', $maquinaId)
+                            ->where('fabricacion_id', $fabricacion->id)
+                            ->where('descripcion', 'like', 'COMPONENTE LIBERADO PARA FABRICACION%')
+                            ->oldest()
+                            ->first();
+                $componente->fecha_liberacion = $notificacion ? $notificacion->created_at->format('d/m/Y h:i a') : null;
+                return $componente;
+            })->unique('id');
+
+            return [
+                'maquina_id' => $maquinaId,
+                'maquina_nombre' => $maquina ? $maquina->nombre : 'Desconocida',
+                'proceso_maquina' => $maquina ? $maquina->tipo_proceso : 'Desconocido',
+                'operadores' => $operadores->map(function ($op) {
                 return [
-                    'maquina_id' => $maquinaId,
-                    'maquina_nombre' => $maquina ? $maquina->nombre : 'Desconocida',
-                    'proceso_maquina' => $maquina ? $maquina->tipo_proceso : 'Desconocido',
-                    'fecha' => $fabricacionesPorMaquina->first()->created_at->format('d-m-Y H:i'),
-                    'operadores' => $operadores->map(function ($op) {
-                        return [
-                            'id' => $op->id,
-                            'nombre' => $op->nombre_completo,
-                        ];
-                    }),
-                    'componentes' => $componentes->values(),
+                    'id' => $op->id,
+                    'nombre' => $op->nombre_completo,
                 ];
+                }),
+                'componentes' => $componentes->values(),
+            ];
             })
             ->values();
 
