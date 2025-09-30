@@ -695,14 +695,15 @@
                 t.cargando = true;
                 let formData = new FormData();
 
-                t.files.forEach((fileObj, index) => {
+                Object.entries(t.files).forEach(([key, fileObj]) => {
                     if (fileObj.vista2D) {
-                        formData.append(`files[${index}][vista2D]`, fileObj.vista2D);
+                        formData.append(`files[${key}][vista2D]`, fileObj.vista2D);
                     }
                     if (fileObj.vista3D) {
-                        formData.append(`files[${index}][vista3D]`, fileObj.vista3D);
+                        formData.append(`files[${key}][vista3D]`, fileObj.vista3D);
                     }
                 });
+
 
                 formData.append('data', JSON.stringify(t.componentes));
                 try { 
@@ -732,33 +733,27 @@
                 }  
             },
             handleFileChange(event, index, fileType) {
-                let t = this;
                 let file = event.target.files[0];
                 
-                if (!this.files[index]) {
-                        this.files[index] = {
-                            vista2D: null,
-                            vista3D: null,
-                            // vistaExplosionada: null
-                        };
+                let componente = this.componentes[index];
+                let key = componente.id ? componente.id : `tmp_${index}`;
+
+                if (!this.files[key]) {
+                    this.files[key] = {
+                        vista2D: null,
+                        vista3D: null,
+                    };
+                }
+                this.files[key][fileType] = file;
+
+                if (fileType === 'vista2D') {
+                    componente.archivo_2d = file.name;
+                    componente.archivo_2d_show = file.name;
+                } else if (fileType === 'vista3D') {
+                    componente.archivo_3d = file.name;
+                    componente.archivo_3d_show = file.name;
                 }
 
-                this.files[index][fileType] = file;
-
-                switch(fileType){
-                    case 'vista2D':
-                        t.componentes[index].archivo_2d = file.name;
-                        t.componentes[index].archivo_2d_show = file.name;
-                    break;
-                    case 'vista3D':
-                        t.componentes[index].archivo_3d = file.name;
-                        t.componentes[index].archivo_3d_show = file.name;
-                    break;
-                    // case 'vistaExplosionada':
-                    //     t.componentes[index].archivo_explosionado = file.name;
-                    //     t.componentes[index].archivo_explosionado_show = file.name;
-                    // break;
-                }
             },
             agregarComponente() {
                 
@@ -768,21 +763,6 @@
                     swal('Falta vista explosiva', 'Por favor cargue un archivo antes de agregar un componente.', 'info');
                     return;
                 }
-
-                // const regex = new RegExp(`^${this.ruta.herramental}-(\\d+)$`);
-                // let maxNumero = 0;
-
-                // this.componentes.forEach(componente => {
-                //     const match = componente.nombre.match(regex);
-                //     if (match) {
-                //         const numero = parseInt(match[1], 10);
-                //         if (numero > maxNumero) {
-                //             maxNumero = numero;
-                //         }
-                //     }
-                // });
-
-                // const nuevoNumero = (maxNumero + 1).toString().padStart(2, '0'); // Usa 3 dígitos como base, ajusta si lo prefieres
 
                 const base = this.ruta.herramental;
                 const usados = new Set();
@@ -806,7 +786,6 @@
                 const nombreFinal = `${base}-${numeroFormateado}`;
 
                 this.componentes.push({
-                    // nombre: `${this.ruta.herramental}-${nuevoNumero}`,
                     nombre: nombreFinal,
                     es_compra: 1,
                     cantidad: 1,
@@ -820,10 +799,8 @@
                     material_id: null,
                     archivo_2d: '',
                     archivo_3d: '',
-                    // archivo_explosionado: '',
                     archivo_2d_show: '',
                     archivo_3d_show: '',
-                    // archivo_explosionado_show: '',
                     cargado: false,
                     cuotas_criticas: [{valor: '', valor_real: ''}],
                     otro_material: '',
@@ -1116,9 +1093,6 @@
             eliminarComponente(index){
                 this.componentes.splice(index, 1);
                 this.files.splice(index, 1);
-                this.componentes.forEach((element, index) => {
-                    element.nombre = `${this.ruta.herramental}-${(index + 1).toString().padStart(2, '0')}`;
-                })
             },
             componenteValido(componente){
                 let t = this;
@@ -1140,24 +1114,6 @@
                     if(componente.material_id == 6 && (componente.otro_material === '' || componente.otro_material == null)){
                         errores.push(`Las nombre del material es obligatorio para ${componente.nombre}.`);
                     }
-
-                    /* QUITAR ESTO PARA LA VALIDACIÓN DEL COMPONENTE (TOLO LO QUE TENGA QUE VER CON MEDIDAS) */
-
-                    /* if(componente.material_id && (componente.material_id == 1 || componente.material_id == 6 || componente.material_id == 2 || componente.material_id == 4 || componente.material_id == 5)){
-                        if(!componente.largo || !componente.ancho){
-                            errores.push(`El largo y ancho en ${componente.nombre} son obligatorios.`);
-                        }
-                    }
-                    if(componente.material_id && (componente.material_id == 1 || componente.material_id == 6 || componente.material_id == 2 || componente.material_id == 5)){
-                        if(!componente.espesor){
-                            errores.push(`El espesor en ${componente.nombre} es obligatorio.`);
-                        }
-                    }
-                    if(componente.material_id && componente.material_id == 3){
-                        if(!componente.longitud || !componente.diametro){
-                            errores.push(`La longitud y diametro en ${componente.nombre} son obligatorios.`);
-                        }
-                    } */
                     if (
                         !componente.cuotas_criticas || 
                         !Array.isArray(componente.cuotas_criticas) || 
@@ -1168,8 +1124,14 @@
                     }
                 }
 
-                if (!componente.archivo_2d || !componente.archivo_3d) {
-                    errores.push(`Todos los archivos son obligatorios en ${componente.nombre}.`);
+                if(componente.es_compra == 1){
+                    if (!componente.archivo_2d && !componente.archivo_3d) {
+                        errores.push(`Al menos un archivo (2D o 3D) es obligatorio en ${componente.nombre}.`);
+                    }
+                }else{
+                    if (!componente.archivo_2d || !componente.archivo_3d) {
+                        errores.push(`Todos los archivos son obligatorios en ${componente.nombre}.`);
+                    }
                 }
 
                 if(errores.length > 0){

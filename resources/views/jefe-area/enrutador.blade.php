@@ -392,7 +392,7 @@
                                     <h5 class="badge badge-dark badge-pill px-3 py-2 w-100" style="background-color: #c0d340 !important; color: black !important"> Tiempo estimado: <br> @{{totalHoras}} horas y @{{totalMinutos}} minutos. </h5>
                                 </div>
                                 <div class="col-5 text-center px-0 mt-0">
-                                    <button class="btn btn-success btn-block mt-0" data-toggle="modal" data-target="#modalProcesos">
+                                    <button class="btn btn-success btn-block mt-0" data-toggle="modal" data-target="#modalProcesos" :disabled="componente.enrutado == true || componente.cancelado == true">
                                         <i class="fa fa-list"></i> AGREGAR PROCESOS
                                     </button>
                                 </div>

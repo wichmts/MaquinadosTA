@@ -207,7 +207,7 @@
                     <div class="row mb-3">
                         <div class="table-responsive col-lg-12">
                             <!-- Vista de Fabricaciones -->
-                            <table class="table table-bordered">
+                            <table class="table table-bordered table-striped">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>Máquina</th>
@@ -221,9 +221,12 @@
                                 </thead>
                                 <tbody>
                                     <tr class="cursor-pointer" v-for="(fabricaciones, index) in trabajosPendientes.fabricaciones" v-if="fabricaciones.componentes?.length > 0">
-                                        <td class="bold">@{{fabricaciones.maquina_nombre}}</td>
-                                        <td>@{{getTipoProcesoString(fabricaciones.proceso_maquina)}}</td>
-    
+                                        <td class="bold bg-warning">
+                                            @{{fabricaciones.maquina_nombre}}
+                                        </td>
+                                        <td>
+                                            @{{getTipoProcesoString(fabricaciones.proceso_maquina)}}
+                                        </td>
                                         <td>
                                             <div v-if="fabricaciones.operadores.length > 0" v-for="operador in fabricaciones.operadores" :key="operador.id">
                                                 @{{operador.nombre}}
@@ -242,7 +245,11 @@
                                                 @{{ componente.comentarios ?? 'Sin comentarios' }}
                                             </div>
                                         </td>
-                                        <td>@{{fabricaciones.fecha}} Hrs.</td> <!-- PENDIENTEEEEEEE -->
+                                        <td>
+                                            <div class="my-4" v-for="componente in fabricaciones.componentes" :key="'comp-comentarios-' + componente.id">
+                                                @{{ componente.fecha_liberacion ?? '-' }}
+                                            </div>
+                                        </td> 
                                         <td>
                                             <div class="my-1" v-for="componente in fabricaciones.componentes" :key="'comp-comentarios-' + componente.id">
                                                 <button @click="goTo('visor-avance-hr', componente.rutaComponente)" class="btn btn-sm btn-default"><i class="fa fa-eye">&nbsp;</i>Ver ruta componente</button>
