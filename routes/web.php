@@ -64,6 +64,9 @@ Route::group(['middleware' => 'auth'], function () {
     // PROCESOS
     Route::get('/pruebas-proceso', 'WebController@pruebasProceso');
 
+    //HERRAMENTALES
+    Route::get('/centro-herramentales', 'WebController@centroHerramentales');
+
     // AUXILIAR DE DISENO
     Route::get('/carga-componentes', 'WebController@cargaComponentes');
     Route::get('/orden-trabajo', 'WebController@ordenTrabajo');
