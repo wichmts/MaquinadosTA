@@ -212,7 +212,7 @@
                                             <thead class="thead thead-light">
                                                 <tr>
                                                     <th style="width: 10%">Componente</th>
-                                                    <th style="width: 10%">Vista 2D</th>
+                                                    <th style="width: 10%">Vista Plano</th>
                                                     <th style="width: 10%">Vista 3D</th>
                                                     <th style="width: 10%">Tipo</th>
                                                     <th style="width: 10%">Cantidad</th>

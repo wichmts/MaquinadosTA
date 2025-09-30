@@ -143,7 +143,7 @@
                         <input :disabled="modo_edicion" type="number" step="1" class="form-control" v-model="nuevo.cantidad">
                     </div>
                     <div class="col-lg-4 form-group">
-                        <label class="bold">Archivo 2D</label>
+                        <label class="bold">Archivo Plano</label>
                         <input
                             class="input-file"
                             id="2d"
@@ -152,7 +152,7 @@
                             style="display: none;"
                         />
                         <label tabindex="0" for="2d" class="input-file-trigger col-12 text-center">
-                            <i class="fa fa-upload"></i> @{{modo_edicion?'EDITAR':'CARGAR'}} 2D
+                            <i class="fa fa-upload"></i> @{{modo_edicion?'EDITAR':'CARGAR'}} PLANO
                         </label>
                         <small>Archivo: <strong>@{{nuevo.archivo_2d ?? 'Sin cargar'}}</strong></small>
                     </div>
@@ -323,7 +323,7 @@
                     return false;
                 }
                if ((!t.archivo_2d && !t.archivo_3d && !t.dibujo) && (!t.nuevo.archivo_2d && !t.nuevo.archivo_3d && !t.nuevo.dibujo)) {
-                    swal('Error', 'Debes cargar al menos uno de los archivos: 2D, 3D o el dibujo a mano.', 'error');
+                    swal('Error', 'Debes cargar al menos uno de los archivos: plano, 3D o el dibujo a mano.', 'error');
                     return false;
                 }
                 return true;
