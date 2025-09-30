@@ -1093,9 +1093,6 @@
             eliminarComponente(index){
                 this.componentes.splice(index, 1);
                 this.files.splice(index, 1);
-                // this.componentes.forEach((element, index) => {
-                //     element.nombre = `${this.ruta.herramental}-${(index + 1).toString().padStart(2, '0')}`;
-                // })
             },
             componenteValido(componente){
                 let t = this;
@@ -1117,24 +1114,6 @@
                     if(componente.material_id == 6 && (componente.otro_material === '' || componente.otro_material == null)){
                         errores.push(`Las nombre del material es obligatorio para ${componente.nombre}.`);
                     }
-
-                    /* QUITAR ESTO PARA LA VALIDACIÓN DEL COMPONENTE (TOLO LO QUE TENGA QUE VER CON MEDIDAS) */
-
-                    /* if(componente.material_id && (componente.material_id == 1 || componente.material_id == 6 || componente.material_id == 2 || componente.material_id == 4 || componente.material_id == 5)){
-                        if(!componente.largo || !componente.ancho){
-                            errores.push(`El largo y ancho en ${componente.nombre} son obligatorios.`);
-                        }
-                    }
-                    if(componente.material_id && (componente.material_id == 1 || componente.material_id == 6 || componente.material_id == 2 || componente.material_id == 5)){
-                        if(!componente.espesor){
-                            errores.push(`El espesor en ${componente.nombre} es obligatorio.`);
-                        }
-                    }
-                    if(componente.material_id && componente.material_id == 3){
-                        if(!componente.longitud || !componente.diametro){
-                            errores.push(`La longitud y diametro en ${componente.nombre} son obligatorios.`);
-                        }
-                    } */
                     if (
                         !componente.cuotas_criticas || 
                         !Array.isArray(componente.cuotas_criticas) || 
@@ -1145,8 +1124,14 @@
                     }
                 }
 
-                if (!componente.archivo_2d || !componente.archivo_3d) {
-                    errores.push(`Todos los archivos son obligatorios en ${componente.nombre}.`);
+                if(componente.es_compra == 1){
+                    if (!componente.archivo_2d && !componente.archivo_3d) {
+                        errores.push(`Al menos un archivo (2D o 3D) es obligatorio en ${componente.nombre}.`);
+                    }
+                }else{
+                    if (!componente.archivo_2d || !componente.archivo_3d) {
+                        errores.push(`Todos los archivos son obligatorios en ${componente.nombre}.`);
+                    }
                 }
 
                 if(errores.length > 0){
