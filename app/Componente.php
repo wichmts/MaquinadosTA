@@ -210,6 +210,7 @@ class Componente extends Model
             ->where('nombre', $this->nombre)
             ->where('cargado', true)
             ->where('es_compra', false)
+            ->whereNull('cancelado')
             ->count() > 1;
     }
     public function tieneRetrabajos(){

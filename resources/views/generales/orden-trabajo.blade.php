@@ -219,7 +219,7 @@
                     <div class="col-xl-12 mb-4">
                         <h2 class="bold my-0 py-1 text-decoration-underline" style="letter-spacing: 2px">MIS ORDENES DE TRABAJO</h2>
                     </div>
-                    <div class="col-xl-12 table-responsive">
+                    <div class="col-xl-12 table-responsive" style="max-height: 70vh; overflow-y: auto">
                         <table class="table">
                             <thead class="thead-light">
                                 <tr>
@@ -233,17 +233,17 @@
                             </thead>
                             <tbody>
                                 <tr v-for="solicitud in solicitudes" >
-                                        <td class="py-1 bold">@{{solicitud.componente.nombre}}</td>
-                                        <td class="py-1" >@{{solicitud.fecha_solicitud_show}}</td>
-                                        <td class="py-1" >@{{solicitud.fecha_deseada_show}}</td>
-                                        <td class="py-1" >@{{solicitud.fecha_real_show}}</td>
-                                        <td class="py-1" >
-                                            </span> <span style="font-size: 12px !important" :class="getClaseColor(solicitud.componente, solicitud.fecha_real_entrega)" class="badge  badge-pill px-2 py-1 my-2">@{{determinarEstatus(solicitud.componente, solicitud.fecha_real_entrega)}}</span>
-                                        </td>
+                                   <td class="py-1 bold">@{{solicitud.componente.nombre}}</td>
+                                    <td class="py-1" >@{{solicitud.fecha_solicitud_show}}</td>
+                                    <td class="py-1" >@{{solicitud.fecha_deseada_show}}</td>
+                                    <td class="py-1" >@{{solicitud.fecha_real_show}}</td>
+                                    <td class="py-1" >
+                                        </span> <span style="font-size: 12px !important" :class="solicitud.class" class="badge badge-pill px-2 py-1 my-2">@{{solicitud.estatus}}</span>
+                                    </td>
                                     <td>
                                         <a :href="'/visor-avance-hr' + solicitud.componente.rutaComponente" class="text-dark"><i class="cursor-pointer fa fa-info-circle"></i></a>
-                                        <span v-if="determinarEstatus(solicitud.componente, solicitud.fecha_real_entrega) != 'Finalizado'" class="text-muted"> | </span>
-                                        <i v-if="determinarEstatus(solicitud.componente, solicitud.fecha_real_entrega) != 'Finalizado'" @click="editarSolicitud(solicitud)" class="cursor-pointer fa fa-edit"></i> 
+                                        <span v-if="solicitud.estatus != 'Finalizado'" class="text-muted"> | </span>
+                                        <i v-if="solicitud.estatus != 'Finalizado'" @click="editarSolicitud(solicitud)" class="cursor-pointer fa fa-edit"></i> 
                                     </td>
                                 </tr>
                                 <tr v-if="solicitudes.length == 0">
@@ -371,7 +371,7 @@
                     });
 
                     if (response.data.success) {
-                        swal('Guardado', 'Tu modiciación se ha guardado correctamente y se notificará al jefe de area, puedes ver el estado del componente desde la lista de la derecha o desde el visor de avance.', 'success');
+                        swal('Guardado', 'Tu modificación se ha guardado correctamente y se notificará al jefe de area, puedes ver el estado del componente desde la lista de la derecha o desde el visor de avance.', 'success');
                         t.nuevo = {
                             fecha_solicitud: new Date().toISOString().slice(0, 10),
                             fecha_deseada_entrega: new Date().toISOString().slice(0, 10),
@@ -390,6 +390,7 @@
                             desde: "auxiliar_diseno",
                         }
                         t.modo_edicion =  false;
+                        t.obtenerAreasSolicitud();
                         t.fetchSolicitudes();
                     }else
                         swal('Error', response.data.message, 'error');
@@ -447,7 +448,7 @@
                     resultado = "Corte";
                 }
                 if (programado && cortado) {
-                    resultado = "Fabricacion";
+                    resultado = "Fabricación";
                 }
                 if (fecha_real_entrega) {
                     resultado = "Finalizado";
@@ -513,6 +514,7 @@
                             comentarios: "",
                             desde: "auxiliar_diseno",
                         }
+                        t.obtenerAreasSolicitud();
                         t.fetchSolicitudes();
                     }else
                         swal('Error', response.data.message, 'error');
@@ -551,6 +553,23 @@
                 try {
                     const response = await axios.get(`/api/mis-solicitudes-externas`);
                     this.solicitudes = response.data.solicitudes;
+                    this.solicitudes.forEach(element => {
+                        element.estatus = this.determinarEstatus(element.componente, element.fecha_real_entrega);
+                        element.class = this.getClaseColor(element.componente, element.fecha_real_entrega);
+                    });
+                    this.solicitudes.sort((a, b) => {
+                        const aEsFinalizado = a.estatus === 'Finalizado';
+                        const bEsFinalizado = b.estatus === 'Finalizado';
+
+                        if (aEsFinalizado && !bEsFinalizado) {
+                            return 1; // 'a' (Finalizado) va después que 'b'
+                        }
+                        if (!aEsFinalizado && bEsFinalizado) {
+                            return -1; // 'a' (No finalizado) va antes que 'b'
+                        }
+                        return b.fecha_solicitud.localeCompare(a.fecha_solicitud);
+                    });
+
                 } catch (error) {
                     console.error('Error fetching solicitudes:', error);
                 } finally {

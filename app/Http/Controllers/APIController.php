@@ -1968,8 +1968,16 @@ class APIController extends Controller
                 $nuevoComponente->save();
                 $this->actualizarVersiones($herramental->id);
             }
-            if ($request->hasFile("files.{$index}.vista2D")) {
-                $file = $request->file("files.{$index}.vista2D");
+
+            if (isset($componente['id'])) {
+                $idKey = $componente['id'];
+            } else {
+                $idKey = "tmp_{$index}";
+            }
+
+            if ($request->hasFile("files.{$idKey}.vista2D")) {
+                $file = $request->file("files.{$idKey}.vista2D");
+
                 $resultado = $this->validarArchivo($file); 
 
                 if (!$resultado['success']) {
@@ -1977,15 +1985,15 @@ class APIController extends Controller
                 }else{
                     if ($nuevoComponente->archivo_2d)
                         Storage::disk('public')->delete("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$nuevoComponente->archivo_2d}");
-                    $file2D = $request->file("files.{$index}.vista2D");
+                    $file2D = $request->file("files.{$idKey}.vista2D");
                     $name2D = uniqid() . '_' . $file2D->getClientOriginalName();
                     Storage::disk('public')->put("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$name2D}", \File::get($file2D));
                     $nuevoComponente->archivo_2d = $name2D;
                 }
             }
 
-            if ($request->hasFile("files.{$index}.vista3D")) {
-                $file = $request->file("files.{$index}.vista3D");
+           if ($request->hasFile("files.{$idKey}.vista3D")) {
+                $file = $request->file("files.{$idKey}.vista3D");
                 $resultado = $this->validarArchivo($file); 
 
                 if (!$resultado['success']) {
@@ -1993,7 +2001,7 @@ class APIController extends Controller
                 }else{
                     if ($nuevoComponente->archivo_3d)
                         Storage::disk('public')->delete("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$nuevoComponente->archivo_3d}");
-                    $file3D = $request->file("files.{$index}.vista3D");
+                    $file3D = $request->file("files.{$idKey}.vista3D");
                     $name3D = uniqid() . '_' . $file3D->getClientOriginalName();
                     Storage::disk('public')->put("{$herramental->proyecto_id}/{$herramental->id}/componentes/{$name3D}", \File::get($file3D));
                     $nuevoComponente->archivo_3d = $name3D;
@@ -2953,6 +2961,7 @@ class APIController extends Controller
         $herramental = Herramental::findOrFail($herramental_id);
         $componentes = Componente::where('herramental_id', $herramental_id)
             ->where('cargado', true)
+            ->whereNull('cancelado')
             ->orderBy('nombre')
             ->orderBy('version', 'asc') 
             ->get();
