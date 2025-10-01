@@ -690,6 +690,7 @@ class ComposerStaticInit60eef7165f8ea49c6781e3119c6a5a04
         'App\\Solicitud' => __DIR__ . '/../..' . '/app/Solicitud.php',
         'App\\SolicitudAfilado' => __DIR__ . '/../..' . '/app/SolicitudAfilado.php',
         'App\\SolicitudExterna' => __DIR__ . '/../..' . '/app/SolicitudExterna.php',
+        'App\\UnidadDeMedida' => __DIR__ . '/../..' . '/app/UnidadDeMedida.php',
         'App\\User' => __DIR__ . '/../..' . '/app/User.php',
         'ArithmeticError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/ArithmeticError.php',
         'Asm89\\Stack\\Cors' => __DIR__ . '/..' . '/asm89/stack-cors/src/Asm89/Stack/Cors.php',

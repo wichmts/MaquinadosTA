@@ -141,7 +141,7 @@
         },
         methods:{
             goToHerramental(ruta){
-                window.location.href = '/visor-avance-hr/' + ruta;
+                window.location.href = '/centro-herramentales/' + ruta;
             },
             async fetchherramentales() {
                 $('#tabla').dataTable().fnDestroy();

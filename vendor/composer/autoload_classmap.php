@@ -77,6 +77,7 @@ return array(
     'App\\Solicitud' => $baseDir . '/app/Solicitud.php',
     'App\\SolicitudAfilado' => $baseDir . '/app/SolicitudAfilado.php',
     'App\\SolicitudExterna' => $baseDir . '/app/SolicitudExterna.php',
+    'App\\UnidadDeMedida' => $baseDir . '/app/UnidadDeMedida.php',
     'App\\User' => $baseDir . '/app/User.php',
     'ArithmeticError' => $vendorDir . '/symfony/polyfill-php70/Resources/stubs/ArithmeticError.php',
     'Asm89\\Stack\\Cors' => $vendorDir . '/asm89/stack-cors/src/Asm89/Stack/Cors.php',

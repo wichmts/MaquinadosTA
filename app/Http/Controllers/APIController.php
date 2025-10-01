@@ -28,6 +28,7 @@ use App\Puesto;
 use App\SolicitudExterna;
 use App\SolicitudAfilado;
 use App\UnidadDeMedida;
+use App\DocumentacionTecnica;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
@@ -6143,6 +6144,69 @@ class APIController extends Controller
         return response()->json([
             'success' => true,
             'data' => $data,
+        ]);
+    }
+
+    //Documentacion Tecnica
+    public function obtenerDocumentacionTecnica(){
+        $documentacion = DocumentacionTecnica::all();
+        return response()->json([
+            'success' => true,
+            'documentacion' => $documentacion
+        ]);
+    }
+
+    public function guardarDocumentacionTecnica(Request $request){
+        $request->validate([
+            'archivo' => 'required|file|mimes:pdf,jpg,png|max:5120', // 5MB máximo
+        ]);
+        
+        if($request->hasFile('archivo')){
+            $file = $request->file('archivo');
+            $resultado = $this->validarArchivo($file);
+            if (!$resultado['success']) {
+                return response()->json(['success' => false, 'message' => $resultado['message']]);
+            }
+
+            $name = uniqid() . '_' . $file->getClientOriginalName();
+            Storage::disk('public')->put("componentes/{$name}", \File::get($file));
+
+            $documento = new DocumentacionTecnica();
+            $documento->nombre = $name;
+            $documento->descripcion = $request->input('descripcion');
+            $documento->save();
+
+            return response()->json([
+                'success' => true,
+            ]);
+        }
+    }
+
+    public function editarDocumentacionTecnica(Request $request, $id){
+        $data = $request->json()->all();
+        $documento = DocumentacionTecnica::findOrFail($id);
+        if(DocumentacionTecnica::where('nombre', $data['nombre'])->where('id', '!=', $id)->exists()){
+            return response()->json([
+                'success' => false,
+                'message' => 'Ya existe un documento con ese nombre.'
+            ], 200);
+        }
+        $documento->nombre = $data['nombre'];
+        $documento->descripcion = $data['descripcion'];        
+        $documento->save();
+
+        return response()->json([
+            'success' => true,
+        ]);
+
+    }
+
+    public function eliminarDocumentacionTecnica($id){
+        $documento = DocumentacionTecnica::findOrFail($id);
+        $documento->delete();
+
+        return response()->json([
+            'success' => true,
         ]);
     }
 
