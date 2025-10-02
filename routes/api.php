@@ -162,7 +162,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::get('documentacion-tecnica/{herramental_id}', 'APIController@obtenerDocumentacionTecnica');
     Route::post('documentacion-tecnica/{herramental_id}', 'APIController@guardarDocumentacionTecnica');
-    Route::put('documentacion-tecnica/{documento_id}', 'APIController@editarDocumentacionTecnica');
+    Route::post('documentacion-tecnica/editar/{documento_id}', 'APIController@editarDocumentacionTecnica');
     Route::delete('documentacion-tecnica/{documento_id}', 'APIController@eliminarDocumentacionTecnica');
 
 

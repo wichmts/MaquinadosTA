@@ -6169,10 +6169,10 @@ class APIController extends Controller
             }
 
             $name = uniqid() . '_' . $file->getClientOriginalName();
-            Storage::disk('public')->put("componentes/{$name}", \File::get($file));
+            Storage::disk('public')->put("herramental/{$name}", \File::get($file));
 
             $documento = new DocumentacionTecnica();
-            $documento->nombre = $name;
+            $documento->archivo = $name;
             $documento->descripcion = $request->input('descripcion');
             $documento->save();
 
@@ -6182,24 +6182,41 @@ class APIController extends Controller
         }
     }
 
-    public function editarDocumentacionTecnica(Request $request, $id){
-        $data = $request->json()->all();
+    public function editarDocumentacionTecnica(Request $request, $id)
+    {
         $documento = DocumentacionTecnica::findOrFail($id);
-        if(DocumentacionTecnica::where('nombre', $data['nombre'])->where('id', '!=', $id)->exists()){
-            return response()->json([
-                'success' => false,
-                'message' => 'Ya existe un documento con ese nombre.'
-            ], 200);
-        }
-        $documento->nombre = $data['nombre'];
-        $documento->descripcion = $data['descripcion'];        
+
+        if ($request->hasFile('archivo')) {
+            $request->validate([
+                'archivo' => 'required|file|mimes:pdf,jpg,png|max:5120', // 5MB máximo
+            ]);
+
+            $file = $request->file('archivo');
+            $resultado = $this->validarArchivo($file);
+
+            if (!$resultado['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $resultado['message']
+                ]);
+            }
+        
+            if ($documento->archivo) {
+                Storage::disk('public')->delete("herramental/{$documento->archivo}");
+            }            
+            $name = uniqid() . '_' . $file->getClientOriginalName();
+            Storage::disk('public')->put("herramental/{$name}", \File::get($file));
+
+            $documento->archivo = $name;
+        }        
+        $documento->descripcion = $request->input('descripcion');
         $documento->save();
 
         return response()->json([
             'success' => true,
         ]);
-
     }
+
 
     public function eliminarDocumentacionTecnica($id){
         $documento = DocumentacionTecnica::findOrFail($id);

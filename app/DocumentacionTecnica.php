@@ -12,6 +12,8 @@ class DocumentacionTecnica extends Model
     public function toArray()
     {
         $array = parent::toArray();     
+        $array['archivo_public'] = $this->archivo ? '/herramental/'. $this->archivo : '';
+        $array['archivo_show'] = $this->archivo ? preg_replace('/^[^_]+_/', '', $this->archivo) : null;
         return $array;
     }
 }
