@@ -73,13 +73,13 @@
                                             <tbody>
                                                 <tr>
                                                     <td>Plano</td>
-                                                    <td class="bold">@{{ componenteSeleccionado.archivo_2d_show ? componenteSeleccionado.archivo_2d_show : 'Sin archivo'}}</td>
+                                                    <td>@{{ componenteSeleccionado.archivo_2d_show ? componenteSeleccionado.archivo_2d_show : 'Sin archivo'}}</td>
                                                     <td>
                                                         <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
                                                             <a class="btn btn-sm btn-link actions text-dark"
                                                                 :href="'/storage/' + componenteSeleccionado.archivo_2d_public"
                                                                 :disabled="!componenteSeleccionado.archivo_2d_public"
-                                                                target="_blank"><i class="fa fa-folder-open"></i>
+                                                                target="_blank"><i class="fa fa-external-link"></i>
                                                             </a>
                                                         </div>
                                                     </td>
@@ -94,7 +94,7 @@
                                                                 :href="'/storage/' + componenteSeleccionado.archivo_3d_public"
                                                                 :disabled="!componenteSeleccionado.archivo_3d_public"
                                                                 target="_blank">
-                                                                <i class="fa fa-folder-open"></i>
+                                                                <i class="fa fa-external-link"></i>
                                                             </a>
                                                         </div>
                                                     </td>
@@ -108,7 +108,7 @@
                                                                 :href="'/storage/' + componenteSeleccionado.archivo_explosionado_public"
                                                                 :disabled="!componenteSeleccionado.archivo_explosionado_show"
                                                                 target="_blank">
-                                                                <i class="fa fa-folder-open"></i>
+                                                                <i class="fa fa-external-link"></i>
                                                             </a>
                                                         </div>
                                                     </td>
@@ -119,11 +119,11 @@
                                                     <td>
                                                         <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
                                                             <a class="btn btn-sm btn-link actions text-dark"
-                                                                :href="'/storage/' + componenteSeleccionado.fotoMatricero"
+                                                                :href="'/storage/fotos_matricero/' + componenteSeleccionado.fotoMatricero"
                                                                 :disabled="!componenteSeleccionado.foto_matricero"
                                                                 target="_blank">
 
-                                                                <i class="fa fa-folder-open"></i>
+                                                                <i class="fa fa-external-link"></i>
                                                             </a>
                                                         </div>
                                                     </td>
@@ -133,77 +133,55 @@
                                         </table>
                                     </div>
                                     <!-- Parte de lo de fabricaciones  -->
-
-                                    <div class="table-responsive shadow">
-                                        <table class="table align-items-center table-bordered">
+                                    <div v-if="fabricacionesComponente.length != 0" class="table-responsive shadow mt-3">
+                                        <table  class="table align-items-center table-bordered">
                                             <thead class="thead-light">
                                                 <tr>
-                                                    <th style="width: 20%">Tipo</th>
-                                                    <th style="width: 60%" scope="col">Nombre del Archivo</th>
-                                                    <th style="width: 20%" scope="col">Acciones</th>
+                                                    <th style="width: 10%">Fabricacion</th>
+                                                    <th style="width: 40%" scope="col">Nombre de Archivos</th>
+                                                    <th style="width: 40%" scope="col">Acciones</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>Plano</td>
-                                                    <td class="bold">@{{ componenteSeleccionado.archivo_2d_show ? componenteSeleccionado.archivo_2d_show : 'Sin archivo'}}</td>
+                                                <tr v-for="f in fabricacionesComponente" :key="f.id">
+                                                    <td>@{{ f.maquina_nombre }}</td>
                                                     <td>
-                                                        <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
-                                                            <a class="btn btn-sm btn-link actions text-dark"
-                                                                :href="'/storage/' + componenteSeleccionado.archivo_2d_public"
-                                                                :disabled="!componenteSeleccionado.archivo_2d_public"
-                                                                target="_blank"><i class="fa fa-folder-open"></i>
-                                                            </a>
+                                                        <div class="pb-4">
+                                                            <strong>Archivo:</strong>
+                                                            <span>@{{ f.archivo_show ? f.archivo_show : 'Sin archivo' }}</span>
+                                                        </div>
+                                                        <div class="border-top pt-4">
+                                                            <strong>Foto:</strong>
+                                                            <span>@{{ f.foto ? f.foto : 'Sin foto' }}</span>
                                                         </div>
                                                     </td>
+                                                    <td>
+                                                        <div class="pb-3 pt-2">
+                                                            <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
+                                                                <a class="btn btn-sm btn-link actions text-dark"
+                                                                    :href="'/api/download/programas/' + f.archivo"
+                                                                    :disabled="!f.archivo"
+                                                                    target="_blank">
+                                                                    <i class="fa fa-download"></i> Descargar
+                                                                </a>
+                                                            </div>
+                                                        </div>
 
-                                                </tr>
-                                                <tr>
-                                                    <td>Vista 3D</td>
-                                                    <td>@{{componenteSeleccionado.archivo_3d_show ? componenteSeleccionado.archivo_3d_show : 'Sin archivo'}}</td>
-                                                    <td>
-                                                        <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
-                                                            <a class="btn btn-sm btn-link actions text-dark"
-                                                                :href="'/storage/' + componenteSeleccionado.archivo_3d_public"
-                                                                :disabled="!componenteSeleccionado.archivo_3d_public"
-                                                                target="_blank">
-                                                                <i class="fa fa-folder-open"></i>
+                                                        <div class="pt-3 border-top">                                                            
+                                                            <a target="_blank" v-if="f.foto" :href="'/storage/fabricaciones/' + f.foto">
+                                                                <img :src="'/storage/fabricaciones/' + f.foto" style="border-radius: 10px; width: 10px; height: 20%; object-fit: cover" alt="">
                                                             </a>
+                                                            <img v-else src="{{ asset('paper/img/no-image.png') }}" style="border-radius: 10px; width: 10%; height: 20%; object-fit:cover" alt="">
                                                         </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Explosionado</td>
-                                                    <td>@{{ componenteSeleccionado.archivo_explosionado_show ? componenteSeleccionado.archivo_explosionado_show : 'Sin archivo' }}</td>
-                                                    <td>
-                                                        <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
-                                                            <a class="btn btn-sm btn-link actions text-dark"
-                                                                :href="'/storage/' + componenteSeleccionado.archivo_explosionado_public"
-                                                                :disabled="!componenteSeleccionado.archivo_explosionado_show"
-                                                                target="_blank">
-                                                                <i class="fa fa-folder-open"></i>
-                                                            </a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Fotografía de ensamble</td>
-                                                    <td>@{{ componenteSeleccionado.foto_matricero ? componenteSeleccionado.foto_matricero : 'Sin archivo' }}</td>
-                                                    <td>
-                                                        <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
-                                                            <a class="btn btn-sm btn-link actions text-dark"
-                                                                :href="'/storage/' + componenteSeleccionado.fotoMatricero"
-                                                                :disabled="!componenteSeleccionado.foto_matricero"
-                                                                target="_blank">
 
-                                                                <i class="fa fa-folder-open"></i>
-                                                            </a>
-                                                        </div>
+
                                                     </td>
                                                 </tr>
-
                                             </tbody>
                                         </table>
+                                    </div>
+                                    <div v-else class="text-center">
+                                        <h4 class="bold text-center mb-4">No hay fabricaciones para este componente</h4>
                                     </div>
                                 </div>
                                 <div v-else class="text-center">
@@ -217,10 +195,36 @@
 
                 <!-- Documentacion de producción -->
                 <div class="tab-pane fade" id="documentacion-p" role="tabpanel" aria-labelledby="profile-tab">
-                    <div class="row mb-3">
-                        <div>
-                            <h1>Documentos de producción</h1>
+                    <div class="mb-3">
+                        <div class="col-md-10 mb-3">
+                            <h2 class="mb-0">Documentos de Producción</h2>
                         </div>
+                                                   
+                            <div class="col-md-12 table-responsive card shadow" v-cloak>
+                                <table class="table align-items-center table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th style="width: 30%" scope="col">Nombre</th>
+                                            <th style="width: 30%" scope="col">Tipo</th>
+                                            <th style="width: 10%" scope="col" class="no-sort">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>...</td>
+                                            <td>...</td>
+                                            <td>
+                                                <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
+                                                    <a class="btn btn-sm btn-link actions text-dark"
+                                                        href="#" target="_blank">
+                                                        <i class="fa fa-external-link"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>                        
                     </div>
                 </div>
 
@@ -260,7 +264,7 @@
                                                 <a class="btn btn-sm btn-link actions text-dark"
                                                     :href="'/storage/' + documento.archivo_public"
                                                     target="_blank">
-                                                    <i class="fa fa-folder-open"></i>
+                                                    <i class="fa fa-external-link"></i>
                                                 </a>
 
                                                 <button class="btn btn-sm btn-link actions"
@@ -379,8 +383,7 @@
                 this.selectedHerramental = herramentalId;
                 try {
                     const response = await axios.get(`/api/avance-hr/${herramentalId}`);
-                    this.componentes = response.data.componentes
-                    console.log(this.componentes);
+                    this.componentes = response.data.componentes                    
                 } catch (error) {
                     console.error('Error fetching componentes:', error);
                 } finally {
@@ -526,10 +529,9 @@
             goToVisorHerramental(ruta) {
                 window.location.href = '/visor-avance-hr/' + ruta;
             },
-            seleccionarComponente(c){
+            seleccionarComponente(c) {
                 this.componenteSeleccionado = c;
-                this.fabricacionesComponente = c.fabricaciones;   
-                console.log(this.fabricacionesComponente);             
+                this.fabricacionesComponente = c.fabricaciones;                
             },
             abrirModal(modo, id, archivo, descripcion) {
                 let t = this;
