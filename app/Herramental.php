@@ -70,10 +70,13 @@ class Herramental extends Model
         $array['fecha_finalizado'] = $this->fechaFinalizado();
         if($this->fecha_limite)
              $array['fecha_limite_show'] = Carbon::createFromFormat('Y-m-d', $this->fecha_limite)->isoFormat('DD/MM/YYYY');
-
         $array['checklist'] = $this->checklist?json_decode($this->checklist):[];
         $array['archivo2_show'] = preg_replace('/^[^_]*_/', '', $this->archivo2);
+        $array['archivo_show'] = preg_replace('/^[^_]*_/', '', $this->archivo);
 
+        $array['archivo_public'] = $this->archivo ? $this->proyecto->id . '/' . $this->id . '/formato/' . $this->archivo : '';
+        $array['archivo2_public'] = $this->archivo2 ? $this->proyecto->id . '/' . $this->id . '/formato2/' . $this->archivo2 : '';
+        $array['archivo_explosionado_public'] = $this->archivo_explosionado ? $this->proyecto->id . '/' . $this->id . '/componentes/' . $this->archivo_explosionado : '';
         
 
 

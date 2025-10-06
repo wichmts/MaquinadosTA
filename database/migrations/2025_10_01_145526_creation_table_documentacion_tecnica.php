@@ -18,21 +18,15 @@ class CreationTableDocumentacionTecnica extends Migration
             $table->string("archivo")->nullable();
             $table->string("descripcion")->nullable(); 
             $table->timestamps();           
+
+            $table->unsignedBigInteger('herramental_id')->nullable();
+            $table->foreign('herramental_id')->references('id')->on('herramentales')->onDelete('cascade');
+
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
-        Schema::table('herramentales', function (Blueprint $table) {
-            $table->unsignedBigInteger('documentacion_tecnica_id')->nullable();
-            $table->foreign('documentacion_tecnica_id')
-                ->references('id')->on('documentacion_tecnica')
-                ->onDelete('cascade');
-        });
-
-        Schema::table('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('documentacion_tecnica_id')->nullable();
-            $table->foreign('documentacion_tecnica_id')
-                ->references('id')->on('documentacion_tecnica')
-                ->onDelete('cascade');
-        });
+       
 
     }
 
@@ -43,16 +37,10 @@ class CreationTableDocumentacionTecnica extends Migration
      */
     public function down()
     {
-        Schema::table('herramentales', function (Blueprint $table) {
-            $table->dropForeign(['documentacion_tecnica_id']);
-            $table->dropColumn('documentacion_tecnica_id');
-        });
-
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['documentacion_tecnica_id']); 
-            $table->dropColumn('documentacion_tecnica_id');
-        });
-
+        Schema::table('documentacion_tecnica', function (Blueprint $table) {
+        $table->dropForeign(['herramental_id']);
+        $table->dropForeign(['user_id']);
+    });
         Schema::dropIfExists('documentacion_tecnica');
     }
 }

@@ -6148,12 +6148,12 @@ class APIController extends Controller
     }
 
     //Documentacion Tecnica
-    public function obtenerDocumentacionTecnica(){
-        $documentacion = DocumentacionTecnica::all();
-        return response()->json([
+    public function obtenerDocumentacionTecnica($herramental_id){
+        $documento = DocumentacionTecnica::where('herramental_id', $herramental_id)->get();
+         return response()->json([
+            'documento' => $documento,
             'success' => true,
-            'documentacion' => $documentacion
-        ]);
+        ], 200);
     }
 
     public function guardarDocumentacionTecnica(Request $request){
@@ -6174,6 +6174,7 @@ class APIController extends Controller
             $documento = new DocumentacionTecnica();
             $documento->archivo = $name;
             $documento->descripcion = $request->input('descripcion');
+            $documento->herramental_id = $request->input('herramental_id');
             $documento->save();
 
             return response()->json([

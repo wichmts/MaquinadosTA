@@ -134,7 +134,7 @@
                                     </div>
                                     <!-- Parte de lo de fabricaciones  -->
                                     <div v-if="fabricacionesComponente.length != 0" class="table-responsive shadow mt-3">
-                                        <table  class="table align-items-center table-bordered">
+                                        <table class="table align-items-center table-bordered">
                                             <thead class="thead-light">
                                                 <tr>
                                                     <th style="width: 10%">Fabricacion</th>
@@ -167,7 +167,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="pt-3 border-top">                                                            
+                                                        <div class="pt-3 border-top">
                                                             <a target="_blank" v-if="f.foto" :href="'/storage/fabricaciones/' + f.foto">
                                                                 <img :src="'/storage/fabricaciones/' + f.foto" style="border-radius: 10px; width: 10px; height: 20%; object-fit: cover" alt="">
                                                             </a>
@@ -192,39 +192,141 @@
                     </div>
                 </div>
 
-
                 <!-- Documentacion de producción -->
                 <div class="tab-pane fade" id="documentacion-p" role="tabpanel" aria-labelledby="profile-tab">
                     <div class="mb-3">
                         <div class="col-md-10 mb-3">
                             <h2 class="mb-0">Documentos de Producción</h2>
                         </div>
-                                                   
-                            <div class="col-md-12 table-responsive card shadow" v-cloak>
+
+                        <div class="col-md-12 table-responsive card shadow" v-cloak>
+                            <table class="table align-items-center table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th style="width: 30%" scope="col">Tipo</th>
+                                        <th style="width: 30%" scope="col">Nombre</th>
+                                        <th style="width: 10%" scope="col" class="no-sort">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>F71-03 ANEXO 1</td>
+                                        <td>@{{ herramental.archivo_show ? herramental.archivo_show : 'Sin archivo'}}</td>
+                                        <td>
+                                            <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
+                                                <a class="btn btn-sm btn-link actions text-dark"
+                                                    :href="'/storage/' + herramental.archivo_public"
+                                                    :disabled="!herramental.archivo"
+                                                    target="_blank"><i class="fa fa-external-link"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>F71-03 ANEXO 1.1</td>
+                                        <td>@{{ herramental.archivo2_show ? herramental.archivo2_show : 'Sin archivo'}}</td>
+                                        <td>
+                                            <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
+                                                <a class="btn btn-sm btn-link actions text-dark"
+                                                    :href="'/storage/' + herramental.archivo2_public"
+                                                    :disabled="!herramental.archivo2"
+                                                    target="_blank"><i class="fa fa-external-link"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                
+                                    <tr>
+                                        <td>ARCHIVO EXPLOSIONADO</td>
+                                        <td>@{{ herramental.archivo_explosionado_show ? herramental.archivo_explosionado_show : 'Sin archivo'}}</td>
+                                        <td>
+                                            <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
+                                                <a class="btn btn-sm btn-link actions text-dark"
+                                                    :href="'/storage/' + herramental.archivo_explosionado_public"
+                                                    :disabled="!herramental.archivo_explosionado" 
+                                                    target="_blank"
+                                                    ><i class="fa fa-external-link"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Prebas Diseño -->
+                            <div v-if='pruebasDiseño.length != 0' class="table-responsive shadow mt-3">
+                                <h4>Pruebas de diseño</h4>
                                 <table class="table align-items-center table-bordered">
                                     <thead class="thead-light">
                                         <tr>
-                                            <th style="width: 30%" scope="col">Nombre</th>
-                                            <th style="width: 30%" scope="col">Tipo</th>
-                                            <th style="width: 10%" scope="col" class="no-sort">Acciones</th>
+                                            <th style="width: 10%">Prueba de Diseño</th>
+                                            <th style="width: 40%" scope="col">Tipo</th>
+                                            <th style="width: 40%" scope="col">Nombre de Archivos</th>
+                                            <th style="width: 40%" scope="col">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>...</td>
-                                            <td>...</td>
+                                        <tr v-for="p in pruebasDiseño" :key="f.id">
+                                            <td>@{{ p.nombre }}</td>
+                                            <td>ARCHIVO DIMENSIONAL</td>
+                                            <td>
+                                                @{{ p.archivo_dimensional ? p.archivo_dimensional : 'Sin archivo' }}
+                                            </td>
                                             <td>
                                                 <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
                                                     <a class="btn btn-sm btn-link actions text-dark"
-                                                        href="#" target="_blank">
-                                                        <i class="fa fa-external-link"></i>
+                                                        :href="'/api/download/pruebas-diseno/' + p.archivo_dimensional"
+                                                        :disabled="!p.archivo_dimensional"
+                                                        target="_blank">
+                                                        <i class="fa fa-download"></i> Descargar
                                                     </a>
                                                 </div>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>                        
+                            </div>
+                            <div v-else class="text-center">
+                                <h4 class="bold text-center mb-4">No hay pruebas de diseño del herramental</h4>
+                            </div>
+
+                            <!-- Prebas Proceso -->
+                            <div v-if='pruebasProceso.length != 0' class="table-responsive shadow mt-3">
+                                <h4>Pruebas de proceso</h4>
+                                <table class="table align-items-center table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th style="width: 10%">Prueba de Proceso</th>
+                                            <th style="width: 40%" scope="col">Tipo</th>
+                                            <th style="width: 40%" scope="col">Nombre de Archivos</th>
+                                            <th style="width: 40%" scope="col">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="p in pruebasProceso" :key="f.id">
+                                            <td>@{{ p.nombre }}</td>
+                                            <td>FORMATO F71-03 ANEXO 2</td>
+                                            <td>
+                                                @{{ p.archivo ? p.archivo : 'Sin archivo' }}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
+                                                    <a class="btn btn-sm btn-link actions text-dark"
+                                                        :href="'/api/download/pruebas-proceso/' + p.archivo"
+                                                        :disabled="!p.archivo"
+                                                        target="_blank">
+                                                        <i class="fa fa-download"></i> Descargar
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div v-else class="text-center">
+                                <h4 class="bold text-center mb-4">No hay pruebas de proceso del herramental</h4>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -243,7 +345,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12 table-responsive card shadow" v-cloak>
+                        <div v-if = 'documentos.length != 0' class="col-md-12 table-responsive card shadow" v-cloak>
                             <table class="table align-items-center table-bordered">
                                 <thead class="thead-light">
                                     <tr>
@@ -281,11 +383,13 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div v-else class="text-center">
+                            <h4 class="bold text-center mb-4">No hay documentos técnicos del herramental</h4>
+                        </div>   
 
                     </div>
                 </div>
                 <!----------------->
-
             </div>
         </div>
     </div>
@@ -358,10 +462,13 @@
                 id: null,
                 archivo: '',
                 descripcion: '',
+                idHerramental: null,
             },
             selectedHerramental: null,
             herramental: {},
             componentes: [],
+            pruebasDiseño: [],
+            pruebasProceso: [],
             componenteSeleccionado: {},
             documentos: [],
             fabricacionesComponente: [],
@@ -371,7 +478,8 @@
                 this.cargando = true
                 try {
                     const response = await axios.get(`/api/herramental/${this.selectedHerramental}`);
-                    this.herramental = response.data.herramental;
+                    this.herramental = response.data.herramental;    
+                    console.log(this.herramental);                                     
                 } catch (error) {
                     console.error('Error fetching herramentales:', error);
                 } finally {
@@ -383,19 +491,43 @@
                 this.selectedHerramental = herramentalId;
                 try {
                     const response = await axios.get(`/api/avance-hr/${herramentalId}`);
-                    this.componentes = response.data.componentes                    
+                    this.componentes = response.data.componentes;                    
                 } catch (error) {
                     console.error('Error fetching componentes:', error);
                 } finally {
                     this.cargando = false;
                 }
             },
+            async fetchPruebasDiseño(herramentalId) {
+                let t = this;
+                t.cargando = true;
+                try {
+                    const response = await axios.get(`/api/herramental/${herramentalId}/pruebas-diseno`);
+                    t.pruebasDiseño = response.data.pruebas;
+                } catch (error) {
+                    console.error('Error fetching pruebas de diseño:', error);
+                } finally {
+                    t.cargando = false;
+                }
+            },
+            async fetchPruebasProceso(herramentalId) {
+                let t = this;
+                t.cargando = true;
+                try {
+                    const response = await axios.get(`/api/herramental/${herramentalId}/pruebas-proceso`);
+                    t.pruebasProceso = response.data.pruebas;
+                } catch (error) {
+                    console.error('Error fetching pruebas de proceso:', error);
+                } finally {
+                    t.cargando = false;
+                }
+            },
             /* Parte de documentos */
             async fetchDocumentos(herramentalId) {
                 this.cargando = true
                 try {
-                    const response = await axios.get(`/api/documentacion-tecnica/${herramentalId}`);
-                    this.documentos = response.data.documentacion;
+                    const response = await axios.get(`/api/documentacion-tecnica/${herramentalId}`);                    
+                    this.documentos = response.data.documento;                    
                 } catch (error) {
                     console.error('Error fetching documentos:', error);
                 } finally {
@@ -409,6 +541,7 @@
                 let formData = new FormData();
                 formData.append('archivo', t.nuevoArchivo.archivo); // este es el archivo en si, no el nombre 
                 formData.append('descripcion', t.nuevoArchivo.descripcion || '');
+                formData.append('herramental_id', t.selectedHerramental);
                 try {
                     const response = await axios.post(`/api/documentacion-tecnica/${t.selectedHerramental}`, formData, {
                         headers: {
@@ -421,6 +554,7 @@
                             id: null,
                             archivo: '',
                             descripcion: '',
+                            idHerramental: null,
                         };
                         t.fetchDocumentos(t.selectedHerramental);
                     } else {
@@ -471,6 +605,8 @@
                     formData.append('archivo', t.nuevoArchivo.archivo);
                 }
                 formData.append('descripcion', t.nuevoArchivo.descripcion || '');
+
+
                 try {
                     const response = await axios.post(`/api/documentacion-tecnica/editar/${documentoId}`, formData);
                     if (response.data.success) {
@@ -480,6 +616,7 @@
                             id: null,
                             archivo: '',
                             descripcion: '',
+                            idHerramental: null,
                         };
                     }
                 } catch (error) {
@@ -501,6 +638,8 @@
                             id: herramentalId
                         };
                         await this.fetchComponentes(herramentalId);
+                        await this.fetchPruebasDiseño(herramentalId);
+                        await this.fetchPruebasProceso(herramentalId);
 
                         if (componenteId) {
                             let task = this.tasks.find(t =>
@@ -531,7 +670,7 @@
             },
             seleccionarComponente(c) {
                 this.componenteSeleccionado = c;
-                this.fabricacionesComponente = c.fabricaciones;                
+                this.fabricacionesComponente = c.fabricaciones;
             },
             abrirModal(modo, id, archivo, descripcion) {
                 let t = this;
@@ -541,13 +680,14 @@
                         id: null,
                         archivo: '',
                         descripcion: '',
+                        idHerramental: null,
                     };
                 } else if (modo == 'editar') {
                     t.modalEdicion = true;
                     t.nuevoArchivo = {
                         id: id,
                         archivo: archivo,
-                        descripcion: descripcion,
+                        descripcion: descripcion,                        
                     };
                 }
                 $('#modalArchivo').modal();
