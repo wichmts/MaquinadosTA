@@ -2484,7 +2484,7 @@ class APIController extends Controller
         ], 200);
     
     }
-    public function ultimasNotificaciones() {
+     public function ultimasNotificaciones() {
         $roles = auth()->user()->roles->pluck('name');
 
         $notificaciones = Notificacion::where(function ($query) use ($roles) {
@@ -2497,11 +2497,13 @@ class APIController extends Controller
             return $this->verificarResponsables($notificacion);
         })->take(6);
 
-
         return response()->json([
             'notificaciones' => $notificacionesFiltradas,
             'success' => true,
-        ], 200);
+        ], 200)
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
     }
     public function verificarResponsables($notificacion) {
         $userId = auth()->id();
@@ -2531,8 +2533,10 @@ class APIController extends Controller
         return response()->json([
             'notificaciones' => $notificacionesFiltradas,
             'success' => true,
-        ], 200);
-
+        ], 200)
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
     }
     public function verNotificaciones(){
         $user = auth()->user();
@@ -2541,7 +2545,10 @@ class APIController extends Controller
 
         return response()->json([
             'success' => true,
-        ], 200);
+        ], 200)
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
     }
     public function updateAtendida(Request $request, $id){
         $notificacion = Notificacion::findOrFail($id);

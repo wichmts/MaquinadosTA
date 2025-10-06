@@ -403,7 +403,7 @@
                                                             
                                                             <div class="col">
                                                                 <a class="btn btn-block btn-sm btn-default" :href="'/storage/' + component.info.archivo_2d_public" target="_blank">
-                                                                    <i class="fa fa-download"></i> Vista Plano
+                                                                    <i class="fa fa-download"></i> Plano
                                                                 </a>
                                                             </div>
                                                             <div class="col">
