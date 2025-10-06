@@ -163,7 +163,7 @@
 
             <div class="row">
                 <div class="col-lg-4 form-group">
-                    <label class="bold">Archivo 2D</label>
+                    <label class="bold">Archivo Plano</label>
                     <input
                         class="input-file"
                         id="2d"
@@ -171,7 +171,7 @@
                         @change="handleFileChange($event)"
                         style="display: none;" />
                     <label tabindex="0" for="2d" class="input-file-trigger col-12 text-center">
-                        <i class="fa fa-upload"></i> @{{modo_edicion?'EDITAR':'CARGAR'}} 2D
+                        <i class="fa fa-upload"></i> @{{modo_edicion?'EDITAR':'CARGAR'}} PLANO
                     </label>
                     <small>Archivo: <strong>@{{nuevo.archivo_2d ?? 'Sin cargar'}}</strong></small>
                 </div>

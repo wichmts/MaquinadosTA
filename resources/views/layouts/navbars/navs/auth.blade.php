@@ -187,6 +187,7 @@
                     @php
                         addMenuItem('carga-componentes', 'Carga de componentes', ['AUXILIAR DE DISEÑO'], $addedRoutes);
                         addMenuItem('visor-avance-hr', 'Visor de avance', ['AUXILIAR DE DISEÑO', 'DIRECCION', 'FINANZAS', 'JEFE DE AREA', 'PROYECTOS', 'MATRICERO', 'HERRAMENTALES'], $addedRoutes);
+                        addMenuItem('almacen-mp', 'AlmacÉn de MP', ['AUXILIAR DE DISEÑO'], $addedRoutes);
                     @endphp
 
                     {{-- JEFE DE AREA --}}

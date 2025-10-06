@@ -169,7 +169,7 @@
                                 <div class="col-lg-3 d-flex justify-content-around">
                                     <div class="p-1">
                                         <a class="text-dark" :href="'/storage/' + componente.archivo_2d_public" target="_blank">
-                                            <h5 class="my-0 py-0 bold">2D</h5>
+                                            <h5 class="my-0 py-0 bold">Plano</h5>
                                             <img src="/paper/img/icons/file.png" width="100%">
                                         </a>
                                     </div>
@@ -689,7 +689,7 @@
                             <p><strong>Comentarios e intrucciones </strong><br> @{{solicitudExterna.comentarios}}</p>
                             <p><strong>¿Requiere tratamiento térmico? </strong><br> @{{solicitudExterna.tratamiento_termico ? 'Si' : 'No'}}</p>
                             <p><strong>Archivos</strong></p>
-                            <a :href="'/api/download/ordenes_trabajo/' + solicitudExterna.archivo_2d" v-if="solicitudExterna.archivo_2d" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo 2D</a>
+                            <a :href="'/api/download/ordenes_trabajo/' + solicitudExterna.archivo_2d" v-if="solicitudExterna.archivo_2d" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo Plano</a>
                             <a :href="'/api/download/ordenes_trabajo/' + solicitudExterna.archivo_3d" v-if="solicitudExterna.archivo_3d" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo 3D</a>
                             <a :href="'/api/download/ordenes_trabajo/' + solicitudExterna.dibujo" v-if="solicitudExterna.dibujo" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Dibujo a mano</a>
                         </div>
@@ -729,7 +729,7 @@
                             <p><strong>Cuanto afilar </strong><br> @{{solicitudAfilado.cuanto_afilar}} @{{solicitudAfilado.unidad_de_medida}}</p>
                             <p><strong>Archivos</strong></p>
                             <p v-if="!solicitudAfilado.archivo_2d">Sin archivos disponibles</p>
-                            <a :href="'/api/download/ordenes_trabajo/' + solicitudAfilado.archivo_2d" v-if="solicitudAfilado.archivo_2d" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo 2D</a>
+                            <a :href="'/api/download/ordenes_afilado/' + solicitudAfilado.archivo_2d" v-if="solicitudAfilado.archivo_2d" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo Plano</a>
 
                         </div>
                     </div>

@@ -177,18 +177,12 @@
                                                 <button v-if="c.estatus_corte != 'paro'" @click="registrarParo(c.id)" :disabled="c.estatus_corte == 'finalizado'" class="mt-1 btn  btn-danger btn-sm"><i class="fa fa-stop-circle"></i> Iniciar paro</button>
                                                 <button  v-else @click="eliminarParo(c.id)" :disabled="c.estatus_corte == 'finalizado'" class="mt-1 btn  btn-danger btn-sm"><i class="fa fa-play-circle"></i> Reanudar operacion</button>
 
-                                                <button 
-                                                    v-show="c.comentarios"
+                                                <button                                                     
                                                     type="button" 
                                                     class="mt-1 btn btn-default btn-sm" 
-                                                    :id="'popoverButton' + c.id"
-                                                    
-                                                    data-toggle="popover"
-                                                    data-trigger="focus"
-                                                    data-html="true"
-                                                    :data-content="c.comentarios"
-                                                    ><i class="fa fa-comment"></i>
-                                                    Comentario
+                                                    @click="abrirModalInfo(c)"                                                    
+                                                    ><i class="fa fa-info-circle "></i>
+                                                    Info
                                                 </button>
  
                                             </td>
@@ -389,6 +383,42 @@
                 </div>  
             </div>
         </div>
+
+        <!-- Modal info componente -->
+        <div class="modal fade" id="modalInfo" tabindex="-1" aria-labelledby="modalInfoLabel" aria-hidden="true">
+            <div class="modal-dialog" style="min-width: 40%;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="bold modal-title" id="modalInfoLabel">
+                            INFORMACIÓN DEL COMPONENTE PARA CORTE
+                        </h3>
+                        <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xl-12 text-center">
+                                <p><strong>Comentarios del enrutador</strong><br>@{{componenteModal.comentarios}}</p>
+
+                                <p v-if="!componenteModal.archivo_2d && !componenteModal.archivo_3d && !componenteModal.archivo_explosionado_public">Sin archivos disponibles</p>
+
+                                <a :href="'/storage/' + componenteModal.archivo_2d_public" target="_blank" v-if="componenteModal.archivo_2d" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo Plano</a>
+
+                                <a :href="'/storage/' + componenteModal.archivo_3d_public" target="_blank" v-if="componenteModal.archivo_3d" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo 3D</a>
+
+                                <a :href="'/storage/' + componenteModal.archivo_explosionado_public" target="_blank" v-if="componenteModal.archivo_explosionado_public" class="my-0 btn btn-default btn-sm"><i class="fa fa-download"></i> Archivo Explosionado</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-12 text-center mt-4">
+                                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -403,6 +433,7 @@
             loading_button: false,
             cargando: false,
             componente: {nombre: ''},
+            componenteModal: {},
             materiales: [],
             hojas: [],
             
@@ -411,7 +442,7 @@
             clientes: [],      
             proyectos: [],     
             herramentales: [], 
-            componentes: [],   
+            componentes: [],              
             cargandoMenu: true,
             menuStep: 1, 
             selectedAnio: null,
@@ -1154,6 +1185,11 @@
                 } finally {
                     this.cargando = false;
                 }
+            },
+            abrirModalInfo(componente){   
+                this.componenteModal = componente;     
+                console.log(this.componenteModal);        
+                $('#modalInfo').modal();
             }
 
         },

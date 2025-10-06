@@ -544,7 +544,7 @@
                                                 <div class="row" style="height: 40vh">
                                                     <div class="col-xl-12">
                                                         <label class="bold">
-                                                            <a v-if="componente.archivo_2d_public" :href="'/storage/' + componente.archivo_2d_public" target="_blank" class="text-dark text-decoration-none">VISTA 2D</a>
+                                                            <a v-if="componente.archivo_2d_public" :href="'/storage/' + componente.archivo_2d_public" target="_blank" class="text-dark text-decoration-none">PLANO</a>
                                                         </label>
                                                     </div>
                                                     <div class="col-xl-12 h-100" >

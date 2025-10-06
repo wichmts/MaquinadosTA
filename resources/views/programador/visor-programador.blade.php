@@ -173,7 +173,7 @@
                                 <div class="d-flex align-items-center">
                                     <a class="text-dark" :href="'/storage/' + componente.archivo_2d_public" target="_blank">
                                         <img src="/paper/img/icons/file.png" height="80px">
-                                        <h5 class="my-0 py-0 bold pt-2">2D</h5>
+                                        <h5 class="my-0 py-0 bold pt-2">PLANO</h5>
                                     </a>
                                 </div>
                                 <div class="d-flex align-items-center">

@@ -96,7 +96,7 @@
             </div>
         </div>
         <div class="row mt-3 px-2" v-cloak v-show="!cargando" >
-            <div class="col-lg-6 d-flex align-items-end">
+            <div :class="getRol().includes('ALMACENISTA') ? 'col-lg-6' : 'col-lg-8'" class="d-flex align-items-end">
                 <h2 class="bold my-0 py-1 text-decoration-underline" style="letter-spacing: 2px">ALMACÉN DE MATERIA PRIMA</h2>
             </div>
             <div class="col-lg-2 d-flex align-items-end">
@@ -116,7 +116,7 @@
                     </select>
                 </div>
             </div>
-            <div class="col-lg-2 d-flex align-items-end">
+            <div v-if="getRol().includes('ALMACENISTA')" class="col-lg-2 d-flex align-items-end">
                 <button class="btn btn-block mb-0" @click="abrirModalNuevo"><i class="fa fa-plus-circle"></i> AÑADIR HOJA</button>
             </div>
             <div class="col-lg-12 mt-3" >
@@ -134,7 +134,7 @@
                             <th  class="py-1" rowspan="2" style="width: 7% ; border: 1px solid #b6b6b6 !important">Fecha Entrada</th>
                             <th  class="py-1" rowspan="2" style="width: 12% ; border: 1px solid #b6b6b6 !important">Ultimo movimiento</th>
                             <th  class="py-1" rowspan="2" style="width: 10% ; border: 1px solid #b6b6b6 !important">Factura</th>
-                            <th  class="py-1" rowspan="2" style="width: 20% ; border: 1px solid #b6b6b6 !important">Acciones</th>
+                            <th v-if="getRol().includes('ALMACENISTA')"  class="py-1" rowspan="2" style="width: 20% ; border: 1px solid #b6b6b6 !important">Acciones</th>
                         </tr>
                         <tr>
                             {{-- entrada --}}
@@ -175,7 +175,7 @@
                             <td>
                                 <a :href=`/api/download/facturas/${h.factura}` target="_blank">@{{h.factura}}</a>
                             </td>
-                            <td>
+                            <td v-if="getRol().includes('ALMACENISTA')">
                                 <button class="my-1 btn btn-sm btn-default" @click="verMovimientosHoja(h.id)"><i class="fa fa-list-ul cursor-pointer"></i> ver movimientos</button>
                                 <button v-if="h.estatus" class="my-1 btn btn-sm btn-danger" @click="estatusHoja(h.id, false)"><i class="fa fa-ban cursor-pointer"></i> Dar de baja</button>
                                 <button v-else class="my-1 btn btn-sm btn-warning text-dark" @click="estatusHoja(h.id, true)"><i class="fa fa-level-up-alt cursor-pointer"></i> Reactivar hoja</button>
@@ -353,6 +353,10 @@
             estatusSelected: 'activo',
         },
         methods:{
+            getRol(){                
+                let rol = JSON.parse('{!! json_encode(auth()->user()->roles->pluck("name")) !!}');                
+                return rol;
+            },
             estatusHoja(id, estatus){
                 let t = this
                 if(estatus){
@@ -579,6 +583,7 @@
         mounted: async function () {
             let t = this;
             await t.fetchMateriales();
+            t.getRol();
         }
 
                 

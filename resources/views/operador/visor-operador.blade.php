@@ -116,7 +116,7 @@
                                     <input type="text" class="form-control text-center" v-model="componente.cantidad" placeholder="Cantidad" disabled>
                                 </div>
                                 <div class="col-lg-2 form-group mb-0 mt-2">
-                                    <a :href="'/storage/' + componente.archivo_2d_public" target="_blank" class="btn btn-block btn-default"><i class="fa fa-file"></i> Ver 2D</a>
+                                    <a :href="'/storage/' + componente.archivo_2d_public" target="_blank" class="btn btn-block btn-default"><i class="fa fa-file"></i> Ver Plano</a>
                                 </div>
                                 <div class="col-lg-2 form-group mb-0 mt-2">
                                     <button class="btn btn-block btn-default" @click="verModalRuta()"><i class="fa fa-eye"></i> Ver ruta</button>
