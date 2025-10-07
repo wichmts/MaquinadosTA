@@ -3,6 +3,12 @@
 'elementActive' => 'dashboard'
 ])
 
+@section('styles')
+<link rel="stylesheet" href="{{ asset('paper/css/paper-dashboard-responsivo.css') }}?v={{ time() }}">
+
+
+@endsection
+
 <style>
 
 </style>
@@ -235,7 +241,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                
+
                                     <tr>
                                         <td>ARCHIVO EXPLOSIONADO</td>
                                         <td>@{{ herramental.archivo_explosionado_show ? herramental.archivo_explosionado_show : 'Sin archivo'}}</td>
@@ -243,9 +249,8 @@
                                             <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
                                                 <a class="btn btn-sm btn-link actions text-dark"
                                                     :href="'/storage/' + herramental.archivo_explosionado_public"
-                                                    :disabled="!herramental.archivo_explosionado" 
-                                                    target="_blank"
-                                                    ><i class="fa fa-external-link"></i>
+                                                    :disabled="!herramental.archivo_explosionado"
+                                                    target="_blank"><i class="fa fa-external-link"></i>
                                                 </a>
                                             </div>
                                         </td>
@@ -340,12 +345,12 @@
                             </div>
                             <div class="col-md-2 text-right">
                                 <button class="btn btn-success" @click="abrirModal('agregar')">
-                                    <i class="fa fa-plus-circle"></i> Nuevo Archivo
+                                    <i class="fa fa-plus-circle"></i> NUEVO DOCUMENTO
                                 </button>
                             </div>
                         </div>
 
-                        <div v-if = 'documentos.length != 0' class="col-md-12 table-responsive card shadow" v-cloak>
+                        <div v-if='documentos.length != 0' class="col-md-12 table-responsive card shadow" v-cloak>
                             <table class="table align-items-center table-bordered">
                                 <thead class="thead-light">
                                     <tr>
@@ -385,7 +390,7 @@
                         </div>
                         <div v-else class="text-center">
                             <h4 class="bold text-center mb-4">No hay documentos técnicos del herramental</h4>
-                        </div>   
+                        </div>
 
                     </div>
                 </div>
@@ -400,7 +405,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="modal-title" id="modalArchivoLabel">
-                        <span>@{{modalEdicion ? 'EDITAR' : 'AGREGAR'}} ARCHIVO</span>
+                        <span>@{{modalEdicion ? 'EDITAR' : 'AGREGAR'}} DOCUMENTO</span>
                     </h3>
                     <button v-if="!loading_button" type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -409,7 +414,11 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-lg-12 form-group">
-                            <label class="bold" for="archivo">Archivo: <span class="text-danger">*</span></label>
+                            <label class="bold mt-3" for="">Descripción:</label>
+                            <textarea class="form-control" v-model="nuevoArchivo.descripcion" rows="3" placeholder="Descripción del documento"></textarea>
+                        </div>
+                        <div class="col-lg-12 form-group">
+                            <label class="bold" for="archivo">Documento: <span class="text-danger">*</span></label>
                             <input
                                 type="file"
                                 id="archivo"
@@ -418,25 +427,23 @@
 
                             <label
                                 for="archivo"
-                                class="btn col-12 text-center"
+                                class="input-file-trigger col-12 text-center"
                                 style="cursor: pointer;">
-                                <i class="fa fa-upload"></i> Cargar
+                                <i class="fa fa-upload"></i> CARGAR DOCUMENTO
                             </label>
+                            
                             <small v-if="nuevoArchivo.archivo">
                                 @{{ typeof nuevoArchivo.archivo === 'string' ? nuevoArchivo.archivo : (nuevoArchivo.archivo.name || '') }}
                             </small>
 
                         </div>
-                        <div class="col-lg-12 form-group">
-                            <label class="bold mt-3" for="">Descripción:</label>
-                            <textarea class="form-control" v-model="nuevoArchivo.descripcion" rows="3" placeholder="Descripción del archivo"></textarea>
-                        </div>
+
                     </div>
                     <div class="row">
                         <div class="col-lg-12 text-right">
                             <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
-                            <button class="btn btn-secondary" v-if="!loading_button" type="button" @click="modalEdicion ? editarArchivo(nuevoArchivo.id) : guardarArchivo()"><i class="fa fa-save"></i> Guardar</button>
-                            <button class="btn btn-secondary" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> Guardando...</button>
+                            <button class="btn btn-dark" v-if="!loading_button" type="button" @click="modalEdicion ? editarArchivo(nuevoArchivo.id) : guardarArchivo()"><i class="fa fa-save"></i> Guardar</button>
+                            <button class="btn btn-dark !important" type="button" disabled v-if="loading_button"><i class="fa fa-spinner spin"></i> Guardando...</button>
                         </div>
                     </div>
                 </div>
@@ -478,8 +485,8 @@
                 this.cargando = true
                 try {
                     const response = await axios.get(`/api/herramental/${this.selectedHerramental}`);
-                    this.herramental = response.data.herramental;    
-                    console.log(this.herramental);                                     
+                    this.herramental = response.data.herramental;
+                    console.log(this.herramental);
                 } catch (error) {
                     console.error('Error fetching herramentales:', error);
                 } finally {
@@ -491,7 +498,7 @@
                 this.selectedHerramental = herramentalId;
                 try {
                     const response = await axios.get(`/api/avance-hr/${herramentalId}`);
-                    this.componentes = response.data.componentes;                    
+                    this.componentes = response.data.componentes;
                 } catch (error) {
                     console.error('Error fetching componentes:', error);
                 } finally {
@@ -526,8 +533,24 @@
             async fetchDocumentos(herramentalId) {
                 this.cargando = true
                 try {
-                    const response = await axios.get(`/api/documentacion-tecnica/${herramentalId}`);                    
-                    this.documentos = response.data.documento;                    
+                    const response = await axios.get(`/api/documentacion-tecnica/${herramentalId}`);
+                    this.documentos = response.data.documento;
+
+                    Vue.nextTick(function() {
+                    document.querySelector("html").classList.add('js');                    
+                    let button = document.querySelector(".input-file-trigger");
+
+                    button.addEventListener("keydown", function(event) {
+                        if (event.keyCode == 13 || event.keyCode == 32) {
+                            fileInput.focus();
+                        }
+                    });
+
+                    button.addEventListener("click", function(event) {
+                        fileInput.focus();
+                        return false;
+                    });
+                });
                 } catch (error) {
                     console.error('Error fetching documentos:', error);
                 } finally {
@@ -620,7 +643,7 @@
                         };
                     }
                 } catch (error) {
-                    console.error('Error al editar docuemento:', error);
+                    console.error('Error al editar documento:', error);
                     swal('Error', 'Ocurrió un error al eliminar el archivo', 'error');
                 } finally {
                     t.cargando = false;
@@ -687,7 +710,7 @@
                     t.nuevoArchivo = {
                         id: id,
                         archivo: archivo,
-                        descripcion: descripcion,                        
+                        descripcion: descripcion,
                     };
                 }
                 $('#modalArchivo').modal();
