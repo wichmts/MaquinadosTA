@@ -6157,10 +6157,7 @@ class APIController extends Controller
     }
 
     public function guardarDocumentacionTecnica(Request $request){
-        $request->validate([
-            'archivo' => 'required|file|mimes:pdf,jpg,png|max:5120', // 5MB máximo
-        ]);
-        
+
         if($request->hasFile('archivo')){
             $file = $request->file('archivo');
             $resultado = $this->validarArchivo($file);
@@ -6187,11 +6184,7 @@ class APIController extends Controller
     {
         $documento = DocumentacionTecnica::findOrFail($id);
 
-        if ($request->hasFile('archivo')) {
-            $request->validate([
-                'archivo' => 'required|file|mimes:pdf,jpg,png|max:5120', // 5MB máximo
-            ]);
-
+        if ($request->hasFile('archivo')) {        
             $file = $request->file('archivo');
             $resultado = $this->validarArchivo($file);
 
