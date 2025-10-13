@@ -145,7 +145,6 @@
                                                 <tr>
                                                     <th style="width: 10%">Fabricacion</th>
                                                     <th style="width: 40%" scope="col">Nombre de Archivos</th>
-                                                    <th style="width: 40%" scope="col">Acciones</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -153,35 +152,28 @@
                                                     <td>@{{ f.maquina_nombre }}</td>
                                                     <td>
                                                         <div class="pb-4">
-                                                            <strong>Archivo:</strong>
-                                                            <span>@{{ f.archivo_show ? f.archivo_show : 'Sin archivo' }}</span>
-                                                        </div>
-                                                        <div class="border-top pt-4">
-                                                            <strong>Foto:</strong>
-                                                            <span>@{{ f.foto ? f.foto : 'Sin foto' }}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="pb-3 pt-2">
-                                                            <div class="btn-group" style="border: 2px solid #121935; border-radius: 10px !important">
-                                                                <a class="btn btn-sm btn-link actions text-dark"
-                                                                    :href="'/api/download/programas/' + f.archivo"
-                                                                    :disabled="!f.archivo"
-                                                                    target="_blank">
-                                                                    <i class="fa fa-download"></i> Descargar
-                                                                </a>
-                                                            </div>
+                                                            <div class="pb-2">
+                                                                <strong>Programa:</strong>
+                                                            </div>                                                        
+                                                            <a class=""
+                                                                :href="'/api/download/programas/' + f.archivo"
+                                                                :disabled="!f.archivo"
+                                                                target="_blank">
+                                                                <i class="fa fa-download"></i>@{{ f.archivo_show ? f.archivo_show : 'Sin archivo' }}
+                                                            </a>
                                                         </div>
 
-                                                        <div class="pt-3 border-top">
+                                                        <div class="border-top pt-4">
+                                                            <strong>Fotografía de fabricación:</strong>
+                                                        </div>                                                    
+                                                        <div class="pt-3">
                                                             <a target="_blank" v-if="f.foto" :href="'/storage/fabricaciones/' + f.foto">
                                                                 <img :src="'/storage/fabricaciones/' + f.foto" style="border-radius: 10px; width: 10%; height: 20%; object-fit: cover" alt="">
                                                             </a>
                                                             <img v-else src="{{ asset('paper/img/no-image.png') }}" style="border-radius: 10px; width: 10%; height: 20%; object-fit:cover" alt="">
                                                         </div>
-
-
                                                     </td>
+
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -431,7 +423,7 @@
                                 style="cursor: pointer;">
                                 <i class="fa fa-upload"></i> CARGAR DOCUMENTO
                             </label>
-                            
+
                             <small v-if="nuevoArchivo.archivo">
                                 @{{ typeof nuevoArchivo.archivo === 'string' ? nuevoArchivo.archivo : (nuevoArchivo.archivo.name || '') }}
                             </small>
@@ -537,20 +529,20 @@
                     this.documentos = response.data.documento;
 
                     Vue.nextTick(function() {
-                    document.querySelector("html").classList.add('js');                    
-                    let button = document.querySelector(".input-file-trigger");
+                        document.querySelector("html").classList.add('js');
+                        let button = document.querySelector(".input-file-trigger");
 
-                    button.addEventListener("keydown", function(event) {
-                        if (event.keyCode == 13 || event.keyCode == 32) {
+                        button.addEventListener("keydown", function(event) {
+                            if (event.keyCode == 13 || event.keyCode == 32) {
+                                fileInput.focus();
+                            }
+                        });
+
+                        button.addEventListener("click", function(event) {
                             fileInput.focus();
-                        }
+                            return false;
+                        });
                     });
-
-                    button.addEventListener("click", function(event) {
-                        fileInput.focus();
-                        return false;
-                    });
-                });
                 } catch (error) {
                     console.error('Error fetching documentos:', error);
                 } finally {

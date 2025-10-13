@@ -13,10 +13,12 @@
         padding: 11px 22px;
         cursor: pointer;
     }
+
     .navBtn:hover {
         background-color: #eee;
     }
-    thead th{
+
+    thead th {
         text-transform: none !important;
     }
 </style>
@@ -25,7 +27,7 @@
 <div id="vue-app" v-cloak>
     <div class="container-fluid mt-3">
         <div class="col-lg-12">
-            <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR GENERAL</h2> 
+            <h2 class="bold my-0 py-1 mb-3 text-decoration-underline" style="letter-spacing: 2px">VISOR GENERAL</h2>
         </div>
         <div class="col-lg-12">
             <!-- Nav -->
@@ -42,6 +44,9 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="fabricacion-tab" data-toggle="tab" data-target="#fabricacion" type="button" role="tab" aria-controls="fabricacion" aria-selected="false">FABRICACIONES POR MÁQUINA</button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="componenteTerminado-tab" data-toggle="tab" data-target="#componenteTerminado" type="button" role="tab" aria-controls="componenteTerminado" aria-selected="true">COMPONENTES TERMINADOS</button>
+                </li>
             </ul>
             <div class="tab-content pt-4" id="myTabContent">
                 <div class="tab-pane fade show active" id="enrutamiento" role="tabpanel" aria-labelledby="home-tab">
@@ -57,31 +62,31 @@
                                         <th>Nombre del componente</th>
                                         <th>Cantidad</th>
                                         <th>Fecha Liberación</th>
-                                        <th>Comentarios del enrutador</th>                                    
+                                        <th>Comentarios del enrutador</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="(componente, index) in trabajosPendientes.enrutamiento">
                                         <td :rowspan="trabajosPendientes.enrutamiento.length" v-if="index === 0">
                                             <p class="bold" v-for="enrutador in trabajosPendientes.enrutadores" :key="enrutador.id">
-                                               @{{enrutador}}
+                                                @{{enrutador}}
                                             </p>
                                         </td>
                                         <td class="bold">@{{componente.nombre}}</td>
                                         <td>@{{componente.cantidad}}</td>
                                         <td>@{{componente.fecha_cargado}}Hrs. </td>
-                                        <td>@{{componente.comentarios??'Sin comentarios'}}</td>                                    
+                                        <td>@{{componente.comentarios??'Sin comentarios'}}</td>
                                     </tr>
                                     <tr v-if="trabajosPendientes?.enrutamiento?.length == 0">
                                         <td>
                                             <p class="bold" v-for="enrutador in trabajosPendientes.enrutadores" :key="enrutador.id">
-                                               @{{enrutador}}<br>
+                                                @{{enrutador}}<br>
                                             </p>
                                         </td>
                                         <td colspan="4" class="text-center">No hay trabajos de enrutamiento pendiente</td>
                                     </tr>
                                 </tbody>
-    
+
                             </table>
                         </div>
                     </div>
@@ -131,7 +136,7 @@
                 </div>
                 <div class="tab-pane fade" id="corte-mp" role="tabpanel" aria-labelledby="profile-tab">
                     <div class="row mb-3">
-                        
+
                         <div class="table-responsive col-lg-12">
                             <table class="table table-bordered">
                                 <thead class="thead-light">
@@ -160,22 +165,22 @@
                                                     <small class="bold">Largo</small>
                                                     <input class="form-control text-center" type="text" disabled v-model="componente.largo">
                                                 </div>
-    
+
                                                 <div class="col text-left form-group" v-if="componente.ancho">
                                                     <small class="bold">Ancho</small>
                                                     <input class="form-control text-center" type="text" disabled v-model="componente.ancho">
                                                 </div>
-    
+
                                                 <div class="col text-left form-group" v-if="componente.espesor">
                                                     <small class="bold">Espesor</small>
                                                     <input class="form-control text-center" type="text" disabled v-model="componente.espesor">
                                                 </div>
-    
+
                                                 <div class="col text-left form-group" v-if="componente.longitud">
                                                     <small class="bold">Longitud</small>
                                                     <input class="form-control text-center" type="text" disabled v-model="componente.longitud">
                                                 </div>
-    
+
                                                 <div class="col text-left form-group" v-if="componente.diametro">
                                                     <small class="bold">Diametro</small>
                                                     <input class="form-control text-center" type="text" disabled v-model="componente.diametro">
@@ -197,7 +202,7 @@
 
                                     </tr>
                                 </tbody>
-    
+
                             </table>
                         </div>
                     </div>
@@ -249,20 +254,61 @@
                                             <div class="my-4" v-for="componente in fabricaciones.componentes" :key="'comp-comentarios-' + componente.id">
                                                 @{{ componente.fecha_liberacion ?? '-' }}
                                             </div>
-                                        </td> 
+                                        </td>
                                         <td>
                                             <div class="my-1" v-for="componente in fabricaciones.componentes" :key="'comp-comentarios-' + componente.id">
                                                 <button @click="goTo('visor-avance-hr', componente.rutaComponente)" class="btn btn-sm btn-default"><i class="fa fa-eye">&nbsp;</i>Ver ruta componente</button>
                                             </div>
-    
+
                                         </td>
                                     </tr>
                                     <tr v-if="trabajosPendientes?.fabricaciones?.length == 0">
                                         <td colspan="3" class="text-center">No hay fabricaciones pendientes</td>
-    
+
                                     </tr>
                                 </tbody>
-    
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="componenteTerminado" role="tabpanel" aria-labelledby="profile-tab">
+                    <div class="row mb-3">
+
+
+
+                        <div class="col-md-2 form-group">
+                            <label for="">Filtrar:</label>
+                            <select class="form-control" v-model="filtro" @change="getComponentesTerminados()">
+                                <option value="hoy">Hoy</option>
+                                <option value="7dias">Últimos 7 días</option>
+                            </select>
+                        </div>
+                        <div class="table-responsive col-lg-12">
+                            <!-- Vista de componentes terminados -->
+                            <table class="table table-bordered table-striped">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Nombre del componente</th>
+                                        <th>Fecha de terminado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="cursor-pointer" v-for="(componenteTerminado, index) in componentesTerminados" v-if="componentesTerminados?.length > 0" @click="goTo('visor-avance-hr', componenteTerminado.rutaComponente)">
+                                        <td class="bold">
+                                            @{{componenteTerminado.nombre}}
+                                        </td>
+                                        <td>
+                                            @{{componenteTerminado.fecha_terminado}}
+                                        </td>
+
+                                    </tr>
+                                    <tr v-if="componentesTerminados?.length == 0">
+                                        <td colspan="3" class="text-center">No hay componentes terminados</td>
+                                    </tr>
+                                </tbody>
+
                             </table>
                         </div>
                     </div>
@@ -294,15 +340,40 @@
                 pruebas_diseno: [],
                 pruebas_proceso: [],
             },
-            procesos: [    
-                { id: 3,  nombre: 'Carear y/o Escuadrar'},
-                { id: 4,  nombre: 'Maquinar'},
-                { id: 5,  nombre: 'Tornear'},
-                { id: 6,  nombre: 'Roscar/Rebabear'},
-                { id: 8,  nombre: 'Rectificar'},
-                { id: 9,  nombre: 'EDM'},
-                { id: 10,  nombre: 'Cortar'},
-                { id: 11, nombre: 'Marcar'},
+            componentesTerminados: [],
+            filtro: 'hoy',
+            procesos: [{
+                    id: 3,
+                    nombre: 'Carear y/o Escuadrar'
+                },
+                {
+                    id: 4,
+                    nombre: 'Maquinar'
+                },
+                {
+                    id: 5,
+                    nombre: 'Tornear'
+                },
+                {
+                    id: 6,
+                    nombre: 'Roscar/Rebabear'
+                },
+                {
+                    id: 8,
+                    nombre: 'Rectificar'
+                },
+                {
+                    id: 9,
+                    nombre: 'EDM'
+                },
+                {
+                    id: 10,
+                    nombre: 'Cortar'
+                },
+                {
+                    id: 11,
+                    nombre: 'Marcar'
+                },
             ]
         },
         methods: {
@@ -318,8 +389,24 @@
                 if (response.data.success) {
                     t.trabajosPendientes = response.data.data;
                 }
-                console.log(t.trabajosPendientes);
                 t.loading = false;
+            },
+            async getComponentesTerminados() {
+                let t = this;
+                const params = this.filtro === 'hoy' ? {} : {
+                    filtro: this.filtro
+                };
+
+                try {
+                    const response = await axios.get(`/api/componentesTerminados`, {
+                        params
+                    });
+                    if (response.data.success) {
+                        t.componentesTerminados = response.data.componentes;
+                    }                    
+                } catch (e) {
+                    console.error(e);
+                }
             },
             getTipoProcesoString: function(id) {
                 let t = this;
@@ -331,6 +418,7 @@
             let t = this;
             this.$nextTick(function() {
                 t.getDataInitial();
+                t.getComponentesTerminados();
             })
         }
     });

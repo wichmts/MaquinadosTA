@@ -6221,6 +6221,26 @@ class APIController extends Controller
         ]);
     }
 
+    public function obtenerComponentesTerminados(Request $request)
+    {
+        $query = Componente::whereNotNull('fecha_terminado'); 
+        
+
+        if ($request->filtro === '7dias') {
+            $query->where('fecha_terminado', '>=', now()->subDays(7));
+        } else {
+            $query->whereDate('fecha_terminado', now());
+        }
+
+        $componentes = $query->orderBy('fecha_terminado', 'desc')->get();
+
+        return response()->json([
+            'success' => true,
+            'componentes' => $componentes
+        ]);
+    }
+
+
 
     /**
      * Helper para verificar si alguna de las queries de un rol debe ejecutarse
