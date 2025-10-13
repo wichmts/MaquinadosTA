@@ -175,7 +175,7 @@
 
                                                         <div class="pt-3 border-top">
                                                             <a target="_blank" v-if="f.foto" :href="'/storage/fabricaciones/' + f.foto">
-                                                                <img :src="'/storage/fabricaciones/' + f.foto" style="border-radius: 10px; width: 10px; height: 20%; object-fit: cover" alt="">
+                                                                <img :src="'/storage/fabricaciones/' + f.foto" style="border-radius: 10px; width: 10%; height: 20%; object-fit: cover" alt="">
                                                             </a>
                                                             <img v-else src="{{ asset('paper/img/no-image.png') }}" style="border-radius: 10px; width: 10%; height: 20%; object-fit:cover" alt="">
                                                         </div>
@@ -258,7 +258,7 @@
                                 </tbody>
                             </table>
 
-                            <!-- Prebas Diseño -->
+                            <!-- Pruebas Diseño -->
                             <div v-if='pruebasDiseño.length != 0' class="table-responsive shadow mt-3">
                                 <h4>Pruebas de diseño</h4>
                                 <table class="table align-items-center table-bordered">
@@ -271,7 +271,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="p in pruebasDiseño" :key="f.id">
+                                        <tr v-for="p in pruebasDiseño" :key="p.id">
                                             <td>@{{ p.nombre }}</td>
                                             <td>ARCHIVO DIMENSIONAL</td>
                                             <td>
@@ -308,7 +308,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="p in pruebasProceso" :key="f.id">
+                                        <tr v-for="p in pruebasProceso" :key="p.id">
                                             <td>@{{ p.nombre }}</td>
                                             <td>FORMATO F71-03 ANEXO 2</td>
                                             <td>
