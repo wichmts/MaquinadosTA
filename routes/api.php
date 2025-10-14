@@ -74,6 +74,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('herramental/{herramental}/pruebas-diseno', 'APIController@obtenerPruebasDiseno');
     Route::get('herramental/{herramental}/pruebas-proceso', 'APIController@obtenerPruebasProceso');
     Route::get('componente/{componente}', 'APIController@obtenerComponente');
+    Route::get('componentesTerminados', 'APIController@obtenerComponentesTerminados');
     Route::post('componente/comentario/{componente}', 'APIController@guardarComentarioComponente');
     Route::get('componentes-reutilizables', 'APIController@obtenerComponentesReutilizables');
     Route::post('componentes-reutilizables', 'APIController@nuevoComponenteReutilizable');
@@ -159,6 +160,11 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::get('trabajos-pendientes', 'APIController@trabajosPendientes');
     Route::get('trabajos-pendientes-general', 'APIController@trabajosPendientesGeneral');
+
+    Route::get('documentacion-tecnica/{herramental_id}', 'APIController@obtenerDocumentacionTecnica');
+    Route::post('documentacion-tecnica/{herramental_id}', 'APIController@guardarDocumentacionTecnica');
+    Route::post('documentacion-tecnica/editar/{documento_id}', 'APIController@editarDocumentacionTecnica');
+    Route::delete('documentacion-tecnica/{documento_id}', 'APIController@eliminarDocumentacionTecnica');
 
 
 });

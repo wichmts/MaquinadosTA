@@ -221,7 +221,7 @@
                     
                     {{-- HERRAMENTALES --}}
                     @php 
-                        addMenuItem('herramentales', 'Herramentales', ['PROCESOS', 'HERRAMENTALES'], $addedRoutes); 
+                        addMenuItem('herramentales', 'Herramentales', ['PROCESOS', 'HERRAMENTALES'], $addedRoutes);                        
                     @endphp
                     @php 
                         addMenuItem('matricero/lista-componentes', 'Lista de componentes', ['PROCESOS', 'HERRAMENTALES'], $addedRoutes); 

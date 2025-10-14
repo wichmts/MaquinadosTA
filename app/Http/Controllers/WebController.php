@@ -47,6 +47,12 @@ class WebController extends Controller
       return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
     }
 
+    public function centroHerramentales(){
+    if(auth()->user()->hasAnyRole(['HERRAMENTALES', 'PROCESOS']))
+          return view('generales.centro-herramentales');
+      return redirect()->route('home')->with('error', 'No cuenta con los permisos necesarios para acceder este recurso.');
+    }
+
     public function matricero(){
         if (auth()->user()->hasRole('MATRICERO'))
           return view('matricero.matricero');

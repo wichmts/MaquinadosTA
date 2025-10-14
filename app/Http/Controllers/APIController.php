@@ -28,6 +28,7 @@ use App\Puesto;
 use App\SolicitudExterna;
 use App\SolicitudAfilado;
 use App\UnidadDeMedida;
+use App\DocumentacionTecnica;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
@@ -6152,6 +6153,100 @@ class APIController extends Controller
             'data' => $data,
         ]);
     }
+
+    //Documentacion Tecnica
+    public function obtenerDocumentacionTecnica($herramental_id){
+        $documento = DocumentacionTecnica::where('herramental_id', $herramental_id)->get();
+         return response()->json([
+            'documento' => $documento,
+            'success' => true,
+        ], 200);
+    }
+
+    public function guardarDocumentacionTecnica(Request $request){
+
+        if($request->hasFile('archivo')){
+            $file = $request->file('archivo');
+            $resultado = $this->validarArchivo($file);
+            if (!$resultado['success']) {
+                return response()->json(['success' => false, 'message' => $resultado['message']]);
+            }
+
+            $name = uniqid() . '_' . $file->getClientOriginalName();
+            Storage::disk('public')->put("herramental/{$name}", \File::get($file));
+
+            $documento = new DocumentacionTecnica();
+            $documento->archivo = $name;
+            $documento->descripcion = $request->input('descripcion');
+            $documento->herramental_id = $request->input('herramental_id');
+            $documento->save();
+
+            return response()->json([
+                'success' => true,
+            ]);
+        }
+    }
+
+    public function editarDocumentacionTecnica(Request $request, $id)
+    {
+        $documento = DocumentacionTecnica::findOrFail($id);
+
+        if ($request->hasFile('archivo')) {        
+            $file = $request->file('archivo');
+            $resultado = $this->validarArchivo($file);
+
+            if (!$resultado['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $resultado['message']
+                ]);
+            }
+        
+            if ($documento->archivo) {
+                Storage::disk('public')->delete("herramental/{$documento->archivo}");
+            }            
+            $name = uniqid() . '_' . $file->getClientOriginalName();
+            Storage::disk('public')->put("herramental/{$name}", \File::get($file));
+
+            $documento->archivo = $name;
+        }        
+        $documento->descripcion = $request->input('descripcion');
+        $documento->save();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+
+    public function eliminarDocumentacionTecnica($id){
+        $documento = DocumentacionTecnica::findOrFail($id);
+        $documento->delete();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function obtenerComponentesTerminados(Request $request)
+    {
+        $query = Componente::whereNotNull('fecha_terminado'); 
+        
+
+        if ($request->filtro === '7dias') {
+            $query->where('fecha_terminado', '>=', now()->subDays(7));
+        } else {
+            $query->whereDate('fecha_terminado', now());
+        }
+
+        $componentes = $query->orderBy('fecha_terminado', 'desc')->get();
+
+        return response()->json([
+            'success' => true,
+            'componentes' => $componentes
+        ]);
+    }
+
 
 
     /**
