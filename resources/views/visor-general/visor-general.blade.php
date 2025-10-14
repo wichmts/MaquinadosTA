@@ -208,10 +208,12 @@
                     </div>
                     <!-- Vista corte de mp -->
                 </div>
+
+                <!-- Vista de Fabricaciones -->
                 <div class="tab-pane fade" id="fabricacion" role="tabpanel" aria-labelledby="profile-tab">
                     <div class="row mb-3">
                         <div class="table-responsive col-lg-12">
-                            <!-- Vista de Fabricaciones -->
+                            
                             <table class="table table-bordered table-striped">
                                 <thead class="thead-light">
                                     <tr>
@@ -273,11 +275,9 @@
                     </div>
                 </div>
 
+                <!-- Vista de componentes terminados -->
                 <div class="tab-pane fade" id="componenteTerminado" role="tabpanel" aria-labelledby="profile-tab">
                     <div class="row mb-3">
-
-
-
                         <div class="col-md-2 form-group">
                             <label for="">Filtrar:</label>
                             <select class="form-control" v-model="filtro" @change="getComponentesTerminados()">
@@ -285,12 +285,11 @@
                                 <option value="7dias">Últimos 7 días</option>
                             </select>
                         </div>
-                        <div class="table-responsive col-lg-12">
-                            <!-- Vista de componentes terminados -->
+                        <div class="table-responsive col-lg-12">                            
                             <table class="table table-bordered table-striped">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th>Nombre del componente</th>
+                                        <th class="bold bg-warning">COMPONENTE TERMINADO</th>
                                         <th>Fecha de terminado</th>
                                     </tr>
                                 </thead>
