@@ -1,1 +1,5 @@
 firmas/
+vendor/
+storage/
+.env
+public/
